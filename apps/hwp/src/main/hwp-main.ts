@@ -109,7 +109,7 @@ const closeSaveWaiters = new Map<number, (ok: boolean) => void>()
 /** Resolvers for menu- and shortcut-triggered saves, settled when the renderer's save ends */
 const saveWaiters = new Map<number, (ok: boolean) => void>()
 const readBytesWaiters = new Map<number, (result: unknown) => void>()
-const readTextInFlight = new Map<number, Promise<string>>()
+const readTextInFlight = new Map<number, Promise<Uint8Array>>()
 /** Target a view resolved with beginSave and has not committed yet */
 const pendingSaveByWc = new Map<number, { path: string; format: HwpFormat }>()
 /** Paths each view has already written this session; their first overwrite kept a backup */
@@ -333,11 +333,31 @@ const READ_TEXT_RETRY_MS = 250
  * registered while it mounts and a request sent before that is dropped.
  */
 export function hwpReadText(contents: WebContents): Promise<string> {
+  return hwpReadBytes(contents).then((bytes) => hwpToText(bytes))
+}
+
+/**
+ * The document's bytes as they are in the editor now, unsaved edits included,
+ * in its own format (Hanpan's sync reads the linked document this way).
+ */
+/** Hanpan: the document tools, carried out by the shell (which holds the engine and the rules) */
+let hanpanToolHook: ((wc: WebContents, request: unknown) => Promise<unknown>) | null = null
+
+export function setHwpHanpanToolHook(hook: ((wc: WebContents, request: unknown) => Promise<unknown>) | null): void {
+  hanpanToolHook = hook
+}
+
+/** Hanpan sync: loads updated bytes in place of the document open in this tab. */
+export function hwpReplaceDocument(contents: WebContents, bytes: Uint8Array): void {
+  if (!contents.isDestroyed()) contents.send(HWP_CHANNELS.hanpanReplace, bytes)
+}
+
+export function hwpReadBytes(contents: WebContents): Promise<Uint8Array> {
   if (contents.isDestroyed()) return Promise.reject(new Error('the document is no longer open'))
   const wcId = contents.id
   const inFlight = readTextInFlight.get(wcId)
   if (inFlight) return inFlight
-  const request = new Promise<string>((resolve, reject) => {
+  const request = new Promise<Uint8Array>((resolve, reject) => {
     let settled = false
     const settle = (finish: () => void): void => {
       if (settled) return
@@ -370,11 +390,8 @@ export function hwpReadText(contents: WebContents): Promise<string> {
         settle(() => reject(new Error(error)))
         return
       }
-      hwpToText(raw.bytes).then(
-        (text) => settle(() => resolve(text)),
-        (error: unknown) =>
-          settle(() => reject(error instanceof Error ? error : new Error(String(error)))),
-      )
+      const bytes = raw.bytes
+      settle(() => resolve(bytes))
     })
     contents.send(HWP_CHANNELS.readBytesRequest)
   })
@@ -765,6 +782,14 @@ function registerHwpIpc(): void {
     waiter?.(ok === true)
   })
 
+  ipcMain.handle(HWP_CHANNELS.hanpanTool, async (e, request: unknown) => {
+    if (!hanpanToolHook) return { ok: false, error: 'not available in this build' }
+    try {
+      return await hanpanToolHook(e.sender, request)
+    } catch (error) {
+      return { ok: false, error: error instanceof Error ? error.message : String(error) }
+    }
+  })
   ipcMain.on(HWP_CHANNELS.readBytesResult, (e, result: unknown) => {
     readBytesWaiters.get(e.sender.id)?.(result)
   })

@@ -3956,6 +3956,24 @@ function storedAiSettings(): AiSettings {
   return normalizeAiSettings(readJson<unknown>(SETTINGS_PATH(), {}))
 }
 
+/** Hanpan: the stored AI settings, for main-process code outside this module (the local AI adoption). */
+export function readStoredAiSettings(): AiSettings {
+  return storedAiSettings()
+}
+
+/**
+ * Hanpan: replace the stored AI settings from main-process code, through the
+ * same checks as the settings screen's save; every window re-reads them.
+ * Returns false when the settings did not pass the checks (nothing written).
+ */
+export function writeStoredAiSettings(settings: AiSettings): boolean {
+  const sanitized = sanitizeAiSettings(settings)
+  if (!sanitized) return false
+  writeJsonAtomic(SETTINGS_PATH(), sealAiSecrets(sanitized))
+  broadcastAiSettingsChanged()
+  return true
+}
+
 /** where the image and media tools may run: the screen path, with the live subscription statuses */
 function screenToolContext(): AiToolCallContext {
   return { path: 'screen', statuses: sharedSubscriptionStatuses() }

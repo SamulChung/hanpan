@@ -885,6 +885,12 @@ const pdfToolsHomeApi: PdfToolsHomeApi = {
   },
 }
 contextBridge.exposeInMainWorld('aiOfficePdfToolsHome', pdfToolsHomeApi)
+// Hanpan: templates (and the design board) from the Home screen
+contextBridge.exposeInMainWorld('hanpanApi', {
+  templates: () => ipcRenderer.invoke('hanpan:templates'),
+  openTemplate: (id: string, target: 'hwp' | 'docx') => ipcRenderer.invoke('hanpan:open-template', id, target),
+  openDesign: () => ipcRenderer.invoke('hanpan:open-design'),
+})
 // Home's entry point into the agent window (decision 0032); the window has its own preload
 contextBridge.exposeInMainWorld('aiOfficeAgent', {
   async open() {

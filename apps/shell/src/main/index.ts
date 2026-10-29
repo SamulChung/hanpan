@@ -29,6 +29,8 @@ import {
 } from 'electron'
 import type { MenuItemConstructorOptions, NativeImage, WebContents } from 'electron'
 import { atomicWriteFile } from './atomic-write'
+import { setupHanpan } from './hanpan/setup'
+import { configureDesignWindow, openDesignWithOutline } from './hanpan/design-window'
 import { tabStripOverlay } from './title-bar-overlay'
 import { shellWindowBackground } from './window-background'
 import { installPointerSize } from './pointer-size'
@@ -284,6 +286,7 @@ import {
   requestHwpPrint,
   requestHwpSave,
   setHwpFileSavedHook,
+  setHwpHanpanToolHook,
 } from '../../../hwp/src/main/hwp-main'
 import {
   configureHtmlRuntime,
@@ -312,6 +315,9 @@ import {
   sendMindmapPrintRequest,
   setMindmapFileSavedHook,
   setMindmapMakeFromDocumentHook,
+  setMindmapSendToDocumentHook,
+  setMindmapSyncHooks,
+  setMindmapSendToDesignHook,
   setMindmapProvisionalTitleHook,
 } from '../../../mindmap/src/main/mindmap-main'
 import { mindmapReadOutline } from '../../../mindmap/src/main/mcp-queries'
@@ -867,7 +873,8 @@ function currentLang(): Lang {
   }
   const saved = readAppSettings(APP_SETTINGS_PATH()).language
   if (isLang(saved)) uiLang = saved
-  uiLang ??= normalizeLang(app.getLocale())
+  // Hanpan is Korean-first: with no language chosen in Settings the UI is Korean, whatever the OS says
+  uiLang ??= 'ko'
   setUiLang(uiLang)
   return uiLang
 }
@@ -1606,8 +1613,8 @@ const tMain = createI18n({
     menuSplitRight: '오른쪽에 나누기',
     menuSplitDown: '아래에 나누기',
     menuUnsplit: '나누기 풀기',
-    menuNewDoc: 'AI Docs',
-    menuNewSheet: 'AI Sheets',
+    menuNewDoc: 'AI 워드',
+    menuNewSheet: 'AI 엑셀',
     untitledSheet: '제목 없는 스프레드시트',
     untitledDoc: '제목 없는 문서',
     untitledDeck: '제목 없는 프레젠테이션',
@@ -1616,9 +1623,9 @@ const tMain = createI18n({
     untitledMindmap: '제목 없는 마인드맵',
     untitledHwp: '제목 없는 한글 문서',
     untitledPdf: '제목 없는 PDF',
-    menuNewSlide: 'AI Slides',
-    menuNewMarkdown: 'AI Markdown',
-    menuNewHtml: 'AI HTML',
+    menuNewSlide: 'AI 파워포인트',
+    menuNewMarkdown: 'AI 마크다운',
+    menuNewHtml: 'AI 웹 문서',
     menuNewMindmap: '마인드맵',
     menuNewHwp: 'AI 한글',
     menuNewPdf: 'AI PDF',
@@ -1630,7 +1637,7 @@ const tMain = createI18n({
     menuMakeFromDocument: '이 문서로 다른 문서 만들기',
     menuDocumentSources: '자료 보기',
     menuDerivedDocuments: '이 문서로 만든 문서',
-    menuOpenInDocs: 'Docs 문서로 변환하여 열기',
+    menuOpenInDocs: '워드 문서로 변환하여 열기',
     menuPrint: '인쇄…',
     menuOpen: '열기…',
     menuSave: '저장',
@@ -1671,7 +1678,7 @@ const tMain = createI18n({
     errUnsupportedExt: '.{ext} 형식은 지원되지 않습니다',
     copySuffix: '복사본',
     menuHelp: '도움말',
-    menuUserGuide: '사용자 가이드',
+    menuUserGuide: '사용 설명서',
     thirdPartyNotices: '타사 소프트웨어 고지',
     menuExportDocx: 'Word로 내보내기…',
     menuExportOdt: 'ODT로 내보내기…',
@@ -4894,6 +4901,7 @@ function createShellWindow(): void {
     recordRecentFile(path)
   })
   setSlidesOpenedHook((wc, path) => {
+    hanpan.documentSaved(wc, path)
     manager.setTabFileFor(wc.id, path)
     detachedSetFileFor(wc.id, path)
     recordRecentFile(path)
@@ -4932,6 +4940,7 @@ function createShellWindow(): void {
   setSlidesPasswordPrompt(documentPasswordPrompt)
   // docs' save-as / silent first save lands on a new path → sync the tab title too
   setDocsFileSavedHook((wc, path) => {
+    hanpan.documentSaved(wc, path)
     manager.setTabFileFor(wc.id, path)
     detachedSetFileFor(wc.id, path)
     recordRecentFile(path)
@@ -4963,6 +4972,7 @@ function createShellWindow(): void {
   })
   // mind map untitled first save / Save As lands on a new path
   setMindmapFileSavedHook((wc, path) => {
+    hanpan.mapSaved(wc, path)
     manager.setTabFileFor(wc.id, path)
     detachedSetFileFor(wc.id, path)
     recordRecentFile(path)
@@ -4971,8 +4981,17 @@ function createShellWindow(): void {
   })
   // the mind map's toolbar button "make another document from this one"
   setMindmapMakeFromDocumentHook((wc) => makeFromDocument(wc))
+  // Hanpan: the mind map's "send to a document" (HWP report, slides, Word report) in a new tab
+  setMindmapSendToDocumentHook((wc, request) => hanpan.sendMap(request, wc))
+  setHwpHanpanToolHook((wc, request) => hanpan.hwpTool(wc, request))
+  setMindmapSendToDesignHook((outline) => openDesignWithOutline(outline))
+  setMindmapSyncHooks({
+    check: (wc, request) => hanpan.sync.check(wc.id, request),
+    finish: (_wc, request) => hanpan.sync.finish(request),
+  })
   // hwp Save As lands on a new path
   setHwpFileSavedHook((wc, path) => {
+    hanpan.documentSaved(wc, path)
     manager.setTabFileFor(wc.id, path)
     detachedSetFileFor(wc.id, path)
     recordRecentFile(path)
@@ -8510,6 +8529,32 @@ const templateTabs = createTemplateTabs({
 })
 registerTemplateTabsIpc(templateTabs)
 
+// Hanpan: map → document sending and the map ↔ document links
+const hanpan = setupHanpan({
+  openCopy: (copy) => openTemplateCopyTab(copy),
+  tabForFile: (path) => {
+    const manager = tabManager
+    if (!manager) return null
+    const norm = (p: string) => p.replace(/\\/g, '/').toLowerCase()
+    const tab = manager.list().find((t) => t.filePath && norm(t.filePath) === norm(path))
+    const contents = tab ? manager.webContentsForTab(tab.id) : null
+    return tab && contents ? { contentsId: contents.id, title: tab.title } : null
+  },
+  tabTitleOf: (contentsId) => {
+    const manager = tabManager
+    if (!manager) return null
+    return manager.list().find((t) => manager.webContentsForTab(t.id)?.id === contentsId)?.title ?? null
+  },
+})
+// Hanpan: the 글집 templates on the Home screen (and, in stage 4, the design board)
+ipcMain.handle('hanpan:templates', () => hanpan.templates())
+ipcMain.handle('hanpan:open-template', (_event, id: unknown, target: unknown) =>
+  hanpan.openTemplate(id, target).catch((error: unknown) => ({
+    ok: false as const,
+    error: error instanceof Error ? error.message : String(error),
+  })),
+)
+
 /** A template copy's new untitled tab: sheets here (its backing workbook), the others in the tab manager */
 async function openTemplateCopyTab(copy: TemplateCopy): Promise<OpenedCopyTab | null> {
   const manager = tabManager
@@ -8600,6 +8645,8 @@ app.whenReady().then(async () => {
   }
   // first scan waits for the windows to come up; later ones follow folder changes
   setTimeout(() => ensureFileIndexer()?.refresh(), 4000)
+  // Hanpan: a local AI server on this PC becomes the default AI (once, only while the choice is "auto")
+  hanpan.adoptLocalAi()
   installRendererProtocol({
     docs: join(DOCS_OUT, 'renderer'),
     sheets: join(SHEETS_OUT, 'renderer'),
@@ -8792,6 +8839,13 @@ app.whenReady().then(async () => {
   })
   // The PDF tools window (decision 0030): Home's "PDF tools" card opens it; what it
   // writes, or a PDF picked for an editor-only tool, opens in a tab here.
+  // Hanpan: the design board window, opened from the Home card
+  configureDesignWindow({
+    parentWindow: () => shellWindow,
+    lang: () => currentLang(),
+    theme: () => currentTheme(),
+    title: (lang) => `${lang === 'ko' ? '디자인' : 'Design'} - ${productName(lang as never)}`,
+  })
   configurePdfToolsWindow({
     parentWindow: () => shellWindow,
     lang: () => currentLang(),
@@ -9007,7 +9061,7 @@ app.whenReady().then(async () => {
         withProject ? enabled : enabled.filter((skill) => skill.source !== 'project'),
         // not under userData: that folder is protected from sessions, and the
         // copied skills' scripts must be readable to run
-        join(process.env.LOCALAPPDATA ?? tmpdir(), 'IeumOffice', 'agent-skills'),
+        join(process.env.LOCALAPPDATA ?? tmpdir(), 'Hanpan', 'agent-skills'),
       )
     },
     projectSkills: {

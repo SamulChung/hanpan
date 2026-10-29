@@ -264,3 +264,107 @@ body {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
+
+/* ---- Hanpan: the document tools beside the memo button ---- */
+.hwp-topbar .memo-toggle {
+  margin-inline-end: 0;
+}
+.hp-tools {
+  position: relative;
+  margin-inline: 4px auto;
+}
+.hp-tools-btn {
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-6);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11px;
+  cursor: pointer;
+}
+.hp-tools-btn:hover,
+.hp-tools-btn.on {
+  background: var(--hover);
+  color: var(--text-primary);
+}
+.hp-tools-pop {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 26px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 320px;
+  max-height: calc(100vh - 80px);
+  overflow: auto;
+  padding: 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-menu);
+  font-size: 12px;
+}
+.hp-tools-pop button {
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.hp-tools-pop button:hover:not(:disabled) {
+  background: var(--hover);
+}
+.hp-tools-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.hp-tools-row > span {
+  flex: 1;
+  color: var(--text-secondary);
+}
+.hp-prompt {
+  display: grid;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.hp-prompt label {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+}
+.hp-prompt input,
+.hp-prompt select,
+.hp-prompt textarea {
+  min-width: 0;
+  padding: 3px 5px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+}
+.hp-prompt-preview {
+  margin: 0;
+  padding: 6px;
+  max-height: 140px;
+  overflow: auto;
+  border-radius: 4px;
+  background: var(--hover);
+  white-space: pre-wrap;
+  font: inherit;
+}
+.hp-tools-result {
+  margin: 4px 0 0;
+  padding-inline-start: 16px;
+  color: var(--text-secondary);
+}

@@ -194,6 +194,33 @@ export function setMindmapMakeFromDocumentHook(hook: ((wc: WebContents) => void)
   makeFromDocumentHook = hook
 }
 
+/** Hanpan: "send this map to a document": the shell writes the document and opens it in a tab */
+let sendToDocumentHook: ((wc: WebContents, request: unknown) => Promise<unknown>) | null = null
+
+export function setMindmapSendToDocumentHook(
+  hook: ((wc: WebContents, request: unknown) => Promise<unknown>) | null,
+): void {
+  sendToDocumentHook = hook
+}
+
+/** Hanpan: the map ↔ document sync, carried out by the shell */
+interface MindmapSyncHooks {
+  check(wc: WebContents, request: unknown): Promise<unknown>
+  finish(wc: WebContents, request: unknown): Promise<unknown>
+}
+let syncHooks: MindmapSyncHooks | null = null
+
+export function setMindmapSyncHooks(hooks: MindmapSyncHooks | null): void {
+  syncHooks = hooks
+}
+
+/** Hanpan: card news on the design board from this map */
+let sendToDesignHook: ((outline: string) => void) | null = null
+
+export function setMindmapSendToDesignHook(hook: ((outline: string) => void) | null): void {
+  sendToDesignHook = hook
+}
+
 /** The tab title of an untitled map, recorded with its recovery copy: the shell knows it */
 let recoveryTitleHook: ((wc: WebContents) => string | null | undefined) | null = null
 
@@ -676,6 +703,33 @@ function registerMindmapIpc(): void {
 
   // the toolbar's "make another document from this one": the shell opens its make window (T18)
   ipcMain.on(MINDMAP_CHANNELS.makeFromDocument, (e) => makeFromDocumentHook?.(e.sender))
+
+  ipcMain.on(MINDMAP_CHANNELS.sendToDesign, (_e, outline: unknown) => {
+    if (typeof outline === 'string' && outline.trim()) sendToDesignHook?.(outline)
+  })
+
+  // Hanpan: the map ↔ document sync
+  ipcMain.handle(MINDMAP_CHANNELS.syncCheck, async (e, request: unknown) =>
+    syncHooks ? syncHooks.check(e.sender, request) : { links: [] },
+  )
+  ipcMain.handle(MINDMAP_CHANNELS.syncFinish, async (e, request: unknown) => {
+    if (!syncHooks) return { ok: false, error: 'not available in this build' }
+    try {
+      return await syncHooks.finish(e.sender, request)
+    } catch (error) {
+      return { ok: false, error: error instanceof Error ? error.message : String(error) }
+    }
+  })
+
+  // Hanpan: send the map to a HWP / PPT / Word document (the shell checks the request)
+  ipcMain.handle(MINDMAP_CHANNELS.sendToDocument, async (e, request: unknown) => {
+    if (!sendToDocumentHook) return { ok: false, error: 'not available in this build' }
+    try {
+      return await sendToDocumentHook(e.sender, request)
+    } catch (error) {
+      return { ok: false, error: error instanceof Error ? error.message : String(error) }
+    }
+  })
 
   // crash-recovery copies: bytes from the renderer, kept in the app data folder only
   ipcMain.handle(

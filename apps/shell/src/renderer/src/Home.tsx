@@ -6,6 +6,8 @@ import type {
 } from 'react'
 import logoLockup from './assets/genoffice-logo.svg'
 import { KbAskPanel } from './KbAskPanel'
+import { TemplatePicker } from './hanpan/TemplatePicker'
+import './hanpan/hanpan.css'
 import iconDocx from './assets/file-docx.svg'
 import iconXlsx from './assets/file-xlsx.svg'
 import iconPptx from './assets/file-pptx.svg'
@@ -1902,6 +1904,9 @@ export function Home({
     },
   ]
 
+  // Hanpan: the template picker
+  const [templatesOpen, setTemplatesOpen] = useState(false)
+
   function renderQuickCards() {
     return (
       <div className="quick-cards">
@@ -1932,6 +1937,31 @@ export function Home({
             <span className="quick-sub">{OPEN_LOCAL_EXTENSIONS}</span>
           </span>
         </button>
+        {/* Hanpan: the 글집 templates (official letters, reports, plans) as HWP or Word */}
+        {window.hanpanApi && (
+          <button className="quick-card" data-hanpan="templates" onClick={() => setTemplatesOpen(true)}>
+            <FileBadge ext="hwp" size={30} />
+            <span className="quick-text">
+              <span className="quick-title-row">
+                <span className="quick-title">{t('hpTemplatesCard')}</span>
+              </span>
+              <span className="quick-sub">{t('hpTemplatesCardSub')}</span>
+            </span>
+          </button>
+        )}
+        {window.hanpanApi?.openDesign && (
+          <button className="quick-card" data-hanpan="design" onClick={() => void window.hanpanApi?.openDesign?.()}>
+            <span className="quick-folder hp-design-badge" aria-hidden="true">
+              ✦
+            </span>
+            <span className="quick-text">
+              <span className="quick-title-row">
+                <span className="quick-title">{t('hpDesignCard')}</span>
+              </span>
+              <span className="quick-sub">{t('hpDesignCardSub')}</span>
+            </span>
+          </button>
+        )}
         {/* decision 0030: PDF tasks without AI, in their own window */}
         <button className="quick-card" onClick={() => void window.aiOfficePdfToolsHome.open()}>
           <FileBadge ext="pdf" size={30} />
@@ -1942,6 +1972,7 @@ export function Home({
             <span className="quick-sub">{t('pdfToolsCardSub')}</span>
           </span>
         </button>
+        {templatesOpen && <TemplatePicker onClose={() => setTemplatesOpen(false)} />}
       </div>
     )
   }

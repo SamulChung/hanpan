@@ -36,6 +36,13 @@ export interface HelpTopicMeta {
 /** Authoritative topic list. Body files live in ./topics/<id>.<lang>.md */
 export const HELP_TOPICS: HelpTopicMeta[] = [
   {
+    // Hanpan: what this product adds, first in the manual
+    id: 'hanpan',
+    group: 'start',
+    order: 0,
+    keywords: ['한판', 'Hanpan', '마인드맵', '보내기', '맞추기', '동기화', '양식', '공문', '보고서', '디자인', '카드뉴스', '내 PC AI', 'Ollama', 'send', 'sync', 'template', 'design', 'local AI'],
+  },
+  {
     id: 'install',
     group: 'start',
     order: 1,

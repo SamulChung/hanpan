@@ -1,0 +1,226 @@
+/**
+ * Hanpan: the "send this map to a document" dialog. The person picks the layout,
+ * the fonts, and whether the map's words go as they are or the AI writes
+ * sentences for them; the shell makes the document and opens it in a new tab,
+ * linked to this map.
+ *
+ * The AI is whatever the person chose in Settings: a local model (Ollama,
+ * LM Studio, vLLM) when one is set up. If it does not answer, the map is sent
+ * as it is and the dialog says why; nothing is sent anywhere else instead.
+ */
+import { useRef, useState } from 'react'
+import { streamText } from '@genoffice/agent-core'
+import {
+  applyBodies,
+  fleshOutJobs,
+  koreanDate,
+  parseFleshOut,
+  type MarkerStyle,
+  type PanOutline,
+  type SendTarget,
+} from '@genoffice/hanpan-core/renderer'
+import type { AiSettings } from '@genoffice/ai-provider'
+import { Modal } from '../components/dialogs'
+import type { DocumentSession } from '../document/session'
+import { createElectronTransport } from '../ai/transport'
+import { useI18n, type StringKey } from '../i18n/locale'
+import { sheetOutline } from './map-outline'
+
+const TITLE: Record<SendTarget, StringKey> = { hwp: 'sendHwp', slides: 'sendSlides', docx: 'sendDocx' }
+/** Longest answer taken for one branch (a branch of 200 topics at 2 sentences each fits). */
+const MAX_ANSWER_CHARS = 60_000
+
+type Phase = { kind: 'idle' } | { kind: 'ai'; done: number; total: number } | { kind: 'sending' } | { kind: 'error'; text: string }
+
+async function fleshOut(
+  outline: PanOutline,
+  settings: AiSettings,
+  lang: () => import('@genoffice/i18n').Lang,
+  signal: AbortSignal,
+  progress: (done: number, total: number) => void,
+): Promise<{ outline: PanOutline; error: string | null }> {
+  let lastError: string | null = null
+  const transport = createElectronTransport(() => settings, {
+    getLang: lang,
+    onStreamError: (error) => {
+      lastError = error.message
+    },
+    onSubscriptionUsage: () => {},
+    onInputTruncated: () => {},
+  })
+  const jobs = fleshOutJobs(outline)
+  const bodies = new Map<string, string>()
+  for (let i = 0; i < jobs.length; i++) {
+    progress(i, jobs.length)
+    const job = jobs[i]!
+    const outcome = await streamText({
+      transport,
+      system: job.system,
+      user: job.user,
+      signal,
+      maxChars: MAX_ANSWER_CHARS,
+      extract: (raw) => ({ text: raw }),
+    })
+    if (outcome.status === 'empty') {
+      return { outline, error: outcome.error ?? lastError ?? 'no answer' }
+    }
+    for (const [key, sentence] of parseFleshOut(outcome.text, job.keys)) bodies.set(key, sentence)
+    if (signal.aborted) break
+  }
+  progress(jobs.length, jobs.length)
+  return { outline: applyBodies(outline, bodies), error: bodies.size ? null : (lastError ?? 'no sentences') }
+}
+
+export function SendDialog(p: {
+  target: SendTarget
+  session: DocumentSession
+  sheetKey: string
+  mapPath: string | null
+  /** puts any topic title still being typed into the map */
+  flush(): void
+  onClose(): void
+  onSent(warning: string | null): void
+}) {
+  const { t, lang } = useI18n()
+  const [style, setStyle] = useState<MarkerStyle>('report')
+  const [theme, setTheme] = useState<'auto' | 'plain'>('auto')
+  const [ai, setAi] = useState(false)
+  const [notes, setNotes] = useState(true)
+  const [date, setDate] = useState(() => koreanDate(new Date()))
+  const [department, setDepartment] = useState('')
+  const [phase, setPhase] = useState<Phase>({ kind: 'idle' })
+  const abort = useRef<AbortController | null>(null)
+  const busy = phase.kind === 'ai' || phase.kind === 'sending'
+  const isDocument = p.target !== 'slides'
+
+  const close = () => {
+    abort.current?.abort()
+    p.onClose()
+  }
+
+  const send = async () => {
+    p.flush()
+    const { outline: mapOutline, sheetId } = await sheetOutline(p.session, p.sheetKey)
+    if (!mapOutline.nodes.length) {
+      setPhase({ kind: 'error', text: t('sendEmpty') })
+      return
+    }
+    let outline = mapOutline
+    let warning: string | null = null
+    if (ai) {
+      const controller = new AbortController()
+      abort.current = controller
+      const settings = await window.mindmapApi.getAiSettings?.().catch(() => null)
+      if (!settings) {
+        warning = t('sendAiFallback', { error: 'AI settings' })
+      } else {
+        const result = await fleshOut(outline, settings, () => lang, controller.signal, (done, total) =>
+          setPhase({ kind: 'ai', done, total }),
+        )
+        if (controller.signal.aborted) return
+        outline = result.outline
+        if (result.error) warning = t('sendAiFallback', { error: result.error })
+      }
+    }
+    setPhase({ kind: 'sending' })
+    const result = await window.mindmapApi.sendToDocument?.({
+      target: p.target,
+      outline,
+      style: isDocument ? style : 'report',
+      theme: theme === 'plain' ? 'plain' : undefined,
+      date: isDocument && date.trim() ? date.trim() : undefined,
+      department: isDocument && department.trim() ? department.trim() : undefined,
+      includeNotes: notes,
+      mapPath: p.mapPath,
+      sheetId,
+    })
+    if (!result) {
+      setPhase({ kind: 'error', text: t('sendFailed', { error: 'not available' }) })
+    } else if (!result.ok) {
+      setPhase({ kind: 'error', text: result.error === 'empty' ? t('sendEmpty') : t('sendFailed', { error: result.error }) })
+    } else {
+      p.onSent(warning)
+    }
+  }
+
+  return (
+    <Modal title={t(TITLE[p.target])} kind="hanpan-send" onCancel={close}>
+      <div className="hp-send-form">
+        {isDocument && (
+          <>
+            <label className="hp-send-row">
+              <span>{t('sendStyle')}</span>
+              <select value={style} disabled={busy} onChange={(e) => setStyle(e.target.value as MarkerStyle)}>
+                <option value="report">{t('sendStyleReport')}</option>
+                <option value="chapter-report">{t('sendStyleChapter')}</option>
+                <option value="gongmun">{t('sendStyleGongmun')}</option>
+              </select>
+            </label>
+            <label className="hp-send-row">
+              <span>{t('sendLook')}</span>
+              <select value={theme} disabled={busy} onChange={(e) => setTheme(e.target.value as 'auto' | 'plain')}>
+                <option value="auto">{t('sendLookHancom')}</option>
+                <option value="plain">{t('sendLookPlain')}</option>
+              </select>
+            </label>
+            <label className="hp-send-row">
+              <span>{t('sendDate')}</span>
+              <input className="mm-field" type="text" value={date} disabled={busy} onChange={(e) => setDate(e.target.value)} />
+            </label>
+            <label className="hp-send-row">
+              <span>{t('sendDepartment')}</span>
+              <input
+                className="mm-field"
+                type="text"
+                value={department}
+                disabled={busy}
+                onChange={(e) => setDepartment(e.target.value)}
+              />
+            </label>
+          </>
+        )}
+        <span className="hp-send-label" id="hp-content-label">
+          {t('sendContent')}
+        </span>
+        <div className="hp-send-choice" role="radiogroup" aria-labelledby="hp-content-label">
+          <label>
+            <input type="radio" name="hp-content" checked={!ai} disabled={busy} onChange={() => setAi(false)} /> {t('sendAsIs')}
+          </label>
+          <label>
+            <input type="radio" name="hp-content" checked={ai} disabled={busy} onChange={() => setAi(true)} /> {t('sendFleshOut')}
+          </label>
+        </div>
+        <label className="hp-send-check">
+          <input type="checkbox" checked={notes} disabled={busy} onChange={(e) => setNotes(e.target.checked)} /> {t('sendNotes')}
+        </label>
+      </div>
+      {phase.kind !== 'idle' && (
+        <p className={`mm-modal-hint${phase.kind === 'error' ? ' error' : ''}`} role={phase.kind === 'error' ? 'alert' : 'status'}>
+          {phase.kind === 'ai'
+            ? t('sendAiWorking', { done: phase.done, total: phase.total })
+            : phase.kind === 'sending'
+              ? t('sendWorking')
+              : phase.text}
+        </p>
+      )}
+      <div className="mm-modal-actions">
+        <button type="button" className="mm-btn" data-action="send-cancel" onClick={close}>
+          {t('cancel')}
+        </button>
+        <button
+          type="button"
+          className="mm-btn primary"
+          data-action="send-go"
+          disabled={busy}
+          onClick={() => {
+            send().catch((error: unknown) =>
+              setPhase({ kind: 'error', text: t('sendFailed', { error: error instanceof Error ? error.message : String(error) }) }),
+            )
+          }}
+        >
+          {t('sendGo')}
+        </button>
+      </div>
+    </Modal>
+  )
+}

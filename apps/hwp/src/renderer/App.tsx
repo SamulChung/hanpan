@@ -1,3 +1,4 @@
+import { HanpanTools } from './hanpan/HanpanTools'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createEditor } from '@rhwp/editor'
 import type { ChromeVisibility, RhwpEditor } from '@rhwp/editor'
@@ -658,6 +659,22 @@ export default function App() {
     [phase],
   )
 
+  // Hanpan sync: the linked map's changes come back as the whole document, loaded in place;
+  // the tab keeps its file and shows unsaved changes, so the person saves (or undoes by not saving)
+  useEffect(
+    () =>
+      window.hwpApi.onHanpanReplace?.((bytes) => {
+        const editor = editorRef.current
+        if (!editor || phase !== 'ready') return
+        const name = filePath ? fileNameOf(filePath) : (copyNameRef.current ?? BLANK_NAME)
+        void editor
+          .loadFile(bytes, name, { skipUnsavedGuard: true })
+          .then(() => window.hwpApi.setDirty(true))
+          .catch(() => {})
+      }),
+    [phase, filePath],
+  )
+
   // keep the editor's own chrome on the app theme
   useEffect(
     () =>
@@ -779,6 +796,7 @@ export default function App() {
       {phase === 'ready' && (
         <div className="hwp-topbar">
           <MemoToggle open={memoOpen} onToggle={() => setMemoOpen((open) => !open)} />
+          <HanpanTools />
           <label className={`autosave-toggle${autoSave ? ' on' : ''}`} data-tip={t('autoSaveTip')}>
             <span className="autosave-knob" />
             <span className="autosave-text">{t('autoSave')}</span>

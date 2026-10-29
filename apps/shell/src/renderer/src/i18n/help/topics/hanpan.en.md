@@ -1,0 +1,35 @@
+# Getting started with Hanpan
+
+Hanpan sends what you sorted out in a mind map to a Hangul (HWP) report, a slide deck or a Word report in the same window, and keeps the map and the document in step. The AI on this PC comes first.
+
+## Send a mind map to a document
+
+1. In the mind map toolbar, press **Send to a document** and pick a HWP report, PowerPoint or a Word report.
+2. Choose the layout (point-form report, report with chapters, official letter numbering), the date and department, and whether to send **exactly what the map says** or **let the AI write the sentences**.
+3. Press **Send**: the document opens in a new tab of the same window. Its first save asks where to keep it.
+
+## Sync the map and the document
+
+- Press **Send to a document › Sync with linked documents** to see what changed in the map and in the HWP document.
+- Changes made in the map go to the document, and changes made in the document come to the map. Where both sides changed a topic differently, choose the map's, the document's, or later.
+- Sentences written in the document are kept. Word and PowerPoint documents can be sent but not synced back yet.
+
+## Hanpan templates
+
+- The **Hanpan templates** card on Home opens 19 templates (official letters, reports, proposals, minutes, plans) as HWP or Word.
+
+## Hanpan tools
+
+- **Hanpan tools** in the strip above a HWP tab tidy and check an official letter, change its tone for a generation, mark a three-colour review and build a structured prompt.
+- Tools that change the document show the result in the tab right away. Closing without saving leaves the file as it was.
+
+## Design
+
+- The **Design** card on Home makes posters, card news, notices and thumbnails.
+- Press **Copy to paste in a document**, then Ctrl+V in a HWP, Word or PowerPoint tab to put the page in as a picture. Pages also save as PNG and PDF.
+- **Send to a document › Send to card news** in a mind map makes one card per main branch.
+
+## The AI on this PC
+
+- At first start Hanpan looks for an AI running on this PC (Ollama, LM Studio, vLLM) and, if you have not chosen an AI, uses it.
+- To use another AI, choose it in **Settings › AI**.

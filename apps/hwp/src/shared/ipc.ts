@@ -29,6 +29,10 @@ export const HWP_CHANNELS = {
   memoBlocked: 'hwp:memo-blocked',
   readBytesRequest: 'hwp:read-bytes-request',
   readBytesResult: 'hwp:read-bytes-result',
+  /** main → renderer (Hanpan sync): load these bytes in place of the open document, keeping its file */
+  hanpanReplace: 'hwp:hanpan-replace',
+  /** invoke(`HanpanToolRequest`) → `HanpanToolResult`: one of 글집's document tools on the open document */
+  hanpanTool: 'hwp:hanpan-tool',
   /** invoke → RecoveryBeginResult: a recovery copy is about to be exported */
   recoveryBegin: 'hwp:recovery-begin',
   /** invoke(bytes, format) → TabSpot[]: the copy's tabs without a width */
@@ -311,6 +315,10 @@ export interface HwpApi {
   /** the renderer could not produce bytes for a save it began */
   abortSave(): void
   setDirty(dirty: boolean): void
+  /** Hanpan: run a document tool (tidy, check, tone, review) on the open document (absent in an older preload) */
+  hanpanTool?(request: HanpanToolRequest): Promise<HanpanToolResult>
+  /** Hanpan sync: the main process hands updated bytes for the open document (absent in an older preload) */
+  onHanpanReplace?(handler: (bytes: Uint8Array) => void): () => void
   onSaveRequest(handler: (mode: SaveMode) => void): () => void
   /**
    * the editor's own File menu asks to save or print: the main process answers it the way
@@ -406,3 +414,14 @@ export interface HwpApi {
   aiToolCapabilities(): Promise<AiToolCapabilities | null>
   onAiStream(handler: (chunk: AiStreamChunk) => void): () => void
 }
+
+/** Hanpan: 글집's document tools, run by the main process on the open document's bytes */
+export type HanpanToolRequest =
+  | { tool: 'tidy' }
+  | { tool: 'check' }
+  | { tool: 'tone'; target: '60대' | '40대' | 'MZ' }
+  | { tool: 'review' }
+
+export type HanpanToolResult =
+  | { ok: true; changed?: number; findings?: { level: string; code: string; line?: number; sample?: string }[]; counts?: Record<'red' | 'blue' | 'yellow', number> }
+  | { ok: false; error: string }

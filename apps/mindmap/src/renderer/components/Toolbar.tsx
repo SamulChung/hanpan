@@ -9,6 +9,8 @@
  * marked below so it lands where it belongs. The theme button opens and closes
  * the theme panel beside the map.
  */
+import type { SendTarget } from '@genoffice/hanpan-core/renderer'
+import { SendMenu } from '../hanpan/SendMenu'
 import { AiMark, aiSubscriptionText, Dropdown, type DropdownOption } from '@genoffice/ui'
 import type { ViewLayout } from '@genoffice/xmind-engine'
 import { useI18n } from '../i18n/locale'
@@ -78,6 +80,12 @@ export interface ToolbarProps {
   onExport(format: ExportFormat): void
   /** "make another document from this one": the shell's make window with this map */
   onMakeFromDocument(): void
+  /** Hanpan: send the map to a HWP / PPT / Word document */
+  onSendTo?(target: SendTarget): void
+  /** Hanpan: sync with the documents made from this map */
+  onSync?(): void
+  /** Hanpan: card news on the design board */
+  onDesign?(): void
 }
 
 export function Toolbar(p: ToolbarProps) {
@@ -297,6 +305,7 @@ export function Toolbar(p: ToolbarProps) {
             >
               <IconMakeFrom />
             </ToolButton>
+            {p.onSendTo && <SendMenu disabled={p.disabled} onPick={p.onSendTo} onSync={p.onSync} onDesign={p.onDesign} />}
           </div>
         </div>
         <span className="mm-tools-end">

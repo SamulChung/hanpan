@@ -1,0 +1,113 @@
+/**
+ * Markdown (as the 글집 templates and AI answers write it) → document blocks, so
+ * a template opens as a HWP or Word document with the same look as a report
+ * made from a map. Headings become the title and chapters, `###`/`####` items,
+ * lists items with the report symbols, tables real tables, `>` notes ※ lines.
+ * Inline marks (**bold**, `code`, links) are reduced to their text: the look
+ * comes from the theme.
+ */
+import type { DocBlock } from './blocks'
+import { reportMarker } from './numbering'
+
+export function plainInline(text: string): string {
+  return text
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/__([^_]+)__/g, '$1')
+    .replace(/(^|[^*])\*([^*\s][^*]*)\*/g, '$1$2')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/<br\s*\/?>/gi, ' ')
+    .trim()
+}
+
+const TABLE_RULE = /^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?$/
+
+function cells(line: string): string[] {
+  return line
+    .trim()
+    .replace(/^\|/, '')
+    .replace(/\|$/, '')
+    .split('|')
+    .map((c) => plainInline(c))
+}
+
+export function markdownToBlocks(markdown: string): DocBlock[] {
+  const lines = markdown.replace(/\r\n?/g, '\n').split('\n')
+  const blocks: DocBlock[] = []
+  let sawTitle = false
+  /** depth of prose under the last heading */
+  let depth = 0
+  let i = 0
+  if (lines[0]?.trim() === '---') {
+    // a front-matter block: not document content
+    i = lines.findIndex((l, j) => j > 0 && l.trim() === '---') + 1
+  }
+  while (i < lines.length) {
+    const raw = lines[i]!
+    const line = raw.trim()
+    if (!line || /^(-{3,}|\*{3,}|_{3,})$/.test(line)) {
+      i++
+      continue
+    }
+    if (line.startsWith('```')) {
+      // a fenced block (box drawings, examples): its lines as they are
+      i++
+      while (i < lines.length && !lines[i]!.trim().startsWith('```')) {
+        const text = lines[i]!.replace(/\s+$/, '')
+        if (text.trim()) blocks.push({ kind: 'para', depth, text, role: 'body' })
+        i++
+      }
+      i++
+      continue
+    }
+    const heading = /^(#{1,6})\s+(.*)$/.exec(line)
+    if (heading) {
+      const level = heading[1]!.length
+      const text = plainInline(heading[2]!)
+      if (level === 1 && !sawTitle) {
+        blocks.push({ kind: 'title', text })
+        sawTitle = true
+      } else if (level <= 2) {
+        const m = /^([ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ]\.|\d+\.)\s*(.*)$/.exec(text)
+        blocks.push({ kind: 'chapter', label: m ? m[1]! : '', text: m ? m[2]! : text })
+        depth = 0
+      } else {
+        const itemDepth = Math.min(level - 3, 2)
+        blocks.push({ kind: 'item', depth: itemDepth, marker: '', text })
+        depth = itemDepth
+      }
+      i++
+      continue
+    }
+    if (line.startsWith('|') && i + 1 < lines.length && TABLE_RULE.test(lines[i + 1]!.trim())) {
+      const rows: string[][] = [cells(line)]
+      i += 2
+      while (i < lines.length && lines[i]!.trim().startsWith('|')) rows.push(cells(lines[i++]!))
+      blocks.push({ kind: 'table', rows, header: true })
+      continue
+    }
+    if (line.startsWith('>')) {
+      const text = plainInline(line.replace(/^>\s?/, ''))
+      if (text.startsWith('※')) blocks.push({ kind: 'reference', depth, text: text.replace(/^※\s*/, '') })
+      else if (text) blocks.push({ kind: 'para', depth, text, role: 'note' })
+      i++
+      continue
+    }
+    const list = /^(\s*)([-*+]|\d+[.)])\s+(.*)$/.exec(raw)
+    if (list) {
+      const level = Math.floor(list[1]!.replace(/\t/g, '  ').length / 2)
+      const itemDepth = depth + 1 + level
+      const ordered = /\d/.test(list[2]!)
+      blocks.push({ kind: 'item', depth: itemDepth, marker: ordered ? list[2]! : reportMarker(itemDepth), text: plainInline(list[3]!) })
+      i++
+      continue
+    }
+    // a paragraph; Korean documents indent sub-points (가. 나.) with spaces
+    const indent = Math.floor((raw.length - raw.trimStart().length) / 2)
+    blocks.push({ kind: 'para', depth: depth + Math.max(0, indent - 1), text: plainInline(line), role: 'body' })
+    i++
+  }
+  if (!sawTitle) blocks.unshift({ kind: 'title', text: '' })
+  return blocks
+}

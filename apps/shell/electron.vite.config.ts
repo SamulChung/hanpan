@@ -31,6 +31,8 @@ export default defineConfig({
           generate: resolve(__dirname, 'src/preload/generate.ts'),
           // dedicated preload for the PDF tools window (see src/main/pdf-tools/pdf-tools-window.ts)
           'pdf-tools': resolve(__dirname, 'src/preload/pdf-tools.ts'),
+          // Hanpan design board window (see src/main/hanpan/design-window.ts)
+          design: resolve(__dirname, 'src/preload/design.ts'),
           // dedicated preload for the agent window (see src/main/agent/agent-window.ts)
           agent: resolve(__dirname, 'src/preload/agent.ts'),
           // dedicated preload for the attach-from-Drive window (see src/main/drive/drive-picker-window.ts)
@@ -57,6 +59,8 @@ export default defineConfig({
           generate: resolve(__dirname, 'src/renderer/generate.html'),
           // PDF tools window (see src/main/pdf-tools/pdf-tools-window.ts)
           'pdf-tools': resolve(__dirname, 'src/renderer/pdf-tools.html'),
+          // Hanpan design board window (see src/main/hanpan/design-window.ts)
+          design: resolve(__dirname, 'src/renderer/design.html'),
           // agent window (see src/main/agent/agent-window.ts)
           agent: resolve(__dirname, 'src/renderer/agent.html'),
           // attach-from-Drive window (see src/main/drive/drive-picker-window.ts)

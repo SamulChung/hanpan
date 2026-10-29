@@ -22,6 +22,7 @@ import type {
   MindmapExportApi,
   MindmapHandoffApi,
   MindmapMakeFromApi,
+  MindmapSendApi,
   MindmapMenuCommand,
   MindmapQueryApi,
   MindmapRecoveryApi,
@@ -193,6 +194,15 @@ const makeFrom: MindmapMakeFromApi = {
   makeFromDocument: () => ipcRenderer.send(MINDMAP_CHANNELS.makeFromDocument),
 }
 
+// ---- Hanpan: send this map to a document ----
+
+const send: MindmapSendApi = {
+  sendToDocument: (request) => ipcRenderer.invoke(MINDMAP_CHANNELS.sendToDocument, request),
+  sendToDesign: (outline) => ipcRenderer.send(MINDMAP_CHANNELS.sendToDesign, outline),
+  syncCheck: (request) => ipcRenderer.invoke(MINDMAP_CHANNELS.syncCheck, request),
+  syncFinish: (request) => ipcRenderer.invoke(MINDMAP_CHANNELS.syncFinish, request),
+}
+
 // ---- crash-recovery copies ----
 
 const recovery: MindmapRecoveryApi = {
@@ -210,6 +220,7 @@ const api: MindmapApi = {
   ...handoff,
   ...seed,
   ...makeFrom,
+  ...send,
   ...recovery,
 }
 

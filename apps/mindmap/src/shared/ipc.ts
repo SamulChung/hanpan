@@ -14,6 +14,14 @@ import type { Lang } from '@genoffice/i18n'
 import type { AiSettings, AiStreamChunk, AiStreamRequest } from '@genoffice/ai-provider'
 import type { AiToolCapabilities } from '@genoffice/ai-search'
 import type { MindmapSubscriptionApi } from './subscription-api'
+import type {
+  SendRequest,
+  SendResult,
+  SyncCheckRequest,
+  SyncCheckResult,
+  SyncFinishRequest,
+  SyncFinishResult,
+} from '@genoffice/hanpan-core/renderer'
 
 export const MINDMAP_CHANNELS = {
   // ---- open and save (implemented) ----
@@ -97,6 +105,16 @@ export const MINDMAP_CHANNELS = {
   // ---- "make another document from this one" (T18) ----
   /** renderer → main: the toolbar button; the shell opens its make window with this map */
   makeFromDocument: 'mindmap:make-from-document',
+
+  // ---- Hanpan: send this map to a HWP / PPT / Word document in a new tab ----
+  /** invoke(`SendRequest`) → `SendResult`: the shell writes the document and opens it */
+  sendToDocument: 'mindmap:send-to-document',
+  /** invoke(`SyncCheckRequest`) → `SyncCheckResult`: what changed in the linked documents and here */
+  /** renderer → main: open the design board with card news made from this outline (indented text) */
+  sendToDesign: 'mindmap:send-to-design',
+  syncCheck: 'mindmap:hanpan-sync-check',
+  /** invoke(`SyncFinishRequest`) → `SyncFinishResult`: the shell changes the document and records the new base */
+  syncFinish: 'mindmap:hanpan-sync-finish',
 
   // ---- crash-recovery copies (spec "work is not lost", stage 1) ----
   /** invoke(`RecoveryCopyRequest`) → `RecoveryCopyResult`: keep a copy of the unsaved map in the app data folder */
@@ -487,8 +505,18 @@ export interface MindmapRecoveryApi {
   onRecoveryReset(handler: () => void): () => void
 }
 
+/** Hanpan: "send this map to a document" */
+export interface MindmapSendApi {
+  /** absent in a preload from an older build */
+  sendToDocument?(request: SendRequest): Promise<SendResult>
+  sendToDesign?(outline: string): void
+  syncCheck?(request: SyncCheckRequest): Promise<SyncCheckResult>
+  syncFinish?(request: SyncFinishRequest): Promise<SyncFinishResult>
+}
+
 /** API exposed by preload to the renderer (window.mindmapApi) */
-export type MindmapApi = MindmapCoreApi &
+export type MindmapApi = MindmapSendApi &
+  MindmapCoreApi &
   MindmapExportApi &
   MindmapAiApi &
   MindmapQueryApi &

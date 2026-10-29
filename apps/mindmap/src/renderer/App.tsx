@@ -8,6 +8,10 @@
  * sheet never reaches another. Everything that changes the map goes through a
  * controller's edit functions; this component only wires the screen to them.
  */
+import type { SendTarget } from '@genoffice/hanpan-core/renderer'
+import { SendDialog } from './hanpan/SendDialog'
+import { SyncDialog } from './hanpan/SyncDialog'
+import { outlineAsIndentedText, sheetOutline } from './hanpan/map-outline'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   templateDocumentOf,
@@ -81,6 +85,10 @@ export default function App() {
   const [confirm, setConfirm] = useState<ConfirmRequest | null>(null)
   const [fieldRequest, setFieldRequest] = useState<TopicFieldRequest | null>(null)
   const [toast, setToast] = useState<StringKey | null>(null)
+  // Hanpan: the "send to a document" dialog's target, and the line told after a send
+  const [sendTarget, setSendTarget] = useState<SendTarget | null>(null)
+  const [sendNotice, setSendNotice] = useState<string | null>(null)
+  const [syncOpen, setSyncOpen] = useState(false)
   const [themeOpen, setThemeOpen] = useState(false)
   /** F5: the map alone, shell chrome covered by HTML fullscreen */
   const [presenting, setPresenting] = useState(false)
@@ -805,10 +813,42 @@ export default function App() {
         }}
         onExport={exporter.exportAs}
         onMakeFromDocument={() => window.mindmapApi.makeFromDocument?.()}
+        onSendTo={window.mindmapApi.sendToDocument ? (target) => setSendTarget(target) : undefined}
+        onSync={window.mindmapApi.syncCheck ? () => setSyncOpen(true) : undefined}
+        onDesign={
+          window.mindmapApi.sendToDesign && session && activeKey
+            ? () => {
+                flushAll()
+                void sheetOutline(session, activeKey).then(({ outline }) =>
+                  window.mindmapApi.sendToDesign?.(outlineAsIndentedText(outline)),
+                )
+              }
+            : undefined
+        }
       />
 
-      {(notices.preserved > 0 || notices.unknownTheme || picking) && (
+      {syncOpen && session && (
+        <SyncDialog session={session} host={ai.host} mapPath={path} flush={flushAll} onClose={() => setSyncOpen(false)} />
+      )}
+
+      {sendTarget && session && activeKey && (
+        <SendDialog
+          target={sendTarget}
+          session={session}
+          sheetKey={activeKey}
+          mapPath={path}
+          flush={flushAll}
+          onClose={() => setSendTarget(null)}
+          onSent={(warning) => {
+            setSendTarget(null)
+            setSendNotice(warning ?? t('sendDone'))
+          }}
+        />
+      )}
+
+      {(notices.preserved > 0 || notices.unknownTheme || picking || sendNotice) && (
         <div className="mm-notices">
+          {sendNotice && <Notice kind="hanpan-send" text={sendNotice} onClose={() => setSendNotice(null)} />}
           {notices.preserved > 0 && (
             <Notice
               kind="preserved"

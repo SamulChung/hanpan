@@ -100,6 +100,14 @@ const api: HwpApi = {
   abortSave: () => ipcRenderer.send(HWP_CHANNELS.abortSave),
   requestFileCommand: (command) => ipcRenderer.send(HWP_CHANNELS.fileCommand, command),
   setDirty: (dirty) => ipcRenderer.send(HWP_CHANNELS.dirtyChanged, dirty),
+  hanpanTool: (request) => ipcRenderer.invoke(HWP_CHANNELS.hanpanTool, request),
+  onHanpanReplace: (handler) => {
+    const listener = (_e: Electron.IpcRendererEvent, bytes: unknown) => {
+      if (bytes instanceof Uint8Array) handler(bytes)
+    }
+    ipcRenderer.on(HWP_CHANNELS.hanpanReplace, listener)
+    return () => ipcRenderer.removeListener(HWP_CHANNELS.hanpanReplace, listener)
+  },
   onSaveRequest: (handler) => {
     const listener = (_e: Electron.IpcRendererEvent, mode: SaveMode) => handler(mode)
     ipcRenderer.on(HWP_CHANNELS.saveRequest, listener)

@@ -1005,3 +1005,98 @@ textarea.mm-field {
   font-size: 12.5px;
   line-height: 1.6;
 }
+
+/* ---- Hanpan: "send to a document" dialog ---- */
+.mm-modal[data-dialog='hanpan-send'] {
+  width: min(480px, calc(100vw - 48px));
+}
+.hp-send-form {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px 12px;
+  margin: 4px 0 14px;
+  font-size: 13px;
+}
+.hp-send-row {
+  display: contents;
+}
+.hp-send-row > span,
+.hp-send-label {
+  color: var(--text-secondary);
+}
+.hp-send-row select,
+.hp-send-row input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.hp-send-row select {
+  height: 30px;
+  padding: 0 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text-primary);
+  font: inherit;
+}
+.hp-send-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.hp-send-check {
+  grid-column: 2;
+}
+
+/* ---- Hanpan: sync with linked documents ---- */
+.mm-modal[data-dialog='hanpan-sync'] {
+  width: min(560px, calc(100vw - 48px));
+}
+.hp-sync {
+  display: grid;
+  gap: 12px;
+  max-height: min(60vh, 520px);
+  overflow: auto;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+.hp-sync-link {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.hp-sync-doc {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.hp-sync-target {
+  margin-left: 6px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+}
+.hp-sync-heading {
+  margin: 6px 0 2px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.hp-sync-group ul {
+  margin: 0;
+  padding-left: 16px;
+}
+.hp-sync-kind {
+  color: var(--text-secondary);
+}
+.hp-sync-conflict {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+}
+.hp-sync-sides {
+  display: flex;
+  gap: 8px;
+  color: var(--text-secondary);
+}

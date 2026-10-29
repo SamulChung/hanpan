@@ -8,7 +8,7 @@ import type { ReactNode } from 'react'
 import type { LinkInputKind } from '../document/link-input'
 import { type StringKey, useI18n } from '../i18n/locale'
 
-function Modal(p: { title: string; onCancel(): void; children: ReactNode; kind: string }) {
+export function Modal(p: { title: string; onCancel(): void; children: ReactNode; kind: string }) {
   return (
     <div
       className="mm-modal-backdrop"

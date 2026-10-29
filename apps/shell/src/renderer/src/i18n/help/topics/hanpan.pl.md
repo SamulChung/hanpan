@@ -1,0 +1,35 @@
+# Pierwsze kroki z Hanpan
+
+Hanpan wysyła to, co uporządkowałeś na mapie myśli, do raportu Hangul (HWP), prezentacji lub raportu Word w tym samym oknie i utrzymuje zgodność mapy z dokumentem. Najpierw używa AI z tego komputera.
+
+## Wysyłanie mapy myśli do dokumentu
+
+1. Na pasku narzędzi mapy naciśnij **Wyślij do dokumentu** i wybierz raport HWP, PowerPoint lub raport Word.
+2. Wybierz układ (raport w punktach, raport z rozdziałami, numeracja pisma urzędowego), datę i dział oraz to, czy wysłać **dokładnie tekst z mapy**, czy **pozwolić AI napisać zdania**.
+3. Naciśnij **Wyślij**: dokument otworzy się w nowej karcie tego samego okna. Przy pierwszym zapisie pojawi się pytanie o miejsce.
+
+## Uzgadnianie mapy i dokumentu
+
+- Naciśnij **Wyślij do dokumentu › Uzgodnij z połączonymi dokumentami**, aby zobaczyć, co zmieniło się na mapie i w dokumencie HWP.
+- Zmiany z mapy trafiają do dokumentu, a zmiany z dokumentu wracają na mapę. Gdy obie strony zmieniły temat inaczej, wybierz wersję mapy, dokumentu albo później.
+- Zdania napisane w dokumencie zostają. Dokumenty Word i PowerPoint można wysłać, ale jeszcze nie uzgodnić z powrotem.
+
+## Szablony Hanpan
+
+- Karta **Szablony Hanpan** na ekranie startowym otwiera 19 szablonów (pisma urzędowe, raporty, oferty, protokoły, plany) jako HWP lub Word.
+
+## Narzędzia Hanpan
+
+- **Narzędzia Hanpan** nad kartą HWP porządkują i sprawdzają pismo urzędowe, dostosowują ton do pokolenia, zaznaczają przegląd w trzech kolorach i budują uporządkowany prompt.
+- Narzędzia zmieniające dokument od razu pokazują wynik w karcie. Zamknięcie bez zapisu pozostawia plik bez zmian.
+
+## Projekt
+
+- Karta **Projekt** na ekranie startowym tworzy plakaty, karty informacyjne, ogłoszenia i miniatury.
+- Naciśnij **Kopiuj do wklejenia w dokumencie**, a potem Ctrl+V w karcie HWP, Word lub PowerPoint, aby wstawić stronę jako obraz. Strony można też zapisać jako PNG i PDF.
+- Na mapie **Wyślij do dokumentu › Wyślij jako karty informacyjne** tworzy jedną kartę na każdą główną gałąź.
+
+## AI na tym komputerze
+
+- Przy pierwszym uruchomieniu Hanpan szuka AI na tym komputerze (Ollama, LM Studio, vLLM) i używa jej, jeśli nie wybrałeś jeszcze AI.
+- Inną AI wybierzesz w **Ustawienia › AI**.

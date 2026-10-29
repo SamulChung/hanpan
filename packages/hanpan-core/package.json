@@ -1,0 +1,25 @@
+{
+  "name": "@genoffice/hanpan-core",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "description": "Hanpan: the editor-neutral outline that links a mind map to the documents made from it (report/official-letter numbering, HWPX writer, outline diff and three-way merge, Korean document rules)",
+  "exports": {
+    ".": "./src/index.ts",
+    "./renderer": "./src/renderer.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "docx": "^9.7.1",
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.12"
+  }
+}

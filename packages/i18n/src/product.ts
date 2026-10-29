@@ -24,11 +24,11 @@ export const UPSTREAM_NAME_LITERAL = `{{${UPSTREAM_PRODUCT_NAME}}}`
  * productName, the userData folder, the default save folder), which must stay
  * the same whatever the UI language is.
  */
-export const PRODUCT_NAME = 'IeumOffice'
+export const PRODUCT_NAME = 'Hanpan'
 
 /** Languages that show a localized product name instead of PRODUCT_NAME. */
 const LOCALIZED_PRODUCT_NAMES: Readonly<Record<string, string>> = {
-  ko: '이음오피스',
+  ko: '한판',
 }
 
 /** The product name as shown in a UI language (a Lang or a raw locale tag). */
@@ -46,8 +46,8 @@ export const USER_DATA_DIR_NAME = PRODUCT_NAME
 export const DEV_USER_DATA_DIR_NAME = `${PRODUCT_NAME}-Dev`
 
 /** The product's public GitHub repository: issues, releases and update checks all point here. */
-export const PRODUCT_REPO_OWNER = 'pblsketch'
-export const PRODUCT_REPO_NAME = 'openoffice'
+export const PRODUCT_REPO_OWNER = 'SamulChung'
+export const PRODUCT_REPO_NAME = 'hanpan'
 /** `owner/repo`; the URLs built from it live in @genoffice/electron-utils (github-menu.ts) */
 export const PRODUCT_REPO_SLUG = `${PRODUCT_REPO_OWNER}/${PRODUCT_REPO_NAME}`
 
@@ -83,6 +83,36 @@ export function brandText(text: string, lang: string | null | undefined): string
     const before = text.charAt(offset - 1)
     const after = text.slice(offset + match.length, offset + match.length + 2)
     if (insideIdentifier(before, after)) return match
-    return insideFileName(before, after) ? PRODUCT_NAME : localized
-  })
+    if (insideFileName(before, after)) return PRODUCT_NAME
+    return localized + koreanParticleFix(localized, text.slice(offset + match.length))
+  }).replace(PARTICLE_MARK, '')
+}
+
+/** Marks the (one-syllable) particle a fix replaced, so the original particle after it is dropped. */
+const PARTICLE_MARK = /\u0000[가-힣]/g
+
+/**
+ * Korean dictionaries attach particles to the upstream name, read "젠오피스", which
+ * ends in a vowel (GenOffice가, GenOffice를). A localized name ending in a final
+ * consonant takes the other form (한판이, 한판을). Returns the corrected particle
+ * followed by a marker that swallows the original one, or '' when nothing changes.
+ */
+function koreanParticleFix(name: string, rest: string): string {
+  const last = name.charCodeAt(name.length - 1)
+  if (last < 0xac00 || last > 0xd7a3) return ''
+  const batchim = (last - 0xac00) % 28
+  if (batchim === 0) return ''
+  const rieul = batchim === 8
+  const end = (n: number) => !/[가-힣]/.test(rest.charAt(n))
+  // the corrected particle, then a mark that drops the original one-syllable particle after it
+  const swap = (to: string) => `${to}\u0000`
+  if (rest.startsWith('가') && end(1)) return swap('이')
+  if (rest.startsWith('는')) return swap('은')
+  if (rest.startsWith('를')) return swap('을')
+  if (rest.startsWith('와')) return swap('과')
+  if (rest.startsWith('랑')) return swap('이랑')
+  if (rest.startsWith('야') && end(1)) return swap('이야')
+  if (rest.startsWith('라') && /^라(고|는|면|서)/.test(rest)) return swap('이라')
+  if (!rieul && rest.startsWith('로') && (end(1) || /^로(는|도|의|부터|만|서|써)/.test(rest))) return swap('으로')
+  return ''
 }

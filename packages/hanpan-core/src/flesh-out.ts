@@ -1,0 +1,79 @@
+/**
+ * "Let the AI write the sentences": each topic of a branch gets one or two
+ * report sentences in 개조식 (ending in ~함, ~임, ~할 계획임), written by the
+ * person's AI (a local model first). The answer format is one line per topic,
+ * `{#n} sentence`, which small local models follow far more reliably than JSON;
+ * `n` is a short number the prompt assigns, mapped back to the topic key.
+ */
+import type { PanNode, PanOutline } from './outline'
+
+export interface FleshOutJob {
+  /** the main branch the job covers */
+  branchKey: string
+  system: string
+  user: string
+  /** prompt number → topic key */
+  keys: Map<string, string>
+}
+
+export const FLESH_OUT_SYSTEM = [
+  '너는 한국 공공기관·기업의 보고서를 쓰는 작성자다.',
+  '주어진 개요의 각 항목을 보고서 본문 문장으로 늘려 쓴다.',
+  '규칙:',
+  '- 항목마다 1~2문장, 개조식 종결(~함, ~임, ~할 계획임, ~필요함)로 쓴다.',
+  '- 개요에 없는 수치·기관명·날짜를 지어내지 않는다. 모르는 것은 일반적으로 쓴다.',
+  '- 출력은 항목마다 한 줄: `{#번호} 문장`. 다른 말, 제목, 목록 기호, 마크다운을 쓰지 않는다.',
+  '- 번호는 개요에 붙은 번호를 그대로 쓰고, 모든 번호에 답한다.',
+].join('\n')
+
+/** One job per main branch: a whole map in one request is too long for a small model. */
+export function fleshOutJobs(outline: PanOutline): FleshOutJob[] {
+  return outline.nodes.map((branch) => {
+    const keys = new Map<string, string>()
+    const lines: string[] = []
+    let n = 0
+    const visit = (node: PanNode, depth: number) => {
+      const id = String(++n)
+      keys.set(id, node.key)
+      const note = node.note ? ` (메모: ${node.note.replace(/\s+/g, ' ').slice(0, 300)})` : ''
+      lines.push(`${'  '.repeat(depth)}{#${id}} ${node.title}${note}`)
+      node.children.forEach((c) => visit(c, depth + 1))
+    }
+    visit(branch, 0)
+    const user = [
+      `보고서 제목: ${outline.title}`,
+      outline.note ? `보고서 취지: ${outline.note}` : '',
+      '',
+      '개요:',
+      ...lines,
+    ]
+      .filter((l, i) => l !== '' || i === 2)
+      .join('\n')
+    return { branchKey: branch.key, system: FLESH_OUT_SYSTEM, user, keys }
+  })
+}
+
+const ANSWER_LINE = /^\s*(?:[-*•]\s*)?\{#(\d{1,4})\}\s*(.+?)\s*$/
+
+/** Topic key → sentence, from the model's answer; lines it cannot read are skipped. */
+export function parseFleshOut(answer: string, keys: ReadonlyMap<string, string>): Map<string, string> {
+  const out = new Map<string, string>()
+  for (const line of answer.split(/\r?\n/)) {
+    const m = ANSWER_LINE.exec(line)
+    if (!m) continue
+    const key = keys.get(m[1]!)
+    const sentence = m[2]!.replace(/^[:：-]\s*/, '').trim()
+    if (key && sentence && !out.has(key)) out.set(key, sentence)
+  }
+  return out
+}
+
+/** The outline with the sentences put in as bodies (topics without one keep theirs). */
+export function applyBodies(outline: PanOutline, bodies: ReadonlyMap<string, string>): PanOutline {
+  const fill = (node: PanNode): PanNode => ({
+    ...node,
+    body: bodies.get(node.key) ?? node.body,
+    children: node.children.map(fill),
+  })
+  return { ...outline, nodes: outline.nodes.map(fill) }
+}

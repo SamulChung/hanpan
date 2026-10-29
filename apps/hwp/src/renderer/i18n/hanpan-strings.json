@@ -1,0 +1,188 @@
+{
+  "hpTools": {
+    "ko": "한판 도구",
+    "en": "Hanpan tools",
+    "zh": "Hanpan 工具",
+    "ja": "Hanpan ツール"
+  },
+  "hpTidy": {
+    "ko": "공문 정돈 (날짜·시간·끝.)",
+    "en": "Tidy the letter (dates, times, closing)",
+    "zh": "公文整理（日期·时间·结尾）",
+    "ja": "公文書を整える（日付・時刻・結び）"
+  },
+  "hpCheck": {
+    "ko": "공문 점검",
+    "en": "Check the letter",
+    "zh": "公文检查",
+    "ja": "公文書チェック"
+  },
+  "hpTone": {
+    "ko": "세대별 톤 바꾸기",
+    "en": "Tone for a generation",
+    "zh": "按年龄层转换语气",
+    "ja": "世代別の口調に変える"
+  },
+  "hpTone60": {
+    "ko": "60대",
+    "en": "60s",
+    "zh": "60多岁",
+    "ja": "60代"
+  },
+  "hpTone40": {
+    "ko": "40대",
+    "en": "40s",
+    "zh": "40多岁",
+    "ja": "40代"
+  },
+  "hpToneMZ": {
+    "ko": "MZ",
+    "en": "Gen MZ",
+    "zh": "MZ世代",
+    "ja": "MZ世代"
+  },
+  "hpReview": {
+    "ko": "3색 검토 표시",
+    "en": "Three-colour review",
+    "zh": "三色审阅",
+    "ja": "3色レビュー"
+  },
+  "hpReviewDone": {
+    "ko": "빨강(사실 확인) {red} · 파랑(핵심) {blue} · 노랑(숫자·날짜) {yellow}곳을 칠했습니다",
+    "en": "Marked red (check the facts) {red} · blue (key points) {blue} · yellow (numbers, dates) {yellow}",
+    "zh": "已标记 红（核实）{red} · 蓝（要点）{blue} · 黄（数字·日期）{yellow}",
+    "ja": "赤（事実確認）{red}・青（要点）{blue}・黄（数字・日付）{yellow} を塗りました"
+  },
+  "hpChanged": {
+    "ko": "{n}곳을 고쳤습니다. 확인하고 저장하세요.",
+    "en": "Changed {n} place(s). Check and save.",
+    "zh": "已修改 {n} 处。请检查后保存。",
+    "ja": "{n} 箇所を直しました。確認して保存してください。"
+  },
+  "hpNoChange": {
+    "ko": "고칠 곳이 없습니다.",
+    "en": "Nothing to change.",
+    "zh": "没有需要修改的地方。",
+    "ja": "直す箇所はありません。"
+  },
+  "hpCheckOk": {
+    "ko": "공문 양식에 맞습니다.",
+    "en": "The letter follows the official form.",
+    "zh": "符合公文格式。",
+    "ja": "公文書の様式に合っています。"
+  },
+  "hpFailed": {
+    "ko": "하지 못했습니다: {error}",
+    "en": "Could not do it: {error}",
+    "zh": "无法完成：{error}",
+    "ja": "できませんでした: {error}"
+  },
+  "hpFNoRecipient": {
+    "ko": "수신(받는 곳) 줄이 없습니다.",
+    "en": "There is no 수신 (recipient) line.",
+    "zh": "没有“수신”（收件方）行。",
+    "ja": "수신（宛先）の行がありません。"
+  },
+  "hpFNoTitle": {
+    "ko": "제목 줄이 없습니다.",
+    "en": "There is no 제목 (title) line.",
+    "zh": "没有“제목”（标题）行。",
+    "ja": "제목（件名）の行がありません。"
+  },
+  "hpFNoClosing": {
+    "ko": "본문 끝에 '끝.'이 없습니다.",
+    "en": "The body does not end with '끝.'.",
+    "zh": "正文末尾没有“끝.”。",
+    "ja": "本文の最後に「끝.」がありません。"
+  },
+  "hpFDateFormat": {
+    "ko": "날짜 표기를 '2026. 5. 8.' 꼴로 바꿀 곳",
+    "en": "Date to write as '2026. 5. 8.'",
+    "zh": "日期应写成“2026. 5. 8.”",
+    "ja": "日付を「2026. 5. 8.」の形に"
+  },
+  "hpFTimeFormat": {
+    "ko": "시각을 '14:30' 꼴로 바꿀 곳",
+    "en": "Time to write as '14:30'",
+    "zh": "时间应写成“14:30”",
+    "ja": "時刻を「14:30」の形に"
+  },
+  "hpFNumberingOrder": {
+    "ko": "항목 번호 차례(1. 가. 1) 가))가 맞지 않는 곳",
+    "en": "Item numbering out of order (1. 가. 1) 가))",
+    "zh": "项目编号顺序不对（1. 가. 1) 가)）",
+    "ja": "項目番号の順（1. 가. 1) 가)）が合わない箇所"
+  },
+  "hpFLoneItemNumbered": {
+    "ko": "항목이 하나뿐인데 번호를 붙인 곳",
+    "en": "A lone item that carries a number",
+    "zh": "只有一项却加了编号",
+    "ja": "項目が一つなのに番号がある箇所"
+  },
+  "hpFMixedEndings": {
+    "ko": "'~합니다'와 '~한다'가 섞여 있습니다",
+    "en": "Formal and plain endings are mixed",
+    "zh": "敬语和平语结尾混用",
+    "ja": "丁寧体と常体が混ざっています"
+  },
+  "hpPrompt": {
+    "ko": "역관목조분 프롬프트",
+    "en": "Prompt builder (role, field, purpose, conditions, length)",
+    "zh": "提示词构建器",
+    "ja": "プロンプトビルダー"
+  },
+  "hpRole": {
+    "ko": "역할",
+    "en": "Role",
+    "zh": "角色",
+    "ja": "役割"
+  },
+  "hpField": {
+    "ko": "관련분야",
+    "en": "Field",
+    "zh": "相关领域",
+    "ja": "関連分野"
+  },
+  "hpPurpose": {
+    "ko": "목적",
+    "en": "Purpose",
+    "zh": "目的",
+    "ja": "目的"
+  },
+  "hpConditions": {
+    "ko": "조건",
+    "en": "Conditions",
+    "zh": "条件",
+    "ja": "条件"
+  },
+  "hpLength": {
+    "ko": "분량",
+    "en": "Length",
+    "zh": "篇幅",
+    "ja": "分量"
+  },
+  "hpTask": {
+    "ko": "유형",
+    "en": "Task",
+    "zh": "类型",
+    "ja": "種類"
+  },
+  "hpRequest": {
+    "ko": "요청",
+    "en": "Request",
+    "zh": "请求",
+    "ja": "依頼"
+  },
+  "hpCopy": {
+    "ko": "프롬프트 복사",
+    "en": "Copy prompt",
+    "zh": "复制提示词",
+    "ja": "プロンプトをコピー"
+  },
+  "hpCopied": {
+    "ko": "복사했습니다. AI 창에 붙여 넣으세요.",
+    "en": "Copied. Paste it into the AI panel.",
+    "zh": "已复制。请粘贴到 AI 面板。",
+    "ja": "コピーしました。AI パネルに貼り付けてください。"
+  }
+}

@@ -19,6 +19,7 @@
     "@genoffice/ai-search": "*",
     "@genoffice/electron-utils": "*",
     "@genoffice/file-parse": "*",
+    "@genoffice/hanpan-core": "*",
     "@genoffice/i18n": "*",
     "@genoffice/project-store": "*",
     "@genoffice/ui": "*",
