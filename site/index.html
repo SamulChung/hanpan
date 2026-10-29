@@ -40,8 +40,19 @@
     :focus-visible { outline: 3px solid var(--node); outline-offset: 3px; border-radius: 6px; }
     .wrap { width: min(1120px, 100% - 40px); margin: 0 auto; }
 
+    /* the maker: TenAI, above everything */
+    .maker { background: var(--paper); border-bottom: 1px solid var(--chalk); font-size: 14px; color: var(--ink-soft); }
+    .maker .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding: 10px 0; }
+    .maker-logo { display: block; flex: none; }
+    .maker-logo img { height: 30px; width: auto; }
+    .maker p { margin: 0; flex: 1 1 360px; line-height: 1.5; }
+    .maker p strong { color: var(--ink); font-weight: 700; }
+    .maker-links { display: flex; gap: 16px; flex: none; }
+    .maker-links a { color: var(--board); font-weight: 500; text-decoration: none; }
+    .maker-links a:hover { text-decoration: underline; }
+
     /* header */
-    .top { position: absolute; inset: 0 0 auto; z-index: 5; }
+    .top { background: var(--board); }
     .top .wrap { display: flex; align-items: center; gap: 28px; height: 72px; }
     .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--paper); font-weight: 700; font-size: 21px; }
     .brand img { width: 32px; height: 32px; border-radius: 8px; }
@@ -55,7 +66,7 @@
         radial-gradient(circle at 1px 1px, rgb(255 255 255 / 7%) 1px, transparent 0) 0 0 / 28px 28px,
         var(--board);
       color: var(--paper);
-      padding: 128px 0 96px;
+      padding: 56px 0 96px;
       overflow: hidden;
     }
     .hero .wrap { display: grid; grid-template-columns: 1fr 1.1fr; gap: 56px; align-items: center; }
@@ -151,12 +162,14 @@
     .made { font-size: 16px; color: var(--paper); }
     .made a { color: var(--node); font-weight: 700; text-decoration: none; }
     .made a:hover { text-decoration: underline; }
+    .made .mail { color: var(--chalk); font-weight: 500; margin-left: 10px; }
     footer .links { display: flex; flex-wrap: wrap; gap: 18px; }
     footer .links a { color: var(--chalk); }
 
     @media (max-width: 860px) {
       .top nav { display: none; }
-      .hero { padding-top: 104px; }
+      .hero { padding-top: 40px; }
+      .maker-logo img { height: 26px; }
       .hero .wrap, .feature, .feature:nth-child(even), .ai-grid { grid-template-columns: 1fr; }
       .feature:nth-child(even) .copy { order: 0; }
       .steps { grid-template-columns: 1fr; }
@@ -165,6 +178,16 @@
   </style>
 </head>
 <body>
+  <aside class="maker" aria-label="만든 곳">
+    <div class="wrap">
+      <a class="maker-logo" href="https://www.tenai.kr" aria-label="TenAI 홈페이지 (www.tenai.kr)"><img src="images/tenai-logo.png" alt="TenAI — AX Hub Platform" width="1919" height="812" /></a>
+      <p><strong>한판은 텐에이아이(TenAI)가 만들었습니다.</strong> 텐에이아이는 기업과 공공기관의 AI 전환(AX)을 돕는 AX 허브 플랫폼으로, 한국어 LLM과 문서 AI를 만듭니다.</p>
+      <div class="maker-links">
+        <a href="https://www.tenai.kr">www.tenai.kr</a>
+        <a href="mailto:ten@tenai.kr">ten@tenai.kr</a>
+      </div>
+    </div>
+  </aside>
   <header class="top">
     <div class="wrap">
       <a class="brand" href="#"><img src="images/icon.svg" alt="" />한판</a>
@@ -332,7 +355,7 @@
 
   <footer>
     <div class="wrap">
-      <p class="made">Made by <a href="https://www.tenai.kr">TenAI</a> (www.tenai.kr)</p>
+      <p class="made">Made by <a href="https://www.tenai.kr">TenAI</a> (www.tenai.kr) <a class="mail" href="mailto:ten@tenai.kr">ten@tenai.kr</a></p>
       <div class="links">
         <a href="https://github.com/SamulChung/hanpan">소스 코드</a>
         <a href="https://github.com/SamulChung/hanpan/blob/main/docs/manual/%ED%95%9C%ED%8C%90-%EC%82%AC%EC%9A%A9%EC%84%A4%EB%AA%85%EC%84%9C.md">사용설명서</a>
