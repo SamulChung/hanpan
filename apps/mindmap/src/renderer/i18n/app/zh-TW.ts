@@ -166,4 +166,6 @@ export const zhTW = {
   syncRemove: '刪除',
   syncClose: '關閉',
   sendDesign: '傳送為卡片新聞（設計）',
+  sendSlideStyle: '投影片風格',
+  sendSlidePlain: '基本（不加修飾）',
 } satisfies Record<keyof typeof zh, string>

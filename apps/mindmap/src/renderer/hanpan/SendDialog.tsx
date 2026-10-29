@@ -15,6 +15,8 @@ import {
   fleshOutJobs,
   koreanDate,
   parseFleshOut,
+  SLIDE_STYLES,
+  type SlideStyleId,
   type MarkerStyle,
   type PanOutline,
   type SendTarget,
@@ -88,6 +90,9 @@ export function SendDialog(p: {
   const [notes, setNotes] = useState(true)
   const [date, setDate] = useState(() => koreanDate(new Date()))
   const [department, setDepartment] = useState('')
+  const [slideStyle, setSlideStyle] = useState<SlideStyleId | 'plain'>('mckinsey')
+  const styleInfo = SLIDE_STYLES.find((st) => st.id === slideStyle)
+  const ko = lang === 'ko'
   const [phase, setPhase] = useState<Phase>({ kind: 'idle' })
   const abort = useRef<AbortController | null>(null)
   const busy = phase.kind === 'ai' || phase.kind === 'sending'
@@ -131,6 +136,7 @@ export function SendDialog(p: {
       date: isDocument && date.trim() ? date.trim() : undefined,
       department: isDocument && department.trim() ? department.trim() : undefined,
       includeNotes: notes,
+      slideStyle: !isDocument && slideStyle !== 'plain' ? slideStyle : undefined,
       mapPath: p.mapPath,
       sheetId,
     })
@@ -177,6 +183,22 @@ export function SendDialog(p: {
                 onChange={(e) => setDepartment(e.target.value)}
               />
             </label>
+          </>
+        )}
+        {!isDocument && (
+          <>
+            <label className="hp-send-row">
+              <span>{t('sendSlideStyle')}</span>
+              <select value={slideStyle} disabled={busy} data-field="slide-style" onChange={(e) => setSlideStyle(e.target.value as SlideStyleId | 'plain')}>
+                {SLIDE_STYLES.map((st, k) => (
+                  <option key={st.id} value={st.id}>
+                    {k + 1}. {ko ? st.name.ko : st.name.en}
+                  </option>
+                ))}
+                <option value="plain">{t('sendSlidePlain')}</option>
+              </select>
+            </label>
+            {styleInfo && <p className="hp-send-hint">{ko ? styleInfo.description.ko : styleInfo.description.en}</p>}
           </>
         )}
         <span className="hp-send-label" id="hp-content-label">

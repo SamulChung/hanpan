@@ -4,7 +4,7 @@ Hanpan sends what you sorted out in a mind map to a Hangul (HWP) report, a slide
 
 ## Send a mind map to a document
 
-1. In the mind map toolbar, press **Send to a document** and pick a HWP report, PowerPoint or a Word report.
+1. In the mind map toolbar, press **Send to a document** and pick a HWP report, PowerPoint or a Word report. For PowerPoint, **Slide style** offers ten designs, from Steve Jobs and McKinsey to a startup pitch deck.
 2. Choose the layout (point-form report, report with chapters, official letter numbering), the date and department, and whether to send **exactly what the map says** or **let the AI write the sentences**.
 3. Press **Send**: the document opens in a new tab of the same window. Its first save asks where to keep it.
 

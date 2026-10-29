@@ -13,7 +13,7 @@ T = {}
 
 T['ko'] = ('한판 시작하기', '한판은 마인드맵으로 정리한 생각을 한글 보고서·PPT·워드로 보내 같은 창에서 이어 쓰고, 지도와 문서를 서로 맞춥니다. AI는 이 PC에 깔린 AI를 먼저 씁니다.', [
  ('마인드맵을 문서로 보내기', 'ol', [
-  '마인드맵 도구 줄의 **보내기** 단추를 누르고 한글 보고서, PPT, 워드 보고서 가운데 하나를 고릅니다.',
+  '마인드맵 도구 줄의 **보내기** 단추를 누르고 한글 보고서, PPT, 워드 보고서 가운데 하나를 고릅니다. PPT는 **슬라이드 스타일**에서 스티브 잡스·맥킨지·토스 등 10가지 디자인 가운데 하나를 고를 수 있습니다.',
   '양식(개조식 보고서, 장 보고서, 공문 번호)과 날짜·부서를 정하고, 내용은 **지도에 적은 말 그대로** 또는 **AI가 문장으로 살 붙이기**를 고릅니다.',
   '**보내기**를 누르면 같은 창의 새 탭에 문서가 열립니다. 처음 저장할 때 저장할 곳을 묻습니다.']),
  ('지도와 문서 맞추기', 'ul', [
@@ -36,7 +36,7 @@ T['ko'] = ('한판 시작하기', '한판은 마인드맵으로 정리한 생각
 
 T['en'] = ('Getting started with Hanpan', 'Hanpan sends what you sorted out in a mind map to a Hangul (HWP) report, a slide deck or a Word report in the same window, and keeps the map and the document in step. The AI on this PC comes first.', [
  ('Send a mind map to a document', 'ol', [
-  'In the mind map toolbar, press **Send to a document** and pick a HWP report, PowerPoint or a Word report.',
+  'In the mind map toolbar, press **Send to a document** and pick a HWP report, PowerPoint or a Word report. For PowerPoint, **Slide style** offers ten designs, from Steve Jobs and McKinsey to a startup pitch deck.',
   'Choose the layout (point-form report, report with chapters, official letter numbering), the date and department, and whether to send **exactly what the map says** or **let the AI write the sentences**.',
   'Press **Send**: the document opens in a new tab of the same window. Its first save asks where to keep it.']),
  ('Sync the map and the document', 'ul', [

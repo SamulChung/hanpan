@@ -166,4 +166,6 @@ export const ar = {
   syncRemove: 'حذف',
   syncClose: 'إغلاق',
   sendDesign: 'إرسال إلى بطاقات أخبار (تصميم)',
+  sendSlideStyle: 'نمط الشرائح',
+  sendSlidePlain: 'أساسي (بلا تنسيق)',
 } satisfies Record<keyof typeof zh, string>

@@ -4,6 +4,7 @@
  */
 import type { MarkerStyle } from './numbering'
 import type { PanOutline } from './outline'
+import { isSlideStyleId, type SlideStyleId } from './slide-styles'
 
 export type SendTarget = 'hwp' | 'slides' | 'docx'
 
@@ -17,6 +18,8 @@ export interface SendRequest {
   date?: string | undefined
   department?: string | undefined
   includeNotes: boolean
+  /** slides only: one of the ten slide styles; the plain deck when absent */
+  slideStyle?: SlideStyleId | undefined
   /** the map file, when it has one: recorded in the link so the two can find each other */
   mapPath: string | null
   /** the sheet the outline came from */
@@ -84,6 +87,7 @@ export function checkSendRequest(value: unknown): SendRequest {
     date: text(r.date, 'date', true),
     department: text(r.department, 'department', true),
     includeNotes: r.includeNotes !== false,
+    slideStyle: isSlideStyleId(r.slideStyle) ? r.slideStyle : undefined,
     mapPath: text(r.mapPath, 'map path', true) ?? null,
     sheetId: text(r.sheetId, 'sheet', true) ?? '',
     outline: {

@@ -168,4 +168,6 @@ export const hi = {
   syncRemove: 'मिटाएँ',
   syncClose: 'बंद करें',
   sendDesign: 'कार्ड न्यूज़ में भेजें (डिज़ाइन)',
+  sendSlideStyle: 'स्लाइड शैली',
+  sendSlidePlain: 'सामान्य (बिना सजावट)',
 } satisfies Record<keyof typeof zh, string>

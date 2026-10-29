@@ -14,8 +14,10 @@ import {
   blocksToHwp,
   documentFileName,
   markdownToBlocks,
+  styledDeckOps,
   type HwpEngine,
   type SlidePlan,
+  type SlideStyleId,
 } from '@genoffice/hanpan-core'
 import type { Op } from '@genoffice/pptx-ops'
 import { app } from 'electron'
@@ -67,8 +69,12 @@ export function loadHwpEngine(): Promise<HwpEngine> {
   return engine
 }
 
-/** Slides → deck through the shell's own outline-to-ops builder, speaker notes after. */
-export async function buildHanpanDeck(slides: SlidePlan[]): Promise<Uint8Array> {
+/**
+ * Slides → deck. With a style, the style draws every slide (slide-styles.ts);
+ * without one, the shell's own outline-to-ops builder makes the plain deck.
+ */
+export async function buildHanpanDeck(slides: SlidePlan[], style?: SlideStyleId): Promise<Uint8Array> {
+  if (style) return buildDeck(styledDeckOps(slides, style) as Op[])
   const ops: Op[] = outlineToOps(
     slides.map((s) => ({
       title: s.title,

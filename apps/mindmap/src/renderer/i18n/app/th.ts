@@ -167,4 +167,6 @@ export const th = {
   syncRemove: 'ลบ',
   syncClose: 'ปิด',
   sendDesign: 'ส่งเป็นการ์ดข่าว (ออกแบบ)',
+  sendSlideStyle: 'สไตล์สไลด์',
+  sendSlidePlain: 'พื้นฐาน (ไม่ตกแต่ง)',
 } satisfies Record<keyof typeof zh, string>

@@ -169,4 +169,6 @@ export const ru = {
   syncRemove: 'Удалить',
   syncClose: 'Закрыть',
   sendDesign: 'Отправить в карточки (дизайн)',
+  sendSlideStyle: 'Стиль слайдов',
+  sendSlidePlain: 'Простой (без оформления)',
 } satisfies Record<keyof typeof zh, string>

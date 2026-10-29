@@ -20,6 +20,7 @@ import {
   type SendRequest,
   type SendResult,
   type SlidePlan,
+  type SlideStyleId,
 } from '@genoffice/hanpan-core'
 import { join } from 'node:path'
 import type { TabContents } from './link-store'
@@ -28,7 +29,7 @@ export type CopyEditor = 'hwp' | 'slides' | 'docs'
 
 export interface SendMapDeps {
   loadHwpEngine(): Promise<HwpEngine>
-  buildDeck(slides: SlidePlan[]): Promise<Uint8Array>
+  buildDeck(slides: SlidePlan[], style?: SlideStyleId): Promise<Uint8Array>
   makeCopyDir(): Promise<string>
   writeFile(path: string, bytes: Uint8Array): Promise<void>
   removeDir(dir: string): Promise<void>
@@ -51,7 +52,7 @@ const EDITOR_OF: Record<SendRequest['target'], CopyEditor> = { hwp: 'hwp', slide
 
 export async function documentBytesFor(request: SendRequest, deps: Pick<SendMapDeps, 'loadHwpEngine' | 'buildDeck'>): Promise<Uint8Array> {
   if (request.target === 'slides') {
-    return deps.buildDeck(outlineToSlides(request.outline, { includeNotes: request.includeNotes }))
+    return deps.buildDeck(outlineToSlides(request.outline, { includeNotes: request.includeNotes }), request.slideStyle)
   }
   const blocks = outlineToBlocks(request.outline, {
     style: request.style,

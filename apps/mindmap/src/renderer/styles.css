@@ -1100,3 +1100,9 @@ textarea.mm-field {
   gap: 8px;
   color: var(--text-secondary);
 }
+.hp-send-hint {
+  grid-column: 2;
+  margin: -4px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}

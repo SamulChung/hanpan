@@ -166,4 +166,6 @@ export const ko = {
   syncRemove: '삭제',
   syncClose: '닫기',
   sendDesign: '카드뉴스로 보내기 (디자인)',
+  sendSlideStyle: '슬라이드 스타일',
+  sendSlidePlain: '기본 (꾸밈 없음)',
 } satisfies Record<keyof typeof zh, string>

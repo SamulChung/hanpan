@@ -163,4 +163,6 @@ export const zh = {
   syncRemove: '删除',
   syncClose: '关闭',
   sendDesign: '发送为卡片新闻（设计）',
+  sendSlideStyle: '幻灯片风格',
+  sendSlidePlain: '基本（不加修饰）',
 }

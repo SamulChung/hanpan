@@ -168,4 +168,6 @@ export const cs = {
   syncRemove: 'Delete',
   syncClose: 'Close',
   sendDesign: 'Send to card news (design board)',
+  sendSlideStyle: 'Slide style',
+  sendSlidePlain: 'Plain deck (no styling)',
 } satisfies Record<keyof typeof zh, string>

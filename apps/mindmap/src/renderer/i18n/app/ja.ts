@@ -168,4 +168,6 @@ export const ja = {
   syncRemove: '削除',
   syncClose: '閉じる',
   sendDesign: 'カードニュースへ送る（デザイン）',
+  sendSlideStyle: 'スライドのスタイル',
+  sendSlidePlain: '基本（装飾なし）',
 } satisfies Record<keyof typeof zh, string>

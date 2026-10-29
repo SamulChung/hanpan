@@ -166,4 +166,6 @@ export const he = {
   syncRemove: 'מחיקה',
   syncClose: 'סגירה',
   sendDesign: 'שליחה לכרטיסי חדשות (עיצוב)',
+  sendSlideStyle: 'סגנון שקפים',
+  sendSlidePlain: 'בסיסי (ללא עיצוב)',
 } satisfies Record<keyof typeof zh, string>
