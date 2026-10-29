@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Hanpan (한판) app icon (source of truth).
+
+  "한판" is one board. The mark is a board on which one idea (the orange node,
+  a mind map) branches into three lines of a document: thinking and writing on
+  the same board.
+
+  Drawn from plain rectangles, a circle and straight lines; no third-party
+  artwork. Every raster/container icon in the repo is derived from this file:
+    node tools/gen-brand-assets.mjs
+  Keep the 1024x1024 canvas and the full-bleed rounded tile; the generator
+  insets the whole drawing for the macOS variants.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" rx="230" fill="#1E3A5F"/>
+  <rect x="176" y="224" width="672" height="576" rx="80" fill="#FFFFFF"/>
+  <path d="M424 512 H468 M468 380 V644 M468 380 H520 M468 512 H520 M468 644 H520" fill="none" stroke="#1E3A5F" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="344" cy="512" r="84" fill="#FF8A3D"/>
+  <rect x="520" y="350" width="232" height="60" rx="30" fill="#1E3A5F"/>
+  <rect x="520" y="482" width="196" height="60" rx="30" fill="#1E3A5F"/>
+  <rect x="520" y="614" width="164" height="60" rx="30" fill="#1E3A5F"/>
+</svg>
