@@ -127,7 +127,7 @@ import { installCliLinkBestEffort } from './cli-link'
 import { createDefaultAppService, execFileRunner } from './default-app'
 import { registerIntegrationsIpc } from './integrations-ipc'
 import { registerResultStoreIpc } from './result-store-ipc'
-import { FEEDBACK_SURVEY_URL, feedbackDetails, feedbackText, platformLabel } from './feedback'
+import { feedbackDetails, feedbackMailUrl, feedbackText, platformLabel } from './feedback'
 import { registerDriveIpc, type DriveService } from './drive/drive-ipc'
 import { registerOutboundIpc } from './outbound-confirm'
 import { projectSkillsAllowed, projectSkillsView, setProjectSkills } from './agent/project-skills'
@@ -4475,8 +4475,8 @@ async function openFeedbackSurvey(): Promise<void> {
     : await dialog.showMessageBox(options)
   if (response !== 0) return
   clipboard.writeText(detail)
-  shell.openExternal(FEEDBACK_SURVEY_URL).catch(() => {
-    // no browser handler available; nothing actionable for the user here
+  shell.openExternal(feedbackMailUrl(detail)).catch(() => {
+    // no mail app registered; the details are on the clipboard for any mail the person writes
   })
 }
 

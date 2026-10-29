@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { LANGS } from '@genoffice/i18n'
 import {
   FEEDBACK_STRINGS,
-  FEEDBACK_SURVEY_URL,
+  feedbackMailUrl,
   feedbackDetails,
   feedbackText,
   platformLabel,
@@ -70,34 +70,10 @@ describe('the diagnostics block', () => {
   })
 })
 
-describe('the survey address', () => {
-  it('is the published Google Form, not a repository or a local path', () => {
-    expect(FEEDBACK_SURVEY_URL).toMatch(/^https:\/\/(docs\.google\.com\/forms\/d\/e\/|forms\.gle\/)/)
-    expect(FEEDBACK_SURVEY_URL).not.toMatch(/REPLACE|example\.com/)
-    expect(FEEDBACK_SURVEY_URL).not.toMatch(/github\.com/)
-    expect(FEEDBACK_SURVEY_URL).not.toMatch(/[\\/](Users|home)[\\/]/)
-  })
-})
-
-describe('the shell wiring', () => {
-  it('offers the feedback entry from whatever Help menu is installed', () => {
-    expect(index).toMatch(/withHelpItems\(\)/)
-    expect(index).toContain('FEEDBACK_MENU_ID')
-    expect(index).toMatch(/id: FEEDBACK_MENU_ID/)
-    expect(index).toMatch(/click: \(\) => void openFeedbackSurvey\(\)/)
-  })
-
-  it('copies the details and opens only the survey', () => {
-    expect(index).toMatch(/clipboard\.writeText\(detail\)/)
-    expect(index).toMatch(/shell\.openExternal\(FEEDBACK_SURVEY_URL\)/)
-    expect(index).toMatch(/HOME_CHANNELS\.openFeedbackSurvey/)
-  })
-
-  it('exposes the entry through preload for Settings → About', () => {
-    expect(src('../src/preload/index.ts')).toMatch(/openFeedbackSurvey\(\)/)
-    expect(src('../src/shared/home-api.ts')).toMatch(/openFeedbackSurvey/)
-    expect(src('../src/renderer/src/SettingsModal.tsx')).toMatch(
-      /window\.aiOffice\.openFeedbackSurvey/,
-    )
+describe('the feedback mail', () => {
+  it('goes to the contact address with the details in the body', () => {
+    const url = feedbackMailUrl('version 1.2.3')
+    expect(url).toMatch(/^mailto:ten@tenai\.kr\?subject=/)
+    expect(decodeURIComponent(url.split('body=')[1]!)).toContain('version 1.2.3')
   })
 })

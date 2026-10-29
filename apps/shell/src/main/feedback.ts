@@ -1,21 +1,27 @@
-import { createI18n, defineStrings, type Lang } from '@genoffice/i18n'
+import { createI18n, defineStrings, PRODUCT_CONTACT_EMAIL, productName, type Lang } from '@genoffice/i18n'
 
 /**
- * The published feedback survey (Google Forms, owned by the repository owner).
- * The Help menu and Settings → About open it in the user's browser; the app
- * itself sends nothing. Changing the form's questions does not change this
- * address, so the link stays valid as the survey is edited.
+ * Hanpan: feedback goes to the people who make it (TenAI) by email. The Help
+ * menu and Settings → About open the person's mail app with a message to
+ * PRODUCT_CONTACT_EMAIL, the version details already in it; the app itself
+ * sends nothing.
  */
-export const FEEDBACK_SURVEY_URL =
-  'https://docs.google.com/forms/d/e/1FAIpQLSfD_dlKfi_ZkcjBJFTH3S2nldTIoW0cMI9d_yDaEe6DwKY47A/viewform'
+export function feedbackMailUrl(details: string): string {
+  const subject = encodeURIComponent(`${productName('ko')} 의견 / ${productName('en')} feedback`)
+  return `mailto:${PRODUCT_CONTACT_EMAIL}?subject=${subject}&body=${encodeURIComponent(`
+
+---
+${details}
+`)}`
+}
 
 const zh = {
   menuLabel: '发送反馈',
   dialogTitle: '发送反馈',
   dialogBody:
-    '问卷将在浏览器中打开。下面的信息会复制到剪贴板，方便你粘贴到问卷中。应用本身不会发送任何内容，也不会包含文档内容。',
+    '将打开你的邮件应用，并给 TenAI 团队写一封邮件。下面的信息已附在邮件中，也会复制到剪贴板。应用本身不会发送任何内容，也不会包含文档内容。',
   details: '版本 {version}\n操作系统 {os}\n界面语言 {language}',
-  btnOpen: '打开问卷',
+  btnOpen: '写邮件',
   btnCancel: '取消',
 }
 
@@ -27,180 +33,180 @@ export const FEEDBACK_STRINGS = defineStrings({
     menuLabel: 'Send feedback',
     dialogTitle: 'Send feedback',
     dialogBody:
-      'The survey opens in your browser. The details below are copied to the clipboard so you can paste them into the survey. The app sends nothing itself, and document contents are never included.',
+      'Your mail app opens with a message to the TenAI team. The details below are in the message and also copied to the clipboard. The app sends nothing itself, and document contents are never included.',
     details: 'Version {version}\nOS {os}\nUI language {language}',
-    btnOpen: 'Open survey',
+    btnOpen: 'Write email',
     btnCancel: 'Cancel',
   } satisfies Keys,
   vi: {
     menuLabel: 'Gửi phản hồi',
     dialogTitle: 'Gửi phản hồi',
     dialogBody:
-      'Bảng hỏi mở trong trình duyệt. Thông tin bên dưới được sao chép vào bộ nhớ tạm để bạn dán vào bảng hỏi. Ứng dụng không tự gửi gì và không bao giờ kèm nội dung tài liệu.',
+      'Ứng dụng thư sẽ mở với một thư gửi nhóm TenAI. Thông tin bên dưới đã có trong thư và cũng được sao chép vào bộ nhớ tạm. Ứng dụng không tự gửi gì, và không bao giờ kèm nội dung tài liệu.',
     details: 'Phiên bản {version}\nHệ thống {os}\nNgôn ngữ {language}',
-    btnOpen: 'Mở bảng hỏi',
+    btnOpen: 'Viết email',
     btnCancel: 'Hủy',
   } satisfies Keys,
   ja: {
     menuLabel: 'フィードバックを送る',
     dialogTitle: 'フィードバックを送る',
     dialogBody:
-      'アンケートがブラウザで開きます。下の情報はクリップボードにコピーされ、アンケートに貼り付けられます。アプリ自体は何も送信せず、文書の内容も含まれません。',
+      'メールアプリが開き、TenAI チーム宛てのメールが作られます。下の情報はメールに入っており、クリップボードにもコピーされます。アプリ自体は何も送信せず、文書の内容は含まれません。',
     details: 'バージョン {version}\nOS {os}\n表示言語 {language}',
-    btnOpen: 'アンケートを開く',
+    btnOpen: 'メールを書く',
     btnCancel: 'キャンセル',
   } satisfies Keys,
   ko: {
     menuLabel: '의견 보내기',
     dialogTitle: '의견 보내기',
     dialogBody:
-      '설문이 브라우저에서 열립니다. 아래 정보는 클립보드에 복사되어 설문에 붙여 넣을 수 있습니다. 앱은 아무것도 보내지 않으며, 문서 내용은 포함되지 않습니다.',
+      '메일 앱이 열리고 TenAI 팀에게 보낼 메일이 만들어집니다. 아래 정보는 메일에 들어 있고 클립보드에도 복사됩니다. 앱은 아무것도 보내지 않으며, 문서 내용은 포함되지 않습니다.',
     details: '버전 {version}\n운영체제 {os}\n화면 언어 {language}',
-    btnOpen: '설문 열기',
+    btnOpen: '메일 쓰기',
     btnCancel: '취소',
   } satisfies Keys,
   fr: {
     menuLabel: 'Envoyer un commentaire',
     dialogTitle: 'Envoyer un commentaire',
     dialogBody:
-      "Le questionnaire s'ouvre dans votre navigateur. Les informations ci-dessous sont copiées dans le presse-papiers pour que vous puissiez les coller dans le questionnaire. L'application n'envoie rien elle-même et le contenu des documents n'est jamais inclus.",
+      "Votre messagerie s'ouvre avec un message pour l'équipe TenAI. Les informations ci-dessous sont dans le message et copiées dans le presse-papiers. L'application n'envoie rien elle-même et n'inclut jamais le contenu des documents.",
     details: 'Version {version}\nSystème {os}\nLangue {language}',
-    btnOpen: 'Ouvrir le questionnaire',
+    btnOpen: 'Écrire un e-mail',
     btnCancel: 'Annuler',
   } satisfies Keys,
   de: {
     menuLabel: 'Feedback senden',
     dialogTitle: 'Feedback senden',
     dialogBody:
-      'Die Umfrage öffnet sich im Browser. Die Angaben unten werden in die Zwischenablage kopiert, damit Sie sie in die Umfrage einfügen können. Die App selbst sendet nichts, und Dokumentinhalte sind nie enthalten.',
+      'Ihr E-Mail-Programm öffnet sich mit einer Nachricht an das TenAI-Team. Die Angaben unten stehen in der Nachricht und werden auch in die Zwischenablage kopiert. Die App sendet selbst nichts, und Dokumentinhalte sind nie enthalten.',
     details: 'Version {version}\nBetriebssystem {os}\nSprache {language}',
-    btnOpen: 'Umfrage öffnen',
+    btnOpen: 'E-Mail schreiben',
     btnCancel: 'Abbrechen',
   } satisfies Keys,
   es: {
     menuLabel: 'Enviar comentarios',
     dialogTitle: 'Enviar comentarios',
     dialogBody:
-      'La encuesta se abre en el navegador. Los datos de abajo se copian al portapapeles para que los pegues en la encuesta. La aplicación no envía nada por sí misma y el contenido de los documentos nunca se incluye.',
+      'Se abre tu aplicación de correo con un mensaje para el equipo de TenAI. Los datos de abajo van en el mensaje y también se copian al portapapeles. La aplicación no envía nada por sí misma y nunca incluye el contenido de los documentos.',
     details: 'Versión {version}\nSistema {os}\nIdioma {language}',
-    btnOpen: 'Abrir la encuesta',
+    btnOpen: 'Escribir correo',
     btnCancel: 'Cancelar',
   } satisfies Keys,
   th: {
     menuLabel: 'ส่งข้อเสนอแนะ',
     dialogTitle: 'ส่งข้อเสนอแนะ',
     dialogBody:
-      'แบบสอบถามจะเปิดในเบราว์เซอร์ ข้อมูลด้านล่างจะถูกคัดลอกไปยังคลิปบอร์ดเพื่อให้คุณวางในแบบสอบถาม แอปไม่ได้ส่งข้อมูลใด ๆ ด้วยตัวเอง และไม่รวมเนื้อหาเอกสาร',
+      'แอปอีเมลจะเปิดพร้อมข้อความถึงทีม TenAI ข้อมูลด้านล่างอยู่ในข้อความและถูกคัดลอกไปยังคลิปบอร์ดด้วย แอปไม่ส่งอะไรเอง และไม่รวมเนื้อหาเอกสาร',
     details: 'เวอร์ชัน {version}\nระบบ {os}\nภาษา {language}',
-    btnOpen: 'เปิดแบบสอบถาม',
+    btnOpen: 'เขียนอีเมล',
     btnCancel: 'ยกเลิก',
   } satisfies Keys,
   id: {
     menuLabel: 'Kirim masukan',
     dialogTitle: 'Kirim masukan',
     dialogBody:
-      'Survei terbuka di peramban. Detail di bawah disalin ke papan klip agar Anda dapat menempelkannya ke survei. Aplikasi tidak mengirim apa pun sendiri, dan isi dokumen tidak pernah disertakan.',
+      'Aplikasi email Anda terbuka dengan pesan untuk tim TenAI. Detail di bawah ada di dalam pesan dan juga disalin ke papan klip. Aplikasi tidak mengirim apa pun sendiri, dan isi dokumen tidak pernah disertakan.',
     details: 'Versi {version}\nSistem {os}\nBahasa {language}',
-    btnOpen: 'Buka survei',
+    btnOpen: 'Tulis email',
     btnCancel: 'Batal',
   } satisfies Keys,
   ru: {
     menuLabel: 'Отправить отзыв',
     dialogTitle: 'Отправить отзыв',
     dialogBody:
-      'Опрос откроется в браузере. Данные ниже копируются в буфер обмена, чтобы вы могли вставить их в опрос. Приложение само ничего не отправляет, содержимое документов не включается.',
+      'Откроется почтовая программа с письмом команде TenAI. Сведения ниже уже в письме и скопированы в буфер обмена. Само приложение ничего не отправляет, содержимое документов не включается.',
     details: 'Версия {version}\nСистема {os}\nЯзык {language}',
-    btnOpen: 'Открыть опрос',
+    btnOpen: 'Написать письмо',
     btnCancel: 'Отмена',
   } satisfies Keys,
   ar: {
     menuLabel: 'إرسال ملاحظات',
     dialogTitle: 'إرسال ملاحظات',
     dialogBody:
-      'يُفتح الاستبيان في المتصفح. تُنسخ التفاصيل أدناه إلى الحافظة لتلصقها في الاستبيان. لا يرسل التطبيق أي شيء بنفسه، ولا يُضمَّن محتوى المستندات أبدًا.',
+      'يُفتح تطبيق البريد برسالة إلى فريق TenAI. التفاصيل أدناه موجودة في الرسالة ومنسوخة أيضًا إلى الحافظة. لا يرسل التطبيق شيئًا بنفسه، ولا يتضمن محتوى المستندات أبدًا.',
     details: 'الإصدار {version}\nالنظام {os}\nاللغة {language}',
-    btnOpen: 'فتح الاستبيان',
+    btnOpen: 'كتابة بريد',
     btnCancel: 'إلغاء',
   } satisfies Keys,
   pt: {
     menuLabel: 'Enviar comentários',
     dialogTitle: 'Enviar comentários',
     dialogBody:
-      'A pesquisa abre no navegador. Os dados abaixo são copiados para a área de transferência para você colá-los na pesquisa. O aplicativo não envia nada por conta própria, e o conteúdo dos documentos nunca é incluído.',
+      'Seu aplicativo de e-mail abre com uma mensagem para a equipe da TenAI. Os detalhes abaixo estão na mensagem e também são copiados para a área de transferência. O aplicativo não envia nada sozinho e nunca inclui o conteúdo dos documentos.',
     details: 'Versão {version}\nSistema {os}\nIdioma {language}',
-    btnOpen: 'Abrir pesquisa',
+    btnOpen: 'Escrever e-mail',
     btnCancel: 'Cancelar',
   } satisfies Keys,
   it: {
     menuLabel: 'Invia feedback',
     dialogTitle: 'Invia feedback',
     dialogBody:
-      "Il sondaggio si apre nel browser. I dati qui sotto vengono copiati negli appunti per poterli incollare nel sondaggio. L'app non invia nulla da sola e il contenuto dei documenti non viene mai incluso.",
+      'Si apre il programma di posta con un messaggio per il team di TenAI. I dettagli qui sotto sono nel messaggio e vengono copiati negli appunti. L’app non invia nulla da sé e non include mai il contenuto dei documenti.',
     details: 'Versione {version}\nSistema {os}\nLingua {language}',
-    btnOpen: 'Apri il sondaggio',
+    btnOpen: 'Scrivi email',
     btnCancel: 'Annulla',
   } satisfies Keys,
   pl: {
     menuLabel: 'Wyślij opinię',
     dialogTitle: 'Wyślij opinię',
     dialogBody:
-      'Ankieta otworzy się w przeglądarce. Poniższe dane są kopiowane do schowka, aby można je było wkleić do ankiety. Aplikacja sama nic nie wysyła, a treść dokumentów nigdy nie jest dołączana.',
+      'Otworzy się program pocztowy z wiadomością do zespołu TenAI. Poniższe dane są w wiadomości i zostaną też skopiowane do schowka. Aplikacja sama niczego nie wysyła i nigdy nie dołącza treści dokumentów.',
     details: 'Wersja {version}\nSystem {os}\nJęzyk {language}',
-    btnOpen: 'Otwórz ankietę',
+    btnOpen: 'Napisz e-mail',
     btnCancel: 'Anuluj',
   } satisfies Keys,
   cs: {
     menuLabel: 'Odeslat zpětnou vazbu',
     dialogTitle: 'Odeslat zpětnou vazbu',
     dialogBody:
-      'Dotazník se otevře v prohlížeči. Údaje níže se zkopírují do schránky, abyste je mohli vložit do dotazníku. Aplikace sama nic neodesílá a obsah dokumentů se nikdy nepřikládá.',
+      'Otevře se poštovní program se zprávou pro tým TenAI. Údaje níže jsou ve zprávě a zkopírují se i do schránky. Aplikace sama nic neodesílá a obsah dokumentů nikdy nepřikládá.',
     details: 'Verze {version}\nSystém {os}\nJazyk {language}',
-    btnOpen: 'Otevřít dotazník',
+    btnOpen: 'Napsat e-mail',
     btnCancel: 'Zrušit',
   } satisfies Keys,
   nl: {
     menuLabel: 'Feedback sturen',
     dialogTitle: 'Feedback sturen',
     dialogBody:
-      'De enquête opent in je browser. De gegevens hieronder worden naar het klembord gekopieerd zodat je ze in de enquête kunt plakken. De app verstuurt zelf niets en de inhoud van documenten wordt nooit meegestuurd.',
+      'Uw mailprogramma opent met een bericht aan het TenAI-team. De gegevens hieronder staan in het bericht en worden ook naar het klembord gekopieerd. De app verstuurt zelf niets en voegt nooit documentinhoud toe.',
     details: 'Versie {version}\nSysteem {os}\nTaal {language}',
-    btnOpen: 'Enquête openen',
+    btnOpen: 'E-mail schrijven',
     btnCancel: 'Annuleren',
   } satisfies Keys,
   ms: {
     menuLabel: 'Hantar maklum balas',
     dialogTitle: 'Hantar maklum balas',
     dialogBody:
-      'Tinjauan dibuka dalam pelayar. Butiran di bawah disalin ke papan keratan supaya anda boleh menampalnya dalam tinjauan. Aplikasi tidak menghantar apa-apa sendiri, dan kandungan dokumen tidak pernah disertakan.',
+      'Aplikasi e-mel anda dibuka dengan mesej kepada pasukan TenAI. Butiran di bawah ada dalam mesej dan turut disalin ke papan keratan. Aplikasi tidak menghantar apa-apa sendiri dan tidak sekali-kali menyertakan kandungan dokumen.',
     details: 'Versi {version}\nSistem {os}\nBahasa {language}',
-    btnOpen: 'Buka tinjauan',
+    btnOpen: 'Tulis e-mel',
     btnCancel: 'Batal',
   } satisfies Keys,
   he: {
     menuLabel: 'שליחת משוב',
     dialogTitle: 'שליחת משוב',
     dialogBody:
-      'השאלון ייפתח בדפדפן. הפרטים למטה מועתקים ללוח כדי שתוכלו להדביק אותם בשאלון. האפליקציה עצמה לא שולחת דבר, ותוכן המסמכים אינו נכלל לעולם.',
+      'תוכנת הדואר תיפתח עם הודעה לצוות TenAI. הפרטים שלמטה נמצאים בהודעה ומועתקים גם ללוח. האפליקציה עצמה לא שולחת דבר, ותוכן מסמכים אף פעם לא נכלל.',
     details: 'גרסה {version}\nמערכת {os}\nשפה {language}',
-    btnOpen: 'פתיחת השאלון',
+    btnOpen: 'כתיבת דוא"ל',
     btnCancel: 'ביטול',
   } satisfies Keys,
   hi: {
     menuLabel: 'फ़ीडबैक भेजें',
     dialogTitle: 'फ़ीडबैक भेजें',
     dialogBody:
-      'सर्वेक्षण ब्राउज़र में खुलेगा। नीचे की जानकारी क्लिपबोर्ड पर कॉपी हो जाती है ताकि आप उसे सर्वेक्षण में पेस्ट कर सकें। ऐप स्वयं कुछ नहीं भेजता, और दस्तावेज़ की सामग्री कभी शामिल नहीं होती।',
+      'आपका मेल ऐप TenAI टीम के लिए एक संदेश के साथ खुलेगा। नीचे की जानकारी संदेश में है और क्लिपबोर्ड पर भी कॉपी हो जाती है। ऐप खुद कुछ नहीं भेजता, और दस्तावेज़ की सामग्री कभी शामिल नहीं होती।',
     details: 'संस्करण {version}\nसिस्टम {os}\nभाषा {language}',
-    btnOpen: 'सर्वेक्षण खोलें',
+    btnOpen: 'ईमेल लिखें',
     btnCancel: 'रद्द करें',
   } satisfies Keys,
   'zh-TW': {
     menuLabel: '傳送意見回饋',
     dialogTitle: '傳送意見回饋',
     dialogBody:
-      '問卷將在瀏覽器中開啟。下方的資訊會複製到剪貼簿，方便你貼到問卷中。應用程式本身不會傳送任何內容，也不會包含文件內容。',
+      '將開啟你的郵件程式，並寫好一封給 TenAI 團隊的郵件。下面的資訊已附在郵件中，也會複製到剪貼簿。應用程式本身不會傳送任何內容，也不會包含文件內容。',
     details: '版本 {version}\n作業系統 {os}\n介面語言 {language}',
-    btnOpen: '開啟問卷',
+    btnOpen: '寫郵件',
     btnCancel: '取消',
   } satisfies Keys,
 })

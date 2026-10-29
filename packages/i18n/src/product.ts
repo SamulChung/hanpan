@@ -55,7 +55,7 @@ export const PRODUCT_REPO_SLUG = `${PRODUCT_REPO_OWNER}/${PRODUCT_REPO_NAME}`
 export const PRODUCT_WEBSITE = 'https://ieumoffice.com'
 
 /** Where rights holders and users reach the maintainer about trademarks, copyright and licensing. */
-export const PRODUCT_CONTACT_EMAIL = 'pblsketch@gmail.com'
+export const PRODUCT_CONTACT_EMAIL = 'ten@tenai.kr'
 
 const NAME_TOKEN = new RegExp(`\\{\\{${UPSTREAM_PRODUCT_NAME}\\}\\}|${UPSTREAM_PRODUCT_NAME}`, 'g')
 

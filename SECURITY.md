@@ -28,8 +28,8 @@ warning the first time you run it.
 
 ## Trademark and Copyright Reports
 
-Send trademark or copyright infringement reports and licensing questions to
-pblsketch@gmail.com. The same address is in the app under Settings → About.
+Send trademark or copyright infringement reports and licensing questions about
+Hanpan to ten@tenai.kr. The same address is in the app under Settings → About.
 
 ## Process Security Posture
 
