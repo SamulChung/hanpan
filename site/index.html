@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>한판 — 생각은 지도로, 문서는 한 판에</title>
+  <title>한판 — 생각은 마인드맵으로, 문서는 한 판에</title>
   <meta name="description" content="한판은 마인드맵을 한글 보고서·PPT·워드로 보내 같은 창에서 이어 쓰는 무료 데스크톱 오피스입니다. AI는 내 PC에 깔린 AI를 먼저 씁니다. Made by TenAI." />
-  <meta property="og:title" content="한판 — 생각은 지도로, 문서는 한 판에" />
+  <meta property="og:title" content="한판 — 생각은 마인드맵으로, 문서는 한 판에" />
   <meta property="og:description" content="마인드맵 하나로 한글 보고서·PPT·워드까지. 내 PC AI 우선. Made by TenAI." />
   <meta property="og:image" content="images/04-hwp-report.png" />
   <link rel="icon" href="images/icon.svg" type="image/svg+xml" />
@@ -14,15 +14,15 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --board: #1e3a5f;
-      --board-deep: #162c49;
-      --node: #ff8a3d;
+      --board: #183f33;
+      --board-deep: #123027;
+      --node: #f2c94c;
       --paper: #ffffff;
-      --chalk: #dce3ec;
-      --mist: #f3f6fa;
-      --ink: #14202e;
-      --ink-soft: #4a5a6e;
-      --line-on-board: rgb(220 227 236 / 45%);
+      --chalk: #dfe9e3;
+      --mist: #f1f6f3;
+      --ink: #13201a;
+      --ink-soft: #4a5b53;
+      --line-on-board: rgb(223 233 227 / 45%);
       --radius: 14px;
     }
     * { box-sizing: border-box; }
@@ -145,6 +145,13 @@
     }
     .steps h3 { margin: 0 0 8px; font-size: 20px; }
     .steps p { margin: 0; color: var(--ink-soft); }
+    .news { display: grid; gap: 0; padding: 0; margin: 0; list-style: none; border-top: 1px solid var(--chalk); }
+    .news li { display: grid; grid-template-columns: 7em 9em 1fr; gap: 16px; align-items: baseline; padding: 20px 0; border-bottom: 1px solid var(--chalk); }
+    .news-ver { font-weight: 800; font-size: 18px; color: var(--board); }
+    .news-date { color: var(--ink-soft); font-size: 15px; }
+    .news p { margin: 0; }
+    .news-all { margin: 24px 0 0; }
+    @media (max-width: 720px) { .news li { grid-template-columns: auto 1fr; } .news p { grid-column: 1 / -1; } }
     .note { margin-top: 36px; padding: 18px 22px; border-left: 4px solid var(--node); background: var(--paper); color: var(--ink-soft); border-radius: 0 10px 10px 0; }
 
     table { width: 100%; border-collapse: collapse; font-size: 16px; }
@@ -193,6 +200,7 @@
       <a class="brand" href="#"><img src="images/icon.svg" alt="" />한판</a>
       <nav aria-label="페이지 안내">
         <a href="#features">기능</a>
+        <a href="#news">업데이트</a>
         <a href="#install">설치</a>
         <a href="#local-ai">내 PC AI</a>
         <a href="https://github.com/SamulChung/hanpan">GitHub</a>
@@ -204,14 +212,14 @@
     <section class="hero" aria-labelledby="hero-title">
       <div class="wrap">
         <div>
-          <h1 id="hero-title">생각은 지도로,<br />문서는 한 판에.</h1>
-          <p class="lead">마인드맵으로 정리한 생각을 한글 보고서·PPT·워드로 보내 같은 창에서 이어 씁니다. 지도를 고치면 문서도, 문서를 고치면 지도도 맞춰집니다. AI는 내 PC에 깔린 AI를 먼저 씁니다.</p>
+          <h1 id="hero-title">생각은 마인드맵으로,<br />문서는 한 판에.</h1>
+          <p class="lead">마인드맵에 정리한 생각을 버튼 하나로 한글 보고서·PPT·워드로 보내 같은 창에서 이어 씁니다. 한쪽을 고치면 다른 쪽도 맞춰집니다. AI는 내 PC에 깔린 AI를 먼저 씁니다.</p>
           <div class="actions">
             <a class="btn download-link" href="https://github.com/SamulChung/hanpan/releases/latest">
               <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3v10M5.5 8.5 10 13l4.5-4.5M4 16.5h12" /></svg>
               Windows용 내려받기
             </a>
-            <span class="meta">무료 · Windows 10/11 (64비트) · <span class="version">v0.12.8</span> · <a href="https://github.com/SamulChung/hanpan/releases">모든 버전</a></span>
+            <span class="meta">무료 · Windows 10/11 (64비트) · <span class="version">v0.13.2</span> · <a href="https://github.com/SamulChung/hanpan/releases">모든 버전</a></span>
           </div>
         </div>
 
@@ -254,12 +262,25 @@
 
         <article class="feature">
           <div class="copy">
+            <span class="tag">홈 화면</span>
+            <h3>주제만 적으면 마인드맵부터 시작</h3>
+            <p>홈 맨 위 시작판에 정리할 주제를 적고 <strong>마인드맵 만들기</strong>를 누르면, 그 주제를 가운데 둔 새 마인드맵이 바로 열립니다.</p>
+            <ul>
+              <li>카드도 일의 순서대로: 마인드맵 → AI 한글 → AI 파워포인트 → 한판 양식</li>
+              <li>워드, 엑셀, 디자인, PDF 도구는 아래 한 줄에 모아서</li>
+            </ul>
+          </div>
+          <div class="shot"><img src="images/01-home.png" alt="시작판과 마인드맵 중심 카드가 있는 한판 홈 화면" loading="lazy" width="1800" height="1125" /></div>
+        </article>
+
+        <article class="feature">
+          <div class="copy">
             <span class="tag">마인드맵 → 문서</span>
-            <h3>지도 하나로 한글 보고서, PPT, 워드까지</h3>
+            <h3>마인드맵 하나로 한글 보고서, PPT, 워드까지</h3>
             <p>도구 줄의 보내기를 누르면 같은 창의 새 탭에 문서가 열립니다.</p>
             <ul>
               <li>개조식 보고서(□ ○ ―), 장 보고서(Ⅰ.), 공문 번호(1. 가. 1))</li>
-              <li>지도에 적은 말 그대로, 또는 AI가 개조식 문장으로 살 붙이기</li>
+              <li>마인드맵에 적은 말 그대로, 또는 AI가 개조식 문장으로 살 붙이기</li>
               <li>큰 가지 하나가 슬라이드 한 장, 메모는 발표자 메모로</li>
             </ul>
           </div>
@@ -268,11 +289,25 @@
 
         <article class="feature">
           <div class="copy">
-            <span class="tag">양방향 맞추기</span>
-            <h3>지도를 고치면 문서도, 문서를 고치면 지도도</h3>
-            <p>보낸 뒤에도 지도와 한글 문서는 연결되어 있습니다. 바뀐 곳을 미리 보여 주고, 양쪽에서 다르게 고친 곳은 직접 고릅니다. 문서에서 쓴 본문은 지켜집니다.</p>
+            <span class="tag">PPT 슬라이드 스타일</span>
+            <h3>발표 자료는 10가지 스타일 중에서 골라</h3>
+            <p>PPT로 보낼 때 스타일을 고르면 표지, 목차, 본문, 마무리 슬라이드까지 그 스타일로 꾸며집니다.</p>
+            <ul>
+              <li>스티브 잡스, 맥킨지, 토스, BCG, TED, 구글 머티리얼, 노션, 에어비앤비, 캔바 모던, 스타트업 피치덱</li>
+              <li>가지에 든 내용에 맞춰 카드, 매트릭스, 타임라인, 큰 숫자로 배치</li>
+              <li>만든 뒤에도 글자·색·도형을 PPT 탭에서 그대로 고칠 수 있음</li>
+            </ul>
           </div>
-          <div class="shot"><img src="images/05-sync.png" alt="지도와 연결된 문서에서 바뀐 곳을 보여 주는 맞추기 창" loading="lazy" width="1800" height="1075" /></div>
+          <div class="shot"><img src="images/09-slide-styles.png" alt="같은 마인드맵을 10가지 슬라이드 스타일로 만든 본문 슬라이드" loading="lazy" width="1792" height="424" /></div>
+        </article>
+
+        <article class="feature">
+          <div class="copy">
+            <span class="tag">양방향 맞추기</span>
+            <h3>마인드맵을 고치면 문서도, 문서를 고치면 마인드맵도</h3>
+            <p>보낸 뒤에도 마인드맵과 한글 문서는 연결되어 있습니다. 바뀐 곳을 미리 보여 주고, 양쪽에서 다르게 고친 곳은 직접 고릅니다. 문서에서 쓴 본문은 지켜집니다.</p>
+          </div>
+          <div class="shot"><img src="images/05-sync.png" alt="마인드맵과 연결된 문서에서 바뀐 곳을 보여 주는 맞추기 창" loading="lazy" width="1800" height="1075" /></div>
         </article>
 
         <article class="feature">
@@ -301,6 +336,36 @@
       </div>
     </section>
 
+    <section id="news" aria-labelledby="news-title">
+      <div class="wrap">
+        <h2 id="news-title">업데이트 소식</h2>
+        <p class="intro">설치한 한판은 새 버전이 나오면 알려 주고 스스로 업데이트합니다.</p>
+        <ol class="news">
+          <li>
+            <span class="news-ver">0.13.2</span>
+            <span class="news-date">2026. 10. 30.</span>
+            <p>홈 화면을 마인드맵 중심으로 새로 짰습니다. 시작판에 주제를 적으면 새 마인드맵이 열리고, 카드는 마인드맵·AI 한글·AI 파워포인트·한판 양식 순서입니다. 한판만의 칠판 초록 디자인을 입혔고, 앱 안의 '지도'라는 말을 모두 '마인드맵'으로 바꿨습니다.</p>
+          </li>
+          <li>
+            <span class="news-ver">0.13.1</span>
+            <span class="news-date">2026. 10. 30.</span>
+            <p>슬라이드 스타일 10가지를 새로 디자인했습니다. 한판이 만든 한글 문서에서 표 칸의 글자가 겹치던 문제와 그림이 글을 가리던 문제를 고쳤습니다.</p>
+          </li>
+          <li>
+            <span class="news-ver">0.13.0</span>
+            <span class="news-date">2026. 10. 30.</span>
+            <p>PPT로 보낼 때 슬라이드 스타일 10가지 가운데 하나를 고를 수 있습니다. 의견 보내기가 TenAI 팀 메일(ten@tenai.kr)로 바뀌었습니다.</p>
+          </li>
+          <li>
+            <span class="news-ver">0.12.8</span>
+            <span class="news-date">2026. 10. 30.</span>
+            <p>첫 공개 버전입니다. 마인드맵을 한글·PPT·워드로 보내기, 양방향 맞추기, 한판 양식 19가지, 한판 도구, 디자인 보드, 내 PC AI 우선.</p>
+          </li>
+        </ol>
+        <p class="news-all"><a href="https://github.com/SamulChung/hanpan/releases">모든 버전과 바뀐 점 보기</a></p>
+      </div>
+    </section>
+
     <section id="install" class="band" aria-labelledby="install-title">
       <div class="wrap">
         <h2 id="install-title">설치하기</h2>
@@ -308,7 +373,7 @@
         <ol class="steps">
           <li>
             <h3>내려받기</h3>
-            <p><a class="download-link" href="https://github.com/SamulChung/hanpan/releases/latest"><span class="file-name">Hanpan-Setup-0.12.8.exe</span></a>를 내려받아 실행합니다.</p>
+            <p><a class="download-link" href="https://github.com/SamulChung/hanpan/releases/latest"><span class="file-name">Hanpan-Setup-0.13.2.exe</span></a>를 내려받아 실행합니다.</p>
           </li>
           <li>
             <h3>Windows 경고 넘기기</h3>
