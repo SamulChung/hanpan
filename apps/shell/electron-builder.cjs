@@ -51,7 +51,11 @@ if (winArm64 && !process.env.ELECTRON_BUILDER_7Z_FILTER) {
   process.env.ELECTRON_BUILDER_7Z_FILTER = 'BCJ'
 }
 const winArch = winArm64 ? 'arm64' : 'x64'
-const winSidecarTarget = winArm64 ? 'aarch64-pc-windows-msvc' : 'x86_64-pc-windows-gnu'
+// Hanpan: a PC with the MSVC toolchain (Visual Studio Build Tools) builds the sidecar for
+// x86_64-pc-windows-msvc; native/xlsx-engine/.cargo/config.toml links its CRT statically,
+// so it needs no VC++ redistributable either. GENOFFICE_WIN_SIDECAR_TARGET names that target.
+const winSidecarTarget =
+  process.env.GENOFFICE_WIN_SIDECAR_TARGET || (winArm64 ? 'aarch64-pc-windows-msvc' : 'x86_64-pc-windows-gnu')
 const WIN_SIDECAR = `../sheets/native/xlsx-engine/target/${winSidecarTarget}/release/xlsx-sidecar.exe`
 
 function assertExtraResourceSources() {
