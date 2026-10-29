@@ -27,6 +27,8 @@ const PARA_UNITS_PER_PT = 200
 const FONT_LANGUAGES = 7
 /** Widest picture placed, points (A4 text width with 20mm margins is about 482pt). */
 const MAX_PICTURE_PT = 400
+/** Picture and table sizes are plain HWPUNIT: 100 to a point (unlike paragraph lengths above). */
+const HWPUNIT_PER_PT = 100
 
 interface PlannedPara extends ParaLayout {
   text: string
@@ -143,26 +145,64 @@ function fontIds(doc: HwpEngineDocument, font: string): number[] {
   return ids
 }
 
-function escapeHtml(text: string): string {
-  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+/** Rough width of a cell's text in ems: Hangul full, Latin and digits about half. */
+function textEms(text: string): number {
+  let w = 0
+  for (const ch of text) w += (ch.codePointAt(0) ?? 0) >= 0x1100 ? 1 : ch === ' ' ? 0.3 : 0.55
+  return w
 }
 
 /**
- * A plain bordered table as the engine's paste HTML, built the way the HWP
- * editor's own plugin builds one (apps/hwp/studio-plugin/agent-plugin.mjs): every
- * cell carries the font and a height that fits a line of it (left to itself the
- * engine makes rows lower than a line), and a header row is a bold, centred <th>.
- * No fill colour: a fill written in the HTML becomes the whole table's in Hangul.
+ * Column widths that share `total` by how much each column holds: a long column
+ * gets more room, none drops below a seventh, and a very long cell counts only
+ * as much as a few lines of wrapping would need.
  */
-export function tableHtml(rows: readonly (readonly string[])[], header: boolean, font: string, size: number): string {
-  const height = Math.round((size * 1.6 + 2.82) * 10) / 10
-  const box = `border:0.4pt solid #000000;padding:1.41pt 5.1pt;height:${height}pt`
-  const text = `font-family:${font.replace(/["';<>]/g, '')};mso-fareast-font-family:${font.replace(/["';<>]/g, '')};font-size:${size}pt`
-  const cell = (value: string) => `<td style="${box}"><span style="${text}">${escapeHtml(value)}</span></td>`
-  const head = (value: string) =>
-    `<th style="${box}"><p style="text-align:center"><span style="${text};font-weight:bold">${escapeHtml(value)}</span></p></th>`
-  const body = rows.map((r, i) => `<tr>${r.map(header && i === 0 ? head : cell).join('')}</tr>`).join('')
-  return `<table>${body}</table>`
+export function tableColumnWidths(rows: readonly (readonly string[])[], total: number): number[] {
+  const cols = Math.max(0, ...rows.map((r) => r.length))
+  if (!cols) return []
+  const need = Array.from({ length: cols }, (_, c) => Math.max(...rows.map((r) => Math.min(textEms(r[c] ?? ''), 24))) + 2)
+  const sum = need.reduce((x, y) => x + y, 0)
+  const raw = need.map((n) => Math.max(total / 7, (n / sum) * total))
+  const scale = total / raw.reduce((x, y) => x + y, 0)
+  const widths = raw.map((w) => Math.round(w * scale))
+  widths[cols - 1]! += total - widths.reduce((x, y) => x + y, 0)
+  return widths
+}
+
+/**
+ * A bordered table made the way the HWP editor makes one: an empty table, then
+ * the text typed into each cell, so every cell gets real line breaks and Hangul
+ * wraps a long cell onto more lines. (A table pasted as HTML keeps each cell on
+ * one line, which Hangul squeezes until the letters overlap.) A header row is
+ * bold and centred; columns share the width by how much they hold.
+ */
+function insertTable(doc: HwpEngineDocument, para: number, rows: readonly (readonly string[])[], header: boolean, font: number[], size: number): void {
+  const cols = Math.max(1, ...rows.map((r) => r.length))
+  const made = expectOk(doc.createTableEx(JSON.stringify({ sectionIdx: 0, paraIdx: para, charOffset: 0, rowCount: rows.length, colCount: cols, treatAsChar: false })), 'insert a table')
+  const at = Number(made.paraIdx ?? para)
+  const control = Number(made.controlIdx ?? 0)
+  rows.forEach((row, r) => {
+    const head = header && r === 0
+    for (let c = 0; c < cols; c++) {
+      const cell = r * cols + c
+      const text = row[c] ?? ''
+      if (text) {
+        expectOk(doc.insertTextInCell(0, at, control, cell, 0, 0, text), 'fill a table cell')
+        expectOk(
+          doc.applyCharFormatInCell(0, at, control, cell, 0, 0, text.length, JSON.stringify({ fontSize: Math.round(size * 100), bold: head, fontIds: font })),
+          'format a table cell',
+        )
+      }
+      expectOk(
+        doc.applyParaFormatInCell(0, at, control, cell, 0, JSON.stringify({ alignment: head ? 'center' : 'left', lineSpacing: 130, lineSpacingType: 'Percent' })),
+        'format a table cell',
+      )
+    }
+  })
+  const current = Array.from({ length: cols }, (_, c) => Number(expectOk(doc.getCellOwnProperties(0, at, control, c), 'read a table cell').width ?? 0))
+  const wanted = tableColumnWidths(rows, current.reduce((x, y) => x + y, 0))
+  const deltas = rows.flatMap((_, r) => wanted.map((w, c) => ({ cellIdx: r * cols + c, widthDelta: w - current[c]! }))).filter((d) => d.widthDelta !== 0)
+  if (deltas.length) expectOk(doc.resizeTableCells(0, at, control, JSON.stringify(deltas)), 'size the table columns')
 }
 
 function extensionOf(mime: string): string | null {
@@ -196,7 +236,7 @@ export function writeBlocks(engine: HwpEngine, blocks: readonly DocBlock[], them
       const object = paras[i]!.object
       if (!object) continue
       if (object.kind === 'table') {
-        expectOk(doc.pasteHtml(0, i, 0, tableHtml(object.block.rows, object.block.header, theme.body.font, theme.body.size - 1)), 'insert a table')
+        insertTable(doc, i, object.block.rows, object.block.header, fontIds(doc, theme.body.font), theme.body.size - 1)
       } else {
         const { image } = object.block
         const extension = extensionOf(image.mime)
@@ -204,14 +244,19 @@ export function writeBlocks(engine: HwpEngine, blocks: readonly DocBlock[], them
         const naturalW = Math.max(1, Math.round(image.width ?? 640))
         const naturalH = Math.max(1, Math.round(image.height ?? 480))
         const widthPt = Math.min(MAX_PICTURE_PT, naturalW * 0.75)
-        const width = Math.round(widthPt * 200)
-        const height = Math.max(200, Math.round((width * naturalH) / naturalW))
-        expectOk(
+        const width = Math.round(widthPt * HWPUNIT_PER_PT)
+        const height = Math.max(HWPUNIT_PER_PT, Math.round((width * naturalH) / naturalW))
+        const placed = expectOk(
           doc.insertPictureEx(
             JSON.stringify({ sectionIdx: 0, paraIdx: i, charOffset: 0, width, height, naturalWidthPx: naturalW, naturalHeightPx: naturalH, extension }),
             image.bytes,
           ),
           'insert a picture',
+        )
+        // in the line like a character: a floating picture lands over the text around it in Hangul
+        expectOk(
+          doc.setPictureProperties(0, Number(placed.paraIdx ?? i), Number(placed.controlIdx ?? 0), JSON.stringify({ treatAsChar: true, width, height })),
+          'place a picture in the line',
         )
       }
     }

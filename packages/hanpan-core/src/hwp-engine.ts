@@ -22,7 +22,20 @@ export interface HwpEngineDocument {
   insertPageBreak?(section: number, para: number, offset: number): string
   /** options: { sectionIdx, paraIdx, charOffset, width, height, naturalWidthPx, naturalHeightPx, extension } */
   insertPictureEx(optionsJson: string, bytes: Uint8Array): string
-  pasteHtml(section: number, para: number, offset: number, html: string): string
+  /** `{ width, height, treatAsChar, ... }`, sizes in HWPUNIT (100 to a point) */
+  getPictureProperties(section: number, para: number, control: number): string
+  setPictureProperties(section: number, para: number, control: number, propsJson: string): string
+  /** options: { sectionIdx, paraIdx, charOffset, rowCount, colCount, treatAsChar? } */
+  createTableEx(optionsJson: string): string
+  insertTextInCell(section: number, para: number, control: number, cell: number, cellPara: number, offset: number, text: string): string
+  applyCharFormatInCell(section: number, para: number, control: number, cell: number, cellPara: number, start: number, end: number, propsJson: string): string
+  applyParaFormatInCell(section: number, para: number, control: number, cell: number, cellPara: number, propsJson: string): string
+  /** `{ width, height, ... }` in HWPUNIT */
+  getCellOwnProperties(section: number, para: number, control: number, cell: number): string
+  getCellParagraphLength(section: number, para: number, control: number, cell: number, cellPara: number): number
+  getCellCharPropertiesAt(section: number, para: number, control: number, cell: number, cellPara: number, offset: number): string
+  /** `[{ cellIdx, widthDelta }]` in HWPUNIT */
+  resizeTableCells(section: number, para: number, control: number, json: string): string
   exportHwpx(): Uint8Array
   exportHwp(): Uint8Array
   free(): void

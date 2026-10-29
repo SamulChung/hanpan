@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { outlineToBlocks } from '../src/blocks'
+import { outlineToBlocks, type DocBlock } from '../src/blocks'
 import { REPORT_THEME } from '../src/doc-theme'
 import { bookmarksOf } from '../src/hwp-engine'
-import { blocksToHwp, keyOfBookmark } from '../src/hwp-writer'
+import { blocksToHwp, keyOfBookmark, tableColumnWidths } from '../src/hwp-writer'
 import { outlineFromIndentedText } from '../src/outline'
 import { loadEngine } from './engine'
 
@@ -75,5 +75,71 @@ describe('blocksToHwp', () => {
     } finally {
       doc.free()
     }
+  })
+
+  /** The paragraph holding the first control the probe answers for (a picture or a table). */
+  function findControl(doc: InstanceType<Awaited<ReturnType<typeof loadEngine>>['HwpDocument']>, probe: (para: number) => string): number {
+    for (let p = 0; p < doc.getParagraphCount(0); p++) {
+      try {
+        const answer = JSON.parse(probe(p)) as { ok?: boolean; width?: number }
+        if (answer.ok !== false && typeof answer.width === 'number') return p
+      } catch {
+        // not this paragraph
+      }
+    }
+    return -1
+  }
+
+  it('places a picture in the line at its size in points, after saving as .hwp', async () => {
+    const engine = await loadEngine()
+    // a 1200×600 screenshot: wider than the page, so it is set at the widest, 400pt
+    const blocks: DocBlock[] = [
+      { kind: 'title', text: '그림' },
+      { kind: 'image', depth: 0, image: { bytes: PNG, mime: 'image/png', width: 1200, height: 600 } },
+      { kind: 'para', depth: 0, text: '그림 아래 글', role: 'body' },
+    ]
+    const doc = new engine.HwpDocument(blocksToHwp(engine, blocks, REPORT_THEME, 'hwp').bytes)
+    try {
+      const at = findControl(doc, (p) => doc.getPictureProperties(0, p, 0))
+      expect(at).toBeGreaterThan(0)
+      const picture = JSON.parse(doc.getPictureProperties(0, at, 0)) as { width: number; height: number; treatAsChar: boolean }
+      // HWPUNIT is 100 to a point
+      expect(picture.width).toBe(40_000)
+      expect(picture.height).toBe(20_000)
+      expect(picture.treatAsChar).toBe(true)
+    } finally {
+      doc.free()
+    }
+  })
+
+  it('types each table cell in, a long column wider, a header row bold', async () => {
+    const engine = await loadEngine()
+    const long = '마인드맵으로 정리한 생각을 버튼 하나로 한글 개조식 보고서와 PPT로 바꾸고 지도와 문서를 계속 맞춤'
+    const blocks: DocBlock[] = [
+      { kind: 'title', text: '표' },
+      { kind: 'table', rows: [['구분', '내용'], ['한 문장 소개', long]], header: true },
+    ]
+    const doc = new engine.HwpDocument(blocksToHwp(engine, blocks, REPORT_THEME, 'hwp').bytes)
+    try {
+      const at = findControl(doc, (p) => doc.getCellOwnProperties(0, p, 0, 0))
+      expect(at).toBeGreaterThan(0)
+      const width = (cell: number) => (JSON.parse(doc.getCellOwnProperties(0, at, 0, cell)) as { width: number }).width
+      expect(width(1)).toBeGreaterThan(width(0) * 2)
+      expect(width(3)).toBe(width(1))
+      // typed text, not a pasted line: the cell holds the whole sentence
+      expect(doc.getCellParagraphLength(0, at, 0, 3, 0)).toBe(long.length)
+      const head = JSON.parse(doc.getCellCharPropertiesAt(0, at, 0, 0, 0, 0)) as { bold?: boolean }
+      expect(head.bold).toBe(true)
+    } finally {
+      doc.free()
+    }
+  })
+
+  it('shares the table width by how much each column holds', () => {
+    const widths = tableColumnWidths([['구분', '내용'], ['짧음', '아주 긴 설명이 여기에 들어가서 칸을 넓게 차지함']], 42_000)
+    expect(widths.reduce((a, b) => a + b, 0)).toBe(42_000)
+    expect(widths[1]).toBeGreaterThan(widths[0]! * 2)
+    // the narrow column keeps about a seventh (scaling back to the total trims a little)
+    expect(widths[0]).toBeGreaterThan((42_000 / 7) * 0.95)
   })
 })
