@@ -25,7 +25,7 @@ import {
 import { join } from 'node:path'
 import type { TabContents } from './link-store'
 
-export type CopyEditor = 'hwp' | 'slides' | 'docs'
+export type CopyEditor = 'hwp' | 'slides' | 'docs' | 'mindmap' | 'mindmap'
 
 export interface SendMapDeps {
   loadHwpEngine(): Promise<HwpEngine>

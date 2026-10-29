@@ -1,7 +1,7 @@
 {
   "name": "@genoffice/shell",
   "productName": "Hanpan",
-  "version": "0.13.1",
+  "version": "0.13.2",
   "license": "Apache-2.0",
   "homepage": "https://github.com/SamulChung/hanpan",
   "private": true,
@@ -29,6 +29,7 @@
     "@genoffice/google-drive": "*",
     "@genoffice/hanpan-core": "*",
     "@genoffice/local-ai": "*",
+    "@genoffice/xmind-engine": "*",
     "pdf-lib": "^1.17.1",
     "@genoffice/cli": "*",
     "@genoffice/i18n": "*",

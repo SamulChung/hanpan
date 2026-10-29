@@ -20,6 +20,7 @@ import {
   type SlideStyleId,
 } from '@genoffice/hanpan-core'
 import type { Op } from '@genoffice/pptx-ops'
+import { createXmindDocumentFromOutline } from '@genoffice/xmind-engine'
 import { app } from 'electron'
 import { randomUUID } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
@@ -107,6 +108,8 @@ export interface HanpanSetup {
   templates(): { id: string; title: string; category: string; description: string; icon: string }[]
   /** a template as a new untitled HWP or Word document in a tab */
   openTemplate(id: unknown, target: unknown): Promise<{ ok: true } | { ok: false; error: string }>
+  /** a new untitled mind map in a tab with `topic` as its central topic (Home's start box) */
+  newMap(topic: unknown): Promise<{ ok: true } | { ok: false; error: string }>
   sync: ReturnType<typeof createSyncService>
 }
 
@@ -220,6 +223,24 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
       const path = join(dir, fileName)
       await atomicWriteFile(path, Buffer.from(bytes))
       const opened = await deps.openCopy({ editor: target === 'hwp' ? 'hwp' : 'docs', path, dir, bytes, fileName, title: template.title })
+      if (!opened) {
+        rmSync(dir, { recursive: true, force: true })
+        return { ok: false, error: 'the new tab did not open' }
+      }
+      opened.contents.once('destroyed', () => rmSync(dir, { recursive: true, force: true }))
+      return { ok: true }
+    },
+    newMap: async (raw) => {
+      // one line of plain text: list and heading marks at its start would read as structure
+      const topic = typeof raw === 'string' ? raw.replace(/\s+/g, ' ').replace(/^[#>*+\-\s]+/, '').trim().slice(0, 120) : ''
+      if (!topic) return { ok: false, error: 'no topic' }
+      const map = await createXmindDocumentFromOutline(`- ${topic}\n`, { untitled: topic })
+      const bytes = await map.save()
+      const fileName = documentFileName(topic, 'xmind')
+      const dir = await makeCopyDir()
+      const path = join(dir, fileName)
+      await atomicWriteFile(path, Buffer.from(bytes))
+      const opened = await deps.openCopy({ editor: 'mindmap', path, dir, bytes, fileName, title: topic })
       if (!opened) {
         rmSync(dir, { recursive: true, force: true })
         return { ok: false, error: 'the new tab did not open' }

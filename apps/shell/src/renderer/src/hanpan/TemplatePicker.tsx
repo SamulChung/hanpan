@@ -18,6 +18,8 @@ export interface HanpanApi {
   templates(): Promise<TemplateSummary[]>
   openTemplate(id: string, target: 'hwp' | 'docx'): Promise<{ ok: true } | { ok: false; error: string }>
   openDesign?(): Promise<void>
+  /** a new mind map with `topic` as its central topic */
+  newMap?(topic: string): Promise<{ ok: true } | { ok: false; error: string }>
 }
 
 declare global {

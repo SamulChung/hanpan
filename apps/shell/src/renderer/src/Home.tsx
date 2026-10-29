@@ -7,6 +7,7 @@ import type {
 import logoLockup from './assets/genoffice-logo.svg'
 import { KbAskPanel } from './KbAskPanel'
 import { TemplatePicker } from './hanpan/TemplatePicker'
+import { StartBoard } from './hanpan/StartBoard'
 import './hanpan/hanpan.css'
 import iconDocx from './assets/file-docx.svg'
 import iconXlsx from './assets/file-xlsx.svg'
@@ -1907,71 +1908,74 @@ export function Home({
   // Hanpan: the template picker
   const [templatesOpen, setTemplatesOpen] = useState(false)
 
+  /**
+   * Hanpan's order: the mind map first (every document starts there), then the
+   * HWP report, the slides and the templates it feeds, as large cards; the other
+   * documents and tools follow in a compact row. Every card keeps `quick-card`
+   * and names what it makes in `data-new`.
+   */
   function renderQuickCards() {
+    const made = (ext: string) => NEW_ITEMS.find((item) => item.ext === ext)!
+    const primary = [
+      { key: 'xmind', badge: <FileBadge ext="xmind" size={34} />, title: made('xmind').title, sub: t('hpCardMapSub'), ai: true, start: true, action: made('xmind').action },
+      { key: 'hwp', badge: <FileBadge ext="hwp" size={34} />, title: made('hwp').title, sub: t('hpCardHwpSub'), ai: true, action: made('hwp').action },
+      { key: 'pptx', badge: <FileBadge ext="pptx" size={34} />, title: made('pptx').title, sub: t('hpCardPptSub'), ai: true, action: made('pptx').action },
+      ...(window.hanpanApi
+        ? [{ key: 'templates', badge: <FileBadge ext="hwp" size={34} />, title: t('hpTemplatesCard'), sub: t('hpTemplatesCardSub'), ai: false, action: () => setTemplatesOpen(true) }]
+        : []),
+    ]
+    const secondary = [
+      ...['docx', 'xlsx'].map((ext) => ({ key: ext, icon: <FileBadge ext={ext} size={24} />, title: made(ext).title, ai: true, tip: undefined as string | undefined, action: made(ext).action })),
+      ...(window.hanpanApi?.openDesign
+        ? [{ key: 'design', icon: <span className="quick-folder hp-design-badge" aria-hidden="true">✦</span>, title: t('hpDesignCard'), ai: false, tip: t('hpDesignCardSub'), action: () => window.hanpanApi?.openDesign?.() }]
+        : []),
+      ...['md', 'html', 'pdf'].map((ext) => ({ key: ext, icon: <FileBadge ext={ext} size={24} />, title: made(ext).title, ai: true, tip: undefined as string | undefined, action: made(ext).action })),
+      // decision 0030: PDF tasks without AI, in their own window
+      { key: 'pdf-tools', icon: <FileBadge ext="pdf" size={24} />, title: t('pdfToolsCard'), ai: false, tip: t('pdfToolsCardSub'), action: () => window.aiOfficePdfToolsHome.open() },
+      { key: 'open', icon: <span className="quick-folder"><FolderIcon size={16} /></span>, title: t('openLocal'), ai: false, tip: OPEN_LOCAL_EXTENSIONS, action: () => window.aiOffice.browse() },
+    ]
     return (
-      <div className="quick-cards">
-        {NEW_ITEMS.map((item) => (
-          <button key={item.ext} className="quick-card" onClick={() => void item.action()}>
-            <FileBadge ext={item.ext} size={30} />
-            <span className="quick-text">
-              <span className="quick-title-row">
-                <span className="quick-title">{item.title}</span>
-                <span className="ai-chip">AI</span>
+      <div className="hp-cards">
+        <div className="quick-cards hp-primary">
+          {primary.map((card) => (
+            <button
+              key={card.key}
+              className={card.start ? 'quick-card hp-primary-card is-start' : 'quick-card hp-primary-card'}
+              data-new={card.key}
+              data-hanpan={card.key === 'templates' ? 'templates' : undefined}
+              onClick={() => void card.action()}
+            >
+              {card.start && <span className="hp-start-badge">{t('hpStartBadge')}</span>}
+              {card.badge}
+              <span className="quick-text">
+                <span className="quick-title-row">
+                  <span className="quick-title">{card.title}</span>
+                  {card.ai && <span className="ai-chip">AI</span>}
+                </span>
+                <span className="quick-sub">{card.sub}</span>
               </span>
-              <span className="quick-sub">{item.sub}</span>
-            </span>
-          </button>
-        ))}
-        <button
-          className="quick-card"
-          onClick={() => void window.aiOffice.browse()}
-          data-tip={OPEN_LOCAL_EXTENSIONS}
-        >
-          <span className="quick-folder">
-            <FolderIcon size={18} />
-          </span>
-          <span className="quick-text">
-            <span className="quick-title-row">
-              <span className="quick-title">{t('openLocal')}</span>
-            </span>
-            <span className="quick-sub">{OPEN_LOCAL_EXTENSIONS}</span>
-          </span>
-        </button>
-        {/* Hanpan: the 글집 templates (official letters, reports, plans) as HWP or Word */}
-        {window.hanpanApi && (
-          <button className="quick-card" data-hanpan="templates" onClick={() => setTemplatesOpen(true)}>
-            <FileBadge ext="hwp" size={30} />
-            <span className="quick-text">
-              <span className="quick-title-row">
-                <span className="quick-title">{t('hpTemplatesCard')}</span>
-              </span>
-              <span className="quick-sub">{t('hpTemplatesCardSub')}</span>
-            </span>
-          </button>
-        )}
-        {window.hanpanApi?.openDesign && (
-          <button className="quick-card" data-hanpan="design" onClick={() => void window.hanpanApi?.openDesign?.()}>
-            <span className="quick-folder hp-design-badge" aria-hidden="true">
-              ✦
-            </span>
-            <span className="quick-text">
-              <span className="quick-title-row">
-                <span className="quick-title">{t('hpDesignCard')}</span>
-              </span>
-              <span className="quick-sub">{t('hpDesignCardSub')}</span>
-            </span>
-          </button>
-        )}
-        {/* decision 0030: PDF tasks without AI, in their own window */}
-        <button className="quick-card" onClick={() => void window.aiOfficePdfToolsHome.open()}>
-          <FileBadge ext="pdf" size={30} />
-          <span className="quick-text">
-            <span className="quick-title-row">
-              <span className="quick-title">{t('pdfToolsCard')}</span>
-            </span>
-            <span className="quick-sub">{t('pdfToolsCardSub')}</span>
-          </span>
-        </button>
+            </button>
+          ))}
+        </div>
+        <div className="section-head hp-more-head">
+          <span className="section-label">{t('hpMoreTools')}</span>
+        </div>
+        <div className="quick-cards hp-secondary">
+          {secondary.map((card) => (
+            <button
+              key={card.key}
+              className="quick-card hp-compact"
+              data-new={card.key}
+              data-hanpan={card.key === 'design' ? 'design' : undefined}
+              data-tip={card.tip}
+              onClick={() => void card.action()}
+            >
+              {card.icon}
+              <span className="quick-title">{card.title}</span>
+              {card.ai && <span className="ai-chip">AI</span>}
+            </button>
+          ))}
+        </div>
         {templatesOpen && <TemplatePicker onClose={() => setTemplatesOpen(false)} />}
       </div>
     )
@@ -3114,12 +3118,16 @@ export function Home({
     return (
       <main className="content">
         <section className="quick-start" aria-label={t('secQuickStart')}>
-          <div className="home-hero">
-            <h1 className="hero-title">
-              {greeting}
-              <span className="hero-ask">{t(greetAskKey)}</span>
-            </h1>
-          </div>
+          {window.hanpanApi?.newMap ? (
+            <StartBoard greeting={greeting.trim()} t={(key) => t(key as Parameters<typeof t>[0])} />
+          ) : (
+            <div className="home-hero">
+              <h1 className="hero-title">
+                {greeting}
+                <span className="hero-ask">{t(greetAskKey)}</span>
+              </h1>
+            </div>
+          )}
           {renderQuickCards()}
         </section>
 

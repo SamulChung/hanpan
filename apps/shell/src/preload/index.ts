@@ -890,6 +890,7 @@ contextBridge.exposeInMainWorld('hanpanApi', {
   templates: () => ipcRenderer.invoke('hanpan:templates'),
   openTemplate: (id: string, target: 'hwp' | 'docx') => ipcRenderer.invoke('hanpan:open-template', id, target),
   openDesign: () => ipcRenderer.invoke('hanpan:open-design'),
+  newMap: (topic: string) => ipcRenderer.invoke('hanpan:new-map', topic),
 })
 // Home's entry point into the agent window (decision 0032); the window has its own preload
 contextBridge.exposeInMainWorld('aiOfficeAgent', {

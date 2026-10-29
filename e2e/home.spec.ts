@@ -6,19 +6,12 @@ test.describe('home screen', () => {
     const launched = await launchShell({ onboardingSeen: true, videoDir: 'home-basics' })
     const { page } = launched
     try {
-      await expect(page.locator('.home-hero')).toBeVisible()
-      // the quick-create cards, the "Open file" browse card and the PDF tools card
-      await expect(page.locator('.quick-card')).toHaveCount(10)
-      await expect(page.locator('.quick-card').first()).toContainText('AI Docs')
-      await expect(page.locator('.quick-card').nth(1)).toContainText('AI Sheets')
-      await expect(page.locator('.quick-card').nth(2)).toContainText('AI Slides')
-      await expect(page.locator('.quick-card').nth(3)).toContainText('AI Markdown')
-      await expect(page.locator('.quick-card').nth(4)).toContainText('AI HTML')
-      await expect(page.locator('.quick-card').nth(5)).toContainText('Mind Map')
-      await expect(page.locator('.quick-card').nth(6)).toContainText('AI HWP')
-      await expect(page.locator('.quick-card').nth(7)).toContainText('AI PDF')
-      await expect(page.locator('.quick-card').nth(8)).toContainText('Open Local File')
-      await expect(page.locator('.quick-card').nth(9)).toContainText('PDF tools')
+      // Hanpan: the start board, then the mind map and the documents it feeds, then the rest
+      await expect(page.locator('[data-hanpan="start-board"]')).toBeVisible()
+      const order = await page.locator('.quick-card').evaluateAll((cards) => cards.map((c) => c.getAttribute('data-new')))
+      expect(order).toEqual(['xmind', 'hwp', 'pptx', 'templates', 'docx', 'xlsx', 'design', 'md', 'html', 'pdf', 'pdf-tools', 'open'])
+      await expect(page.locator('.quick-card[data-new="xmind"]')).toContainText('Mind Map')
+      await expect(page.locator('.quick-card[data-new="docx"]')).toContainText('AI Docs')
       // the agent is not a document to make: it sits in the sidebar, under Ask AI
       const nav = page.locator('.sidebar-nav .nav-label')
       await expect(nav).toHaveText(['Recent', 'Starred', 'Ask AI', 'Agent'])

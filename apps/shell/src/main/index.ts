@@ -8548,6 +8548,9 @@ const hanpan = setupHanpan({
 })
 // Hanpan: the 글집 templates on the Home screen (and, in stage 4, the design board)
 ipcMain.handle('hanpan:templates', () => hanpan.templates())
+ipcMain.handle('hanpan:new-map', (_event, topic: unknown) =>
+  hanpan.newMap(topic).catch((error: unknown) => ({ ok: false as const, error: error instanceof Error ? error.message : String(error) })),
+)
 ipcMain.handle('hanpan:open-template', (_event, id: unknown, target: unknown) =>
   hanpan.openTemplate(id, target).catch((error: unknown) => ({
     ok: false as const,
