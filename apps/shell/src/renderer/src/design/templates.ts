@@ -170,31 +170,6 @@ function grouped(...els: El[]): El[] {
   return els.map((e) => ({ ...e, group }))
 }
 
-/** An icon in a filled circle beside a small label and its value: one group. */
-function infoRow(
-  name: string,
-  label: string,
-  value: string,
-  x: number,
-  y: number,
-  w: number,
-  c: { disc: string; icon: string; label: string; value: string },
-  size = 36,
-): El[] {
-  const d = Math.round(size * 2)
-  const s = Math.round(d * 0.5)
-  return grouped(
-    disc(x, y, d, c.disc),
-    icon(name, x + (d - s) / 2, y + (d - s) / 2, s, c.icon),
-    txt(label, x + d + 28, y - 4, w - d - 28, Math.round(size * 0.72), { color: c.label }),
-    txt(value, x + d + 28, y + Math.round(size * 0.95), w - d - 28, size, {
-      color: c.value,
-      fontWeight: 700,
-      lineHeight: 1.3,
-    }),
-  )
-}
-
 /** An icon and one line of text after it. */
 function iconLine(
   name: string,
@@ -219,37 +194,70 @@ export const DESIGN_TEMPLATES: readonly DesignTemplate[] = [
     name: '공공기관 안내문',
     format: 'a4',
     make: () => {
-      const navy = '#16324F'
-      const colors = { disc: navy, icon: '#FFFFFF', label: '#64748B', value: '#0F172A' }
-      return docOf('a4', '공공기관 안내문', '#FFFFFF', [
-        rect(0, 0, 1240, 540, navy, { fill2: '#2563A8', gradientAngle: 135, locked: true }),
-        disc(820, -260, 640, '#FFFFFF', { opacity: 0.06, locked: true }),
-        disc(1010, 300, 360, '#FFFFFF', { opacity: 0.05, locked: true }),
-        pill('○○구청 알림', 96, 112, 30, '#FFFFFF', navy),
-        txt('2026 하반기\n주민 설명회 안내', 96, 200, 1048, 96, {
+      const ink = '#14213D'
+      const blue = '#2350C8'
+      const grey = '#5B6577'
+      const row = (i: number, label: string, value: string): El[] => {
+        const y = 1112 + i * 96
+        return grouped(
+          rule(96, y, 1048, '#CDD2DA', 2),
+          txt(label, 96, y + 30, 200, 28, { color: blue, fontWeight: 700 }),
+          txt(value, 300, y + 26, 844, 34, { color: ink }),
+        )
+      }
+      return docOf('a4', '공공기관 안내문', '#F5F6F3', [
+        rect(0, 0, 1240, 16, blue, { locked: true }),
+        txt('○○구청 알림', 96, 84, 600, 28, { color: blue, fontWeight: 700 }),
+        txt('제2026-047호', 644, 84, 500, 28, { color: grey, align: 'right' }),
+        rule(96, 142, 1048, ink, 3),
+        txt('주민 설명회\n안내', 96, 196, 1048, 132, {
           fontWeight: 900,
-          color: '#FFFFFF',
-          lineHeight: 1.18,
+          color: ink,
+          lineHeight: 1.1,
+          letterSpacing: -4,
         }),
-        txt('주민 여러분의 의견을 듣고 함께 정합니다', 96, 444, 1048, 34, { color: '#C9D8EA' }),
-        txt(
-          '주민 여러분의 소중한 의견을 듣고자 아래와 같이 설명회를 엽니다.\n관심 있는 분은 누구나 오셔서 함께해 주시기 바랍니다.',
-          96,
-          610,
-          1048,
-          34,
-          { color: '#334155', lineHeight: 1.7 },
+        txt('2026 하반기 ○○동 생활권 계획을 주민 여러분과 함께 정합니다.', 96, 516, 1048, 36, {
+          color: '#3A4558',
+        }),
+        txt('11.20', 80, 590, 860, 470, {
+          fontFamily: F.bebas,
+          color: blue,
+          lineHeight: 0.95,
+          letterSpacing: -6,
+        }),
+        ...grouped(
+          txt('금요일', 940, 700, 204, 52, { fontWeight: 900, color: ink }),
+          txt('오후 2시부터\n4시까지', 940, 784, 204, 34, {
+            color: ink,
+            fontWeight: 700,
+            lineHeight: 1.45,
+          }),
         ),
-        rect(96, 830, 1048, 540, '#F4F7FB', { radius: 28 }),
-        ...infoRow('calendar-days', '일시', '2026. 11. 20.(금) 오후 2시', 146, 884, 950, colors),
-        ...infoRow('map-pin', '장소', '○○구청 3층 대회의실', 146, 1004, 950, colors),
-        ...infoRow('users', '대상', '○○구 주민 누구나', 146, 1124, 950, colors),
-        ...infoRow('phone', '문의', '기획예산과 02-000-0000', 146, 1244, 950, colors),
-        txt('※ 주차 공간이 부족하니 대중교통을 이용해 주세요.', 96, 1410, 1048, 28, {
-          color: '#64748B',
+        ...row(0, '장소', '○○구청 3층 대회의실'),
+        ...row(1, '대상', '○○동 주민 누구나, 신청 없이 오시면 됩니다'),
+        ...row(2, '내용', '생활권 계획안 설명과 질의응답'),
+        ...row(3, '문의', '기획예산과 02-000-0000'),
+        rule(96, 1496, 1048, '#CDD2DA', 2),
+        ...iconLine(
+          'bus',
+          '주차 공간이 부족하니 대중교통을 이용해 주세요.',
+          96,
+          1530,
+          1048,
+          28,
+          grey,
+          {
+            color: grey,
+          },
+        ),
+        rect(0, 1626, 1240, 128, ink, { locked: true }),
+        txt('○○구청장', 96, 1664, 600, 48, {
+          fontFamily: F.serif,
+          fontWeight: 700,
+          color: '#FFFFFF',
+          letterSpacing: 6,
         }),
-        rule(96, 1530, 1048, '#E2E8F0'),
-        mid('○○구청장', 96, 1574, 1048, 50, { fontFamily: F.serif, fontWeight: 700, color: navy }),
+        txt('www.○○gu.go.kr', 644, 1678, 500, 28, { color: '#AFC0E6', align: 'right' }),
       ])
     },
   },
@@ -258,52 +266,89 @@ export const DESIGN_TEMPLATES: readonly DesignTemplate[] = [
     name: '가정통신문',
     format: 'a4',
     make: () => {
-      const green = '#2E7D6B'
-      const card = (x: number, y: number, name: string, label: string, value: string): El[] =>
-        grouped(
-          rect(x, y, 504, 240, '#FFFFFF', { radius: 24, stroke: '#ECE7DD', strokeWidth: 2 }),
-          disc(x + 32, y + 32, 68, '#E7F5EF'),
-          icon(name, x + 49, y + 49, 34, green),
-          txt(label, x + 120, y + 48, 360, 28, { color: '#6B7280', fontWeight: 700 }),
-          txt(value, x + 32, y + 124, 440, 34, {
-            color: '#1F2937',
-            fontWeight: 700,
-            lineHeight: 1.35,
-          }),
+      const forest = '#22594A'
+      const ink = '#1C2A25'
+      const line = '#D5DED9'
+      const row = (i: number, name: string, label: string, value: string): El[] => {
+        const y = 866 + i * 92
+        return grouped(
+          rule(96, y, 1048, line, 2),
+          icon(name, 96, y + 26, 40, forest, { strokeWidth: 1.75 }),
+          txt(label, 160, y + 30, 190, 30, { color: ink, fontWeight: 700 }),
+          txt(value, 360, y + 28, 784, 32, { color: ink }),
         )
-      return docOf('a4', '가정통신문', '#FFFDF7', [
-        disc(-140, -180, 540, '#FDE68A', { opacity: 0.5, locked: true }),
-        disc(980, 70, 220, '#BBF7D0', { opacity: 0.6, locked: true }),
-        icon('school', 96, 110, 60, green, { strokeWidth: 1.75 }),
-        txt('가정통신문 제2026-000호', 172, 124, 800, 28, { color: green, fontWeight: 700 }),
-        txt('현장체험학습 안내', 96, 220, 1048, 100, { fontWeight: 700, color: '#1F2937' }),
-        rect(96, 372, 140, 12, '#F59E0B', { radius: 6 }),
-        txt(
-          '학부모님, 안녕하십니까?\n가정에 건강과 행복이 가득하시기를 바랍니다.\n우리 학교는 아래와 같이 현장체험학습을 실시합니다.',
-          96,
-          430,
-          1048,
-          34,
-          { color: '#374151', lineHeight: 1.75 },
-        ),
-        ...card(96, 740, 'calendar-days', '일시', '11. 13.(금) 09:00 – 15:00'),
-        ...card(640, 740, 'map-pin', '장소', '○○과학관'),
-        ...card(96, 1012, 'list-checks', '준비물', '도시락, 물, 필기도구'),
-        ...card(640, 1012, 'footprints', '복장', '활동하기 편한 옷과 운동화'),
+      }
+      return docOf('a4', '가정통신문', '#FFFFFF', [
+        rect(0, 0, 1240, 20, forest, { locked: true }),
         ...grouped(
-          rect(96, 1296, 1048, 112, '#FEF3C7', { radius: 20 }),
-          icon('info', 130, 1330, 44, '#B45309'),
-          txt('참가 동의서는 11. 6.(금)까지 담임 선생님께 보내 주세요.', 196, 1330, 920, 30, {
-            color: '#92400E',
+          icon('school', 96, 76, 44, forest, { strokeWidth: 1.75 }),
+          txt('○○초등학교 가정통신문', 158, 80, 640, 30, { color: forest, fontWeight: 700 }),
+        ),
+        txt('제2026-000호', 644, 84, 500, 26, { color: '#5F6B66', align: 'right' }),
+        rule(96, 150, 1048, line, 2),
+        txt('현장체험학습\n안내', 96, 214, 720, 116, {
+          fontWeight: 900,
+          color: ink,
+          lineHeight: 1.12,
+          letterSpacing: -3,
+        }),
+        // the day as a tear-off calendar sheet
+        ...grouped(
+          rect(864, 200, 280, 300, '#FFFFFF', { radius: 20, stroke: forest, strokeWidth: 3 }),
+          rect(864, 200, 280, 80, forest, { radius: 20 }),
+          rect(864, 244, 280, 36, forest),
+          disc(916, 184, 26, ink),
+          disc(1066, 184, 26, ink),
+          mid('11월', 864, 220, 280, 34, { color: '#FFFFFF', fontWeight: 700 }),
+          mid('13', 864, 290, 280, 150, { fontFamily: F.bebas, color: forest, lineHeight: 1 }),
+          mid('금요일', 864, 444, 280, 28, { color: '#5F6B66', fontWeight: 700 }),
+        ),
+        txt(
+          '학부모님, 안녕하십니까?\n가을이 깊어 가는 때, 가정에 건강과 행복이 가득하시기를 바랍니다.\n우리 학교는 아래와 같이 현장체험학습을 실시하오니 준비물을 살펴봐 주십시오.',
+          96,
+          556,
+          1048,
+          31,
+          { color: '#33403B', lineHeight: 1.8 },
+        ),
+        txt('알려 드립니다', 96, 790, 600, 32, { color: forest, fontWeight: 700 }),
+        ...row(0, 'clock', '일시', '11. 13.(금) 09:00 – 15:00'),
+        ...row(1, 'map-pin', '장소', '○○과학관 (학교 버스로 이동)'),
+        ...row(2, 'list-checks', '준비물', '도시락, 물, 필기도구'),
+        ...row(3, 'footprints', '복장', '활동하기 편한 옷과 운동화'),
+        rule(96, 1234, 1048, line, 2),
+        ...grouped(
+          rect(96, 1270, 10, 70, '#F2C230'),
+          txt('참가 동의서는 11. 6.(금)까지 담임 선생님께 보내 주세요.', 134, 1284, 1010, 30, {
+            color: ink,
             fontWeight: 700,
           }),
         ),
-        mid('2026. 10. 30.', 96, 1500, 1048, 34, { color: '#6B7280' }),
-        mid('○○초등학교장', 96, 1566, 1048, 54, {
+        txt('2026. 10. 30.', 644, 1376, 500, 28, { color: '#5F6B66', align: 'right' }),
+        txt('○○초등학교장', 644, 1416, 500, 48, {
           fontFamily: F.batang,
           fontWeight: 700,
-          color: '#1F2937',
+          color: ink,
+          align: 'right',
+          letterSpacing: 4,
         }),
+        mid(
+          '- - - - - - - - - - - - - - - - - - - -   자르는 곳   - - - - - - - - - - - - - - - - - - - -',
+          60,
+          1512,
+          1120,
+          20,
+          { color: '#A3ADA8' },
+        ),
+        txt('참가 동의서', 96, 1560, 400, 32, { color: forest, fontWeight: 700 }),
+        txt(
+          '        학년        반   이름                     \n위 학생의 현장체험학습 참가에 동의합니다.     보호자                    (인)',
+          96,
+          1612,
+          1048,
+          28,
+          { color: ink, lineHeight: 1.9 },
+        ),
       ])
     },
   },
@@ -311,199 +356,256 @@ export const DESIGN_TEMPLATES: readonly DesignTemplate[] = [
     id: 'event-poster',
     name: '행사 포스터',
     format: 'a4',
-    make: () =>
-      docOf('a4', '행사 포스터', '#0B1020', [
-        disc(520, -280, 1000, '#FF6B3D', { fill2: '#FFB547', gradientAngle: 160, locked: true }),
-        disc(-300, 1400, 860, '#6D5DFC', { fill2: '#A78BFA', gradientAngle: 45, locked: true }),
-        disc(1000, 1180, 150, 'transparent', { stroke: '#FFFFFF', strokeWidth: 4, opacity: 0.5 }),
-        pill('AI FORUM 2026', 96, 560, 30, '#FFFFFF', '#0B1020', {
+    make: () => {
+      const yellow = '#FFD84D'
+      const soft = '#C3C7FF'
+      const session = (i: number, time: string, what: string): El[] => {
+        const y = 1296 + i * 62
+        return grouped(
+          rule(96, y, 1048, '#FFFFFF', 2, { opacity: 0.35 }),
+          txt(time, 96, y + 14, 140, 30, {
+            fontFamily: F.grotesk,
+            fontWeight: 700,
+            color: yellow,
+          }),
+          txt(what, 260, y + 14, 884, 30, { color: '#FFFFFF' }),
+        )
+      }
+      return docOf('a4', '행사 포스터', '#2B35E8', [
+        txt('AI FORUM 2026', 96, 80, 600, 28, {
           fontFamily: F.grotesk,
-          letterSpacing: 2,
+          fontWeight: 700,
+          color: '#FFFFFF',
+          letterSpacing: 3,
         }),
-        txt('AI와 함께하는\n문서 혁신 포럼', 96, 650, 1060, 128, {
+        txt('주최 ○○기관', 644, 80, 500, 28, { color: '#FFFFFF', align: 'right' }),
+        rule(96, 134, 1048, '#FFFFFF', 2, { opacity: 0.4 }),
+        txt('AI', 64, 150, 1100, 860, {
+          fontFamily: F.archivo,
+          color: yellow,
+          lineHeight: 0.9,
+          letterSpacing: -20,
+        }),
+        txt('와 함께하는\n문서 혁신 포럼', 96, 920, 1048, 112, {
           fontFamily: F.black,
           color: '#FFFFFF',
           lineHeight: 1.12,
         }),
-        txt('일하는 방식을 바꾸는 하루', 96, 964, 1048, 44, { color: '#CBD5E1' }),
-        ...iconLine(
-          'calendar-days',
-          '2026. 12. 3.(목) 14:00 – 17:00',
-          96,
-          1076,
-          900,
-          40,
-          '#FFB547',
-          {
-            color: '#FFFFFF',
-            fontWeight: 700,
-          },
-        ),
-        ...iconLine('map-pin', '○○컨벤션센터 3층 그랜드홀', 96, 1146, 900, 40, '#FFB547', {
+        txt('일하는 방식을 바꾸는 오후, 세 번의 발표와 한 번의 토론', 96, 1196, 1048, 32, {
+          color: soft,
+        }),
+        ...session(0, '14:00', '기조 발표   김○○ 교수'),
+        ...session(1, '14:40', '현장 사례   이○○ 대표'),
+        ...session(2, '15:30', '도구 시연   박○○ 연구원'),
+        ...session(3, '16:20', '함께 토론'),
+        rule(96, 1544, 1048, '#FFFFFF', 2, { opacity: 0.35 }),
+        ...iconLine('calendar-days', '12. 3.(목) 14:00 – 17:00', 96, 1590, 860, 32, yellow, {
           color: '#FFFFFF',
           fontWeight: 700,
         }),
-        rule(96, 1262, 600, '#334155'),
-        txt('발표  김○○ 교수 · 이○○ 대표 · 박○○ 연구원', 96, 1290, 1000, 32, { color: '#94A3B8' }),
-        txt('주최 ○○기관  ·  후원 ○○협회', 96, 1620, 760, 28, { color: '#FFFFFF', opacity: 0.85 }),
-        qrElement({
-          x: 1020,
-          y: 1520,
-          w: 124,
-          h: 124,
-          qrText: 'https://example.com',
-          color: '#0B1020',
-          radius: 12,
+        ...iconLine('map-pin', '○○컨벤션센터 3층 그랜드홀', 96, 1644, 860, 32, yellow, {
+          color: '#FFFFFF',
+          fontWeight: 700,
         }),
-      ]),
+        qrElement({
+          x: 1032,
+          y: 1580,
+          w: 112,
+          h: 112,
+          qrText: 'https://example.com',
+          color: '#1B1F9E',
+          fill: '#FFFFFF',
+          radius: 10,
+        }),
+      ])
+    },
   },
   {
     id: 'card-cover',
     name: '카드뉴스 표지',
     format: 'card',
-    make: () =>
-      docOf(
-        'card',
-        '카드뉴스',
-        ['#1E40AF', '#3B82F6', 145],
-        [
-          rect(72, 72, 936, 936, '#FFFFFF', { radius: 44, shadow: 'soft', locked: true }),
-          txt('05', 560, 560, 400, 360, {
-            fontFamily: F.bebas,
-            color: '#EEF2FF',
-            align: 'right',
-            lineHeight: 1,
-          }),
-          pill('알아두면 좋은', 136, 150, 30, '#DBEAFE', '#1E40AF'),
-          txt('공문서 작성\n5가지 규칙', 136, 240, 808, 112, {
-            fontWeight: 900,
-            color: '#0F172A',
-            lineHeight: 1.15,
-          }),
-          txt('보고서·안내문에 바로 쓰는\n문장 규칙을 정리했습니다', 136, 540, 640, 36, {
-            color: '#475569',
-            lineHeight: 1.5,
-          }),
-          rule(136, 880, 808, '#E2E8F0'),
-          txt('한판 디자인', 136, 906, 400, 28, { color: '#64748B' }),
-          ...grouped(
-            txt('옆으로 넘기기', 600, 906, 290, 28, {
-              color: '#1E40AF',
-              fontWeight: 700,
-              align: 'right',
-            }),
-            icon('arrow-right', 900, 906, 38, '#1E40AF'),
-          ),
-        ],
-      ),
+    make: () => {
+      const ink = '#16181D'
+      const red = '#E8381F'
+      return docOf('card', '카드뉴스', '#FFFFFF', [
+        txt('업무 글쓰기', 72, 72, 600, 28, { color: red, fontWeight: 700 }),
+        txt('1 / 6', 708, 72, 300, 28, {
+          fontFamily: F.grotesk,
+          fontWeight: 700,
+          color: '#8A8F98',
+          align: 'right',
+        }),
+        txt('5', 480, 110, 560, 900, {
+          fontFamily: F.bebas,
+          color: red,
+          align: 'right',
+          lineHeight: 0.92,
+        }),
+        txt('공문서\n작성 규칙', 72, 300, 560, 112, {
+          fontWeight: 900,
+          color: ink,
+          lineHeight: 1.12,
+          letterSpacing: -3,
+        }),
+        txt('헷갈리기 쉬운\n다섯 가지만 골랐습니다', 72, 590, 520, 34, {
+          color: '#4B5160',
+          lineHeight: 1.5,
+        }),
+        rule(72, 960, 936, ink, 2),
+        txt('한판 디자인', 72, 988, 400, 26, { color: '#4B5160' }),
+        ...grouped(
+          txt('넘겨 보기', 640, 988, 314, 26, { color: ink, fontWeight: 700, align: 'right' }),
+          icon('arrow-right', 970, 986, 38, ink),
+        ),
+      ])
+    },
   },
   {
     id: 'thumbnail',
     name: '유튜브 썸네일',
     format: 'thumb',
-    make: () =>
-      docOf('thumb', '썸네일', '#FFD43B', [
-        rect(780, -90, 640, 900, '#111827', { rotation: 8, locked: true }),
-        icon('file-text', 900, 190, 300, '#FFD43B', { strokeWidth: 1.5 }),
-        pill('3분 정리', 64, 64, 34, '#111827', '#FFD43B'),
-        txt('마인드맵으로\n보고서 끝!', 64, 150, 720, 96, {
+    make: () => {
+      const black = '#0D0D0D'
+      const yellow = '#FFD400'
+      // a mind map drawn in a few strokes: the subject at the centre, branches around it
+      const cx = 1030
+      const cy = 360
+      const nodes: [number, number, number][] = [
+        [1190, 150, 46],
+        [1206, 540, 58],
+        [850, 600, 40],
+        [856, 146, 34],
+      ]
+      return docOf('thumb', '썸네일', yellow, [
+        ...grouped(
+          ...nodes.map(([x, y]) =>
+            shapeElement('line', {
+              x: cx,
+              y: cy,
+              w: x - cx,
+              h: y - cy,
+              stroke: black,
+              strokeWidth: 8,
+            }),
+          ),
+          ...nodes.map(([x, y, r]) =>
+            disc(x - r, y - r, r * 2, '#FFFFFF', { stroke: black, strokeWidth: 6 }),
+          ),
+          disc(cx - 104, cy - 104, 208, black),
+          icon('file-text', cx - 48, cy - 48, 96, yellow, { strokeWidth: 1.75 }),
+        ),
+        pill('3분 정리', 64, 58, 32, black, yellow),
+        txt('마인드맵으로', 64, 136, 760, 110, {
           fontFamily: F.black,
-          color: '#111827',
-          lineHeight: 1.12,
+          color: black,
+          lineHeight: 1.1,
         }),
-        txt('한판 사용법', 64, 400, 600, 64, {
+        pill('보고서 끝!', 52, 268, 110, black, yellow, {
           fontFamily: F.black,
-          color: '#FFFFFF',
-          outline: 7,
-          outlineColor: '#111827',
+          fontWeight: 400,
+          radius: 14,
         }),
-        txt('AI가 쓰고, 나는 고르기만', 64, 540, 680, 38, { color: '#111827', fontWeight: 700 }),
-      ]),
+        txt('회의 메모가 보고서가 되기까지', 64, 520, 720, 38, { color: black, fontWeight: 700 }),
+        txt('한판 사용법', 64, 586, 720, 30, { color: black }),
+      ])
+    },
   },
   {
     id: 'sale-banner',
     name: '할인 배너',
     format: 'thumb',
-    make: () =>
-      docOf(
-        'thumb',
-        '할인 배너',
-        ['#FF3B5C', '#FF7A45', 120],
-        [
-          disc(780, 110, 440, '#FFFFFF', { opacity: 0.15, locked: true }),
-          disc(840, 170, 320, '#FFFFFF', { shadow: 'soft' }),
-          icon('shopping-bag', 920, 240, 160, '#E11D48', { strokeWidth: 1.5 }),
-          icon('sparkles', 1172, 64, 64, '#FFFFFF', { strokeWidth: 1.75 }),
-          pill('WINTER SALE', 72, 80, 30, '#FFFFFF', '#E11D48', {
-            fontFamily: F.archivo,
-            fontWeight: 400,
-            letterSpacing: 3,
-          }),
-          txt('최대', 72, 180, 400, 64, { fontFamily: F.black, color: '#FFE4E6' }),
-          txt('50%', 60, 236, 680, 270, { fontFamily: F.archivo, color: '#FFFFFF', lineHeight: 1 }),
-          txt('12. 1.(월) – 12. 7.(일)', 72, 540, 680, 40, { color: '#FFFFFF', fontWeight: 700 }),
-          txt('전 품목 · 3만 원 이상 무료 배송', 72, 604, 680, 30, { color: '#FFE4E6' }),
-          mid('○○스토어', 780, 590, 440, 34, { color: '#FFFFFF', fontWeight: 700 }),
-        ],
-      ),
+    make: () => {
+      const ice = '#9FD8FF'
+      return docOf('thumb', '할인 배너', '#0B1E3F', [
+        icon('snowflake', 940, 150, 300, '#16305A', { strokeWidth: 1, locked: true }),
+        txt('WINTER SALE 2026', 890, 340, 640, 30, {
+          fontFamily: F.archivo,
+          color: ice,
+          letterSpacing: 8,
+          align: 'center',
+          lineHeight: 1.3,
+          rotation: 90,
+        }),
+        txt('최대', 72, 64, 300, 56, { fontFamily: F.black, color: ice }),
+        txt('50', 56, 120, 620, 420, { fontFamily: F.archivo, color: '#FFFFFF', lineHeight: 0.95 }),
+        txt('%', 660, 150, 260, 220, { fontFamily: F.archivo, color: ice, lineHeight: 1 }),
+        txt('OFF', 664, 386, 300, 110, { fontFamily: F.archivo, color: '#FFFFFF', lineHeight: 1 }),
+        rule(72, 560, 760, '#FFFFFF', 2, { opacity: 0.3 }),
+        txt('12. 1.(월) – 12. 7.(일)', 72, 588, 520, 36, { color: '#FFFFFF', fontWeight: 700 }),
+        txt('전 품목, 3만 원 이상 무료 배송', 72, 642, 600, 28, { color: ice }),
+        txt('○○스토어', 560, 592, 272, 32, { color: '#FFFFFF', fontWeight: 900, align: 'right' }),
+      ])
+    },
   },
   {
     id: 'seminar-invite',
     name: '세미나 초대장',
     format: 'a4',
     make: () => {
-      const gold = '#B08D57'
-      const ink = '#1F2A44'
-      const column = (x: number, name: string, label: string, value: string): El[] =>
+      const brass = '#C9A96E'
+      const ivory = '#F3EBDD'
+      const column = (x: number, label: string, value: string): El[] =>
         grouped(
-          icon(name, x + 126, 1040, 48, gold, { strokeWidth: 1.5 }),
-          mid(label, x, 1110, 300, 26, { color: '#8A7350', letterSpacing: 4 }),
-          mid(value, x, 1156, 300, 32, {
+          mid(label, x, 1044, 306, 24, { color: brass, fontWeight: 700, letterSpacing: 6 }),
+          mid(value, x, 1094, 306, 32, {
             fontFamily: F.serif,
             fontWeight: 700,
-            color: ink,
-            lineHeight: 1.4,
+            color: ivory,
+            lineHeight: 1.45,
           }),
         )
-      return docOf('a4', '세미나 초대장', '#F7F3EC', [
-        frame(60, 60, 1120, 1634, gold, 3),
-        frame(82, 82, 1076, 1590, gold, 1, { opacity: 0.6 }),
-        mid('INVITATION', 0, 220, 1240, 34, {
+      const divider = (x: number): El =>
+        shapeElement('line', {
+          x,
+          y: 1040,
+          w: 0,
+          h: 170,
+          stroke: brass,
+          strokeWidth: 1,
+          opacity: 0.5,
+        })
+      return docOf('a4', '세미나 초대장', '#11302A', [
+        frame(60, 60, 1120, 1634, brass, 2),
+        frame(78, 78, 1084, 1598, brass, 1, { opacity: 0.45 }),
+        rect(608, 140, 24, 24, brass, { rotation: 45 }),
+        mid('INVITATION', 0, 206, 1240, 30, {
           fontFamily: F.playfair,
-          letterSpacing: 10,
-          color: gold,
+          letterSpacing: 14,
+          color: brass,
         }),
-        rule(570, 292, 100, gold),
-        mid('디지털 전환\n정책 세미나', 100, 340, 1040, 104, {
+        mid('디지털 전환\n정책 세미나', 100, 300, 1040, 108, {
           fontFamily: F.serif,
           fontWeight: 700,
-          color: ink,
+          color: ivory,
           lineHeight: 1.25,
         }),
-        mid('공공 서비스의 내일을 함께 그립니다', 100, 640, 1040, 38, {
+        rule(560, 614, 120, brass, 2),
+        mid('공공 서비스의 내일을 함께 그립니다', 100, 656, 1040, 38, {
           fontFamily: F.serif,
-          color: '#4B5563',
+          color: '#D9CFBD',
         }),
         mid(
           '귀하를 아래 세미나에 정중히 초대합니다.\n바쁘시더라도 참석하시어 자리를 빛내 주시기 바랍니다.',
           100,
-          780,
+          790,
           1040,
-          32,
-          { fontFamily: F.batang, color: '#374151', lineHeight: 1.85 },
+          30,
+          { fontFamily: F.batang, color: '#CFC6B4', lineHeight: 1.9 },
         ),
-        ...column(120, 'calendar-days', '일시', '2026. 11. 27.(목)\n오후 2시'),
-        shapeElement('line', { x: 445, y: 1040, w: 0, h: 210, stroke: '#D8C7A6', strokeWidth: 2 }),
-        ...column(470, 'map-pin', '장소', '○○호텔\n그랜드볼룸'),
-        shapeElement('line', { x: 795, y: 1040, w: 0, h: 210, stroke: '#D8C7A6', strokeWidth: 2 }),
-        ...column(820, 'mail', '회신', '11. 20.(목)까지'),
-        mid('한국○○연구원장', 100, 1470, 1040, 46, {
+        rule(160, 1000, 920, brass, 1, { opacity: 0.6 }),
+        ...column(160, '일시', '2026. 11. 27.(목)\n오후 2시'),
+        divider(467),
+        ...column(467, '장소', '○○호텔\n그랜드볼룸'),
+        divider(773),
+        ...column(773, '회신', '11. 20.(목)까지'),
+        rule(160, 1250, 920, brass, 1, { opacity: 0.6 }),
+        mid('한국○○연구원장', 100, 1400, 1040, 46, {
           fontFamily: F.serif,
           fontWeight: 700,
-          color: ink,
-          letterSpacing: 4,
+          color: ivory,
+          letterSpacing: 6,
         }),
-        mid('문의 02-000-0000 · seminar@example.kr', 100, 1556, 1040, 26, { color: '#8A7350' }),
+        mid('문의 02-000-0000   seminar@example.kr', 100, 1494, 1040, 24, { color: brass }),
       ])
     },
   },
@@ -511,69 +613,74 @@ export const DESIGN_TEMPLATES: readonly DesignTemplate[] = [
     id: 'quote-card',
     name: '인용 카드',
     format: 'card',
-    make: () =>
-      docOf('card', '인용 카드', '#F5EFE6', [
-        disc(740, 740, 460, '#E9D8C4', { locked: true }),
-        icon('quote', 96, 116, 120, '#C2410C', { strokeWidth: 1.5 }),
-        txt('작은 기록이 모여\n큰 변화를 만듭니다.', 96, 300, 888, 76, {
+    make: () => {
+      const ink = '#1A1A1A'
+      return docOf('card', '인용 카드', '#F0C93A', [
+        txt('“', 56, -20, 500, 520, { fontFamily: F.playfair, color: ink, lineHeight: 1 }),
+        txt('작은 기록이 모여\n큰 변화를\n만듭니다.', 96, 400, 888, 92, {
           fontFamily: F.batang,
           fontWeight: 700,
-          color: '#2B2118',
-          lineHeight: 1.45,
+          color: ink,
+          lineHeight: 1.35,
         }),
-        rect(96, 560, 80, 6, '#C2410C', { radius: 3 }),
-        txt('— 오늘의 문장', 96, 600, 600, 34, { fontFamily: F.batang, color: '#7C6A58' }),
-        txt('@hanpan.design', 96, 960, 600, 26, { fontFamily: F.grotesk, color: '#9A8572' }),
-      ]),
+        rule(96, 840, 120, ink, 4),
+        txt('오늘의 문장', 96, 880, 500, 32, { fontFamily: F.batang, fontWeight: 700, color: ink }),
+        txt('@hanpan.design', 584, 960, 400, 26, {
+          fontFamily: F.grotesk,
+          fontWeight: 700,
+          color: ink,
+          align: 'right',
+        }),
+      ])
+    },
   },
   {
     id: 'recruit',
     name: '모집 공고',
     format: 'a4',
     make: () => {
-      const teal = '#0F766E'
+      const coral = '#FF5A4E'
+      const plum = '#2A1536'
       const row = (i: number, label: string, value: string): El[] => {
-        const y = 960 + i * 110
+        const y = 948 + i * 100
         return grouped(
-          rule(96, y - 26, 1048, '#E2E8F0'),
-          txt(label, 96, y, 220, 32, { color: teal, fontWeight: 700 }),
-          txt(value, 320, y, 824, 34, { color: '#1F2937' }),
+          rule(96, y, 1048, '#EADFE3', 2),
+          txt(label, 96, y + 32, 220, 30, { color: coral, fontWeight: 700 }),
+          txt(value, 320, y + 30, 824, 34, { color: plum }),
         )
       }
       return docOf('a4', '모집 공고', '#FFFFFF', [
-        rect(0, 0, 1240, 760, teal, { fill2: '#14B8A6', gradientAngle: 135, locked: true }),
-        disc(960, 70, 220, '#FFFFFF', { opacity: 0.12, locked: true }),
-        disc(1090, 380, 120, '#FFFFFF', { opacity: 0.12, locked: true }),
-        pill('모집', 96, 120, 34, '#FFFFFF', teal),
-        txt('청년 서포터즈\n3기를 모집합니다', 96, 220, 1048, 96, {
+        rect(0, 0, 1240, 880, coral, { locked: true }),
+        txt('○○시 청년센터', 96, 84, 600, 28, { color: plum, fontWeight: 700 }),
+        pill('D-14', 1026, 72, 30, plum, '#FFFFFF', { fontFamily: F.grotesk }),
+        txt('청년 서포터즈\n모집합니다', 96, 176, 1048, 92, {
           fontWeight: 900,
           color: '#FFFFFF',
-          lineHeight: 1.2,
+          lineHeight: 1.18,
+          letterSpacing: -2,
         }),
-        txt('지역의 이야기를 함께 기록할 분을 기다립니다', 96, 470, 900, 36, { color: '#CCFBF1' }),
-        ...grouped(
-          disc(930, 600, 230, '#FDE047', { shadow: 'soft' }),
-          mid('D-14\n마감 임박', 930, 660, 230, 38, {
-            fontWeight: 900,
-            color: '#134E4A',
-            lineHeight: 1.2,
-          }),
-        ),
-        txt('모집 개요', 96, 830, 600, 40, { fontWeight: 900, color: '#0F172A' }),
-        rect(96, 890, 60, 8, '#14B8A6', { radius: 4 }),
+        txt('지역의 이야기를 함께 기록할\n스무 명의 청년을 찾습니다', 96, 420, 560, 34, {
+          color: '#FFFFFF',
+          lineHeight: 1.5,
+        }),
+        txt('3기', 500, 440, 700, 430, { fontFamily: F.black, color: plum, lineHeight: 1 }),
         ...row(0, '모집 기간', '2026. 11. 1. – 11. 30.'),
         ...row(1, '모집 인원', '20명 내외'),
         ...row(2, '활동 내용', '지역 소식 취재, 카드뉴스 제작'),
         ...row(3, '혜택', '활동비 지원, 수료증 발급'),
+        rule(96, 1348, 1048, '#EADFE3', 2),
         ...grouped(
-          rect(96, 1430, 1048, 140, '#0F172A', { radius: 28 }),
-          icon('globe', 150, 1473, 54, '#5EEAD4'),
-          txt('지원하기   apply.example.kr', 232, 1472, 880, 40, {
-            color: '#FFFFFF',
+          rect(96, 1410, 1048, 130, plum, { radius: 16 }),
+          txt('지원하기', 144, 1450, 400, 40, { color: '#FFFFFF', fontWeight: 900 }),
+          txt('apply.example.kr', 560, 1454, 470, 34, {
+            fontFamily: F.grotesk,
             fontWeight: 700,
+            color: '#FFFFFF',
+            align: 'right',
           }),
+          icon('arrow-right', 1050, 1453, 44, coral),
         ),
-        mid('주관 ○○시 청년센터 · 문의 02-000-0000', 96, 1640, 1048, 28, { color: '#64748B' }),
+        mid('주관 ○○시 청년센터   문의 02-000-0000', 96, 1630, 1048, 26, { color: '#6E6474' }),
       ])
     },
   },
@@ -582,115 +689,141 @@ export const DESIGN_TEMPLATES: readonly DesignTemplate[] = [
     name: '이벤트 스토리',
     format: 'story',
     make: () => {
-      const yellow = '#FDE047'
+      const cream = '#FFF1DC'
+      const brown = '#3A1A0B'
+      const persimmon = '#E8551E'
       const step = (i: number, text: string): El[] => {
-        const y = 1120 + i * 170
+        const y = 1010 + i * 200
         return grouped(
-          disc(90, y, 100, yellow),
-          mid(String(i + 1), 90, y + 18, 100, 52, {
+          ...(i > 0 ? [rule(120, y - 24, 840, '#F2C9A8', 2)] : []),
+          txt(String(i + 1), 120, y, 120, 96, {
             fontFamily: F.archivo,
-            color: '#2E1065',
-            lineHeight: 1.2,
-          }),
-          txt(text, 226, y + 22, 770, 44, { color: '#FFFFFF', fontWeight: 700 }),
-        )
-      }
-      return docOf(
-        'story',
-        '이벤트 스토리',
-        ['#2E1065', '#7C3AED', 160],
-        [
-          disc(660, -220, 640, '#A78BFA', { opacity: 0.35, locked: true }),
-          disc(-200, 1500, 520, '#C084FC', { opacity: 0.25, locked: true }),
-          pill('EVENT', 90, 180, 40, yellow, '#2E1065', {
-            fontFamily: F.archivo,
-            fontWeight: 400,
-            letterSpacing: 4,
-          }),
-          txt('가을맞이\n팔로우 이벤트', 90, 300, 900, 130, {
-            fontFamily: F.black,
-            color: '#FFFFFF',
+            color: persimmon,
             lineHeight: 1.1,
           }),
-          txt('참여만 해도 추첨으로 선물을 드려요', 90, 620, 900, 40, { color: '#E9D5FF' }),
-          icon('gift', 640, 700, 340, yellow, { strokeWidth: 1.25 }),
-          ...step(0, '계정 팔로우하기'),
-          ...step(1, '게시물에 친구 태그하기'),
-          ...step(2, '이 이야기 공유하기'),
-          txt('11. 30.(일)까지 · 당첨 발표 12. 3.', 90, 1720, 900, 38, { color: '#E9D5FF' }),
-        ],
-      )
+          txt(text, 260, y + 26, 700, 44, { color: brown, fontWeight: 700 }),
+        )
+      }
+      return docOf('story', '이벤트 스토리', persimmon, [
+        txt('FOLLOW EVENT', 90, 120, 900, 34, {
+          fontFamily: F.grotesk,
+          fontWeight: 700,
+          color: cream,
+          letterSpacing: 6,
+        }),
+        txt('가을맞이\n팔로우\n이벤트', 90, 200, 900, 190, {
+          fontFamily: F.black,
+          color: cream,
+          lineHeight: 1.02,
+        }),
+        icon('leaf', 680, 560, 320, brown, { strokeWidth: 1.25 }),
+        txt('참여만 해도 추첨으로 서른 분께 선물을 드려요', 90, 850, 900, 40, {
+          color: cream,
+          fontWeight: 700,
+        }),
+        rect(60, 960, 960, 620, cream, { radius: 40 }),
+        ...step(0, '계정 팔로우하기'),
+        ...step(1, '게시물에 친구 태그하기'),
+        ...step(2, '이 이야기 공유하기'),
+        txt('11. 30.(일)까지   당첨 발표 12. 3.', 90, 1680, 900, 38, {
+          color: cream,
+          fontWeight: 700,
+        }),
+        txt('@hanpan.event', 90, 1748, 900, 30, { fontFamily: F.grotesk, color: cream }),
+      ])
     },
   },
   {
     id: 'slide-cover',
     name: '발표 표지',
     format: 'slide',
-    make: () =>
-      docOf('slide', '발표 표지', '#0F172A', [
-        rect(1180, 0, 740, 1080, '#1E293B', { locked: true }),
-        disc(1280, 150, 540, '#38BDF8', { fill2: '#6366F1', gradientAngle: 135 }),
-        disc(1580, 630, 300, '#F472B6', { opacity: 0.9 }),
-        rect(1250, 700, 220, 220, '#FACC15', { radius: 28, rotation: 18 }),
-        txt('2026 하반기 업무 보고', 140, 300, 980, 36, { color: '#38BDF8', fontWeight: 700 }),
-        txt('데이터로 보는\n우리 기관의 1년', 140, 370, 1000, 104, {
+    make: () => {
+      const ink = '#0E3B43'
+      const teal = '#1F8A8A'
+      const amber = '#F5A524'
+      // a year as twelve monthly bars, the last one picked out
+      const heights = [210, 260, 240, 300, 330, 310, 380, 420, 400, 470, 520, 600]
+      const bars = heights.flatMap((h, i) => {
+        const x = 1060 + i * 64
+        return [
+          rect(x, 860 - h, 44, h, i === 11 ? amber : teal, {
+            opacity: i === 11 ? 1 : 0.35 + i * 0.05,
+          }),
+          mid(String(i + 1), x - 10, 884, 64, 22, { fontFamily: F.grotesk, color: '#7A8E92' }),
+        ]
+      })
+      return docOf('slide', '발표 표지', '#FFFFFF', [
+        ...grouped(...bars, rule(1040, 860, 790, ink, 3)),
+        txt('2026 하반기 업무 보고', 140, 250, 820, 34, { color: teal, fontWeight: 700 }),
+        txt('데이터로 보는\n우리 기관의 1년', 140, 316, 860, 112, {
           fontWeight: 900,
-          color: '#FFFFFF',
-          lineHeight: 1.15,
+          color: ink,
+          lineHeight: 1.12,
+          letterSpacing: -3,
         }),
-        rect(140, 650, 120, 8, '#38BDF8', { radius: 4 }),
-        txt('기획예산팀  김○○', 140, 700, 900, 36, { color: '#CBD5E1' }),
-        txt('2026. 12. 15.', 140, 760, 900, 32, { fontFamily: F.grotesk, color: '#64748B' }),
-      ]),
+        rule(140, 620, 120, amber, 8),
+        txt('기획예산팀 김○○', 140, 676, 820, 36, { color: ink, fontWeight: 700 }),
+        txt('2026. 12. 15.', 140, 732, 820, 30, { fontFamily: F.grotesk, color: '#7A8E92' }),
+      ])
+    },
   },
   {
     id: 'certificate',
     name: '상장',
     format: 'a4',
     make: () => {
+      const navy = '#1F2A44'
       const gold = '#B8963E'
-      return docOf('a4', '상장', '#FFFDF8', [
-        frame(50, 50, 1140, 1654, gold, 6),
-        frame(78, 78, 1084, 1598, gold, 2),
-        txt('제 2026-001 호', 120, 120, 500, 26, { color: '#8A7350' }),
-        icon('award', 560, 170, 120, gold, { strokeWidth: 1.5 }),
-        mid('상 장', 0, 320, 1240, 150, {
+      const red = '#C0392B'
+      const corner = (x: number, y: number): El => rect(x, y, 28, 28, gold, { rotation: 45 })
+      return docOf('a4', '상장', '#FCFAF4', [
+        frame(48, 48, 1144, 1658, navy, 10),
+        frame(84, 84, 1072, 1586, gold, 2),
+        ...grouped(corner(70, 70), corner(1142, 70), corner(70, 1656), corner(1142, 1656)),
+        txt('제 2026-001 호', 140, 140, 500, 26, { color: '#6B6250' }),
+        mid('상    장', 0, 250, 1240, 150, {
           fontFamily: F.serif,
           fontWeight: 700,
-          letterSpacing: 40,
-          color: '#1F2A44',
+          color: navy,
           lineHeight: 1.2,
         }),
-        txt('성 명   홍 길 동', 200, 580, 840, 44, {
-          fontFamily: F.batang,
+        mid('독서 우수상', 0, 460, 1240, 44, { fontFamily: F.serif, fontWeight: 700, color: gold }),
+        rule(520, 560, 200, gold, 2),
+        txt('○○초등학교 6학년 2반', 200, 640, 840, 34, { fontFamily: F.batang, color: navy }),
+        txt('홍 길 동', 200, 700, 840, 64, {
+          fontFamily: F.serif,
           fontWeight: 700,
-          color: '#1F2937',
-        }),
-        txt('소 속   ○○초등학교 6학년 2반', 200, 650, 840, 36, {
-          fontFamily: F.batang,
-          color: '#1F2937',
+          color: navy,
+          letterSpacing: 6,
         }),
         mid(
           '위 학생은 평소 성실한 태도로 학교생활에 임하며\n바른 독서 습관을 길러 다른 학생의 모범이 되었기에\n이 상장을 주어 칭찬합니다.',
           150,
-          820,
+          890,
           940,
-          42,
-          { fontFamily: F.batang, color: '#1F2937', lineHeight: 1.9 },
+          40,
+          { fontFamily: F.batang, color: navy, lineHeight: 1.95 },
         ),
-        mid('2026년 12월 20일', 100, 1250, 1040, 40, { fontFamily: F.batang, color: '#1F2937' }),
-        mid('○○초등학교장', 100, 1390, 1040, 60, {
+        mid('2026년 12월 20일', 100, 1270, 1040, 38, { fontFamily: F.batang, color: navy }),
+        mid('○○초등학교장', 100, 1400, 1040, 60, {
           fontFamily: F.serif,
           fontWeight: 700,
-          color: '#1F2A44',
-          letterSpacing: 8,
+          color: navy,
+          letterSpacing: 10,
         }),
+        // the school seal: a red square stamp over the end of the name
         ...grouped(
-          disc(860, 1360, 140, 'transparent', { stroke: '#C0392B', strokeWidth: 6, opacity: 0.85 }),
-          mid('직인', 860, 1405, 140, 36, {
+          rect(862, 1370, 128, 128, 'transparent', {
+            stroke: red,
+            strokeWidth: 6,
+            radius: 6,
+            opacity: 0.85,
+          }),
+          mid('○○초등\n학교장인', 862, 1392, 128, 28, {
             fontFamily: F.serif,
             fontWeight: 700,
-            color: '#C0392B',
+            color: red,
+            lineHeight: 1.25,
             opacity: 0.85,
           }),
         ),
@@ -702,27 +835,40 @@ export const DESIGN_TEMPLATES: readonly DesignTemplate[] = [
     name: '카드뉴스 본문',
     format: 'card',
     make: () => {
-      const blue = '#2563EB'
-      const point = (i: number, text: string): El[] =>
-        iconLine('circle-check', text, 80, 560 + i * 100, 920, 38, blue, { color: '#334155' })
+      const ink = '#16181D'
+      const red = '#E8381F'
+      const point = (i: number, lead: string, text: string): El[] => {
+        const y = 560 + i * 120
+        return grouped(
+          rule(72, y, 936, '#D9DBE0', 2),
+          txt(lead, 72, y + 34, 220, 32, { color: red, fontWeight: 700 }),
+          txt(text, 300, y + 32, 708, 34, { color: ink }),
+        )
+      }
       return docOf('card', '카드뉴스 본문', '#FFFFFF', [
-        txt('01', 80, 40, 400, 200, { fontFamily: F.bebas, color: blue, lineHeight: 1 }),
-        txt('보고서는\n결론부터 씁니다', 80, 250, 920, 76, {
-          fontWeight: 900,
-          color: '#0F172A',
-          lineHeight: 1.2,
-        }),
-        rect(80, 470, 72, 10, blue, { radius: 5 }),
-        ...point(0, '첫 문단에 결론과 요청을 씁니다'),
-        ...point(1, '근거는 숫자로 세 가지만'),
-        ...point(2, '끝에 다음 할 일을 적습니다'),
-        rect(0, 940, 1080, 140, '#EFF6FF', { locked: true }),
-        txt('한판 · 업무 글쓰기', 80, 990, 600, 28, { color: blue, fontWeight: 700 }),
-        txt('1 / 5', 800, 990, 200, 28, {
+        txt('업무 글쓰기', 72, 72, 600, 28, { color: red, fontWeight: 700 }),
+        txt('2 / 6', 708, 72, 300, 28, {
           fontFamily: F.grotesk,
-          color: '#64748B',
+          fontWeight: 700,
+          color: '#8A8F98',
           align: 'right',
         }),
+        txt('01', 64, 130, 400, 220, { fontFamily: F.bebas, color: red, lineHeight: 0.95 }),
+        txt('보고서는\n결론부터 씁니다', 72, 350, 936, 76, {
+          fontWeight: 900,
+          color: ink,
+          lineHeight: 1.18,
+          letterSpacing: -2,
+        }),
+        ...point(0, '첫 문단', '결론과 요청을 먼저 씁니다'),
+        ...point(1, '근거', '숫자로, 세 가지만 듭니다'),
+        ...point(2, '끝 문단', '다음에 할 일과 기한을 적습니다'),
+        rule(72, 960, 936, ink, 2),
+        txt('한판 디자인', 72, 988, 400, 26, { color: '#4B5160' }),
+        ...grouped(
+          txt('넘겨 보기', 640, 988, 314, 26, { color: ink, fontWeight: 700, align: 'right' }),
+          icon('arrow-right', 970, 986, 38, ink),
+        ),
       ])
     },
   },
@@ -731,30 +877,52 @@ export const DESIGN_TEMPLATES: readonly DesignTemplate[] = [
     name: '개업 안내',
     format: 'a4',
     make: () => {
-      const brown = '#7C2D12'
+      const teal = '#0F4C5C'
+      const peach = '#FFE8D6'
+      const orange = '#F28C38'
       const perk = (x: number, name: string, text: string): El[] =>
         grouped(
-          rect(x, 1230, 300, 260, '#FFFFFF', { radius: 28, shadow: 'soft' }),
-          icon(name, x + 116, 1270, 68, '#EA580C', { strokeWidth: 1.75 }),
-          mid(text, x, 1370, 300, 32, { fontWeight: 700, color: brown, lineHeight: 1.35 }),
+          icon(name, x + 132, 1236, 64, orange, { strokeWidth: 1.75 }),
+          mid(text, x, 1326, 328, 32, { fontWeight: 700, color: teal, lineHeight: 1.4 }),
         )
-      return docOf('a4', '개업 안내', '#FFF7ED', [
-        rect(170, 130, 900, 1000, '#EA580C', { radius: 450, fill2: '#F59E0B', gradientAngle: 180 }),
-        icon('coffee', 520, 250, 200, '#FFF7ED', { strokeWidth: 1.5 }),
-        mid('GRAND OPEN', 170, 500, 900, 150, {
+      const divider = (x: number): El =>
+        shapeElement('line', {
+          x,
+          y: 1236,
+          w: 0,
+          h: 180,
+          stroke: teal,
+          strokeWidth: 2,
+          opacity: 0.25,
+        })
+      return docOf('a4', '개업 안내', peach, [
+        // a shop door: a tall arch
+        ...grouped(rect(270, 110, 700, 900, teal, { radius: 350 }), rect(270, 460, 700, 550, teal)),
+        icon('coffee', 560, 220, 120, peach, { strokeWidth: 1.5 }),
+        mid('GRAND\nOPEN', 270, 380, 700, 230, {
           fontFamily: F.bebas,
-          letterSpacing: 6,
-          color: '#FFFFFF',
-          lineHeight: 1.1,
+          color: peach,
+          lineHeight: 0.92,
+          letterSpacing: 4,
         }),
-        mid('카페 ○○ 문을 엽니다', 170, 700, 900, 64, { fontFamily: F.black, color: '#FFFFFF' }),
-        mid('12. 5.(금) 오전 10시', 170, 820, 900, 44, { fontWeight: 700, color: '#FFF7ED' }),
+        rule(520, 844, 200, orange, 4),
+        mid('12. 5.(금) 오전 10시', 270, 880, 700, 40, { color: '#FFFFFF', fontWeight: 700 }),
+        mid('카페 ○○이 문을 엽니다', 96, 1072, 1048, 64, {
+          fontWeight: 900,
+          color: teal,
+          letterSpacing: -2,
+        }),
         ...perk(96, 'coffee', '첫 주 음료\n1+1'),
-        ...perk(470, 'ticket', '스탬프\n2배 적립'),
-        ...perk(844, 'gift', '선착순\n머그컵 증정'),
-        ...iconLine('map-pin', '○○시 ○○로 123 (○○역 2번 출구)', 300, 1580, 760, 32, '#EA580C', {
-          color: brown,
+        divider(456),
+        ...perk(456, 'ticket', '스탬프\n2배 적립'),
+        divider(784),
+        ...perk(816, 'gift', '선착순 100명\n머그컵 증정'),
+        rule(96, 1500, 1048, teal, 2, { opacity: 0.25 }),
+        ...iconLine('map-pin', '○○시 ○○로 123, ○○역 2번 출구에서 3분', 96, 1548, 1048, 30, orange, {
+          color: teal,
+          fontWeight: 700,
         }),
+        ...iconLine('clock', '매일 09:00 – 22:00', 96, 1606, 1048, 30, orange, { color: teal }),
       ])
     },
   },
@@ -763,35 +931,57 @@ export const DESIGN_TEMPLATES: readonly DesignTemplate[] = [
     name: '메뉴판',
     format: 'a4',
     make: () => {
-      const cream = '#F5E6C8'
-      const gold = '#B08D57'
-      const item = (y: number, name: string, price: string): El[] =>
+      const cream = '#F2E3C6'
+      const gold = '#B9975B'
+      const item = (y: number, name: string, desc: string, price: string): El[] =>
         grouped(
-          txt(name, 140, y, 640, 40, { fontWeight: 700, color: '#F5F5F4' }),
-          txt(price, 900, y, 200, 40, { fontFamily: F.grotesk, color: cream, align: 'right' }),
-          rule(140, y + 72, 960, '#3F3A36'),
+          txt(name, 140, y, 700, 38, { fontWeight: 700, color: '#F7F3EE' }),
+          txt(desc, 140, y + 54, 700, 24, { color: '#A8A29E' }),
+          txt(price, 880, y - 4, 220, 44, {
+            fontFamily: F.playfair,
+            fontWeight: 700,
+            color: cream,
+            align: 'right',
+          }),
         )
-      return docOf('a4', '메뉴판', '#1C1917', [
-        mid('MENU', 0, 110, 1240, 170, {
+      const section = (y: number, title: string): El[] =>
+        grouped(
+          txt(title, 140, y, 400, 30, {
+            fontFamily: F.grotesk,
+            fontWeight: 700,
+            letterSpacing: 6,
+            color: gold,
+          }),
+          rule(400, y + 20, 700, gold, 1, { opacity: 0.6 }),
+        )
+      return docOf('a4', '메뉴판', '#1E1A17', [
+        mid('카페 ○○', 0, 120, 1240, 32, {
+          fontFamily: F.batang,
+          color: '#D6C4A8',
+          letterSpacing: 4,
+        }),
+        mid('Menu', 0, 170, 1240, 200, {
           fontFamily: F.playfair,
           fontWeight: 700,
-          letterSpacing: 14,
+          italic: true,
           color: cream,
           lineHeight: 1.1,
         }),
-        mid('카페 ○○', 0, 320, 1240, 36, { fontFamily: F.batang, color: '#D6C4A8' }),
-        rule(470, 400, 300, gold),
-        txt('COFFEE', 140, 470, 600, 34, { fontFamily: F.grotesk, letterSpacing: 6, color: gold }),
-        ...item(550, '아메리카노', '4.0'),
-        ...item(640, '카페 라테', '4.5'),
-        ...item(730, '바닐라 라테', '5.0'),
-        ...item(820, '콜드브루', '5.0'),
-        txt('DESSERT', 140, 960, 600, 34, { fontFamily: F.grotesk, letterSpacing: 6, color: gold }),
-        ...item(1040, '치즈케이크', '6.0'),
-        ...item(1130, '크로플', '5.5'),
-        ...item(1220, '마들렌', '3.0'),
-        ...iconLine('clock', '매일 09:00 – 21:00', 140, 1560, 520, 32, gold, { color: '#D6C4A8' }),
-        ...iconLine('phone', '02-000-0000', 720, 1560, 400, 32, gold, { color: '#D6C4A8' }),
+        ...section(480, 'COFFEE'),
+        ...item(560, '아메리카노', '산미가 적은 블렌드, 따뜻하게 또는 차갑게', '4.0'),
+        ...item(680, '카페 라테', '우유를 곱게 데워 부드럽게', '4.5'),
+        ...item(800, '바닐라 라테', '직접 끓인 바닐라 시럽', '5.0'),
+        ...grouped(
+          ...item(920, '콜드브루', '열두 시간 내린 이 집의 대표 메뉴', '5.0'),
+          pill('대표', 352, 918, 22, gold, '#1E1A17'),
+        ),
+        ...section(1080, 'DESSERT'),
+        ...item(1160, '치즈케이크', '매일 아침 굽는 바스크 치즈케이크', '6.0'),
+        ...item(1280, '크로플', '버터 크루아상 반죽을 와플 틀에', '5.5'),
+        ...item(1400, '마들렌', '레몬 마들렌, 두 개', '3.0'),
+        rule(140, 1560, 960, '#3F3A36', 2),
+        ...iconLine('clock', '매일 09:00 – 21:00', 140, 1604, 520, 30, gold, { color: '#D6C4A8' }),
+        ...iconLine('phone', '02-000-0000', 760, 1604, 340, 30, gold, { color: '#D6C4A8' }),
       ])
     },
   },
@@ -800,26 +990,35 @@ export const DESIGN_TEMPLATES: readonly DesignTemplate[] = [
     name: '봉사자 모집',
     format: 'card',
     make: () => {
-      const green = '#047857'
-      const line = (i: number, name: string, text: string): El[] =>
-        iconLine(name, text, 80, 590 + i * 82, 920, 36, green, { color: '#065F46' })
-      return docOf('card', '봉사자 모집', '#ECFDF5', [
-        disc(640, -170, 620, '#A7F3D0', { locked: true }),
-        icon('hand-heart', 760, 80, 210, green, { strokeWidth: 1.5 }),
-        pill('함께해요', 80, 100, 30, green, '#FFFFFF'),
-        txt('주말 환경 정화\n봉사자를 찾습니다', 80, 330, 920, 78, {
-          fontWeight: 900,
-          color: '#064E3B',
-          lineHeight: 1.2,
-        }),
-        ...line(0, 'calendar-days', '매월 둘째 토요일 오전 10시'),
-        ...line(1, 'map-pin', '○○천 산책로 입구'),
-        ...line(2, 'users', '누구나 · 장갑과 집게를 드립니다'),
+      const sky = '#CFE8FF'
+      const ink = '#0B3B5C'
+      const orange = '#FF8A3D'
+      const row = (i: number, name: string, text: string): El[] =>
+        iconLine(name, text, 72, 600 + i * 76, 760, 34, ink, { color: ink })
+      return docOf('card', '봉사자 모집', sky, [
         ...grouped(
-          rect(80, 880, 920, 110, green, { radius: 55 }),
-          mid('신청  volunteer.example.kr', 80, 910, 920, 36, {
-            color: '#FFFFFF',
+          icon('trees', 700, 560, 340, '#9CC9EE', { strokeWidth: 1.25 }),
+          icon('sprout', 880, 830, 140, '#9CC9EE', { strokeWidth: 1.5 }),
+        ),
+        txt('함께해요', 72, 72, 400, 30, { color: ink, fontWeight: 700 }),
+        txt('이웃과 함께하는 걷기 정화', 520, 72, 488, 26, { color: ink, align: 'right' }),
+        rule(72, 128, 936, ink, 3),
+        txt('주말 환경 정화\n봉사자를\n찾습니다', 72, 180, 936, 104, {
+          fontWeight: 900,
+          color: ink,
+          lineHeight: 1.12,
+          letterSpacing: -3,
+        }),
+        ...row(0, 'calendar-days', '매월 둘째 토요일 오전 10시'),
+        ...row(1, 'map-pin', '○○천 산책로 입구'),
+        ...row(2, 'users', '누구나, 장갑과 집게를 드립니다'),
+        ...grouped(
+          rect(72, 880, 640, 120, orange, { radius: 60 }),
+          txt('신청하기', 124, 918, 200, 38, { color: '#FFFFFF', fontWeight: 900 }),
+          txt('volunteer.example.kr', 330, 924, 340, 28, {
+            fontFamily: F.grotesk,
             fontWeight: 700,
+            color: '#FFFFFF',
           }),
         ),
       ])
@@ -829,61 +1028,90 @@ export const DESIGN_TEMPLATES: readonly DesignTemplate[] = [
     id: 'class-thumb',
     name: '강의 썸네일',
     format: 'thumb',
-    make: () =>
-      docOf(
-        'thumb',
-        '강의 썸네일',
-        ['#0B1220', '#1E3A8A', 120],
-        [
-          rect(860, 110, 350, 500, '#1E293B', { radius: 32, stroke: '#334155', strokeWidth: 2 }),
-          icon('presentation', 935, 180, 200, '#60A5FA', { strokeWidth: 1.5 }),
-          icon('chart-column', 975, 420, 120, '#FACC15', { strokeWidth: 1.75 }),
-          pill('LIVE', 64, 64, 30, '#EF4444', '#FFFFFF', {
-            fontFamily: F.archivo,
-            fontWeight: 400,
-            letterSpacing: 3,
+    make: () => {
+      const ink = '#111827'
+      const green = '#1D7A46'
+      const grid = '#DDE3EA'
+      // a sheet's grid on the right, one cell picked
+      const cells: El[] = []
+      for (let i = 0; i <= 6; i++)
+        cells.push(
+          shapeElement('line', {
+            x: 712 + i * 96,
+            y: 0,
+            w: 0,
+            h: 720,
+            stroke: grid,
+            strokeWidth: 2,
           }),
-          txt('엑셀 자동화\n30분 만에 끝내기', 64, 140, 760, 80, {
-            fontWeight: 900,
-            color: '#FFFFFF',
-            lineHeight: 1.15,
-          }),
-          txt('무료 온라인 강의 · 11. 21.(금) 저녁 8시', 64, 380, 760, 32, { color: '#BFDBFE' }),
-          ...iconLine('mic', '강사 김○○', 64, 560, 600, 34, '#FACC15', {
-            color: '#FFFFFF',
-            fontWeight: 700,
-          }),
-        ],
-      ),
+        )
+      for (let j = 0; j <= 12; j++) cells.push(rule(712, j * 60, 568, grid, 2))
+      const heads = ['A', 'B', 'C', 'D', 'E', 'F'].map((c, i) =>
+        mid(c, 712 + i * 96, 14, 96, 26, {
+          fontFamily: F.grotesk,
+          fontWeight: 700,
+          color: '#8A94A6',
+        }),
+      )
+      return docOf('thumb', '강의 썸네일', '#FFFFFF', [
+        ...grouped(rect(712, 0, 568, 60, '#F1F4F8'), ...cells, ...heads),
+        ...grouped(
+          rect(808, 240, 384, 240, '#E8F5EE', { stroke: green, strokeWidth: 6 }),
+          rect(1180, 468, 24, 24, green),
+          mid('30:00', 808, 278, 384, 150, { fontFamily: F.bebas, color: green, lineHeight: 1.1 }),
+        ),
+        pill('LIVE', 64, 64, 28, '#E5322D', '#FFFFFF', { fontFamily: F.grotesk, letterSpacing: 3 }),
+        txt('무료 온라인 강의', 226, 72, 440, 28, { color: ink, fontWeight: 700 }),
+        txt('엑셀 자동화\n30분 만에\n끝내기', 64, 150, 620, 92, {
+          fontWeight: 900,
+          color: ink,
+          lineHeight: 1.12,
+          letterSpacing: -3,
+        }),
+        ...iconLine('calendar-days', '11. 21.(금) 저녁 8시', 64, 520, 600, 32, green, {
+          color: ink,
+          fontWeight: 700,
+        }),
+        ...iconLine('mic', '강사 김○○', 64, 580, 600, 32, green, { color: ink }),
+      ])
+    },
   },
   {
     id: 'data-slide',
     name: '숫자 강조 발표',
     format: 'slide',
     make: () => {
-      const blue = '#2563EB'
-      const stat = (x: number, name: string, value: string, label: string, on = false): El[] =>
+      const ink = '#15171C'
+      const green = '#0A8F5A'
+      const grey = '#5D6470'
+      const side = (y: number, value: string, label: string): El[] =>
         grouped(
-          rect(x, 520, 520, 400, on ? blue : '#F1F5F9', { radius: 32 }),
-          icon(name, x + 48, 568, 64, on ? '#FFFFFF' : blue),
-          txt(value, x + 48, 660, 440, 120, {
-            fontFamily: F.archivo,
-            color: on ? '#FFFFFF' : '#0F172A',
-            lineHeight: 1.1,
-          }),
-          txt(label, x + 48, 820, 440, 34, { color: on ? '#DBEAFE' : '#475569' }),
+          txt(value, 1260, y, 520, 140, { fontFamily: F.archivo, color: ink, lineHeight: 1 }),
+          txt(label, 1260, y + 160, 520, 32, { color: grey }),
         )
       return docOf('slide', '숫자 강조 발표', '#FFFFFF', [
-        txt('핵심 성과', 140, 130, 600, 36, { color: blue, fontWeight: 700 }),
-        txt('민원 처리 기간이\n절반으로 줄었습니다', 140, 196, 1200, 84, {
+        txt('핵심 성과', 140, 120, 600, 32, { color: green, fontWeight: 700 }),
+        txt('민원 처리 기간이 절반으로 줄었습니다', 140, 176, 1640, 72, {
           fontWeight: 900,
-          color: '#0F172A',
-          lineHeight: 1.2,
+          color: ink,
+          letterSpacing: -2,
         }),
-        ...stat(140, 'clock', '-52%', '평균 처리 기간', true),
-        ...stat(700, 'thumbs-up', '4.8', '만족도 (5점 만점)'),
-        ...stat(1260, 'trending-up', '+38%', '온라인 신청 증가'),
-        txt('자료: 2026 ○○기관 업무 통계', 140, 980, 900, 26, { color: '#94A3B8' }),
+        rule(140, 300, 1640, ink, 3),
+        txt('-52%', 120, 380, 1040, 330, {
+          fontFamily: F.archivo,
+          color: green,
+          lineHeight: 1,
+          letterSpacing: -10,
+        }),
+        txt('평균 민원 처리 기간, 2025년과 견주어', 140, 740, 960, 36, {
+          color: ink,
+          fontWeight: 700,
+        }),
+        shapeElement('line', { x: 1180, y: 380, w: 0, h: 520, stroke: '#D9DCE1', strokeWidth: 2 }),
+        ...side(390, '4.8', '만족도 (5점 만점)'),
+        rule(1260, 640, 520, '#D9DCE1', 2),
+        ...side(690, '+38%', '온라인 신청 증가'),
+        txt('자료: 2026 ○○기관 업무 통계', 140, 980, 900, 24, { color: grey }),
       ])
     },
   },
@@ -891,63 +1119,83 @@ export const DESIGN_TEMPLATES: readonly DesignTemplate[] = [
     id: 'thanks-card',
     name: '감사 카드',
     format: 'card',
-    make: () =>
-      docOf('card', '감사 카드', '#FDF2F8', [
-        disc(140, 140, 800, '#FCE7F3', { locked: true }),
-        icon('heart', 470, 190, 140, '#DB2777', { strokeWidth: 1.75 }),
-        icon('sparkles', 230, 300, 64, '#F472B6', { strokeWidth: 1.5 }),
-        icon('sparkles', 800, 700, 52, '#F472B6', { strokeWidth: 1.5 }),
-        mid('Thank you', 0, 370, 1080, 110, {
+    make: () => {
+      const red = '#C8323A'
+      const ink = '#2A1F1F'
+      return docOf('card', '감사 카드', red, [
+        rect(80, 80, 920, 920, '#FFFBF5', { locked: true }),
+        icon('heart', 504, 170, 72, red, { strokeWidth: 2 }),
+        mid('Thank you', 80, 300, 920, 140, {
           fontFamily: F.playfair,
           fontWeight: 700,
           italic: true,
-          color: '#831843',
-          lineHeight: 1.2,
+          color: red,
+          lineHeight: 1.15,
         }),
-        mid('늘 함께해 주셔서\n고맙습니다', 0, 560, 1080, 56, {
+        rule(500, 520, 80, red, 3),
+        mid('늘 곁에서 힘이 되어 주셔서\n고맙습니다', 80, 580, 920, 48, {
           fontFamily: F.batang,
           fontWeight: 700,
-          color: '#4A044E',
-          lineHeight: 1.5,
+          color: ink,
+          lineHeight: 1.6,
         }),
-        mid('○○ 드림', 0, 820, 1080, 34, { fontFamily: F.batang, color: '#9D174D' }),
-      ]),
+        mid('○○ 드림', 80, 820, 920, 32, { fontFamily: F.batang, color: '#7A5A5A' }),
+      ])
+    },
   },
   {
     id: 'safety-notice',
     name: '안전 수칙',
     format: 'a4',
     make: () => {
-      const ink = '#0F172A'
-      const rule4 = (i: number, name: string, title: string, desc: string): El[] => {
-        const y = 640 + i * 230
+      const ink = '#111111'
+      const yellow = '#FFCC00'
+      const item = (i: number, name: string, title: string, desc: string): El[] => {
+        const y = 640 + i * 200
         return grouped(
-          rect(96, y, 1048, 200, '#F8FAFC', { radius: 24 }),
-          disc(136, y + 44, 112, ink),
-          icon(name, 164, y + 72, 56, '#FACC15'),
-          txt(title, 290, y + 40, 820, 40, { fontWeight: 900, color: ink }),
-          txt(desc, 290, y + 102, 820, 30, { color: '#475569', lineHeight: 1.5 }),
+          rule(96, y, 1048, '#DADADA', 2),
+          rect(96, y + 40, 104, 104, yellow),
+          icon(name, 122, y + 66, 52, ink),
+          txt(title, 240, y + 40, 904, 42, { fontWeight: 900, color: ink }),
+          txt(desc, 240, y + 104, 904, 30, { color: '#4A4A4A' }),
         )
       }
+      // a hazard band: black stripes leaning across the yellow
+      const stripes = Array.from({ length: 16 }, (_, i) =>
+        rect(-120 + i * 100, -40, 44, 120, ink, { rotation: 35 }),
+      )
       return docOf('a4', '안전 수칙', '#FFFFFF', [
-        rect(0, 0, 1240, 420, '#FACC15', { locked: true }),
-        rect(0, 420, 1240, 24, ink, { locked: true }),
-        icon('triangle-alert', 96, 90, 120, ink),
-        txt('겨울철 안전 수칙', 96, 236, 1048, 104, { fontFamily: F.black, color: ink }),
-        txt('눈과 빙판길, 화재에 미리 대비해 주세요.', 96, 520, 1048, 38, {
-          color: '#334155',
+        rect(0, 0, 1240, 470, yellow, { locked: true }),
+        ...grouped(...stripes.map((e) => ({ ...e, locked: true }))),
+        icon('triangle-alert', 96, 150, 96, ink, { strokeWidth: 2.25 }),
+        txt('겨울철\n안전 수칙', 220, 140, 924, 112, {
+          fontFamily: F.black,
+          color: ink,
+          lineHeight: 1.08,
+        }),
+        txt('눈과 빙판길, 화재에 미리 대비해 주세요.', 96, 534, 1048, 36, {
+          color: ink,
           fontWeight: 700,
         }),
-        ...rule4(0, 'snowflake', '빙판길은 천천히', '주머니에서 손을 빼고 보폭을 줄여 걷습니다.'),
-        ...rule4(
+        ...item(0, 'snowflake', '빙판길은 천천히', '주머니에서 손을 빼고 보폭을 줄여 걷습니다.'),
+        ...item(
           1,
           'flame',
           '난방기 곁을 비우지 않기',
           '외출할 때는 전원을 끄고 플러그를 뽑습니다.',
         ),
-        ...rule4(2, 'car', '차량 월동 준비', '타이어와 배터리, 부동액을 미리 점검합니다.'),
-        ...rule4(3, 'phone', '위급할 때는 119', '다친 사람이 있으면 먼저 119에 알립니다.'),
-        mid('○○시청 안전총괄과', 96, 1630, 1048, 36, { fontWeight: 700, color: ink }),
+        ...item(2, 'car', '차량 월동 준비', '타이어와 배터리, 부동액을 미리 점검합니다.'),
+        rule(96, 1240, 1048, '#DADADA', 2),
+        ...grouped(
+          rect(96, 1300, 1048, 220, ink),
+          txt('119', 144, 1324, 400, 180, { fontFamily: F.bebas, color: yellow, lineHeight: 1 }),
+          txt('위급할 때는', 470, 1356, 640, 34, { color: '#FFFFFF' }),
+          txt('다친 사람이 있으면 먼저 119에 알립니다', 470, 1408, 640, 34, {
+            color: '#FFFFFF',
+            fontWeight: 700,
+          }),
+        ),
+        mid('○○시청 안전총괄과', 96, 1620, 1048, 34, { fontWeight: 700, color: ink }),
       ])
     },
   },
