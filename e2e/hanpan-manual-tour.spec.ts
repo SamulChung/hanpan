@@ -101,7 +101,7 @@ test('the manual tour, in Korean', async () => {
     await activate(page, mapTab.id)
     await map
       .locator('.mm-sheet-host:not([hidden]) me-tpc', { hasText: '업무 경감 필요' })
-      .dblclick()
+      .dblclick({ delay: 50 })
     await map.waitForSelector('#input-box')
     await map.keyboard.press('Control+A')
     await map.keyboard.type('교원 업무 경감 필요')
