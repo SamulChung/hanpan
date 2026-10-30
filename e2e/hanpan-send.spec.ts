@@ -23,7 +23,8 @@ interface ShellApisOnWindow {
   aiOffice: { openPath(path: string): Promise<void> }
 }
 
-const OUTLINE = '# 보고\n\n- 디지털 전환 보고\n  - 추진 배경\n    - 업무량 증가\n    - 민원 증가\n  - 추진 계획\n    - 1단계 시범\n'
+const OUTLINE =
+  '# 보고\n\n- 디지털 전환 보고\n  - 추진 배경\n    - 업무량 증가\n    - 민원 증가\n  - 추진 계획\n    - 1단계 시범\n'
 
 const listTabs = (page: Page): Promise<TabSummaryOnWindow[]> =>
   page.evaluate(() => (window as unknown as ShellApisOnWindow).aiOfficeTabs.list())
@@ -48,24 +49,35 @@ test('a map goes to HWP, PowerPoint and Word tabs, and a map change syncs into t
   const launched = await launchShell({ onboardingSeen: true, videoDir: 'hanpan-send' })
   const { app, page } = launched
   try {
-    await page.evaluate((path) => (window as unknown as ShellApisOnWindow).aiOffice.openPath(path), mapPath)
+    await page.evaluate(
+      (path) => (window as unknown as ShellApisOnWindow).aiOffice.openPath(path),
+      mapPath,
+    )
     const map = await waitForPageWithUrl(app, '://mindmap/')
     await expect(map.locator('[data-action="send-to"]')).toBeVisible({ timeout: 30_000 })
 
     await send(map, 'hwp')
-    await expect.poll(async () => (await listTabs(page)).filter((t) => t.kind === 'hwp').map((t) => t.title)).toEqual([
-      expect.stringContaining('디지털 전환 보고'),
-    ])
+    await expect
+      .poll(async () => (await listTabs(page)).filter((t) => t.kind === 'hwp').map((t) => t.title))
+      .toEqual([expect.stringContaining('디지털 전환 보고')])
     const hwp = await waitForPageWithUrl(app, '://hwp/')
     await hwp.waitForTimeout(8000)
     await hwp.screenshot({ path: screenshotPath('hanpan-hwp-tab') })
 
     // back to the map: the other two targets
     const mapTab = (await listTabs(page)).find((t) => t.kind === 'mindmap')!
-    await page.evaluate((id) => (window as unknown as ShellApisOnWindow).aiOfficeTabs.activate?.(id), mapTab.id)
+    await page.evaluate(
+      (id) => (window as unknown as ShellApisOnWindow).aiOfficeTabs.activate?.(id),
+      mapTab.id,
+    )
     await send(map, 'slides')
-    await expect.poll(async () => (await listTabs(page)).some((t) => t.kind === 'slides')).toBe(true)
-    await page.evaluate((id) => (window as unknown as ShellApisOnWindow).aiOfficeTabs.activate?.(id), mapTab.id)
+    await expect
+      .poll(async () => (await listTabs(page)).some((t) => t.kind === 'slides'))
+      .toBe(true)
+    await page.evaluate(
+      (id) => (window as unknown as ShellApisOnWindow).aiOfficeTabs.activate?.(id),
+      mapTab.id,
+    )
     await send(map, 'docx')
     await expect.poll(async () => (await listTabs(page)).some((t) => t.kind === 'docs')).toBe(true)
     const docs = await waitForPageWithUrl(app, '://docs/')
@@ -75,7 +87,10 @@ test('a map goes to HWP, PowerPoint and Word tabs, and a map change syncs into t
     await slides.screenshot({ path: screenshotPath('hanpan-slides-tab') })
 
     // sync: nothing changed yet
-    await page.evaluate((id) => (window as unknown as ShellApisOnWindow).aiOfficeTabs.activate?.(id), mapTab.id)
+    await page.evaluate(
+      (id) => (window as unknown as ShellApisOnWindow).aiOfficeTabs.activate?.(id),
+      mapTab.id,
+    )
     await map.locator('[data-action="send-to"]').click()
     await map.locator('[data-send="sync"]').click()
     const sync = map.locator('[data-dialog="hanpan-sync"]')
@@ -86,7 +101,8 @@ test('a map goes to HWP, PowerPoint and Word tabs, and a map change syncs into t
 
     // rename a topic on the map, then sync it into the report
     const topic = map.locator('.mm-sheet-host:not([hidden]) me-tpc', { hasText: '업무량 증가' })
-    await topic.dblclick()
+    // Mind Elixir requires a positive interval below 300 ms between pointer presses.
+    await topic.dblclick({ delay: 50 })
     await map.waitForSelector('#input-box')
     await map.keyboard.press('Control+A')
     await map.keyboard.type('업무량 급증')
@@ -104,7 +120,10 @@ test('a map goes to HWP, PowerPoint and Word tabs, and a map change syncs into t
 
     // the report tab now reads the new title
     const hwpTab = (await listTabs(page)).find((t) => t.kind === 'hwp')!
-    await page.evaluate((id) => (window as unknown as ShellApisOnWindow).aiOfficeTabs.activate?.(id), hwpTab.id)
+    await page.evaluate(
+      (id) => (window as unknown as ShellApisOnWindow).aiOfficeTabs.activate?.(id),
+      hwpTab.id,
+    )
     await hwp.waitForTimeout(5000)
     await hwp.screenshot({ path: screenshotPath('hanpan-hwp-after-sync') })
   } finally {
