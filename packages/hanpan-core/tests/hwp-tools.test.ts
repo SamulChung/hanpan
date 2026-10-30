@@ -27,11 +27,13 @@ describe('HWP document tools', () => {
     const engine = await loadEngine()
     const doc = writeBlocks(engine, markdownToBlocks(LETTER), GONGMUN_THEME)
     try {
-      expect(checkHwpGongmun(doc).map((f) => f.code)).toEqual(expect.arrayContaining(['no-closing', 'date-format', 'time-format']))
+      expect(checkHwpGongmun(doc).map((f) => f.code)).toEqual(
+        expect.arrayContaining(['no-closing', 'date-format', 'time-format']),
+      )
       expect(tidyGongmun(doc)).toBeGreaterThanOrEqual(2)
       const lines = texts(doc)
       expect(lines).toContain('1. 일시: 2026. 5. 8. 14:30')
-      expect(lines[lines.length - 1]).toMatch(/추정됨\.  끝\.$/)
+      expect(lines[lines.length - 1]).toMatch(/추정됨\.[ ]{2}끝\.$/)
       expect(checkHwpGongmun(doc).map((f) => f.code)).not.toContain('no-closing')
     } finally {
       doc.free()

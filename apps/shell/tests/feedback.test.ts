@@ -1,5 +1,3 @@
-import { readFileSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { LANGS } from '@genoffice/i18n'
 import {
@@ -16,9 +14,6 @@ import {
  * thing the app opens, and the diagnostics carry version, OS and language and
  * nothing about the user's documents.
  */
-
-const src = (path: string) => readFileSync(fileURLToPath(new URL(path, import.meta.url)), 'utf8')
-const index = src('../src/main/index.ts')
 
 describe('feedback strings', () => {
   const keys = Object.keys(FEEDBACK_STRINGS.zh).sort()

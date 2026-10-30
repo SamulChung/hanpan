@@ -7,16 +7,30 @@
  */
 import type { DocTheme } from './doc-theme'
 import { bookmarksOf, expectOk, type HwpEngineDocument } from './hwp-engine'
-import { bodyLayout, itemLayout, keyOfBookmark, linkBookmarkName, paragraphFormatter } from './hwp-writer'
+import {
+  bodyLayout,
+  itemLayout,
+  keyOfBookmark,
+  linkBookmarkName,
+  paragraphFormatter,
+} from './hwp-writer'
 import { leadingMarker, markerFor, stripMarker, type MarkerStyle } from './numbering'
 import type { PanNode, PanOutline } from './outline'
 import type { SyncChange } from './sync'
 
 /** Item depth by marker, per numbering system (chapters are depth 0 in a chapter report). */
 const DEPTH_BY_MARKER: Record<MarkerStyle, (marker: string) => number | null> = {
-  report: (m) => ({ '□': 0, '■': 0, '○': 1, '●': 1, '◦': 1, '―': 2, '-': 2, '–': 2, '·': 3, '•': 3 })[m] ?? null,
+  report: (m) =>
+    ({ '□': 0, '■': 0, '○': 1, '●': 1, '◦': 1, '―': 2, '-': 2, '–': 2, '·': 3, '•': 3 })[m] ?? null,
   'chapter-report': (m) =>
-    /^[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅪⅫ]\.$/.test(m) ? 0 : (({ '□': 1, '■': 1, '○': 2, '●': 2, '―': 3, '-': 3, '·': 4, '•': 4 }) as Record<string, number>)[m] ?? null,
+    /^[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅪⅫ]\.$/.test(m)
+      ? 0
+      : ((
+          { '□': 1, '■': 1, '○': 2, '●': 2, '―': 3, '-': 3, '·': 4, '•': 4 } as Record<
+            string,
+            number
+          >
+        )[m] ?? null),
   gongmun: (m) => {
     if (/^\d+\.$/.test(m)) return 0
     if (/^[가-힣]\.$/.test(m)) return 1
@@ -56,7 +70,7 @@ export interface ReadOptions {
 }
 
 // eslint-disable-next-line no-control-regex
-const CONTROL = /[\u0000-\u001f​]/g
+const CONTROL = /[\u0000-\u001f\u200b]/g
 
 export function paragraphText(doc: HwpEngineDocument, para: number): string {
   return doc.getTextRange(0, para, 0, doc.getParagraphLength(0, para)).replace(CONTROL, '')
@@ -87,7 +101,13 @@ export function readHwpDocument(doc: HwpEngineDocument, options: ReadOptions): R
       const depth = byMarker ?? options.depthOf?.(key) ?? 0
       items.push({ key, para: p, depth, title: stripMarker(raw).trim(), isNew: false })
     } else if (byMarker !== null && marker !== '※' && stripMarker(raw).trim()) {
-      items.push({ key: `new:${++newCount}`, para: p, depth: byMarker, title: stripMarker(raw).trim(), isNew: true })
+      items.push({
+        key: `new:${++newCount}`,
+        para: p,
+        depth: byMarker,
+        title: stripMarker(raw).trim(),
+        isNew: true,
+      })
     }
   }
   // depths as a tree: a child is at most one deeper than the item before it
@@ -99,7 +119,12 @@ export function readHwpDocument(doc: HwpEngineDocument, options: ReadOptions): R
     stack[stack.length - 1]!.node.children.push(node)
     stack.push({ node, depth: Math.min(item.depth, stack[stack.length - 1]!.depth + 1) })
   }
-  return { outline: { title, rootKey: options.rootKey, nodes: root.children }, items, titlePara, paraCount }
+  return {
+    outline: { title, rootKey: options.rootKey, nodes: root.children },
+    items,
+    titlePara,
+    paraCount,
+  }
 }
 
 export interface ApplyOptions extends ReadOptions {
@@ -148,7 +173,16 @@ function removeParagraphs(doc: HwpEngineDocument, start: number, end: number): v
   for (const b of inRange) expectOk(doc.deleteBookmark(0, b.para, b.ctrlIdx), 'remove a bookmark')
   const before = start - 1
   const last = end - 1
-  expectOk(doc.deleteRange(0, before, doc.getParagraphLength(0, before), last, doc.getParagraphLength(0, last)), 'remove paragraphs')
+  expectOk(
+    doc.deleteRange(
+      0,
+      before,
+      doc.getParagraphLength(0, before),
+      last,
+      doc.getParagraphLength(0, last),
+    ),
+    'remove paragraphs',
+  )
 }
 
 /** Inserts a paragraph after `after`, holding `text`; returns its index. */
@@ -172,7 +206,9 @@ function replaceTitle(doc: HwpEngineDocument, para: number, title: string): void
 /** Where a new child of `parent` at `index` goes: the paragraph to insert after. */
 function insertionPoint(read: ReadDocument, parent: string | null, index: number): number {
   const parents = parentsOf(read)
-  const siblings = read.items.map((it, i) => ({ it, i })).filter(({ it }) => parents.get(it.key) === parent)
+  const siblings = read.items
+    .map((it, i) => ({ it, i }))
+    .filter(({ it }) => parents.get(it.key) === parent)
   if (index > 0 && siblings.length) {
     const prev = siblings[Math.min(index, siblings.length) - 1]!
     return subtreeRange(read, prev.i)[1] - 1
@@ -185,7 +221,9 @@ function insertionPoint(read: ReadDocument, parent: string | null, index: number
   const parentIndex = read.items.findIndex((it) => it.key === parent)
   if (parentIndex < 0) return read.paraCount - 1
   // after the parent's own prose, before its first child
-  const firstChild = read.items.findIndex((it, j) => j > parentIndex && parents.get(it.key) === parent)
+  const firstChild = read.items.findIndex(
+    (it, j) => j > parentIndex && parents.get(it.key) === parent,
+  )
   return firstChild >= 0 ? read.items[firstChild]!.para - 1 : subtreeRange(read, parentIndex)[1] - 1
 }
 
@@ -194,11 +232,16 @@ function insertionPoint(read: ReadDocument, parent: string | null, index: number
  * the document's key (a topic added on the map side is new here; the caller
  * passes its id). Each change re-reads the document, so indices never go stale.
  */
-export function applyToHwp(doc: HwpEngineDocument, changes: readonly SyncChange[], options: ApplyOptions): ApplyOutcome {
+export function applyToHwp(
+  doc: HwpEngineDocument,
+  changes: readonly SyncChange[],
+  options: ApplyOptions,
+): ApplyOutcome {
   const format = paragraphFormatter(doc)
   const outcome: ApplyOutcome = { applied: 0, skipped: [] }
   const read = () => readHwpDocument(doc, options)
-  const depthOfParent = (r: ReadDocument, parent: string | null) => (parent === null ? -1 : (r.items.find((it) => it.key === parent)?.depth ?? -1))
+  const depthOfParent = (r: ReadDocument, parent: string | null) =>
+    parent === null ? -1 : (r.items.find((it) => it.key === parent)?.depth ?? -1)
 
   for (const change of changes) {
     const r = read()
@@ -242,7 +285,11 @@ export function applyToHwp(doc: HwpEngineDocument, changes: readonly SyncChange[
         const depth = depthOfParent(r, change.parent) + 1
         // the marker for its depth now; renumbering settles an official letter's numbers after
         const marker = markerFor(options.style, depth, change.index + 1, 2)
-        const at = insertParagraphAfter(doc, insertionPoint(r, change.parent, change.index), `${marker} ${change.title}`)
+        const at = insertParagraphAfter(
+          doc,
+          insertionPoint(r, change.parent, change.index),
+          `${marker} ${change.title}`,
+        )
         format(at, itemLayout(options.theme, depth, marker))
         expectOk(doc.addBookmark(0, at, 0, linkBookmarkName(change.key)), 'add a bookmark')
         outcome.applied++
@@ -322,7 +369,10 @@ export function renumber(doc: HwpEngineDocument, options: ReadOptions & { theme:
       const want = `${marker ? `${marker} ` : ''}${stripMarker(raw)}`
       const full = doc.getTextRange(0, item.para, 0, doc.getParagraphLength(0, item.para))
       const start = full.length - raw.length
-      expectOk(doc.deleteText(0, item.para, start, doc.getParagraphLength(0, item.para) - start), 'renumber')
+      expectOk(
+        doc.deleteText(0, item.para, start, doc.getParagraphLength(0, item.para) - start),
+        'renumber',
+      )
       expectOk(doc.insertText(0, item.para, start, want), 'renumber')
     })
   }
@@ -333,7 +383,11 @@ export function renumber(doc: HwpEngineDocument, options: ReadOptions & { theme:
  * topics for them: `ids` maps the reader's provisional keys (`new:1`) to the
  * new topic ids, so the next sync knows them.
  */
-export function bookmarkNewItems(doc: HwpEngineDocument, ids: ReadonlyMap<string, string>, options: ReadOptions): number {
+export function bookmarkNewItems(
+  doc: HwpEngineDocument,
+  ids: ReadonlyMap<string, string>,
+  options: ReadOptions,
+): number {
   const r = readHwpDocument(doc, options)
   let added = 0
   for (const item of [...r.items].reverse()) {

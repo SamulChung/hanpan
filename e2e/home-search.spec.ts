@@ -104,7 +104,9 @@ test.describe('home file search', () => {
       await expect(box).toHaveValue('')
       await expect(page.locator('.search-results')).toHaveCount(0)
       await expect(page.locator('.recents-heading .section-label')).toHaveText('Recent')
-      await page.locator('body').click()
+      // Blur the box on a non-interactive heading; body's centre can hit a create card.
+      await page.locator('.recents-heading .section-label').click()
+      await expect(box).not.toBeFocused()
       await page.keyboard.press(process.platform === 'darwin' ? 'Meta+f' : 'Control+f')
       await expect(box).toBeFocused()
 

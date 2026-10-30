@@ -78,17 +78,20 @@ function insideFileName(before: string, after: string): boolean {
 export function brandText(text: string, lang: string | null | undefined): string {
   if (!text.includes(UPSTREAM_PRODUCT_NAME)) return text
   const localized = productName(lang)
-  return text.replace(NAME_TOKEN, (match: string, offset: number) => {
-    if (match !== UPSTREAM_PRODUCT_NAME) return UPSTREAM_PRODUCT_NAME
-    const before = text.charAt(offset - 1)
-    const after = text.slice(offset + match.length, offset + match.length + 2)
-    if (insideIdentifier(before, after)) return match
-    if (insideFileName(before, after)) return PRODUCT_NAME
-    return localized + koreanParticleFix(localized, text.slice(offset + match.length))
-  }).replace(PARTICLE_MARK, '')
+  return text
+    .replace(NAME_TOKEN, (match: string, offset: number) => {
+      if (match !== UPSTREAM_PRODUCT_NAME) return UPSTREAM_PRODUCT_NAME
+      const before = text.charAt(offset - 1)
+      const after = text.slice(offset + match.length, offset + match.length + 2)
+      if (insideIdentifier(before, after)) return match
+      if (insideFileName(before, after)) return PRODUCT_NAME
+      return localized + koreanParticleFix(localized, text.slice(offset + match.length))
+    })
+    .replace(PARTICLE_MARK, '')
 }
 
 /** Marks the (one-syllable) particle a fix replaced, so the original particle after it is dropped. */
+// eslint-disable-next-line no-control-regex -- The NUL marker is internal to particle substitution.
 const PARTICLE_MARK = /\u0000[가-힣]/g
 
 /**
@@ -113,6 +116,7 @@ function koreanParticleFix(name: string, rest: string): string {
   if (rest.startsWith('랑')) return swap('이랑')
   if (rest.startsWith('야') && end(1)) return swap('이야')
   if (rest.startsWith('라') && /^라(고|는|면|서)/.test(rest)) return swap('이라')
-  if (!rieul && rest.startsWith('로') && (end(1) || /^로(는|도|의|부터|만|서|써)/.test(rest))) return swap('으로')
+  if (!rieul && rest.startsWith('로') && (end(1) || /^로(는|도|의|부터|만|서|써)/.test(rest)))
+    return swap('으로')
   return ''
 }

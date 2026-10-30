@@ -1,482 +1,1176 @@
 <!doctype html>
 <html lang="ko">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>한판 — 생각은 마인드맵으로, 문서는 한 판에</title>
-  <meta name="description" content="한판은 마인드맵을 한글 보고서·PPT·워드로 보내 같은 창에서 이어 쓰는 무료 데스크톱 오피스입니다. AI는 내 PC에 깔린 AI를 먼저 씁니다. Made by TenAI." />
-  <meta property="og:title" content="한판 — 생각은 마인드맵으로, 문서는 한 판에" />
-  <meta property="og:description" content="마인드맵 하나로 한글 보고서·PPT·워드까지. 내 PC AI 우선. Made by TenAI." />
-  <meta property="og:image" content="images/04-hwp-report.png" />
-  <link rel="icon" href="images/icon.svg" type="image/svg+xml" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --board: #183f33;
-      --board-deep: #123027;
-      --node: #f2c94c;
-      --paper: #ffffff;
-      --chalk: #dfe9e3;
-      --mist: #f1f6f3;
-      --ink: #13201a;
-      --ink-soft: #4a5b53;
-      --line-on-board: rgb(223 233 227 / 45%);
-      --radius: 14px;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      background: var(--paper);
-      color: var(--ink);
-      font: 400 17px/1.7 'IBM Plex Sans KR', system-ui, 'Malgun Gothic', sans-serif;
-      word-break: keep-all;
-      -webkit-font-smoothing: antialiased;
-    }
-    a { color: inherit; }
-    img { max-width: 100%; height: auto; display: block; }
-    :focus-visible { outline: 3px solid var(--node); outline-offset: 3px; border-radius: 6px; }
-    .wrap { width: min(1120px, 100% - 40px); margin: 0 auto; }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>한판 — 생각은 마인드맵으로, 문서는 한 판에</title>
+    <meta
+      name="description"
+      content="한판은 마인드맵을 한글 보고서·PPT·워드로 보내 같은 창에서 이어 쓰는 무료 데스크톱 오피스입니다. AI는 내 PC에 깔린 AI를 먼저 씁니다. Made by TenAI."
+    />
+    <meta property="og:title" content="한판 — 생각은 마인드맵으로, 문서는 한 판에" />
+    <meta
+      property="og:description"
+      content="마인드맵 하나로 한글 보고서·PPT·워드까지. 내 PC AI 우선. Made by TenAI."
+    />
+    <meta property="og:image" content="images/04-hwp-report.png" />
+    <link rel="icon" href="images/icon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=Nanum+Myeongjo:wght@400;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --board: #183f33;
+        --board-deep: #123027;
+        --node: #f2c94c;
+        --paper: #ffffff;
+        --chalk: #dfe9e3;
+        --mist: #f1f6f3;
+        --ink: #13201a;
+        --ink-soft: #4a5b53;
+        --line-on-board: rgb(223 233 227 / 45%);
+        --radius: 14px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font:
+          400 17px/1.7 'IBM Plex Sans KR',
+          system-ui,
+          'Malgun Gothic',
+          sans-serif;
+        word-break: keep-all;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: inherit;
+      }
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+      :focus-visible {
+        outline: 3px solid var(--node);
+        outline-offset: 3px;
+        border-radius: 6px;
+      }
+      .wrap {
+        width: min(1120px, 100% - 40px);
+        margin: 0 auto;
+      }
 
-    /* the maker: TenAI, above everything */
-    .maker { background: var(--paper); border-bottom: 1px solid var(--chalk); font-size: 14px; color: var(--ink-soft); }
-    .maker .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding: 10px 0; }
-    .maker-logo { display: block; flex: none; }
-    .maker-logo img { height: 30px; width: auto; }
-    .maker p { margin: 0; flex: 1 1 360px; line-height: 1.5; }
-    .maker p strong { color: var(--ink); font-weight: 700; }
-    .maker-links { display: flex; gap: 16px; flex: none; }
-    .maker-links a { color: var(--board); font-weight: 500; text-decoration: none; }
-    .maker-links a:hover { text-decoration: underline; }
+      /* the maker: TenAI, above everything */
+      .maker {
+        background: var(--paper);
+        border-bottom: 1px solid var(--chalk);
+        font-size: 14px;
+        color: var(--ink-soft);
+      }
+      .maker .wrap {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 20px;
+        padding: 10px 0;
+      }
+      .maker-logo {
+        display: block;
+        flex: none;
+      }
+      .maker-logo img {
+        height: 30px;
+        width: auto;
+      }
+      .maker p {
+        margin: 0;
+        flex: 1 1 360px;
+        line-height: 1.5;
+      }
+      .maker p strong {
+        color: var(--ink);
+        font-weight: 700;
+      }
+      .maker-links {
+        display: flex;
+        gap: 16px;
+        flex: none;
+      }
+      .maker-links a {
+        color: var(--board);
+        font-weight: 500;
+        text-decoration: none;
+      }
+      .maker-links a:hover {
+        text-decoration: underline;
+      }
 
-    /* header */
-    .top { background: var(--board); }
-    .top .wrap { display: flex; align-items: center; gap: 28px; height: 72px; }
-    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--paper); font-weight: 700; font-size: 21px; }
-    .brand img { width: 32px; height: 32px; border-radius: 8px; }
-    .top nav { display: flex; gap: 22px; margin-left: auto; font-size: 15px; }
-    .top nav a { color: var(--chalk); text-decoration: none; }
-    .top nav a:hover { color: var(--paper); }
+      /* header */
+      .top {
+        background: var(--board);
+      }
+      .top .wrap {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        height: 72px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: var(--paper);
+        font-weight: 700;
+        font-size: 21px;
+      }
+      .brand img {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+      }
+      .top nav {
+        display: flex;
+        gap: 22px;
+        margin-left: auto;
+        font-size: 15px;
+      }
+      .top nav a {
+        color: var(--chalk);
+        text-decoration: none;
+      }
+      .top nav a:hover {
+        color: var(--paper);
+      }
 
-    /* hero: the board */
-    .hero {
-      background:
-        radial-gradient(circle at 1px 1px, rgb(255 255 255 / 7%) 1px, transparent 0) 0 0 / 28px 28px,
-        var(--board);
-      color: var(--paper);
-      padding: 56px 0 96px;
-      overflow: hidden;
-    }
-    .hero .wrap { display: grid; grid-template-columns: 1fr 1.1fr; gap: 56px; align-items: center; }
-    .hero h1 { margin: 0 0 20px; font-size: clamp(36px, 5vw, 58px); line-height: 1.22; font-weight: 700; letter-spacing: -0.02em; }
-    .hero p.lead { margin: 0 0 32px; max-width: 30em; color: var(--chalk); font-size: 19px; }
-    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; }
-    .btn {
-      display: inline-flex; align-items: center; gap: 10px;
-      padding: 15px 26px; border-radius: 999px;
-      background: var(--node); color: var(--ink);
-      font-weight: 700; font-size: 17px; text-decoration: none;
-      box-shadow: 0 10px 30px rgb(255 138 61 / 30%);
-    }
-    .btn:hover { filter: brightness(1.05); }
-    .btn svg { width: 20px; height: 20px; }
-    .meta { color: var(--chalk); font-size: 14px; }
-    .meta a { color: var(--paper); }
+      /* hero: the board */
+      .hero {
+        background:
+          radial-gradient(circle at 1px 1px, rgb(255 255 255 / 7%) 1px, transparent 0) 0 0 / 28px
+            28px,
+          var(--board);
+        color: var(--paper);
+        padding: 56px 0 96px;
+        overflow: hidden;
+      }
+      .hero .wrap {
+        display: grid;
+        grid-template-columns: 1fr 1.1fr;
+        gap: 56px;
+        align-items: center;
+      }
+      .hero h1 {
+        margin: 0 0 20px;
+        font-size: clamp(36px, 5vw, 58px);
+        line-height: 1.22;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .hero p.lead {
+        margin: 0 0 32px;
+        max-width: 30em;
+        color: var(--chalk);
+        font-size: 19px;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px 22px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 26px;
+        border-radius: 999px;
+        background: var(--node);
+        color: var(--ink);
+        font-weight: 700;
+        font-size: 17px;
+        text-decoration: none;
+        box-shadow: 0 10px 30px rgb(255 138 61 / 30%);
+      }
+      .btn:hover {
+        filter: brightness(1.05);
+      }
+      .btn svg {
+        width: 20px;
+        height: 20px;
+      }
+      .meta {
+        color: var(--chalk);
+        font-size: 14px;
+      }
+      .meta a {
+        color: var(--paper);
+      }
 
-    /* the map turning into a report */
-    .stage { position: relative; aspect-ratio: 1.32; }
-    .stage svg { width: 100%; height: 100%; overflow: visible; }
-    .map-line { stroke: var(--line-on-board); stroke-width: 2.5; fill: none; }
-    .topic rect { fill: rgb(255 255 255 / 10%); stroke: var(--line-on-board); stroke-width: 1.5; }
-    .topic text { fill: var(--paper); font: 500 15px 'IBM Plex Sans KR', sans-serif; }
-    .root circle { fill: var(--node); }
-    .root text { fill: var(--ink); font: 700 15px 'IBM Plex Sans KR', sans-serif; }
-    .sheet { fill: var(--paper); filter: drop-shadow(0 22px 40px rgb(0 0 0 / 35%)); }
-    .sheet-text { font-family: 'Nanum Myeongjo', serif; fill: var(--ink); }
-    .sheet-title { font-weight: 800; font-size: 20px; }
-    .sheet-l1 { font-weight: 800; font-size: 15px; }
-    .sheet-l2 { font-size: 14px; }
-    .sheet-date { font-size: 11px; fill: var(--ink-soft); }
-    .flow { stroke: var(--node); stroke-width: 2.5; stroke-dasharray: 6 7; fill: none; }
+      /* the map turning into a report */
+      .stage {
+        position: relative;
+        aspect-ratio: 1.32;
+      }
+      .stage svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+      .map-line {
+        stroke: var(--line-on-board);
+        stroke-width: 2.5;
+        fill: none;
+      }
+      .topic rect {
+        fill: rgb(255 255 255 / 10%);
+        stroke: var(--line-on-board);
+        stroke-width: 1.5;
+      }
+      .topic text {
+        fill: var(--paper);
+        font:
+          500 15px 'IBM Plex Sans KR',
+          sans-serif;
+      }
+      .root circle {
+        fill: var(--node);
+      }
+      .root text {
+        fill: var(--ink);
+        font:
+          700 15px 'IBM Plex Sans KR',
+          sans-serif;
+      }
+      .sheet {
+        fill: var(--paper);
+        filter: drop-shadow(0 22px 40px rgb(0 0 0 / 35%));
+      }
+      .sheet-text {
+        font-family: 'Nanum Myeongjo', serif;
+        fill: var(--ink);
+      }
+      .sheet-title {
+        font-weight: 800;
+        font-size: 20px;
+      }
+      .sheet-l1 {
+        font-weight: 800;
+        font-size: 15px;
+      }
+      .sheet-l2 {
+        font-size: 14px;
+      }
+      .sheet-date {
+        font-size: 11px;
+        fill: var(--ink-soft);
+      }
+      .flow {
+        stroke: var(--node);
+        stroke-width: 2.5;
+        stroke-dasharray: 6 7;
+        fill: none;
+      }
 
-    @media (prefers-reduced-motion: no-preference) {
-      .topic, .root { animation: settle 0.6s ease-out both; }
-      .topic:nth-of-type(2) { animation-delay: 0.1s; } .topic:nth-of-type(3) { animation-delay: 0.2s; }
-      .topic:nth-of-type(4) { animation-delay: 0.3s; } .topic:nth-of-type(5) { animation-delay: 0.4s; }
-      .flow { animation: dash 1.2s 0.9s linear both; stroke-dashoffset: 120; }
-      .report { animation: rise 0.9s 1.3s cubic-bezier(.2,.8,.2,1) both; }
-      .report .row { animation: write 0.35s ease-out both; }
-      .report .row:nth-of-type(1) { animation-delay: 1.9s; } .report .row:nth-of-type(2) { animation-delay: 2.05s; }
-      .report .row:nth-of-type(3) { animation-delay: 2.2s; } .report .row:nth-of-type(4) { animation-delay: 2.35s; }
-      .report .row:nth-of-type(5) { animation-delay: 2.5s; } .report .row:nth-of-type(6) { animation-delay: 2.65s; }
-      .report .row:nth-of-type(7) { animation-delay: 2.8s; }
-    }
-    @keyframes settle { from { opacity: 0; transform: translateY(8px); } }
-    @keyframes dash { to { stroke-dashoffset: 0; } }
-    @keyframes rise { from { opacity: 0; transform: translate(30px, 24px) rotate(2deg); } }
-    @keyframes write { from { opacity: 0; } }
+      @media (prefers-reduced-motion: no-preference) {
+        .topic,
+        .root {
+          animation: settle 0.6s ease-out both;
+        }
+        .topic:nth-of-type(2) {
+          animation-delay: 0.1s;
+        }
+        .topic:nth-of-type(3) {
+          animation-delay: 0.2s;
+        }
+        .topic:nth-of-type(4) {
+          animation-delay: 0.3s;
+        }
+        .topic:nth-of-type(5) {
+          animation-delay: 0.4s;
+        }
+        .flow {
+          animation: dash 1.2s 0.9s linear both;
+          stroke-dashoffset: 120;
+        }
+        .report {
+          animation: rise 0.9s 1.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+        }
+        .report .row {
+          animation: write 0.35s ease-out both;
+        }
+        .report .row:nth-of-type(1) {
+          animation-delay: 1.9s;
+        }
+        .report .row:nth-of-type(2) {
+          animation-delay: 2.05s;
+        }
+        .report .row:nth-of-type(3) {
+          animation-delay: 2.2s;
+        }
+        .report .row:nth-of-type(4) {
+          animation-delay: 2.35s;
+        }
+        .report .row:nth-of-type(5) {
+          animation-delay: 2.5s;
+        }
+        .report .row:nth-of-type(6) {
+          animation-delay: 2.65s;
+        }
+        .report .row:nth-of-type(7) {
+          animation-delay: 2.8s;
+        }
+      }
+      @keyframes settle {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+      }
+      @keyframes dash {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translate(30px, 24px) rotate(2deg);
+        }
+      }
+      @keyframes write {
+        from {
+          opacity: 0;
+        }
+      }
 
-    /* sections */
-    section { padding: 96px 0; }
-    h2 { margin: 0 0 14px; font-size: clamp(28px, 3.4vw, 38px); line-height: 1.3; letter-spacing: -0.015em; }
-    .intro { max-width: 36em; color: var(--ink-soft); margin: 0 0 56px; }
+      /* sections */
+      section {
+        padding: 96px 0;
+      }
+      h2 {
+        margin: 0 0 14px;
+        font-size: clamp(28px, 3.4vw, 38px);
+        line-height: 1.3;
+        letter-spacing: -0.015em;
+      }
+      .intro {
+        max-width: 36em;
+        color: var(--ink-soft);
+        margin: 0 0 56px;
+      }
 
-    .feature { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 48px; align-items: center; margin-bottom: 88px; }
-    .feature:nth-child(even) { grid-template-columns: 1.15fr 0.85fr; }
-    .feature:nth-child(even) .copy { order: 2; }
-    .feature:last-child { margin-bottom: 0; }
-    .feature h3 { margin: 0 0 12px; font-size: 25px; line-height: 1.35; }
-    .feature p { margin: 0 0 12px; color: var(--ink-soft); }
-    .feature ul { margin: 0; padding-left: 1.1em; color: var(--ink-soft); }
-    .feature li { margin: 4px 0; }
-    .shot { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--chalk); background: var(--mist); }
-    .tag { display: inline-block; margin-bottom: 10px; color: var(--board); font-weight: 700; font-size: 15px; }
+      .feature {
+        display: grid;
+        grid-template-columns: 0.85fr 1.15fr;
+        gap: 48px;
+        align-items: center;
+        margin-bottom: 88px;
+      }
+      .feature:nth-child(even) {
+        grid-template-columns: 1.15fr 0.85fr;
+      }
+      .feature:nth-child(even) .copy {
+        order: 2;
+      }
+      .feature:last-child {
+        margin-bottom: 0;
+      }
+      .feature h3 {
+        margin: 0 0 12px;
+        font-size: 25px;
+        line-height: 1.35;
+      }
+      .feature p {
+        margin: 0 0 12px;
+        color: var(--ink-soft);
+      }
+      .feature ul {
+        margin: 0;
+        padding-left: 1.1em;
+        color: var(--ink-soft);
+      }
+      .feature li {
+        margin: 4px 0;
+      }
+      .shot {
+        border-radius: var(--radius);
+        overflow: hidden;
+        border: 1px solid var(--chalk);
+        background: var(--mist);
+      }
+      .tag {
+        display: inline-block;
+        margin-bottom: 10px;
+        color: var(--board);
+        font-weight: 700;
+        font-size: 15px;
+      }
 
-    .band { background: var(--mist); }
-    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; counter-reset: step; padding: 0; margin: 0; list-style: none; }
-    .steps li { position: relative; padding-top: 58px; }
-    .steps li::before {
-      counter-increment: step; content: counter(step);
-      position: absolute; top: 0; left: 0; width: 42px; height: 42px; border-radius: 50%;
-      display: grid; place-items: center;
-      background: var(--board); color: var(--paper); font-weight: 700;
-    }
-    .steps h3 { margin: 0 0 8px; font-size: 20px; }
-    .steps p { margin: 0; color: var(--ink-soft); }
-    .news { display: grid; gap: 0; padding: 0; margin: 0; list-style: none; border-top: 1px solid var(--chalk); }
-    .news li { display: grid; grid-template-columns: 7em 9em 1fr; gap: 16px; align-items: baseline; padding: 20px 0; border-bottom: 1px solid var(--chalk); }
-    .news-ver { font-weight: 800; font-size: 18px; color: var(--board); }
-    .news-date { color: var(--ink-soft); font-size: 15px; }
-    .news p { margin: 0; }
-    .news-all { margin: 24px 0 0; }
-    @media (max-width: 720px) { .news li { grid-template-columns: auto 1fr; } .news p { grid-column: 1 / -1; } }
-    .mac-install { margin-top: 28px; max-width: 46em; }
-    .mac-install h3 { margin: 0 0 8px; font-size: 20px; }
-    .mac-install p { margin: 0 0 10px; color: var(--ink-soft); }
-    .final .mac-final { margin: 22px auto 0; font-size: 15px; }
-    .final .mac-final a { color: var(--paper); }
-    .note { margin-top: 36px; padding: 18px 22px; border-left: 4px solid var(--node); background: var(--paper); color: var(--ink-soft); border-radius: 0 10px 10px 0; }
+      .band {
+        background: var(--mist);
+      }
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 28px;
+        counter-reset: step;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+      }
+      .steps li {
+        position: relative;
+        padding-top: 58px;
+      }
+      .steps li::before {
+        counter-increment: step;
+        content: counter(step);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: var(--board);
+        color: var(--paper);
+        font-weight: 700;
+      }
+      .steps h3 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+      .steps p {
+        margin: 0;
+        color: var(--ink-soft);
+      }
+      .news {
+        display: grid;
+        gap: 0;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        border-top: 1px solid var(--chalk);
+      }
+      .news li {
+        display: grid;
+        grid-template-columns: 7em 9em 1fr;
+        gap: 16px;
+        align-items: baseline;
+        padding: 20px 0;
+        border-bottom: 1px solid var(--chalk);
+      }
+      .news-ver {
+        font-weight: 800;
+        font-size: 18px;
+        color: var(--board);
+      }
+      .news-date {
+        color: var(--ink-soft);
+        font-size: 15px;
+      }
+      .news p {
+        margin: 0;
+      }
+      .news-all {
+        margin: 24px 0 0;
+      }
+      @media (max-width: 720px) {
+        .news li {
+          grid-template-columns: auto 1fr;
+        }
+        .news p {
+          grid-column: 1 / -1;
+        }
+      }
+      .mac-install {
+        margin-top: 28px;
+        max-width: 46em;
+      }
+      .mac-install h3 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+      .mac-install p {
+        margin: 0 0 10px;
+        color: var(--ink-soft);
+      }
+      .final .mac-final {
+        margin: 22px auto 0;
+        font-size: 15px;
+      }
+      .final .mac-final a {
+        color: var(--paper);
+      }
+      .note {
+        margin-top: 36px;
+        padding: 18px 22px;
+        border-left: 4px solid var(--node);
+        background: var(--paper);
+        color: var(--ink-soft);
+        border-radius: 0 10px 10px 0;
+      }
 
-    table { width: 100%; border-collapse: collapse; font-size: 16px; }
-    th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--chalk); }
-    th { color: var(--ink-soft); font-weight: 500; }
-    td code { font-family: inherit; background: var(--mist); padding: 2px 7px; border-radius: 6px; }
-    .ai-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 56px; align-items: start; }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 16px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--chalk);
+      }
+      th {
+        color: var(--ink-soft);
+        font-weight: 500;
+      }
+      td code {
+        font-family: inherit;
+        background: var(--mist);
+        padding: 2px 7px;
+        border-radius: 6px;
+      }
+      .ai-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.1fr;
+        gap: 56px;
+        align-items: start;
+      }
 
-    .final { background: var(--board); color: var(--paper); text-align: center; }
-    .final h2 { color: var(--paper); }
-    .final p { color: var(--chalk); margin: 0 auto 30px; max-width: 34em; }
+      .final {
+        background: var(--board);
+        color: var(--paper);
+        text-align: center;
+      }
+      .final h2 {
+        color: var(--paper);
+      }
+      .final p {
+        color: var(--chalk);
+        margin: 0 auto 30px;
+        max-width: 34em;
+      }
 
-    footer { background: var(--board-deep); color: var(--chalk); padding: 40px 0; font-size: 14px; }
-    footer .wrap { display: flex; flex-wrap: wrap; gap: 14px 32px; align-items: center; justify-content: space-between; }
-    .made { font-size: 16px; color: var(--paper); }
-    .made a { color: var(--node); font-weight: 700; text-decoration: none; }
-    .made a:hover { text-decoration: underline; }
-    .made .mail { color: var(--chalk); font-weight: 500; margin-left: 10px; }
-    footer .links { display: flex; flex-wrap: wrap; gap: 18px; }
-    footer .links a { color: var(--chalk); }
+      footer {
+        background: var(--board-deep);
+        color: var(--chalk);
+        padding: 40px 0;
+        font-size: 14px;
+      }
+      footer .wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px 32px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .made {
+        font-size: 16px;
+        color: var(--paper);
+      }
+      .made a {
+        color: var(--node);
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .made a:hover {
+        text-decoration: underline;
+      }
+      .made .mail {
+        color: var(--chalk);
+        font-weight: 500;
+        margin-left: 10px;
+      }
+      footer .links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+      footer .links a {
+        color: var(--chalk);
+      }
 
-    @media (max-width: 860px) {
-      .top nav { display: none; }
-      .hero { padding-top: 40px; }
-      .maker-logo img { height: 26px; }
-      .hero .wrap, .feature, .feature:nth-child(even), .ai-grid { grid-template-columns: 1fr; }
-      .feature:nth-child(even) .copy { order: 0; }
-      .steps { grid-template-columns: 1fr; }
-      section { padding: 72px 0; }
-    }
-  </style>
-</head>
-<body>
-  <aside class="maker" aria-label="만든 곳">
-    <div class="wrap">
-      <a class="maker-logo" href="https://www.tenai.kr" aria-label="TenAI 홈페이지 (www.tenai.kr)"><img src="images/tenai-logo.png" alt="TenAI — AX Hub Platform" width="1919" height="812" /></a>
-      <p><strong>한판은 텐에이아이(TenAI)가 만들었습니다.</strong> 텐에이아이는 기업과 공공기관의 AI 전환(AX)을 돕는 AX 허브 플랫폼으로, 한국어 LLM과 문서 AI를 만듭니다.</p>
-      <div class="maker-links">
-        <a href="https://www.tenai.kr">www.tenai.kr</a>
-        <a href="mailto:ten@tenai.kr">ten@tenai.kr</a>
-      </div>
-    </div>
-  </aside>
-  <header class="top">
-    <div class="wrap">
-      <a class="brand" href="#"><img src="images/icon.svg" alt="" />한판</a>
-      <nav aria-label="페이지 안내">
-        <a href="#features">기능</a>
-        <a href="#news">업데이트</a>
-        <a href="#install">설치</a>
-        <a href="#local-ai">내 PC AI</a>
-        <a href="https://github.com/SamulChung/hanpan">GitHub</a>
-      </nav>
-    </div>
-  </header>
-
-  <main>
-    <section class="hero" aria-labelledby="hero-title">
+      @media (max-width: 860px) {
+        .top nav {
+          display: none;
+        }
+        .hero {
+          padding-top: 40px;
+        }
+        .maker-logo img {
+          height: 26px;
+        }
+        .hero .wrap,
+        .feature,
+        .feature:nth-child(even),
+        .ai-grid {
+          grid-template-columns: 1fr;
+        }
+        .feature:nth-child(even) .copy {
+          order: 0;
+        }
+        .steps {
+          grid-template-columns: 1fr;
+        }
+        section {
+          padding: 72px 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <aside class="maker" aria-label="만든 곳">
       <div class="wrap">
-        <div>
-          <h1 id="hero-title">생각은 마인드맵으로,<br />문서는 한 판에.</h1>
-          <p class="lead">마인드맵에 정리한 생각을 버튼 하나로 한글 보고서·PPT·워드로 보내 같은 창에서 이어 씁니다. 한쪽을 고치면 다른 쪽도 맞춰집니다. AI는 내 PC에 깔린 AI를 먼저 씁니다.</p>
-          <div class="actions">
-            <a class="btn download-link" href="https://github.com/SamulChung/hanpan/releases/latest">
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3v10M5.5 8.5 10 13l4.5-4.5M4 16.5h12" /></svg>
-              Windows용 내려받기
-            </a>
-            <span class="meta">무료 · Windows 10/11 (64비트) · <span class="version">v0.13.3</span> · <a href="https://github.com/SamulChung/hanpan/releases">모든 버전</a></span>
-            <span class="meta mac">Mac용 베타: <a class="mac-link" data-arch="arm64" href="https://github.com/SamulChung/hanpan/releases/latest">Apple 실리콘(M1 이상)</a> · <a class="mac-link" data-arch="x64" href="https://github.com/SamulChung/hanpan/releases/latest">Intel</a></span>
-          </div>
+        <a class="maker-logo" href="https://www.tenai.kr" aria-label="TenAI 홈페이지 (www.tenai.kr)"
+          ><img src="images/tenai-logo.png" alt="TenAI — AX Hub Platform" width="1919" height="812"
+        /></a>
+        <p>
+          <strong>한판은 텐에이아이(TenAI)가 만들었습니다.</strong> 텐에이아이는 기업과 공공기관의
+          AI 전환(AX)을 돕는 AX 허브 플랫폼으로, 한국어 LLM과 문서 AI를 만듭니다.
+        </p>
+        <div class="maker-links">
+          <a href="https://www.tenai.kr">www.tenai.kr</a>
+          <a href="mailto:ten@tenai.kr">ten@tenai.kr</a>
         </div>
+      </div>
+    </aside>
+    <header class="top">
+      <div class="wrap">
+        <a class="brand" href="#"><img src="images/icon.svg" alt="" />한판</a>
+        <nav aria-label="페이지 안내">
+          <a href="#features">기능</a>
+          <a href="#news">업데이트</a>
+          <a href="#install">설치</a>
+          <a href="#local-ai">내 PC AI</a>
+          <a href="https://github.com/SamulChung/hanpan">GitHub</a>
+        </nav>
+      </div>
+    </header>
 
-        <div class="stage" aria-hidden="true">
-          <svg viewBox="-86 0 646 490">
-            <!-- the map -->
-            <path class="map-line" d="M120 245 C 60 245, 60 120, 30 110" />
-            <path class="map-line" d="M120 245 C 60 245, 60 200, 22 195" />
-            <path class="map-line" d="M120 245 C 60 245, 60 300, 22 300" />
-            <path class="map-line" d="M120 245 C 60 245, 60 385, 30 390" />
-            <g class="root"><circle cx="120" cy="245" r="54" /><text x="120" y="240" text-anchor="middle">AI 연수</text><text x="120" y="260" text-anchor="middle">계획</text></g>
-            <g class="topic"><rect x="-70" y="92" width="104" height="36" rx="18" /><text x="-18" y="115" text-anchor="middle">추진 배경</text></g>
-            <g class="topic"><rect x="-78" y="177" width="104" height="36" rx="18" /><text x="-26" y="200" text-anchor="middle">업무 경감</text></g>
-            <g class="topic"><rect x="-78" y="282" width="104" height="36" rx="18" /><text x="-26" y="305" text-anchor="middle">추진 내용</text></g>
-            <g class="topic"><rect x="-70" y="372" width="104" height="36" rx="18" /><text x="-18" y="395" text-anchor="middle">기대 효과</text></g>
-            <path class="flow" d="M176 245 C 220 245, 222 190, 262 190" />
-            <!-- the report it becomes -->
-            <g class="report">
-              <rect class="sheet" x="262" y="40" width="290" height="420" rx="8" />
-              <g class="sheet-text">
-                <text class="row sheet-title" x="407" y="96" text-anchor="middle">2026년 AI 연수 계획</text>
-                <text class="row sheet-date" x="526" y="124" text-anchor="end">2026. 10. 30.  교육연구부</text>
-                <text class="row sheet-l1" x="290" y="172">□ 추진 배경</text>
-                <text class="row sheet-l2" x="306" y="204">○ 교원 AI 활용 수요 증가</text>
-                <text class="row sheet-l2" x="306" y="234">○ 교원 업무 경감 필요</text>
-                <text class="row sheet-l1" x="290" y="280">□ 추진 내용</text>
-                <text class="row sheet-l2" x="306" y="312">○ 기초 연수 (3월)</text>
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="wrap">
+          <div>
+            <h1 id="hero-title">생각은 마인드맵으로,<br />문서는 한 판에.</h1>
+            <p class="lead">
+              마인드맵에 정리한 생각을 버튼 하나로 한글 보고서·PPT·워드로 보내 같은 창에서 이어
+              씁니다. 한쪽을 고치면 다른 쪽도 맞춰집니다. AI는 내 PC에 깔린 AI를 먼저 씁니다.
+            </p>
+            <div class="actions">
+              <a
+                class="btn download-link"
+                href="https://github.com/SamulChung/hanpan/releases/latest"
+              >
+                <svg
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M10 3v10M5.5 8.5 10 13l4.5-4.5M4 16.5h12" />
+                </svg>
+                Windows용 내려받기
+              </a>
+              <span class="meta"
+                >무료 · Windows 10/11 (64비트) · <span class="version">v0.13.3</span> ·
+                <a href="https://github.com/SamulChung/hanpan/releases">모든 버전</a></span
+              >
+              <span class="meta mac"
+                >Mac용 베타:
+                <a
+                  class="mac-link"
+                  data-arch="arm64"
+                  href="https://github.com/SamulChung/hanpan/releases/latest"
+                  >Apple 실리콘(M1 이상)</a
+                >
+                ·
+                <a
+                  class="mac-link"
+                  data-arch="x64"
+                  href="https://github.com/SamulChung/hanpan/releases/latest"
+                  >Intel</a
+                ></span
+              >
+            </div>
+          </div>
+
+          <div class="stage" aria-hidden="true">
+            <svg viewBox="-86 0 646 490">
+              <!-- the map -->
+              <path class="map-line" d="M120 245 C 60 245, 60 120, 30 110" />
+              <path class="map-line" d="M120 245 C 60 245, 60 200, 22 195" />
+              <path class="map-line" d="M120 245 C 60 245, 60 300, 22 300" />
+              <path class="map-line" d="M120 245 C 60 245, 60 385, 30 390" />
+              <g class="root">
+                <circle cx="120" cy="245" r="54" />
+                <text x="120" y="240" text-anchor="middle">AI 연수</text>
+                <text x="120" y="260" text-anchor="middle">계획</text>
               </g>
-              <path d="M306 340 H 520 M306 364 H 488 M306 388 H 506 M306 412 H 470" stroke="#dce3ec" stroke-width="7" stroke-linecap="round" />
-            </g>
-          </svg>
+              <g class="topic">
+                <rect x="-70" y="92" width="104" height="36" rx="18" />
+                <text x="-18" y="115" text-anchor="middle">추진 배경</text>
+              </g>
+              <g class="topic">
+                <rect x="-78" y="177" width="104" height="36" rx="18" />
+                <text x="-26" y="200" text-anchor="middle">업무 경감</text>
+              </g>
+              <g class="topic">
+                <rect x="-78" y="282" width="104" height="36" rx="18" />
+                <text x="-26" y="305" text-anchor="middle">추진 내용</text>
+              </g>
+              <g class="topic">
+                <rect x="-70" y="372" width="104" height="36" rx="18" />
+                <text x="-18" y="395" text-anchor="middle">기대 효과</text>
+              </g>
+              <path class="flow" d="M176 245 C 220 245, 222 190, 262 190" />
+              <!-- the report it becomes -->
+              <g class="report">
+                <rect class="sheet" x="262" y="40" width="290" height="420" rx="8" />
+                <g class="sheet-text">
+                  <text class="row sheet-title" x="407" y="96" text-anchor="middle">
+                    2026년 AI 연수 계획
+                  </text>
+                  <text class="row sheet-date" x="526" y="124" text-anchor="end">
+                    2026. 10. 30. 교육연구부
+                  </text>
+                  <text class="row sheet-l1" x="290" y="172">□ 추진 배경</text>
+                  <text class="row sheet-l2" x="306" y="204">○ 교원 AI 활용 수요 증가</text>
+                  <text class="row sheet-l2" x="306" y="234">○ 교원 업무 경감 필요</text>
+                  <text class="row sheet-l1" x="290" y="280">□ 추진 내용</text>
+                  <text class="row sheet-l2" x="306" y="312">○ 기초 연수 (3월)</text>
+                </g>
+                <path
+                  d="M306 340 H 520 M306 364 H 488 M306 388 H 506 M306 412 H 470"
+                  stroke="#dce3ec"
+                  stroke-width="7"
+                  stroke-linecap="round"
+                />
+              </g>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" aria-labelledby="features-title">
+        <div class="wrap">
+          <h2 id="features-title">하나의 판에서 생각하고, 쓰고, 꾸밉니다</h2>
+          <p class="intro">
+            마인드맵, 한글, 워드, PPT, 엑셀, PDF가 한 창의 탭으로 열립니다. 프로그램을 오가며 복사해
+            붙이던 일을 버튼 하나로 줄였습니다.
+          </p>
+
+          <article class="feature">
+            <div class="copy">
+              <span class="tag">홈 화면</span>
+              <h3>주제만 적으면 마인드맵부터 시작</h3>
+              <p>
+                홈 맨 위 시작판에 정리할 주제를 적고 <strong>마인드맵 만들기</strong>를 누르면, 그
+                주제를 가운데 둔 새 마인드맵이 바로 열립니다.
+              </p>
+              <ul>
+                <li>카드도 일의 순서대로: 마인드맵 → AI 한글 → AI 파워포인트 → 한판 양식</li>
+                <li>워드, 엑셀, 디자인, PDF 도구는 아래 한 줄에 모아서</li>
+              </ul>
+            </div>
+            <div class="shot">
+              <img
+                src="images/01-home.png"
+                alt="시작판과 마인드맵 중심 카드가 있는 한판 홈 화면"
+                loading="lazy"
+                width="1800"
+                height="1125"
+              />
+            </div>
+          </article>
+
+          <article class="feature">
+            <div class="copy">
+              <span class="tag">마인드맵 → 문서</span>
+              <h3>마인드맵 하나로 한글 보고서, PPT, 워드까지</h3>
+              <p>도구 줄의 보내기를 누르면 같은 창의 새 탭에 문서가 열립니다.</p>
+              <ul>
+                <li>개조식 보고서(□ ○ ―), 장 보고서(Ⅰ.), 공문 번호(1. 가. 1))</li>
+                <li>마인드맵에 적은 말 그대로, 또는 AI가 개조식 문장으로 살 붙이기</li>
+                <li>큰 가지 하나가 슬라이드 한 장, 메모는 발표자 메모로</li>
+              </ul>
+            </div>
+            <div class="shot">
+              <img
+                src="images/03-send-dialog.png"
+                alt="마인드맵에서 한글 보고서로 보내는 창"
+                loading="lazy"
+                width="1800"
+                height="1075"
+              />
+            </div>
+          </article>
+
+          <article class="feature">
+            <div class="copy">
+              <span class="tag">PPT 슬라이드 스타일</span>
+              <h3>발표 자료는 10가지 스타일 중에서 골라</h3>
+              <p>
+                PPT로 보낼 때 스타일을 고르면 표지, 목차, 본문, 마무리 슬라이드까지 그 스타일로
+                꾸며집니다.
+              </p>
+              <ul>
+                <li>
+                  스티브 잡스, 맥킨지, 토스, BCG, TED, 구글 머티리얼, 노션, 에어비앤비, 캔바 모던,
+                  스타트업 피치덱
+                </li>
+                <li>가지에 든 내용에 맞춰 카드, 매트릭스, 타임라인, 큰 숫자로 배치</li>
+                <li>만든 뒤에도 글자·색·도형을 PPT 탭에서 그대로 고칠 수 있음</li>
+              </ul>
+            </div>
+            <div class="shot">
+              <img
+                src="images/09-slide-styles.png"
+                alt="같은 마인드맵을 10가지 슬라이드 스타일로 만든 본문 슬라이드"
+                loading="lazy"
+                width="1792"
+                height="424"
+              />
+            </div>
+          </article>
+
+          <article class="feature">
+            <div class="copy">
+              <span class="tag">마크다운 변환기</span>
+              <h3>마크다운을 한글·워드·PDF로 한 번에</h3>
+              <p>
+                AI가 써 준 글이나 노트의 마크다운을 붙여 넣고 <strong>한 번에 변환</strong>을
+                누르면, 고른 형식이 한 폴더에 함께 만들어집니다.
+              </p>
+              <ul>
+                <li>HWP, HWPX, Word, ODT, PDF, HTML 가운데 필요한 것만 골라서</li>
+                <li>보고서·일반 문서·공문 모양으로, 표는 실제 표로</li>
+                <li>만들기 전에 문서 모양을 미리 보기로 확인</li>
+              </ul>
+            </div>
+            <div class="shot">
+              <img
+                src="images/10-md-convert.png"
+                alt="마크다운을 붙여 넣고 미리 보기를 보며 HWP·워드·PDF로 한 번에 변환하는 창"
+                loading="lazy"
+                width="1475"
+                height="960"
+              />
+            </div>
+          </article>
+
+          <article class="feature">
+            <div class="copy">
+              <span class="tag">양방향 맞추기</span>
+              <h3>마인드맵을 고치면 문서도, 문서를 고치면 마인드맵도</h3>
+              <p>
+                보낸 뒤에도 마인드맵과 한글 문서는 연결되어 있습니다. 바뀐 곳을 미리 보여 주고,
+                양쪽에서 다르게 고친 곳은 직접 고릅니다. 문서에서 쓴 본문은 지켜집니다.
+              </p>
+            </div>
+            <div class="shot">
+              <img
+                src="images/05-sync.png"
+                alt="마인드맵과 연결된 문서에서 바뀐 곳을 보여 주는 맞추기 창"
+                loading="lazy"
+                width="1800"
+                height="1075"
+              />
+            </div>
+          </article>
+
+          <article class="feature">
+            <div class="copy">
+              <span class="tag">공문·보고서 도구</span>
+              <h3>공문 정돈부터 3색 검토까지</h3>
+              <ul>
+                <li>날짜는 2026. 5. 8., 시각은 14:30, 본문 끝에 끝.</li>
+                <li>수신·제목, 항목 번호 차례, 어미 섞임 점검</li>
+                <li>60대·40대·MZ 세대별 말투 바꾸기</li>
+                <li>사실 확인(빨강)·핵심(파랑)·숫자(노랑) 형광펜</li>
+                <li>공문·보고서·기획서 양식 19가지</li>
+              </ul>
+            </div>
+            <div class="shot">
+              <img
+                src="images/06-hwp-tools.png"
+                alt="한글 탭의 한판 도구와 3색 검토 표시"
+                loading="lazy"
+                width="1800"
+                height="1075"
+              />
+            </div>
+          </article>
+
+          <article class="feature">
+            <div class="copy">
+              <span class="tag">디자인</span>
+              <h3>안내문, 포스터, 카드뉴스도 같은 판에서</h3>
+              <p>
+                템플릿에서 시작해 글과 도형을 고치고, PNG·PDF로 저장하거나 복사해서 한글·워드·PPT에
+                바로 붙여 넣습니다. 마인드맵을 보내면 큰 가지마다 카드뉴스 한 장이 됩니다.
+              </p>
+            </div>
+            <div class="shot">
+              <img
+                src="images/08-design.png"
+                alt="공공기관 안내문 템플릿을 연 디자인 창"
+                loading="lazy"
+                width="1683"
+                height="974"
+              />
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="news" aria-labelledby="news-title">
+        <div class="wrap">
+          <h2 id="news-title">업데이트 소식</h2>
+          <p class="intro">설치한 한판은 새 버전이 나오면 알려 주고 스스로 업데이트합니다.</p>
+          <ol class="news">
+            <li>
+              <span class="news-ver">0.13.3</span>
+              <span class="news-date">2026. 10. 30.</span>
+              <p>
+                마크다운 변환기가 들어왔습니다. 마크다운을 붙여 넣고 한 번에 변환을 누르면 HWP,
+                HWPX, 워드, ODT, PDF, HTML 가운데 고른 형식이 한 폴더에 함께 만들어집니다.
+              </p>
+            </li>
+            <li>
+              <span class="news-ver">0.13.2</span>
+              <span class="news-date">2026. 10. 30.</span>
+              <p>
+                홈 화면을 마인드맵 중심으로 새로 짰습니다. 시작판에 주제를 적으면 새 마인드맵이
+                열리고, 카드는 마인드맵·AI 한글·AI 파워포인트·한판 양식 순서입니다. 한판만의 칠판
+                초록 디자인을 입혔고, 앱 안의 '지도'라는 말을 모두 '마인드맵'으로 바꿨습니다.
+                Mac용(Apple 실리콘·Intel) 베타도 함께 냈습니다.
+              </p>
+            </li>
+            <li>
+              <span class="news-ver">0.13.1</span>
+              <span class="news-date">2026. 10. 30.</span>
+              <p>
+                슬라이드 스타일 10가지를 새로 디자인했습니다. 한판이 만든 한글 문서에서 표 칸의
+                글자가 겹치던 문제와 그림이 글을 가리던 문제를 고쳤습니다.
+              </p>
+            </li>
+            <li>
+              <span class="news-ver">0.13.0</span>
+              <span class="news-date">2026. 10. 30.</span>
+              <p>
+                PPT로 보낼 때 슬라이드 스타일 10가지 가운데 하나를 고를 수 있습니다. 의견 보내기가
+                TenAI 팀 메일(ten@tenai.kr)로 바뀌었습니다.
+              </p>
+            </li>
+            <li>
+              <span class="news-ver">0.12.8</span>
+              <span class="news-date">2026. 10. 30.</span>
+              <p>
+                첫 공개 버전입니다. 마인드맵을 한글·PPT·워드로 보내기, 양방향 맞추기, 한판 양식
+                19가지, 한판 도구, 디자인 보드, 내 PC AI 우선.
+              </p>
+            </li>
+          </ol>
+          <p class="news-all">
+            <a href="https://github.com/SamulChung/hanpan/releases">모든 버전과 바뀐 점 보기</a>
+          </p>
+        </div>
+      </section>
+
+      <section id="install" class="band" aria-labelledby="install-title">
+        <div class="wrap">
+          <h2 id="install-title">설치하기</h2>
+          <p class="intro">회원가입도, 결제도 없습니다. 문서는 내 PC에서만 열고 저장합니다.</p>
+          <ol class="steps">
+            <li>
+              <h3>내려받기</h3>
+              <p>
+                <a class="download-link" href="https://github.com/SamulChung/hanpan/releases/latest"
+                  ><span class="file-name">Hanpan-Setup-0.13.3.exe</span></a
+                >를 내려받아 실행합니다.
+              </p>
+            </li>
+            <li>
+              <h3>Windows 경고 넘기기</h3>
+              <p>
+                "Windows의 PC 보호" 창이 뜨면 <strong>추가 정보</strong>를 누른 뒤
+                <strong>실행</strong>을 누릅니다. 아직 코드 서명을 받지 않은 무료 프로그램이라
+                나오는 안내입니다.
+              </p>
+            </li>
+            <li>
+              <h3>한판 시작하기</h3>
+              <p>
+                설치가 끝나면 홈 화면이 열립니다. <strong>도움말 › 사용 설명서</strong>(F1)의
+                <strong>한판 시작하기</strong>에서 쓰는 법을 볼 수 있습니다.
+              </p>
+            </li>
+          </ol>
+          <p class="note">새 버전이 나오면 한판이 알려 주고 스스로 업데이트합니다.</p>
+          <div class="mac-install">
+            <h3>Mac에 설치하기 (베타)</h3>
+            <p>
+              내 Mac에 맞는 파일을 내려받습니다:
+              <a
+                class="mac-link"
+                data-arch="arm64"
+                href="https://github.com/SamulChung/hanpan/releases/latest"
+                >Apple 실리콘(M1 이상)</a
+              >
+              ·
+              <a
+                class="mac-link"
+                data-arch="x64"
+                href="https://github.com/SamulChung/hanpan/releases/latest"
+                >Intel</a
+              >. 열린 창에서 한판을 응용 프로그램 폴더로 끌어 넣습니다.
+            </p>
+            <p>
+              처음 열 때 "확인되지 않은 개발자" 안내가 뜨면
+              <strong>시스템 설정 › 개인정보 보호 및 보안</strong>에서
+              <strong>그래도 열기</strong>를 누릅니다. Apple 개발자 서명을 받지 않은 무료
+              프로그램이라 나오는 안내입니다. Mac에서는 스스로 업데이트하지 못해, 새 버전이 나오면
+              알려 주는 대로 다시 내려받아 바꿔 넣습니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="local-ai" aria-labelledby="ai-title">
+        <div class="wrap ai-grid">
+          <div>
+            <h2 id="ai-title">AI는 내 PC에 깔린 것부터</h2>
+            <p class="intro" style="margin-bottom: 0">
+              처음 시작할 때 이 PC에서 돌고 있는 AI를 찾아 기본으로 씁니다. 문서를 PC 밖으로 보내지
+              않아 공공기관·학교에서도 안심하고 쓸 수 있습니다. Claude나 ChatGPT 구독을 쓰고 싶다면
+              설정에서 고르면 됩니다.
+            </p>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">찾는 AI</th>
+                <th scope="col">주소</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Ollama</td>
+                <td><code>127.0.0.1:11434</code></td>
+              </tr>
+              <tr>
+                <td>LM Studio</td>
+                <td><code>127.0.0.1:1234</code></td>
+              </tr>
+              <tr>
+                <td>vLLM · TenOS-Ko-28B</td>
+                <td><code>127.0.0.1:8000</code>, <code>8001</code></td>
+              </tr>
+              <tr>
+                <td>llama.cpp</td>
+                <td><code>127.0.0.1:8080</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="final" aria-labelledby="final-title">
+        <div class="wrap">
+          <h2 id="final-title">오늘 정리한 생각을 내일 아침 보고서로</h2>
+          <p>무료로 내려받아 바로 써 보세요.</p>
+          <a class="btn download-link" href="https://github.com/SamulChung/hanpan/releases/latest">
+            <svg
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M10 3v10M5.5 8.5 10 13l4.5-4.5M4 16.5h12" />
+            </svg>
+            Windows용 내려받기
+          </a>
+          <p class="mac-final">
+            Mac용 베타:
+            <a
+              class="mac-link"
+              data-arch="arm64"
+              href="https://github.com/SamulChung/hanpan/releases/latest"
+              >Apple 실리콘(M1 이상)</a
+            >
+            ·
+            <a
+              class="mac-link"
+              data-arch="x64"
+              href="https://github.com/SamulChung/hanpan/releases/latest"
+              >Intel</a
+            >
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <p class="made">
+          Made by <a href="https://www.tenai.kr">TenAI</a> (www.tenai.kr)
+          <a class="mail" href="mailto:ten@tenai.kr">ten@tenai.kr</a>
+        </p>
+        <div class="links">
+          <a href="https://github.com/SamulChung/hanpan">소스 코드</a>
+          <a
+            href="https://github.com/SamulChung/hanpan/blob/main/docs/manual/%ED%95%9C%ED%8C%90-%EC%82%AC%EC%9A%A9%EC%84%A4%EB%AA%85%EC%84%9C.md"
+            >사용설명서</a
+          >
+          <a href="https://github.com/SamulChung/hanpan/issues">문의·오류 신고</a>
+          <span
+            >오픈소스 <a href="https://github.com/pblsketch/openoffice">이음오피스</a>(Apache-2.0)를
+            바탕으로 만들었습니다.</span
+          >
         </div>
       </div>
-    </section>
+    </footer>
 
-    <section id="features" aria-labelledby="features-title">
-      <div class="wrap">
-        <h2 id="features-title">하나의 판에서 생각하고, 쓰고, 꾸밉니다</h2>
-        <p class="intro">마인드맵, 한글, 워드, PPT, 엑셀, PDF가 한 창의 탭으로 열립니다. 프로그램을 오가며 복사해 붙이던 일을 버튼 하나로 줄였습니다.</p>
-
-        <article class="feature">
-          <div class="copy">
-            <span class="tag">홈 화면</span>
-            <h3>주제만 적으면 마인드맵부터 시작</h3>
-            <p>홈 맨 위 시작판에 정리할 주제를 적고 <strong>마인드맵 만들기</strong>를 누르면, 그 주제를 가운데 둔 새 마인드맵이 바로 열립니다.</p>
-            <ul>
-              <li>카드도 일의 순서대로: 마인드맵 → AI 한글 → AI 파워포인트 → 한판 양식</li>
-              <li>워드, 엑셀, 디자인, PDF 도구는 아래 한 줄에 모아서</li>
-            </ul>
-          </div>
-          <div class="shot"><img src="images/01-home.png" alt="시작판과 마인드맵 중심 카드가 있는 한판 홈 화면" loading="lazy" width="1800" height="1125" /></div>
-        </article>
-
-        <article class="feature">
-          <div class="copy">
-            <span class="tag">마인드맵 → 문서</span>
-            <h3>마인드맵 하나로 한글 보고서, PPT, 워드까지</h3>
-            <p>도구 줄의 보내기를 누르면 같은 창의 새 탭에 문서가 열립니다.</p>
-            <ul>
-              <li>개조식 보고서(□ ○ ―), 장 보고서(Ⅰ.), 공문 번호(1. 가. 1))</li>
-              <li>마인드맵에 적은 말 그대로, 또는 AI가 개조식 문장으로 살 붙이기</li>
-              <li>큰 가지 하나가 슬라이드 한 장, 메모는 발표자 메모로</li>
-            </ul>
-          </div>
-          <div class="shot"><img src="images/03-send-dialog.png" alt="마인드맵에서 한글 보고서로 보내는 창" loading="lazy" width="1800" height="1075" /></div>
-        </article>
-
-        <article class="feature">
-          <div class="copy">
-            <span class="tag">PPT 슬라이드 스타일</span>
-            <h3>발표 자료는 10가지 스타일 중에서 골라</h3>
-            <p>PPT로 보낼 때 스타일을 고르면 표지, 목차, 본문, 마무리 슬라이드까지 그 스타일로 꾸며집니다.</p>
-            <ul>
-              <li>스티브 잡스, 맥킨지, 토스, BCG, TED, 구글 머티리얼, 노션, 에어비앤비, 캔바 모던, 스타트업 피치덱</li>
-              <li>가지에 든 내용에 맞춰 카드, 매트릭스, 타임라인, 큰 숫자로 배치</li>
-              <li>만든 뒤에도 글자·색·도형을 PPT 탭에서 그대로 고칠 수 있음</li>
-            </ul>
-          </div>
-          <div class="shot"><img src="images/09-slide-styles.png" alt="같은 마인드맵을 10가지 슬라이드 스타일로 만든 본문 슬라이드" loading="lazy" width="1792" height="424" /></div>
-        </article>
-
-        <article class="feature">
-          <div class="copy">
-            <span class="tag">마크다운 변환기</span>
-            <h3>마크다운을 한글·워드·PDF로 한 번에</h3>
-            <p>AI가 써 준 글이나 노트의 마크다운을 붙여 넣고 <strong>한 번에 변환</strong>을 누르면, 고른 형식이 한 폴더에 함께 만들어집니다.</p>
-            <ul>
-              <li>HWP, HWPX, Word, ODT, PDF, HTML 가운데 필요한 것만 골라서</li>
-              <li>보고서·일반 문서·공문 모양으로, 표는 실제 표로</li>
-              <li>만들기 전에 문서 모양을 미리 보기로 확인</li>
-            </ul>
-          </div>
-          <div class="shot"><img src="images/10-md-convert.png" alt="마크다운을 붙여 넣고 미리 보기를 보며 HWP·워드·PDF로 한 번에 변환하는 창" loading="lazy" width="1475" height="960" /></div>
-        </article>
-
-        <article class="feature">
-          <div class="copy">
-            <span class="tag">양방향 맞추기</span>
-            <h3>마인드맵을 고치면 문서도, 문서를 고치면 마인드맵도</h3>
-            <p>보낸 뒤에도 마인드맵과 한글 문서는 연결되어 있습니다. 바뀐 곳을 미리 보여 주고, 양쪽에서 다르게 고친 곳은 직접 고릅니다. 문서에서 쓴 본문은 지켜집니다.</p>
-          </div>
-          <div class="shot"><img src="images/05-sync.png" alt="마인드맵과 연결된 문서에서 바뀐 곳을 보여 주는 맞추기 창" loading="lazy" width="1800" height="1075" /></div>
-        </article>
-
-        <article class="feature">
-          <div class="copy">
-            <span class="tag">공문·보고서 도구</span>
-            <h3>공문 정돈부터 3색 검토까지</h3>
-            <ul>
-              <li>날짜는 2026. 5. 8., 시각은 14:30, 본문 끝에 끝.</li>
-              <li>수신·제목, 항목 번호 차례, 어미 섞임 점검</li>
-              <li>60대·40대·MZ 세대별 말투 바꾸기</li>
-              <li>사실 확인(빨강)·핵심(파랑)·숫자(노랑) 형광펜</li>
-              <li>공문·보고서·기획서 양식 19가지</li>
-            </ul>
-          </div>
-          <div class="shot"><img src="images/06-hwp-tools.png" alt="한글 탭의 한판 도구와 3색 검토 표시" loading="lazy" width="1800" height="1075" /></div>
-        </article>
-
-        <article class="feature">
-          <div class="copy">
-            <span class="tag">디자인</span>
-            <h3>안내문, 포스터, 카드뉴스도 같은 판에서</h3>
-            <p>템플릿에서 시작해 글과 도형을 고치고, PNG·PDF로 저장하거나 복사해서 한글·워드·PPT에 바로 붙여 넣습니다. 마인드맵을 보내면 큰 가지마다 카드뉴스 한 장이 됩니다.</p>
-          </div>
-          <div class="shot"><img src="images/08-design.png" alt="공공기관 안내문 템플릿을 연 디자인 창" loading="lazy" width="1683" height="974" /></div>
-        </article>
-      </div>
-    </section>
-
-    <section id="news" aria-labelledby="news-title">
-      <div class="wrap">
-        <h2 id="news-title">업데이트 소식</h2>
-        <p class="intro">설치한 한판은 새 버전이 나오면 알려 주고 스스로 업데이트합니다.</p>
-        <ol class="news">
-          <li>
-            <span class="news-ver">0.13.3</span>
-            <span class="news-date">2026. 10. 30.</span>
-            <p>마크다운 변환기가 들어왔습니다. 마크다운을 붙여 넣고 한 번에 변환을 누르면 HWP, HWPX, 워드, ODT, PDF, HTML 가운데 고른 형식이 한 폴더에 함께 만들어집니다.</p>
-          </li>
-          <li>
-            <span class="news-ver">0.13.2</span>
-            <span class="news-date">2026. 10. 30.</span>
-            <p>홈 화면을 마인드맵 중심으로 새로 짰습니다. 시작판에 주제를 적으면 새 마인드맵이 열리고, 카드는 마인드맵·AI 한글·AI 파워포인트·한판 양식 순서입니다. 한판만의 칠판 초록 디자인을 입혔고, 앱 안의 '지도'라는 말을 모두 '마인드맵'으로 바꿨습니다. Mac용(Apple 실리콘·Intel) 베타도 함께 냈습니다.</p>
-          </li>
-          <li>
-            <span class="news-ver">0.13.1</span>
-            <span class="news-date">2026. 10. 30.</span>
-            <p>슬라이드 스타일 10가지를 새로 디자인했습니다. 한판이 만든 한글 문서에서 표 칸의 글자가 겹치던 문제와 그림이 글을 가리던 문제를 고쳤습니다.</p>
-          </li>
-          <li>
-            <span class="news-ver">0.13.0</span>
-            <span class="news-date">2026. 10. 30.</span>
-            <p>PPT로 보낼 때 슬라이드 스타일 10가지 가운데 하나를 고를 수 있습니다. 의견 보내기가 TenAI 팀 메일(ten@tenai.kr)로 바뀌었습니다.</p>
-          </li>
-          <li>
-            <span class="news-ver">0.12.8</span>
-            <span class="news-date">2026. 10. 30.</span>
-            <p>첫 공개 버전입니다. 마인드맵을 한글·PPT·워드로 보내기, 양방향 맞추기, 한판 양식 19가지, 한판 도구, 디자인 보드, 내 PC AI 우선.</p>
-          </li>
-        </ol>
-        <p class="news-all"><a href="https://github.com/SamulChung/hanpan/releases">모든 버전과 바뀐 점 보기</a></p>
-      </div>
-    </section>
-
-    <section id="install" class="band" aria-labelledby="install-title">
-      <div class="wrap">
-        <h2 id="install-title">설치하기</h2>
-        <p class="intro">회원가입도, 결제도 없습니다. 문서는 내 PC에서만 열고 저장합니다.</p>
-        <ol class="steps">
-          <li>
-            <h3>내려받기</h3>
-            <p><a class="download-link" href="https://github.com/SamulChung/hanpan/releases/latest"><span class="file-name">Hanpan-Setup-0.13.3.exe</span></a>를 내려받아 실행합니다.</p>
-          </li>
-          <li>
-            <h3>Windows 경고 넘기기</h3>
-            <p>"Windows의 PC 보호" 창이 뜨면 <strong>추가 정보</strong>를 누른 뒤 <strong>실행</strong>을 누릅니다. 아직 코드 서명을 받지 않은 무료 프로그램이라 나오는 안내입니다.</p>
-          </li>
-          <li>
-            <h3>한판 시작하기</h3>
-            <p>설치가 끝나면 홈 화면이 열립니다. <strong>도움말 › 사용 설명서</strong>(F1)의 <strong>한판 시작하기</strong>에서 쓰는 법을 볼 수 있습니다.</p>
-          </li>
-        </ol>
-        <p class="note">새 버전이 나오면 한판이 알려 주고 스스로 업데이트합니다.</p>
-        <div class="mac-install">
-          <h3>Mac에 설치하기 (베타)</h3>
-          <p>내 Mac에 맞는 파일을 내려받습니다: <a class="mac-link" data-arch="arm64" href="https://github.com/SamulChung/hanpan/releases/latest">Apple 실리콘(M1 이상)</a> · <a class="mac-link" data-arch="x64" href="https://github.com/SamulChung/hanpan/releases/latest">Intel</a>. 열린 창에서 한판을 응용 프로그램 폴더로 끌어 넣습니다.</p>
-          <p>처음 열 때 "확인되지 않은 개발자" 안내가 뜨면 <strong>시스템 설정 › 개인정보 보호 및 보안</strong>에서 <strong>그래도 열기</strong>를 누릅니다. Apple 개발자 서명을 받지 않은 무료 프로그램이라 나오는 안내입니다. Mac에서는 스스로 업데이트하지 못해, 새 버전이 나오면 알려 주는 대로 다시 내려받아 바꿔 넣습니다.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="local-ai" aria-labelledby="ai-title">
-      <div class="wrap ai-grid">
-        <div>
-          <h2 id="ai-title">AI는 내 PC에 깔린 것부터</h2>
-          <p class="intro" style="margin-bottom:0">처음 시작할 때 이 PC에서 돌고 있는 AI를 찾아 기본으로 씁니다. 문서를 PC 밖으로 보내지 않아 공공기관·학교에서도 안심하고 쓸 수 있습니다. Claude나 ChatGPT 구독을 쓰고 싶다면 설정에서 고르면 됩니다.</p>
-        </div>
-        <table>
-          <thead><tr><th scope="col">찾는 AI</th><th scope="col">주소</th></tr></thead>
-          <tbody>
-            <tr><td>Ollama</td><td><code>127.0.0.1:11434</code></td></tr>
-            <tr><td>LM Studio</td><td><code>127.0.0.1:1234</code></td></tr>
-            <tr><td>vLLM · TenOS-Ko-28B</td><td><code>127.0.0.1:8000</code>, <code>8001</code></td></tr>
-            <tr><td>llama.cpp</td><td><code>127.0.0.1:8080</code></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="final" aria-labelledby="final-title">
-      <div class="wrap">
-        <h2 id="final-title">오늘 정리한 생각을 내일 아침 보고서로</h2>
-        <p>무료로 내려받아 바로 써 보세요.</p>
-        <a class="btn download-link" href="https://github.com/SamulChung/hanpan/releases/latest">
-          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3v10M5.5 8.5 10 13l4.5-4.5M4 16.5h12" /></svg>
-          Windows용 내려받기
-        </a>
-        <p class="mac-final">Mac용 베타: <a class="mac-link" data-arch="arm64" href="https://github.com/SamulChung/hanpan/releases/latest">Apple 실리콘(M1 이상)</a> · <a class="mac-link" data-arch="x64" href="https://github.com/SamulChung/hanpan/releases/latest">Intel</a></p>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="wrap">
-      <p class="made">Made by <a href="https://www.tenai.kr">TenAI</a> (www.tenai.kr) <a class="mail" href="mailto:ten@tenai.kr">ten@tenai.kr</a></p>
-      <div class="links">
-        <a href="https://github.com/SamulChung/hanpan">소스 코드</a>
-        <a href="https://github.com/SamulChung/hanpan/blob/main/docs/manual/%ED%95%9C%ED%8C%90-%EC%82%AC%EC%9A%A9%EC%84%A4%EB%AA%85%EC%84%9C.md">사용설명서</a>
-        <a href="https://github.com/SamulChung/hanpan/issues">문의·오류 신고</a>
-        <span>오픈소스 <a href="https://github.com/pblsketch/openoffice">이음오피스</a>(Apache-2.0)를 바탕으로 만들었습니다.</span>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    // the installer of the newest release, asked from GitHub; the release page stays the link if that fails
-    fetch('https://api.github.com/repos/SamulChung/hanpan/releases/latest')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((release) => {
-        const asset = release && release.assets && release.assets.find((a) => /Setup-.*\.exe$/.test(a.name) && !/arm64/.test(a.name))
-        if (!asset) return
-        document.querySelectorAll('.download-link').forEach((a) => (a.href = asset.browser_download_url))
-        document.querySelectorAll('.file-name').forEach((s) => (s.textContent = asset.name))
-        document.querySelectorAll('.version').forEach((s) => (s.textContent = release.tag_name))
-        document.querySelectorAll('.mac-link').forEach((a) => {
-          const dmg = release.assets.find((d) => d.name.endsWith('-' + a.dataset.arch + '.dmg'))
-          if (dmg) a.href = dmg.browser_download_url
+    <script>
+      // the installer of the newest release, asked from GitHub; the release page stays the link if that fails
+      fetch('https://api.github.com/repos/SamulChung/hanpan/releases/latest')
+        .then((r) => (r.ok ? r.json() : null))
+        .then((release) => {
+          const asset =
+            release &&
+            release.assets &&
+            release.assets.find((a) => /Setup-.*\.exe$/.test(a.name) && !/arm64/.test(a.name))
+          if (!asset) return
+          document
+            .querySelectorAll('.download-link')
+            .forEach((a) => (a.href = asset.browser_download_url))
+          document.querySelectorAll('.file-name').forEach((s) => (s.textContent = asset.name))
+          document.querySelectorAll('.version').forEach((s) => (s.textContent = release.tag_name))
+          document.querySelectorAll('.mac-link').forEach((a) => {
+            const dmg = release.assets.find((d) => d.name.endsWith('-' + a.dataset.arch + '.dmg'))
+            if (dmg) a.href = dmg.browser_download_url
+          })
         })
-      })
-      .catch(() => {})
-  </script>
-</body>
+        .catch(() => {})
+    </script>
+  </body>
 </html>
