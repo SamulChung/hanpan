@@ -5,7 +5,15 @@
  * into a HWP, Word or PowerPoint tab), and bind page pictures into a PDF.
  * Every handler answers only the design window itself.
  */
-import { BrowserWindow, clipboard, dialog, ipcMain, nativeImage, shell, type IpcMainInvokeEvent } from 'electron'
+import {
+  BrowserWindow,
+  clipboard,
+  dialog,
+  ipcMain,
+  nativeImage,
+  shell,
+  type IpcMainInvokeEvent,
+} from 'electron'
 import { readFile, writeFile } from 'node:fs/promises'
 import { basename, extname, join } from 'node:path'
 import { PDFDocument } from 'pdf-lib'
@@ -45,13 +53,28 @@ function bytesOf(value: unknown): Uint8Array | null {
 function safeName(name: unknown, fallback: string): string {
   const text = typeof name === 'string' ? name : ''
   // eslint-disable-next-line no-control-regex
-  return text.replace(/[<>:"/\\|?*\u0000-\u001f]/g, ' ').trim().slice(0, 80) || fallback
+  return (
+    text
+      .replace(/[<>:"/\\|?*\u0000-\u001f]/g, ' ')
+      .trim()
+      .slice(0, 80) || fallback
+  )
 }
 
-async function saveAs(name: string, extension: string, label: string, bytes: Uint8Array | string): Promise<string | null> {
+async function saveAs(
+  name: string,
+  extension: string,
+  label: string,
+  bytes: Uint8Array | string,
+): Promise<string | null> {
   const parent = win && !win.isDestroyed() ? win : undefined
-  const options = { defaultPath: `${name}.${extension}`, filters: [{ name: label, extensions: [extension] }] }
-  const result = parent ? await dialog.showSaveDialog(parent, options) : await dialog.showSaveDialog(options)
+  const options = {
+    defaultPath: `${name}.${extension}`,
+    filters: [{ name: label, extensions: [extension] }],
+  }
+  const result = parent
+    ? await dialog.showSaveDialog(parent, options)
+    : await dialog.showSaveDialog(options)
   if (result.canceled || !result.filePath) return null
   await writeFile(result.filePath, typeof bytes === 'string' ? bytes : Buffer.from(bytes))
   return result.filePath
@@ -64,29 +87,38 @@ function registerIpc(): void {
     pendingOutline = null
     return { lang: deps.lang(), theme: deps.theme(), ...(outline ? { outline } : {}) }
   })
-  ipcMain.handle(DESIGN_CHANNELS.savePng, async (event, bytes: unknown, name: unknown) => {
-    const png = bytesOf(bytes)
-    if (!fromWindow(event) || !png) return null
-    return saveAs(safeName(name, 'design'), 'png', 'PNG', png)
-  })
-  ipcMain.handle(DESIGN_CHANNELS.savePdf, async (event, pages: unknown, size: unknown, name: unknown) => {
-    if (!fromWindow(event) || !Array.isArray(pages) || !pages.length) return null
-    const { width, height } = (size ?? {}) as { width?: number; height?: number }
-    if (!(Number(width) > 0) || !(Number(height) > 0)) return null
-    const pdf = await PDFDocument.create()
-    for (const page of pages) {
-      const png = bytesOf(page)
-      if (!png) return null
-      const image = await pdf.embedPng(png)
-      // 150 dpi pixels to points
-      const w = (Number(width) * 72) / 150
-      const h = (Number(height) * 72) / 150
-      pdf.addPage([w, h]).drawImage(image, { x: 0, y: 0, width: w, height: h })
-    }
-    const path = await saveAs(safeName(name, 'design'), 'pdf', 'PDF', await pdf.save())
-    if (path) void shell.openPath(path)
-    return path
-  })
+  ipcMain.handle(
+    DESIGN_CHANNELS.savePng,
+    async (event, bytes: unknown, name: unknown, format: unknown) => {
+      const picture = bytesOf(bytes)
+      if (!fromWindow(event) || !picture) return null
+      // a JPEG (smaller, no transparency) when asked; PNG otherwise
+      return format === 'jpg'
+        ? saveAs(safeName(name, 'design'), 'jpg', 'JPEG', picture)
+        : saveAs(safeName(name, 'design'), 'png', 'PNG', picture)
+    },
+  )
+  ipcMain.handle(
+    DESIGN_CHANNELS.savePdf,
+    async (event, pages: unknown, size: unknown, name: unknown) => {
+      if (!fromWindow(event) || !Array.isArray(pages) || !pages.length) return null
+      const { width, height } = (size ?? {}) as { width?: number; height?: number }
+      if (!(Number(width) > 0) || !(Number(height) > 0)) return null
+      const pdf = await PDFDocument.create()
+      for (const page of pages) {
+        const png = bytesOf(page)
+        if (!png) return null
+        const image = await pdf.embedPng(png)
+        // 150 dpi pixels to points
+        const w = (Number(width) * 72) / 150
+        const h = (Number(height) * 72) / 150
+        pdf.addPage([w, h]).drawImage(image, { x: 0, y: 0, width: w, height: h })
+      }
+      const path = await saveAs(safeName(name, 'design'), 'pdf', 'PDF', await pdf.save())
+      if (path) void shell.openPath(path)
+      return path
+    },
+  )
   ipcMain.handle(DESIGN_CHANNELS.copyImage, (event, bytes: unknown) => {
     const png = bytesOf(bytes)
     if (!fromWindow(event) || !png) return false
@@ -99,7 +131,10 @@ function registerIpc(): void {
   })
   ipcMain.handle(DESIGN_CHANNELS.openDesign, async (event) => {
     if (!fromWindow(event)) return null
-    const result = await dialog.showOpenDialog(win!, { properties: ['openFile'], filters: [{ name: '한판 디자인', extensions: ['hpdesign'] }] })
+    const result = await dialog.showOpenDialog(win!, {
+      properties: ['openFile'],
+      filters: [{ name: '한판 디자인', extensions: ['hpdesign'] }],
+    })
     const path = result.filePaths[0]
     if (result.canceled || !path) return null
     const text = await readFile(path, 'utf8')
@@ -107,7 +142,10 @@ function registerIpc(): void {
   })
   ipcMain.handle(DESIGN_CHANNELS.pickImage, async (event) => {
     if (!fromWindow(event)) return null
-    const result = await dialog.showOpenDialog(win!, { properties: ['openFile'], filters: [{ name: 'Image', extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp'] }] })
+    const result = await dialog.showOpenDialog(win!, {
+      properties: ['openFile'],
+      filters: [{ name: 'Image', extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp'] }],
+    })
     const path = result.filePaths[0]
     if (result.canceled || !path) return null
     const image = nativeImage.createFromPath(path)
@@ -165,6 +203,7 @@ export function openDesignWindow(): void {
   next.on('closed', () => {
     if (win === next) win = null
   })
-  if (process.env.ELECTRON_RENDERER_URL) void next.loadURL(`${process.env.ELECTRON_RENDERER_URL}/design.html`)
+  if (process.env.ELECTRON_RENDERER_URL)
+    void next.loadURL(`${process.env.ELECTRON_RENDERER_URL}/design.html`)
   else void next.loadFile(join(__dirname, '../renderer/design.html'))
 }

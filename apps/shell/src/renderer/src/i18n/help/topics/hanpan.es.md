@@ -30,6 +30,7 @@ Hanpan envía lo que ordenaste en un mapa mental a un informe Hangul (HWP), una 
 - Pulsa **Copiar para pegar en un documento** y luego Ctrl+V en una pestaña HWP, Word o PowerPoint para insertar la página como imagen. Las páginas también se guardan en PNG y PDF.
 - En un mapa, **Enviar a un documento › Enviar como tarjetas de noticias** crea una tarjeta por cada rama principal.
 - En la ventana de diseño, escribe lo que quieres en **Make with AI** y pulsa **Make**: la IA elegida en Ajustes escribe el texto y Hanpan lo maqueta como un diseño editable. Con un cuadro de texto seleccionado, **Edit with AI** lo pule, lo acorta, lo hace más llamativo o lo traduce entre inglés y coreano. Deshacer recupera lo anterior.
+- En la ventana de diseño, las pestañas **Templates**, **Elements** y **Text** añaden plantillas, formas, códigos QR y estilos de texto. Con Mayús+clic o arrastrando en un espacio vacío eliges varios; muévelos siguiendo las guías, cambia su tamaño y giro con los tiradores y haz doble clic en un cuadro de texto para escribir en el sitio. A la derecha se ajustan degradados, sombras, contornos y filtros de foto; la pestaña **Layers** fija el orden y el bloqueo, y **Resize** cambia el tamaño de la página manteniendo el diseño. Las páginas también se guardan como JPG.
 
 ## La IA de este PC
 

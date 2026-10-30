@@ -30,6 +30,7 @@ Hanpan menghantar apa yang anda susun dalam peta minda ke laporan Hangul (HWP), 
 - Tekan **Salin untuk ditampal dalam dokumen**, kemudian Ctrl+V dalam tab HWP, Word atau PowerPoint untuk memasukkan halaman sebagai gambar. Halaman juga boleh disimpan sebagai PNG dan PDF.
 - Dalam peta, **Hantar ke dokumen › Hantar sebagai kad berita** membuat satu kad bagi setiap cabang utama.
 - Dalam tetingkap reka bentuk, tulis apa yang anda mahu di bawah **Make with AI** dan tekan **Make**: AI yang dipilih dalam Tetapan menulis teks dan Hanpan menyusunnya menjadi reka bentuk yang boleh disunting. Dengan kotak teks dipilih, **Edit with AI** menghaluskan, memendekkan, menjadikannya lebih menarik atau menterjemah antara Inggeris dan Korea. Buat asal mengembalikan keadaan sebelumnya.
+- Dalam tetingkap reka bentuk, tab **Templates**, **Elements** dan **Text** menambah templat, bentuk, kod QR dan gaya teks. Shift+klik atau seret di ruang kosong untuk memilih beberapa; alihkan mengikut garis panduan, ubah saiz dan putaran dengan pemegang, dan klik dua kali kotak teks untuk menaip di tempatnya. Di sebelah kanan ditetapkan gradien, bayang, garis luar dan penapis foto, tab **Layers** menetapkan susunan dan kunci, dan **Resize** menukar saiz halaman sambil mengekalkan susun atur. Halaman juga boleh disimpan sebagai JPG.
 
 ## AI pada PC ini
 

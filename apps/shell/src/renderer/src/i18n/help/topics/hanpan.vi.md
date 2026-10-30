@@ -30,6 +30,7 @@ Hanpan gửi những gì bạn sắp xếp trong sơ đồ tư duy thành báo c
 - Nhấn **Sao chép để dán vào tài liệu**, rồi Ctrl+V trong thẻ HWP, Word hoặc PowerPoint để chèn trang dưới dạng ảnh. Trang cũng lưu được dạng PNG và PDF.
 - Trong sơ đồ, **Gửi sang tài liệu › Gửi thành thẻ tin** tạo một thẻ cho mỗi nhánh chính.
 - Trong cửa sổ thiết kế, viết điều bạn muốn ở **Make with AI** rồi nhấn **Make**: AI đã chọn trong Cài đặt viết chữ và Hanpan dàn trang thành thiết kế có thể chỉnh sửa. Khi chọn một ô chữ, **Edit with AI** trau chuốt, rút gọn, làm nổi bật hơn hoặc dịch giữa tiếng Anh và tiếng Hàn. Hoàn tác đưa về trạng thái trước.
+- Trong cửa sổ thiết kế, các thẻ **Templates**, **Elements** và **Text** thêm mẫu, hình, mã QR và kiểu chữ. Shift+nhấp hoặc kéo qua vùng trống để chọn nhiều; di chuyển theo đường gióng, đổi kích thước và xoay bằng tay nắm, và nhấp đúp vào ô chữ để sửa ngay tại chỗ. Bên phải chỉnh dải màu, bóng, viền và bộ lọc ảnh, thẻ **Layers** đặt thứ tự và khóa, còn **Resize** đổi khổ trang mà vẫn giữ bố cục. Trang cũng lưu được dạng JPG.
 
 ## AI trên máy tính này
 

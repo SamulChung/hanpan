@@ -30,6 +30,7 @@ Hanpan pošle to, co jste uspořádali v myšlenkové mapě, do zprávy Hangul (
 - Stiskněte **Kopírovat pro vložení do dokumentu** a pak Ctrl+V na kartě HWP, Word nebo PowerPoint, čímž stránku vložíte jako obrázek. Stránky lze uložit i jako PNG a PDF.
 - V mapě **Odeslat do dokumentu › Odeslat jako karty se zprávami** vytvoří jednu kartu na každou hlavní větev.
 - V okně návrhu napište pod **Make with AI**, co chcete, a stiskněte **Make**: AI zvolená v Nastavení napíše text a Hanpan z něj sestaví upravitelný návrh. U vybraného textového pole **Edit with AI** text vyladí, zkrátí, zatraktivní nebo přeloží mezi angličtinou a korejštinou. Zpět vrátí předchozí stav.
+- V okně návrhu přidávají karty **Templates**, **Elements** a **Text** šablony, tvary, QR kódy a styly textu. Shift+klik nebo tažení přes prázdné místo vybere více prvků; posouvejte je podél vodítek, měňte velikost a otočení úchyty a dvojklikem na textové pole pište přímo na místě. Vpravo nastavíte přechody, stíny, obrysy a filtry fotek, karta **Layers** určuje pořadí a zamčení a **Resize** mění velikost stránky se zachováním rozvržení. Stránky lze uložit i jako JPG.
 
 ## AI na tomto počítači
 

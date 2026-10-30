@@ -30,6 +30,7 @@ Hanpan invia ciò che hai organizzato in una mappa mentale a un rapporto Hangul 
 - Premi **Copia per incollare in un documento**, poi Ctrl+V in una scheda HWP, Word o PowerPoint per inserire la pagina come immagine. Le pagine si salvano anche in PNG e PDF.
 - In una mappa, **Invia a un documento › Invia come schede notizie** crea una scheda per ogni ramo principale.
 - Nella finestra di design scrivi cosa vuoi sotto **Make with AI** e premi **Make**: l'IA scelta nelle Impostazioni scrive il testo e Hanpan lo impagina in un design modificabile. Con una casella di testo selezionata, **Edit with AI** la rifinisce, la accorcia, la rende più accattivante o la traduce tra inglese e coreano. Annulla ripristina lo stato precedente.
+- Nella finestra di design, le schede **Templates**, **Elements** e **Text** aggiungono modelli, forme, codici QR e stili di testo. Con Maiusc+clic o trascinando nel vuoto ne selezioni più d'uno; spostali lungo le guide, cambia dimensione e rotazione con le maniglie e fai doppio clic su una casella di testo per scrivere sul posto. A destra si impostano sfumature, ombre, contorni e filtri foto, la scheda **Layers** imposta ordine e blocco, e **Resize** cambia il formato della pagina mantenendo l'impaginazione. Le pagine si salvano anche in JPG.
 
 ## L’IA di questo PC
 

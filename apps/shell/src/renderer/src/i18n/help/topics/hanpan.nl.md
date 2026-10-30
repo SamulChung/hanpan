@@ -30,6 +30,7 @@ Hanpan stuurt wat u in een mindmap hebt geordend naar een Hangul-rapport (HWP), 
 - Druk op **Kopiëren om in een document te plakken** en daarna op Ctrl+V in een HWP-, Word- of PowerPoint-tabblad om de pagina als afbeelding in te voegen. Pagina’s worden ook als PNG en PDF opgeslagen.
 - In een kaart maakt **Naar een document sturen › Als nieuwskaarten sturen** één kaart per hoofdtak.
 - Schrijf in het ontwerpvenster onder **Make with AI** wat je wilt en druk op **Make**: de AI die je in Instellingen koos schrijft de tekst en Hanpan maakt er een bewerkbaar ontwerp van. Met een geselecteerd tekstvak kan **Edit with AI** het verfijnen, inkorten, pakkender maken of vertalen tussen Engels en Koreaans. Ongedaan maken zet het vorige terug.
+- In het ontwerpvenster voegen de tabbladen **Templates**, **Elements** en **Text** sjablonen, vormen, QR-codes en tekststijlen toe. Met Shift-klik of slepen over lege ruimte kies je er meerdere, verplaats je ze langs de hulplijnen, verander je grootte en draaiing met de grepen, en dubbelklik je op een tekstvak om ter plekke te typen. Rechts stel je verlopen, schaduwen, omlijningen en fotofilters in, het tabblad **Layers** regelt volgorde en vergrendeling, en **Resize** wijzigt het paginaformaat met behoud van de opmaak. Pagina's kunnen ook als JPG worden opgeslagen.
 
 ## De AI op deze pc
 

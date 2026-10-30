@@ -4,17 +4,28 @@
 :root {
   --accent: #1e3a5f;
   --dz-on-accent: #ffffff;
+  /* snapping guides: a colour the chrome never uses, so a guide is not mistaken for the design */
+  --dz-guide: #e5007e;
+  /* the selection on the page: a bright blue that shows on light and dark designs alike */
+  --dz-select: #2f80ff;
+  /* the text-style samples show what a style puts on a page (document colours, not chrome) */
+  --dz-sample-pill: #ff8a3d;
+  --dz-sample-light: #ffffff;
+  --dz-sample-dark: #0f172a;
+  --dz-sample-shadow: rgba(15, 23, 42, 0.35);
 }
 
 [data-theme='dark'] {
   --accent: #ff8a3d;
   --dz-on-accent: #1e1e1e;
+  --dz-guide: #ff4fb3;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']):not([data-theme='dark']) {
     --accent: #ff8a3d;
     --dz-on-accent: #1e1e1e;
+    --dz-guide: #ff4fb3;
   }
 }
 
@@ -27,7 +38,10 @@ body,
 body {
   background: var(--surface);
   color: var(--text-primary);
-  font: 13px/1.4 system-ui, 'Malgun Gothic', sans-serif;
+  font:
+    13px/1.4 system-ui,
+    'Malgun Gothic',
+    sans-serif;
 }
 .dz {
   display: flex;
@@ -111,33 +125,85 @@ body {
   flex: 1;
   min-height: 0;
 }
+
+/* ---- left: tab rail and its panel ---- */
+.dz-tabs {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 2px;
+  width: 72px;
+  padding: 8px 4px;
+  border-inline-end: 1px solid var(--border);
+}
+.dz .dz-tabs button {
+  padding: 10px 2px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  text-align: center;
+}
+.dz .dz-tabs button.on {
+  border-color: transparent;
+  background: var(--hover);
+  color: var(--text-primary);
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--accent);
+}
 .dz-left,
 .dz-right {
   flex: none;
-  width: 230px;
   overflow: auto;
-  padding: 8px 12px;
+  padding: 8px 12px 16px;
 }
 .dz-left {
+  width: 250px;
   border-inline-end: 1px solid var(--border);
 }
 .dz-right {
-  width: 260px;
+  width: 272px;
   border-inline-start: 1px solid var(--border);
 }
-.dz-templates,
-.dz-tools {
+.dz-templates {
   display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 4px;
 }
-.dz-tools {
-  grid-template-columns: 1fr 1fr;
-}
-.dz-templates button,
-.dz-tools button {
+.dz-templates button {
   text-align: start;
 }
-.dz-outline-btn {
+.dz-template-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.dz .dz-template {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 6px 4px;
+  font-size: 12px;
+}
+.dz-template > span:last-child {
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dz-preview {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px var(--border);
+  pointer-events: none;
+}
+.dz-preview .dz-el {
+  cursor: inherit;
+}
+.dz-outline-btn,
+.dz .dz-wide {
   width: 100%;
   margin-top: 10px;
 }
@@ -152,12 +218,133 @@ body {
   color: var(--text-secondary);
   font-size: 12px;
 }
+.dz-shape-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.dz .dz-shape-grid button {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 6px 2px;
+  font-size: 11px;
+}
+.dz-shape-grid svg {
+  width: 34px;
+  height: 34px;
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+.dz-shape-grid svg rect,
+.dz-shape-grid svg circle,
+.dz-shape-grid svg path {
+  stroke: none;
+}
+.dz-text-adds {
+  display: grid;
+  gap: 6px;
+  margin-top: 4px;
+}
+.dz .dz-text-adds button {
+  padding: 10px 12px;
+  text-align: start;
+}
+.dz .dz-add-title {
+  font-size: 22px;
+  font-weight: 900;
+}
+.dz .dz-add-subtitle {
+  font-size: 16px;
+  font-weight: 700;
+}
+.dz-presets {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.dz .dz-presets button {
+  display: grid;
+  place-items: center;
+  min-height: 64px;
+  overflow: hidden;
+  background: var(--hover);
+}
+.dz-pv-badge {
+  padding: 3px 12px;
+  border-radius: 99px;
+  background: var(--dz-sample-pill);
+  color: var(--dz-sample-light);
+  font-weight: 700;
+}
+.dz-pv-outlined {
+  color: var(--dz-sample-light);
+  font-size: 20px;
+  font-weight: 900;
+  -webkit-text-stroke: 3px var(--dz-sample-dark);
+  paint-order: stroke fill;
+}
+.dz-pv-shadowed {
+  font-size: 18px;
+  font-weight: 900;
+  text-shadow: 0 2px 6px var(--dz-sample-shadow);
+}
+.dz-pv-quote {
+  font-style: italic;
+  font-weight: 700;
+}
+.dz-layers {
+  display: grid;
+  gap: 2px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.dz-layers li {
+  display: flex;
+  gap: 2px;
+  border-radius: 6px;
+}
+.dz-layers li.on {
+  background: var(--hover);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.dz .dz-layer {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  border-color: transparent;
+  background: transparent;
+  text-align: start;
+}
+.dz-layer-kind {
+  flex: none;
+  width: 18px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+.dz-layer-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dz .dz-layer-lock {
+  flex: none;
+  border-color: transparent;
+  background: transparent;
+  opacity: 0.35;
+}
+.dz .dz-layer-lock.on,
+.dz-layers li:hover .dz-layer-lock {
+  opacity: 1;
+}
+
+/* ---- AI ---- */
 .dz-ai {
   display: grid;
   gap: 6px;
-  margin-bottom: 4px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border);
 }
 .dz-ai h3 {
   margin-top: 4px;
@@ -191,7 +378,10 @@ body {
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--hover);
-  font: 11px/1.4 ui-monospace, Consolas, monospace;
+  font:
+    11px/1.4 ui-monospace,
+    Consolas,
+    monospace;
   white-space: pre-wrap;
 }
 .dz-ai-error {
@@ -199,18 +389,26 @@ body {
   color: var(--danger);
   font-size: 12px;
 }
-.dz-stage-wrap {
-  position: relative;
+
+/* ---- the page ---- */
+.dz-center {
   display: flex;
   flex: 1;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   min-width: 0;
-  overflow: hidden;
+}
+.dz-stage-wrap {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 32px;
   background: var(--hover);
 }
 .dz-stage {
   position: relative;
+  flex: none;
+  margin: auto;
   box-shadow: var(--shadow-modal-strong);
 }
 .dz-page {
@@ -225,9 +423,21 @@ body {
   cursor: move;
   user-select: none;
 }
-.dz-el.selected {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
+.dz-el.locked {
+  cursor: default;
+}
+.dz-stage .dz-el.selected {
+  outline: calc(2px / var(--dz-scale, 1)) solid var(--dz-select);
+  outline-offset: calc(2px / var(--dz-scale, 1));
+}
+.dz-stage .dz-el.locked.selected {
+  outline-style: dashed;
+}
+.dz-stage .dz-el:not(.selected):hover {
+  outline: calc(1px / var(--dz-scale, 1)) solid var(--dz-select);
+}
+.dz-el.editing {
+  cursor: text;
 }
 .dz-text {
   white-space: pre-wrap;
@@ -242,35 +452,146 @@ body {
   display: block;
   width: 100%;
   height: 100%;
+  object-fit: cover;
   pointer-events: none;
 }
-.dz-handle {
+.dz-overlay {
   position: absolute;
-  right: -10px;
-  bottom: -10px;
-  width: 20px;
-  height: 20px;
-  border: 3px solid var(--surface);
+  inset: 0 auto auto 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+.dz-frame {
+  position: absolute;
+  box-sizing: border-box;
+}
+.dz-handle,
+.dz-rotate {
+  position: absolute;
+  pointer-events: auto;
+  z-index: 2;
+  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--dz-select);
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--surface);
+  box-shadow: var(--shadow-modal-strong);
+}
+.dz-h-n,
+.dz-h-s {
+  width: 22px;
+  height: 8px;
+  border-radius: 4px;
+  cursor: ns-resize;
+}
+.dz-h-e,
+.dz-h-w {
+  width: 8px;
+  height: 22px;
+  border-radius: 4px;
+  cursor: ew-resize;
+}
+.dz-h-nw,
+.dz-h-se {
   cursor: nwse-resize;
-  transform-origin: 50% 50%;
+}
+.dz-h-ne,
+.dz-h-sw {
+  cursor: nesw-resize;
+}
+.dz-frame-line .dz-handle {
+  cursor: crosshair;
+}
+.dz-rotate {
+  width: 18px;
+  height: 18px;
+  cursor: grab;
+}
+.dz-rotate::after {
+  position: absolute;
+  inset: 3px;
+  border: 1.5px solid var(--dz-select);
+  border-top-color: transparent;
+  border-radius: 50%;
+  content: '';
+}
+.dz .dz-inline {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  resize: none;
+}
+.dz-guide {
+  position: absolute;
+  z-index: 3;
+  background: var(--dz-guide);
+  pointer-events: none;
+}
+.dz-guide-v {
+  top: 0;
+  height: 100%;
+}
+.dz-guide-h {
+  left: 0;
+  width: 100%;
+}
+.dz-marquee {
+  position: absolute;
+  z-index: 3;
+  box-sizing: border-box;
+  border: solid var(--dz-select);
+  background: color-mix(in srgb, var(--dz-select) 12%, transparent);
+  pointer-events: none;
 }
 .dz-pages {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
   display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 4px;
-  transform: translateX(-50%);
+  padding: 8px;
+  border-top: 1px solid var(--border);
 }
+.dz-export {
+  margin-inline-start: auto;
+}
+.dz-zoom button:nth-child(2) {
+  min-width: 56px;
+}
+
+/* ---- right: the inspector ---- */
 .dz-props {
   display: grid;
-  gap: 8px;
+  gap: 10px;
+}
+.dz-section {
+  display: grid;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.dz-section > h3 {
+  margin: 0;
 }
 .dz-col {
   display: grid;
   gap: 4px;
+}
+.dz-col textarea {
+  resize: vertical;
 }
 .dz-row {
   display: flex;
@@ -282,8 +603,81 @@ body {
   min-width: 56px;
   color: var(--text-secondary);
 }
-.dz-row input[type='number'] {
-  width: 72px;
+.dz-row select {
+  flex: 1;
+}
+.dz-slider {
+  flex-wrap: nowrap;
+}
+.dz-slider input[type='range'] {
+  flex: 1;
+  min-width: 60px;
+  padding: 0;
+  border: none;
+  accent-color: var(--accent);
+}
+.dz-slider output {
+  min-width: 34px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+.dz-grid2,
+.dz-grid3,
+.dz-grid4 {
+  display: grid;
+  gap: 4px;
+}
+.dz-grid2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.dz-grid3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.dz-grid4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+.dz .dz-grid2 button,
+.dz .dz-grid3 button,
+.dz .dz-grid4 button {
+  padding: 5px 2px;
+  font-size: 12px;
+}
+.dz-grid-num {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px 8px;
+}
+.dz-num {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.dz-num > span {
+  min-width: 14px;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.dz-num input {
+  flex: 1;
+  width: 0;
+}
+.dz-choice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.dz .dz-choice button {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+.dz-toggles button {
+  min-width: 32px;
+}
+.dz-colors {
+  display: grid;
+  gap: 4px;
 }
 .dz-swatches {
   display: flex;
@@ -300,6 +694,10 @@ body {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
+.dz .dz-swatch-none {
+  background:
+    linear-gradient(135deg, transparent 45%, var(--danger) 45% 55%, transparent 55%), var(--surface);
+}
 .dz-swatches input[type='color'] {
   width: 28px;
   height: 24px;
@@ -308,10 +706,19 @@ body {
 .dz-actions button {
   flex: 1;
 }
+.dz-locked {
+  margin: 0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--hover);
+  color: var(--text-secondary);
+  font-size: 12px;
+}
 .dz-notice {
   position: fixed;
   right: 16px;
   bottom: 16px;
+  z-index: 10;
   display: flex;
   align-items: center;
   gap: 8px;

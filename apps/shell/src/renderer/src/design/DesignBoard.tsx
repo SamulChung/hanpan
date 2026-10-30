@@ -1,17 +1,28 @@
 /**
  * Hanpan design board: posters, card news, notices and thumbnails on a page.
- * Elements (text, shapes, lines, pictures) are moved and resized on the page and
- * styled in the side panel. A design is saved as one `.hpdesign` file (pictures
- * inside), exported as PNG or PDF, or copied as a picture to paste into a HWP,
- * Word or PowerPoint tab. Card news can start from an outline (a mind map pasted
- * as indented text): one card per main branch.
+ * Elements (text, shapes, lines, pictures, QR codes) are picked one by one or
+ * several at once (Shift, or a drag box), moved with guides that click to the
+ * page and to each other, resized from eight handles, turned by the rotation
+ * handle, and text is typed in place with a double click. The side panel
+ * styles the selection (Inspector.tsx); the left panel holds the AI, the
+ * templates, elements, text styles and the layers. A design is saved as one
+ * `.hpdesign` file (pictures inside), exported as PNG, JPG or PDF, or copied
+ * as a picture to paste into a HWP, Word or PowerPoint tab.
  */
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { pagePng } from './draw'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type DragEvent,
+  type PointerEvent as ReactPointerEvent,
+} from 'react'
+import { pageJpeg, pagePng } from './draw'
 import {
   DESIGN_MOODS,
   MAX_BRIEF_CHARS,
-  REWRITE_MODES,
   briefRequest,
   cleanRewrite,
   designFromBrief,
@@ -21,197 +32,179 @@ import {
   type DesignMood,
   type RewriteMode,
 } from './ai'
-import { runDesignAi, type AiErrorWords, type DesignAiApi } from './ai-run'
+import { runDesignAi, type DesignAiApi } from './ai-run'
+import {
+  HANDLE_SIDES,
+  alignMoves,
+  bounds,
+  overlaps,
+  resizeBox,
+  rotationAt,
+  snapMove,
+  spreadMoves,
+  union,
+  type AlignMode,
+  type Box,
+  type Guides,
+  type Handle,
+} from './geometry'
+import { Inspector, type Arrange } from './Inspector'
 import {
   DESIGN_TEMPLATES,
-  FONTS,
   FORMATS,
-  PALETTE,
+  SHAPES,
   blankDoc,
   cardNewsFromOutline,
   newId,
   parseDesign,
+  pathElement,
+  qrElement,
+  resizeDoc,
   shapeElement,
   textElement,
   type DesignDoc,
   type DesignElement,
   type DesignPage,
+  type ShapeName,
 } from './model'
+import { shapePath, textPadding } from './style'
+import { PagePreview, elementBox, elementLook, pageBackground } from './view'
+import { wordsFor } from './words'
 
 export interface DesignApi extends Partial<DesignAiApi> {
-  savePng(bytes: Uint8Array, name: string): Promise<string | null>
-  savePdf(pages: Uint8Array[], size: { width: number; height: number }, name: string): Promise<string | null>
+  savePng(bytes: Uint8Array, name: string, format?: 'png' | 'jpg'): Promise<string | null>
+  savePdf(
+    pages: Uint8Array[],
+    size: { width: number; height: number },
+    name: string,
+  ): Promise<string | null>
   copyImage(bytes: Uint8Array): Promise<boolean>
   saveDesign(text: string, name: string): Promise<string | null>
   openDesign(): Promise<{ name: string; text: string } | null>
   pickImage(): Promise<{ dataUrl: string; width: number; height: number } | null>
 }
 
-const KO = {
-  format: '판형',
-  templates: '템플릿',
-  outline: '개요로 카드뉴스',
-  outlineHint: '마인드맵을 들여쓴 글로 붙여 넣으세요. 첫 줄은 제목, 큰 가지마다 카드 한 장이 됩니다.',
-  make: '만들기',
-  title: '제목',
-  body: '본문',
-  rect: '사각형',
-  ellipse: '원',
-  line: '선',
-  image: '그림',
-  undo: '되돌리기',
-  redo: '다시 하기',
-  addPage: '쪽 추가',
-  dupPage: '쪽 복제',
-  delPage: '쪽 삭제',
-  png: 'PNG 저장',
-  pdf: 'PDF 저장',
-  copy: '문서에 붙여 넣기용 복사',
-  copied: '복사했습니다. 한글·워드·PPT 탭에서 Ctrl+V 하세요.',
-  saved: '저장했습니다',
-  save: '저장',
-  open: '열기',
-  text: '글',
-  size: '크기',
-  font: '글꼴',
-  color: '글자색',
-  fill: '채우기',
-  stroke: '선 색',
-  strokeWidth: '선 굵기',
-  radius: '모서리',
-  opacity: '투명도',
-  bold: '굵게',
-  align: '정렬',
-  front: '앞으로',
-  back: '뒤로',
-  duplicate: '복제',
-  remove: '삭제',
-  background: '쪽 배경',
-  page: '쪽',
-  nothing: '요소를 고르면 여기서 꾸밉니다.',
-  close: '닫기',
-  newText: '내용을 입력하세요',
-  aiMake: 'AI로 만들기',
-  aiPlaceholder: '무엇을 만들까요?\n예: 11월 20일 저녁 7시 본관 강당에서 여는 학부모 설명회 안내문',
-  aiFormat: '판형',
-  aiMood: '분위기',
-  aiAuto: 'AI가 고름',
-  moods: { formal: '공식적', calm: '차분한', vivid: '강렬한', warm: '따뜻한' } as Record<DesignMood, string>,
-  aiGo: '만들기',
-  aiAgain: '다시 만들기',
-  aiStop: '멈추기',
-  aiWriting: 'AI가 글을 쓰는 중…',
-  aiHint: '설정에서 고른 AI가 글을 쓰고, 배치와 색은 한판이 정합니다. 만든 뒤에도 하나하나 고칠 수 있고, 되돌리기로 이전 디자인에 돌아갑니다.',
-  aiNeedRequest: '무엇을 만들지 먼저 적어 주세요.',
-  aiUnreadable: 'AI의 답에서 쓸 글을 찾지 못했습니다. 한 번 더 누르거나 요청을 조금 바꿔 보세요.',
-  aiRewrite: 'AI로 고치기',
-  rewrites: { polish: '다듬기', shorter: '짧게', catchy: '눈길 끌게', translate: '영↔한 번역' } as Record<RewriteMode, string>,
-  aiRewriting: 'AI가 고치는 중…',
-  aiFailed: 'AI가 답하지 못했습니다',
-  aiErrors: {
-    unknown: 'AI가 알 수 없는 이유로 멈췄습니다.',
-    timeout: 'AI가 제때 답하지 않았습니다.',
-    credits: 'AI 사용 한도를 다 썼습니다.',
-    network: 'AI에 연결하지 못했습니다. 인터넷이나 로컬 AI 서버를 확인하세요.',
-    overloaded: 'AI 서비스가 혼잡합니다. 잠시 뒤 다시 해 보세요.',
-    noSettings: 'AI 설정을 읽지 못했습니다. 설정 › AI에서 쓸 AI를 고르세요.',
-  } as AiErrorWords,
-}
-type Words = typeof KO
-const EN: Words = {
-  format: 'Format',
-  templates: 'Templates',
-  outline: 'Card news from an outline',
-  outlineHint: 'Paste a mind map as indented text. The first line is the title; each main branch becomes a card.',
-  make: 'Make',
-  title: 'Title',
-  body: 'Text',
-  rect: 'Rectangle',
-  ellipse: 'Circle',
-  line: 'Line',
-  image: 'Picture',
-  undo: 'Undo',
-  redo: 'Redo',
-  addPage: 'Add page',
-  dupPage: 'Duplicate page',
-  delPage: 'Delete page',
-  png: 'Save PNG',
-  pdf: 'Save PDF',
-  copy: 'Copy to paste in a document',
-  copied: 'Copied. Press Ctrl+V in a HWP, Word or PowerPoint tab.',
-  saved: 'Saved',
-  save: 'Save',
-  open: 'Open',
-  text: 'Text',
-  size: 'Size',
-  font: 'Font',
-  color: 'Colour',
-  fill: 'Fill',
-  stroke: 'Line colour',
-  strokeWidth: 'Line width',
-  radius: 'Corners',
-  opacity: 'Opacity',
-  bold: 'Bold',
-  align: 'Align',
-  front: 'Forward',
-  back: 'Backward',
-  duplicate: 'Duplicate',
-  remove: 'Delete',
-  background: 'Page background',
-  page: 'Page',
-  nothing: 'Pick an element to style it here.',
-  close: 'Close',
-  newText: 'Type here',
-  aiMake: 'Make with AI',
-  aiPlaceholder: 'What should it be?\ne.g. A notice for a parents evening on 20 November, 7 pm, in the main hall',
-  aiFormat: 'Format',
-  aiMood: 'Mood',
-  aiAuto: 'AI picks',
-  moods: { formal: 'Formal', calm: 'Calm', vivid: 'Bold', warm: 'Warm' },
-  aiGo: 'Make',
-  aiAgain: 'Make again',
-  aiStop: 'Stop',
-  aiWriting: 'The AI is writing…',
-  aiHint: 'The AI you chose in Settings writes the words; Hanpan does the layout and colours. Everything stays editable, and Undo brings back the previous design.',
-  aiNeedRequest: 'Write what to make first.',
-  aiUnreadable: 'Nothing usable in the AI’s answer. Press again or change the request a little.',
-  aiRewrite: 'Edit with AI',
-  rewrites: { polish: 'Polish', shorter: 'Shorter', catchy: 'Catchier', translate: 'EN↔KO' },
-  aiRewriting: 'The AI is editing…',
-  aiFailed: 'The AI did not answer',
-  aiErrors: {
-    unknown: 'The AI stopped for an unknown reason.',
-    timeout: 'The AI did not answer in time.',
-    credits: 'The AI usage limit is used up.',
-    network: 'Could not reach the AI. Check the internet or the local AI server.',
-    overloaded: 'The AI service is busy. Try again shortly.',
-    noSettings: 'Could not read the AI settings. Choose an AI in Settings › AI.',
-  },
+type Tab = 'ai' | 'templates' | 'elements' | 'text' | 'layers'
+
+type Drag =
+  | {
+      mode: 'move'
+      start: Pt
+      origs: DesignElement[]
+      others: Box[]
+      moved: boolean
+      clicked: string
+      collapse: boolean
+    }
+  | { mode: 'resize'; start: Pt; handle: Handle; orig: DesignElement; moved: boolean }
+  | { mode: 'rotate'; orig: DesignElement; moved: boolean }
+  | { mode: 'marquee'; start: Pt; base: string[] }
+
+interface Pt {
+  x: number
+  y: number
 }
 
-type Drag = { id: string; mode: 'move' | 'resize'; startX: number; startY: number; orig: DesignElement }
+/** A deep copy that shares the (immutable) strings: a picture's data URL is not copied on every change. */
+function clone<T>(value: T): T {
+  if (Array.isArray(value)) return value.map(clone) as T
+  if (value && typeof value === 'object') {
+    const out: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(value)) out[k] = clone(v)
+    return out as T
+  }
+  return value
+}
 
-const clone = <T,>(value: T): T => JSON.parse(JSON.stringify(value)) as T
+const MAX_IMAGE_BYTES = 15 * 1024 * 1024
+const HISTORY = 80
+
+/** Text colour that reads on this page's background. */
+function inkFor(background: string): string {
+  const hex = /^#([0-9a-f]{6})$/i.exec(background)?.[1]
+  if (!hex) return '#0F172A'
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16))
+  return 0.299 * r! + 0.587 * g! + 0.114 * b! < 140 ? '#FFFFFF' : '#0F172A'
+}
+
+/** Every colour the design uses, most used first, for the colour pickers. */
+function colorsOf(doc: DesignDoc): string[] {
+  const count = new Map<string, number>()
+  const add = (c: string | undefined) => {
+    if (c && /^#[0-9a-f]{6}$/i.test(c))
+      count.set(c.toUpperCase(), (count.get(c.toUpperCase()) ?? 0) + 1)
+  }
+  for (const pg of doc.pages) {
+    add(pg.background)
+    add(pg.background2)
+    for (const e of pg.elements)
+      for (const c of [e.fill, e.fill2, e.color, e.stroke, e.highlight, e.outlineColor]) add(c)
+  }
+  return [...count.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([c]) => c)
+    .slice(0, 14)
+}
+
+function readImageFile(file: File): Promise<{ dataUrl: string; width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onerror = () => reject(new Error('read'))
+    reader.onload = () => {
+      const dataUrl = String(reader.result)
+      const img = new Image()
+      img.onload = () => resolve({ dataUrl, width: img.naturalWidth, height: img.naturalHeight })
+      img.onerror = () => reject(new Error('image'))
+      img.src = dataUrl
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
+const isTyping = (target: EventTarget | null) => {
+  const el = target as HTMLElement | null
+  return Boolean(el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || el.isContentEditable))
+}
 
 export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string | undefined }) {
-  const w = p.lang === 'ko' ? KO : EN
-  const [doc, setDoc] = useState<DesignDoc>(() => (p.outline ? cardNewsFromOutline(p.outline) : DESIGN_TEMPLATES[0]!.make()))
+  const w = wordsFor(p.lang)
+  const [doc, setDoc] = useState<DesignDoc>(() =>
+    p.outline ? cardNewsFromOutline(p.outline) : DESIGN_TEMPLATES[0]!.make(),
+  )
   const [pageIndex, setPageIndex] = useState(0)
-  const [selected, setSelected] = useState<string | null>(null)
+  const [selected, setSelected] = useState<string[]>([])
   const [past, setPast] = useState<DesignDoc[]>([])
   const [future, setFuture] = useState<DesignDoc[]>([])
-  const [scale, setScale] = useState(0.4)
+  const [fit, setFit] = useState(0.4)
+  const [zoom, setZoom] = useState(1)
   const [notice, setNotice] = useState<string | null>(null)
+  // the AI first when there is one (it makes a whole design from a request); a map's card news opens on its layers
+  const [tab, setTab] = useState<Tab>(() =>
+    p.outline ? 'layers' : p.api.aiStream ? 'ai' : 'templates',
+  )
   const [outlineOpen, setOutlineOpen] = useState(false)
-  const [outlineText, setOutlineText] = useState('공문서 작성 규칙\n  날짜 표기\n    2026. 10. 30. 처럼 씁니다\n  항목 번호\n    1. 가. 1) 가) 순서\n  끝 표시\n    본문 끝에 두 칸 띄우고 끝.')
+  const [outlineText, setOutlineText] = useState(
+    '공문서 작성 규칙\n  날짜 표기\n    2026. 10. 30. 처럼 씁니다\n  항목 번호\n    1. 가. 1) 가) 순서\n  끝 표시\n    본문 끝에 두 칸 띄우고 끝.',
+  )
+  const [guides, setGuides] = useState<Guides>({ v: [], h: [] })
+  const [marquee, setMarquee] = useState<Box | null>(null)
+  const [editing, setEditing] = useState<string | null>(null)
+  const [qrInput, setQrInput] = useState('')
   const stageWrap = useRef<HTMLDivElement>(null)
+  const pageRef = useRef<HTMLDivElement>(null)
   const drag = useRef<Drag | null>(null)
-  // the latest doc, for changes that land after an await (an AI answer)
+  // the latest doc, for changes that land after an await (an AI answer, a picture read)
   const docRef = useRef(doc)
   docRef.current = doc
-  const hasAi = Boolean(p.api.aiStream && p.api.getAiSettings && p.api.onAiStream && p.api.aiStreamCancel)
+  const lastMerge = useRef<{ key: string; at: number } | null>(null)
+
+  const hasAi = Boolean(
+    p.api.aiStream && p.api.getAiSettings && p.api.onAiStream && p.api.aiStreamCancel,
+  )
   const [aiRequest, setAiRequest] = useState('')
-  const [aiFormat, setAiFormat] = useState<string>(() => FORMATS.find((f) => f.width === doc.width && f.height === doc.height)?.id ?? 'a4')
+  const [aiFormat, setAiFormat] = useState<string>(
+    () => FORMATS.find((f) => f.width === doc.width && f.height === doc.height)?.id ?? 'a4',
+  )
   const [aiMood, setAiMood] = useState<DesignMood | 'auto'>('auto')
   const [aiBusy, setAiBusy] = useState<null | 'make' | 'rewrite'>(null)
   const [aiLive, setAiLive] = useState('')
@@ -219,152 +212,644 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   const [aiMade, setAiMade] = useState(false)
   const aiAbort = useRef<AbortController | null>(null)
 
-  const page: DesignPage = doc.pages[Math.min(pageIndex, doc.pages.length - 1)]!
-  const element = page.elements.find((e) => e.id === selected) ?? null
+  const pi = Math.min(pageIndex, doc.pages.length - 1)
+  const page: DesignPage = doc.pages[pi]!
+  const selection = page.elements.filter((e) => selected.includes(e.id))
+  const single = selection.length === 1 ? selection[0]! : null
+  const scale = fit * zoom
+  const docColors = useMemo(() => colorsOf(doc), [doc])
+  const templatePreviews = useMemo(() => DESIGN_TEMPLATES.map((t) => ({ t, doc: t.make() })), [])
 
-  // the page fits the space it has
+  // the page fits the space it has; zoom multiplies that
   useLayoutEffect(() => {
-    const fit = () => {
+    const measure = () => {
       const box = stageWrap.current?.getBoundingClientRect()
       if (!box) return
-      setScale(Math.max(0.1, Math.min((box.width - 48) / doc.width, (box.height - 48) / doc.height)))
+      setFit(Math.max(0.05, Math.min((box.width - 64) / doc.width, (box.height - 64) / doc.height)))
     }
-    fit()
-    window.addEventListener('resize', fit)
-    return () => window.removeEventListener('resize', fit)
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
   }, [doc.width, doc.height])
 
-  /** A change that can be undone. */
-  const commit = useCallback((change: (draft: DesignDoc) => void) => {
+  // ---- history ----
+
+  /** A change that can be undone; quick repeats with the same `merge` key are one step. */
+  const commit = useCallback((change: (draft: DesignDoc) => void, merge?: string) => {
     const current = docRef.current
-    setPast((list) => [...list.slice(-49), current])
-    setFuture([])
+    const now = Date.now()
+    const joined =
+      merge !== undefined && lastMerge.current?.key === merge && now - lastMerge.current.at < 1200
+    if (!joined) {
+      setPast((list) => [...list.slice(-(HISTORY - 1)), current])
+      setFuture([])
+    }
+    lastMerge.current = merge === undefined ? null : { key: merge, at: now }
     const next = clone(current)
     change(next)
     docRef.current = next
     setDoc(next)
   }, [])
-  const changePage = (change: (pg: DesignPage) => void) => commit((d) => change(d.pages[pageIndex]!))
-  const changeElement = (id: string, patch: Partial<DesignElement>) =>
+  /** The step a drag will become, taken when it first moves. */
+  const snapshot = () => {
+    const before = docRef.current
+    setPast((list) => [...list.slice(-(HISTORY - 1)), before])
+    setFuture([])
+    lastMerge.current = null
+  }
+  /** A change while dragging: no history step of its own. */
+  const live = (change: (draft: DesignDoc) => void) => {
+    const next = clone(docRef.current)
+    change(next)
+    docRef.current = next
+    setDoc(next)
+  }
+  const changePage = (change: (pg: DesignPage) => void, merge?: string) =>
+    commit((d) => change(d.pages[pi]!), merge)
+  const changeElement = (id: string, patch: Partial<DesignElement>, merge?: string) =>
     changePage((pg) => {
       const e = pg.elements.find((x) => x.id === id)
       if (e) Object.assign(e, patch)
+      // a QR code stays square
+      if (e?.kind === 'qr' && ('w' in patch || 'h' in patch)) e.h = e.w = Math.max(e.w, e.h)
+    }, merge)
+  const moveElements = (moves: Map<string, { dx: number; dy: number }>) =>
+    changePage((pg) => {
+      for (const e of pg.elements) {
+        const m = moves.get(e.id)
+        if (!m || e.locked) continue
+        e.x += m.dx
+        e.y += m.dy
+      }
     })
 
   const replaceDoc = (next: DesignDoc) => {
-    const current = docRef.current
-    setPast((list) => [...list.slice(-49), current])
+    const before = docRef.current
+    setPast((list) => [...list.slice(-(HISTORY - 1)), before])
     setFuture([])
+    lastMerge.current = null
+    docRef.current = next
     setDoc(next)
     setPageIndex(0)
-    setSelected(null)
+    setSelected([])
+    setEditing(null)
   }
-
   const undo = () => {
     const prev = past[past.length - 1]
     if (!prev) return
     setPast(past.slice(0, -1))
     setFuture([doc, ...future])
+    lastMerge.current = null
     setDoc(prev)
+    setEditing(null)
   }
   const redo = () => {
     const next = future[0]
     if (!next) return
     setFuture(future.slice(1))
     setPast([...past, doc])
+    lastMerge.current = null
     setDoc(next)
   }
 
-  const add = (e: DesignElement) => {
-    changePage((pg) => pg.elements.push(e))
-    setSelected(e.id)
-  }
-  /** Text colour that reads on this page's background. */
-  const inkFor = (background: string): string => {
-    const hex = /^#([0-9a-f]{6})$/i.exec(background)?.[1]
-    if (!hex) return '#0F172A'
-    const [r, g, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16))
-    return 0.299 * r! + 0.587 * g! + 0.114 * b! < 140 ? '#FFFFFF' : '#0F172A'
-  }
-  const center = (wd: number, ht: number) => ({ x: Math.round((doc.width - wd) / 2), y: Math.round((doc.height - ht) / 2), w: wd, h: ht })
+  // ---- adding ----
 
+  const center = (wd: number, ht: number) => ({
+    x: Math.round((doc.width - wd) / 2),
+    y: Math.round((doc.height - ht) / 2),
+    w: Math.round(wd),
+    h: Math.round(ht),
+  })
+  const add = (...elements: DesignElement[]) => {
+    changePage((pg) => pg.elements.push(...elements))
+    setSelected(elements.map((e) => e.id))
+  }
+  const unit = Math.min(doc.width, doc.height)
+  const ink = inkFor(page.background)
+  const addTextPreset = (
+    kind: 'title' | 'subtitle' | 'body' | 'badge' | 'outlined' | 'shadowed' | 'quote',
+  ) => {
+    const base = unit / 1080
+    const s = (n: number) => Math.round(n * base)
+    switch (kind) {
+      case 'title':
+        return add(
+          textElement({
+            ...center(doc.width * 0.8, s(140)),
+            text: w.title,
+            fontSize: s(96),
+            fontWeight: 900,
+            color: ink,
+          }),
+        )
+      case 'subtitle':
+        return add(
+          textElement({
+            ...center(doc.width * 0.75, s(90)),
+            text: w.subtitle,
+            fontSize: s(60),
+            fontWeight: 700,
+            color: ink,
+          }),
+        )
+      case 'body':
+        return add(
+          textElement({
+            ...center(doc.width * 0.7, s(200)),
+            text: w.newText,
+            fontSize: s(44),
+            color: ink,
+          }),
+        )
+      case 'badge':
+        return add(
+          textElement({
+            ...center(s(380), s(96)),
+            text: w.presets.badge,
+            fontSize: s(52),
+            fontWeight: 700,
+            color: '#FFFFFF',
+            highlight: '#FF8A3D',
+            radius: s(48),
+            align: 'center',
+          }),
+        )
+      case 'outlined':
+        return add(
+          textElement({
+            ...center(doc.width * 0.8, s(160)),
+            text: w.presets.outlined,
+            fontSize: s(110),
+            fontWeight: 900,
+            color: '#FFFFFF',
+            outline: s(10),
+            outlineColor: '#0F172A',
+            shadow: 'hard',
+          }),
+        )
+      case 'shadowed':
+        return add(
+          textElement({
+            ...center(doc.width * 0.8, s(150)),
+            text: w.presets.shadowed,
+            fontSize: s(100),
+            fontWeight: 900,
+            color: ink,
+            shadow: 'soft',
+          }),
+        )
+      case 'quote':
+        return add(
+          textElement({
+            ...center(doc.width * 0.75, s(200)),
+            text: '“함께 만드는 내일”',
+            fontSize: s(70),
+            fontWeight: 700,
+            italic: true,
+            align: 'center',
+            color: ink,
+          }),
+        )
+    }
+  }
+  const addShape = (kind: 'rect' | 'ellipse' | 'line' | ShapeName) => {
+    const s = Math.round(unit * 0.3)
+    if (kind === 'rect') return add(shapeElement('rect', center(s * 1.4, s)))
+    if (kind === 'ellipse') return add(shapeElement('ellipse', center(s, s)))
+    if (kind === 'line') return add(shapeElement('line', { ...center(s * 1.6, 0), h: 0 }))
+    return add(pathElement(kind, center(kind === 'arrow' ? s * 1.4 : s, s)))
+  }
+  const placeImage = (picked: { dataUrl: string; width: number; height: number }, at?: Pt) => {
+    const k = Math.min(1, (doc.width * 0.6) / picked.width, (doc.height * 0.6) / picked.height)
+    const wd = Math.round(picked.width * k)
+    const ht = Math.round(picked.height * k)
+    const box = at
+      ? { x: Math.round(at.x - wd / 2), y: Math.round(at.y - ht / 2), w: wd, h: ht }
+      : center(wd, ht)
+    add({ id: newId(), kind: 'image', src: picked.dataUrl, ...box })
+  }
   const addImage = async () => {
     const picked = await p.api.pickImage()
-    if (!picked) return
-    const fit = Math.min(1, (doc.width * 0.6) / picked.width, (doc.height * 0.6) / picked.height)
-    add({ id: newId(), kind: 'image', src: picked.dataUrl, ...center(Math.round(picked.width * fit), Math.round(picked.height * fit)) })
+    if (picked) placeImage(picked)
+  }
+  const addImageFile = async (file: File, at?: Pt) => {
+    if (!file.type.startsWith('image/')) return
+    if (file.size > MAX_IMAGE_BYTES) return say(w.imageTooBig)
+    placeImage(await readImageFile(file), at)
+  }
+  const addQr = () => {
+    const text = qrInput.trim() || 'https://'
+    const s = Math.round(unit * 0.3)
+    add(qrElement({ ...center(s, s), qrText: text }))
   }
 
-  // ---- moving and resizing ----
+  // ---- acting on the selection ----
 
-  const startDrag = (event: ReactPointerEvent, e: DesignElement, mode: Drag['mode']) => {
+  const duplicate = () => {
+    if (!selection.length) return
+    const copies = selection.map((e) => ({
+      ...clone(e),
+      id: newId(),
+      x: e.x + 30,
+      y: e.y + 30,
+      locked: false,
+    }))
+    add(...copies)
+  }
+  const remove = () => {
+    const ids = new Set(selected)
+    changePage((pg) => (pg.elements = pg.elements.filter((x) => !ids.has(x.id))))
+    setSelected([])
+  }
+  const toggleLock = () => {
+    const lock = !selection.every((e) => e.locked)
+    changePage((pg) =>
+      pg.elements.forEach((e) => selected.includes(e.id) && (e.locked = lock || undefined)),
+    )
+  }
+  const arrange = (where: Arrange) =>
+    changePage((pg) => {
+      const ids = new Set(selected)
+      const picked = pg.elements.filter((e) => ids.has(e.id))
+      const rest = pg.elements.filter((e) => !ids.has(e.id))
+      if (where === 'toFront') pg.elements = [...rest, ...picked]
+      else if (where === 'toBack') pg.elements = [...picked, ...rest]
+      else {
+        const list = pg.elements
+        const order = where === 'front' ? [...list.keys()].reverse() : [...list.keys()]
+        for (const i of order) {
+          const j = where === 'front' ? i + 1 : i - 1
+          if (!ids.has(list[i]!.id) || j < 0 || j >= list.length || ids.has(list[j]!.id)) continue
+          ;[list[i], list[j]] = [list[j]!, list[i]!]
+        }
+      }
+    })
+  const align = (mode: AlignMode) => moveElements(alignMoves(selection, mode, doc))
+  const spread = (axis: 'x' | 'y') => moveElements(spreadMoves(selection, axis))
+  const fillPage = (id: string) =>
+    changePage((pg) => {
+      const i = pg.elements.findIndex((x) => x.id === id)
+      const e = pg.elements[i]
+      if (!e) return
+      const k = Math.max(doc.width / e.w, doc.height / e.h)
+      e.w = Math.round(e.w * k)
+      e.h = Math.round(e.h * k)
+      e.x = Math.round((doc.width - e.w) / 2)
+      e.y = Math.round((doc.height - e.h) / 2)
+      e.rotation = 0
+      // a picture filling the page is the backdrop
+      pg.elements.splice(i, 1)
+      pg.elements.unshift(e)
+    })
+  const replaceImage = async (id: string) => {
+    const picked = await p.api.pickImage()
+    if (!picked) return
+    changeElement(id, {
+      src: picked.dataUrl,
+      h: Math.round(
+        (docRef.current.pages[pi]!.elements.find((e) => e.id === id)?.w ?? picked.width) *
+          (picked.height / picked.width),
+      ),
+    })
+  }
+  const changeFormat = (id: string) => {
+    const f = FORMATS.find((x) => x.id === id)
+    if (!f || (f.width === doc.width && f.height === doc.height)) return
+    replaceDoc({ ...resizeDoc(docRef.current, f) })
+    setPageIndex(pi)
+  }
+
+  // ---- the pointer on the page ----
+
+  const toPage = (clientX: number, clientY: number): Pt => {
+    const r = pageRef.current!.getBoundingClientRect()
+    return { x: (clientX - r.left) / scale, y: (clientY - r.top) / scale }
+  }
+  const capture = (event: ReactPointerEvent) =>
+    (event.currentTarget as Element).setPointerCapture?.(event.pointerId)
+
+  const startMove = (event: ReactPointerEvent, e: DesignElement) => {
+    if (event.button !== 0 || editing === e.id) return
     event.stopPropagation()
     event.preventDefault()
-    setSelected(e.id)
-    setPast((list) => [...list.slice(-49), doc])
-    setFuture([])
-    drag.current = { id: e.id, mode, startX: event.clientX, startY: event.clientY, orig: clone(e) }
-    ;(event.target as Element).setPointerCapture?.(event.pointerId)
+    if (editing) stopEditing()
+    const additive = event.shiftKey || event.ctrlKey || event.metaKey
+    let next = selected
+    if (additive)
+      next = selected.includes(e.id) ? selected.filter((x) => x !== e.id) : [...selected, e.id]
+    else if (!selected.includes(e.id)) next = [e.id]
+    setSelected(next)
+    const moving = page.elements.filter((x) => next.includes(x.id) && !x.locked)
+    if (!moving.length || (additive && !next.includes(e.id))) return
+    const ids = new Set(moving.map((x) => x.id))
+    drag.current = {
+      mode: 'move',
+      start: toPage(event.clientX, event.clientY),
+      origs: moving.map(clone),
+      others: page.elements.filter((x) => !ids.has(x.id)).map(bounds),
+      moved: false,
+      clicked: e.id,
+      collapse: !additive && next.length > 1,
+    }
+    capture(event)
   }
+  const startResize = (event: ReactPointerEvent, e: DesignElement, handle: Handle) => {
+    event.stopPropagation()
+    event.preventDefault()
+    drag.current = {
+      mode: 'resize',
+      start: toPage(event.clientX, event.clientY),
+      handle,
+      orig: clone(e),
+      moved: false,
+    }
+    capture(event)
+  }
+  const startRotate = (event: ReactPointerEvent, e: DesignElement) => {
+    event.stopPropagation()
+    event.preventDefault()
+    drag.current = { mode: 'rotate', orig: clone(e), moved: false }
+    capture(event)
+  }
+  const startMarquee = (event: ReactPointerEvent) => {
+    if (event.button !== 0) return
+    if (editing) stopEditing()
+    const additive = event.shiftKey || event.ctrlKey || event.metaKey
+    if (!additive) setSelected([])
+    drag.current = {
+      mode: 'marquee',
+      start: toPage(event.clientX, event.clientY),
+      base: additive ? selected : [],
+    }
+    capture(event)
+  }
+
   const onPointerMove = (event: ReactPointerEvent) => {
     const d = drag.current
     if (!d) return
-    const dx = (event.clientX - d.startX) / scale
-    const dy = (event.clientY - d.startY) / scale
-    setDoc((current) => {
-      const next = clone(current)
-      const e = next.pages[pageIndex]!.elements.find((x) => x.id === d.id)
-      if (!e) return current
-      if (d.mode === 'move') {
-        e.x = Math.round(d.orig.x + dx)
-        e.y = Math.round(d.orig.y + dy)
-      } else if (e.kind === 'line') {
-        e.w = Math.round(d.orig.w + dx)
-        e.h = Math.round(d.orig.h + dy)
-      } else {
-        e.w = Math.max(10, Math.round(d.orig.w + dx))
-        e.h = Math.max(10, Math.round(d.orig.h + dy))
+    const at = toPage(event.clientX, event.clientY)
+    if (d.mode === 'marquee') {
+      const box = {
+        left: Math.min(d.start.x, at.x),
+        top: Math.min(d.start.y, at.y),
+        right: Math.max(d.start.x, at.x),
+        bottom: Math.max(d.start.y, at.y),
       }
-      return next
-    })
+      setMarquee(box)
+      const hit = page.elements
+        .filter((e) => !e.locked && overlaps(bounds(e), box))
+        .map((e) => e.id)
+      setSelected([...new Set([...d.base, ...hit])])
+      return
+    }
+    if (!d.moved) {
+      if (d.mode !== 'rotate' && Math.hypot(at.x - d.start.x, at.y - d.start.y) * scale < 3) return
+      d.moved = true
+      snapshot()
+    }
+    if (d.mode === 'move') {
+      let dx = at.x - d.start.x
+      let dy = at.y - d.start.y
+      if (event.shiftKey && Math.abs(dx) > Math.abs(dy)) dy = 0
+      else if (event.shiftKey) dx = 0
+      const moved = union(d.origs.map((o) => bounds({ ...o, x: o.x + dx, y: o.y + dy })))
+      if (!event.altKey) {
+        const snap = snapMove(moved, d.others, doc, 8 / scale)
+        dx += snap.dx
+        dy += snap.dy
+        setGuides(snap.guides)
+      } else setGuides({ v: [], h: [] })
+      live((draft) => {
+        for (const o of d.origs) {
+          const e = draft.pages[pi]!.elements.find((x) => x.id === o.id)
+          if (!e) continue
+          e.x = Math.round(o.x + dx)
+          e.y = Math.round(o.y + dy)
+        }
+      })
+    } else if (d.mode === 'resize') {
+      const o = d.orig
+      const dx = at.x - d.start.x
+      const dy = at.y - d.start.y
+      live((draft) => {
+        const e = draft.pages[pi]!.elements.find((x) => x.id === o.id)
+        if (!e) return
+        if (o.kind === 'line') {
+          // a line's handles are its two ends
+          if (d.handle === 'nw')
+            Object.assign(e, {
+              x: Math.round(o.x + dx),
+              y: Math.round(o.y + dy),
+              w: Math.round(o.w - dx),
+              h: Math.round(o.h - dy),
+            })
+          else Object.assign(e, { w: Math.round(o.w + dx), h: Math.round(o.h + dy) })
+          return
+        }
+        const [sx, sy] = HANDLE_SIDES[d.handle]
+        const corner = sx !== 0 && sy !== 0
+        // pictures, QR codes and text keep their shape from a corner; Shift does it for the rest
+        const keep =
+          corner && (o.kind === 'image' || o.kind === 'qr' || o.kind === 'text' || event.shiftKey)
+        Object.assign(e, resizeBox(o, d.handle, dx, dy, keep))
+        if (o.kind === 'text' && corner) {
+          const k = e.w / o.w
+          e.fontSize = Math.max(6, Math.round((o.fontSize ?? 48) * k))
+          if (o.letterSpacing) e.letterSpacing = Math.round(o.letterSpacing * k * 10) / 10
+          if (o.outline) e.outline = Math.round(o.outline * k * 10) / 10
+          if (o.radius) e.radius = Math.round(o.radius * k)
+        }
+      })
+    } else if (d.mode === 'rotate') {
+      const o = d.orig
+      const rotation = rotationAt({ x: o.x + o.w / 2, y: o.y + o.h / 2 }, at, event.shiftKey)
+      live((draft) => {
+        const e = draft.pages[pi]!.elements.find((x) => x.id === o.id)
+        if (e) e.rotation = rotation || undefined
+      })
+    }
   }
   const endDrag = () => {
+    const d = drag.current
     drag.current = null
+    setGuides({ v: [], h: [] })
+    setMarquee(null)
+    // a plain click on one of several picked elements picks just that one
+    if (d?.mode === 'move' && !d.moved && d.collapse) setSelected([d.clicked])
   }
 
-  // ---- keyboard ----
+  // ---- typing in place ----
+
+  const startEdit = (e: DesignElement) => {
+    if (e.kind !== 'text' || e.locked) return
+    setSelected([e.id])
+    setEditing(e.id)
+  }
+  /** Leaves the text being typed, keeping it (the blur saves it). */
+  const stopEditing = () => {
+    const active = document.activeElement as HTMLElement | null
+    if (active?.dataset.hanpan === 'design-inline') active.blur()
+    else setEditing(null)
+  }
+  const finishEdit = (id: string, text: string, height: number) => {
+    setEditing(null)
+    const e = docRef.current.pages[pi]!.elements.find((x) => x.id === id)
+    if (!e || (e.text === text && height <= e.h)) return
+    changeElement(id, { text, h: Math.max(e.h, Math.ceil(height)) })
+  }
+
+  // ---- keyboard, clipboard, wheel ----
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement | null
-      if (target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) return
+      if (isTyping(event.target)) return
       const mod = event.ctrlKey || event.metaKey
-      if (mod && event.key.toLowerCase() === 'z') {
+      const key = event.key.toLowerCase()
+      if (mod && key === 'z') {
         event.preventDefault()
         if (event.shiftKey) redo()
         else undo()
-      } else if (mod && event.key.toLowerCase() === 'y') {
+      } else if (mod && key === 'y') {
         event.preventDefault()
         redo()
-      } else if (element && (event.key === 'Delete' || event.key === 'Backspace')) {
+      } else if (mod && key === 'a') {
         event.preventDefault()
-        changePage((pg) => (pg.elements = pg.elements.filter((x) => x.id !== element.id)))
-        setSelected(null)
-      } else if (element && mod && event.key.toLowerCase() === 'd') {
+        setSelected(page.elements.filter((e) => !e.locked).map((e) => e.id))
+      } else if (mod && key === 'd') {
         event.preventDefault()
-        const copy = { ...clone(element), id: newId(), x: element.x + 30, y: element.y + 30 }
-        add(copy)
-      } else if (element && event.key.startsWith('Arrow')) {
+        duplicate()
+      } else if (mod && (event.key === ']' || event.key === '[')) {
+        event.preventDefault()
+        if (selection.length)
+          arrange(
+            event.key === ']'
+              ? event.shiftKey
+                ? 'toFront'
+                : 'front'
+              : event.shiftKey
+                ? 'toBack'
+                : 'back',
+          )
+      } else if (mod && (key === '=' || key === '+' || key === '-' || key === '0')) {
+        event.preventDefault()
+        setZoom((z) =>
+          key === '0' ? 1 : Math.min(4, Math.max(0.25, key === '-' ? z / 1.2 : z * 1.2)),
+        )
+      } else if (event.key === 'Escape') {
+        setSelected([])
+      } else if (selection.length && (event.key === 'Delete' || event.key === 'Backspace')) {
+        event.preventDefault()
+        remove()
+      } else if (selection.length && event.key === 'Enter' && single?.kind === 'text') {
+        event.preventDefault()
+        startEdit(single)
+      } else if (selection.length && event.key.startsWith('Arrow')) {
         event.preventDefault()
         const step = event.shiftKey ? 10 : 1
         const dx = event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0
         const dy = event.key === 'ArrowUp' ? -step : event.key === 'ArrowDown' ? step : 0
-        changeElement(element.id, { x: element.x + dx, y: element.y + dy })
+        changePage(
+          (pg) =>
+            pg.elements.forEach(
+              (e) => selected.includes(e.id) && !e.locked && ((e.x += dx), (e.y += dy)),
+            ),
+          'nudge',
+        )
+      }
+    }
+    const onCopy = (event: ClipboardEvent, cut: boolean) => {
+      if (isTyping(event.target) || !selection.length || !event.clipboardData) return
+      event.preventDefault()
+      event.clipboardData.setData('application/x-hanpan-design', JSON.stringify(selection))
+      event.clipboardData.setData(
+        'text/plain',
+        selection
+          .map((e) => e.text ?? e.qrText ?? '')
+          .filter(Boolean)
+          .join('\n'),
+      )
+      if (cut) remove()
+    }
+    const copy = (event: ClipboardEvent) => onCopy(event, false)
+    const cut = (event: ClipboardEvent) => onCopy(event, true)
+    const paste = (event: ClipboardEvent) => {
+      if (isTyping(event.target) || !event.clipboardData) return
+      const ours = event.clipboardData.getData('application/x-hanpan-design')
+      if (ours) {
+        event.preventDefault()
+        try {
+          const list = (JSON.parse(ours) as DesignElement[]).filter(
+            (e) => e && typeof e.kind === 'string',
+          )
+          add(
+            ...list.map((e) => ({
+              ...e,
+              id: newId(),
+              x: e.x + 30,
+              y: e.y + 30,
+              locked: undefined,
+            })),
+          )
+        } catch {
+          /* not ours after all */
+        }
+        return
+      }
+      const file = [...event.clipboardData.files].find((f) => f.type.startsWith('image/'))
+      if (file) {
+        event.preventDefault()
+        void addImageFile(file)
+        return
+      }
+      const text = event.clipboardData.getData('text/plain').trim()
+      if (text) {
+        event.preventDefault()
+        add(
+          textElement({
+            ...center(doc.width * 0.7, Math.round(unit * 0.12)),
+            text: text.slice(0, 2000),
+            fontSize: Math.round(unit * 0.045),
+            color: ink,
+          }),
+        )
       }
     }
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    window.addEventListener('copy', copy)
+    window.addEventListener('cut', cut)
+    window.addEventListener('paste', paste)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('copy', copy)
+      window.removeEventListener('cut', cut)
+      window.removeEventListener('paste', paste)
+    }
   })
+
+  useEffect(() => {
+    const wrap = stageWrap.current
+    if (!wrap) return
+    const onWheel = (event: WheelEvent) => {
+      if (!event.ctrlKey && !event.metaKey) return
+      event.preventDefault()
+      setZoom((z) => Math.min(4, Math.max(0.25, event.deltaY > 0 ? z / 1.1 : z * 1.1)))
+    }
+    wrap.addEventListener('wheel', onWheel, { passive: false })
+    return () => wrap.removeEventListener('wheel', onWheel)
+  }, [])
+
+  const onDragOver = (event: DragEvent) => {
+    if (!event.dataTransfer.types.includes('Files')) return
+    event.preventDefault()
+    event.dataTransfer.dropEffect = 'copy'
+  }
+  const onDrop = (event: DragEvent) => {
+    const files = [...event.dataTransfer.files].filter((f) => f.type.startsWith('image/'))
+    if (!files.length) return
+    event.preventDefault()
+    const at = toPage(event.clientX, event.clientY)
+    files.forEach((f, i) => void addImageFile(f, { x: at.x + i * 30, y: at.y + i * 30 }))
+  }
 
   // ---- AI ----
 
@@ -374,7 +859,6 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     const d = new Date()
     return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`
   }
-
   const makeWithAi = async () => {
     if (aiBusy) return
     if (!aiRequest.trim()) return setAiError(w.aiNeedRequest)
@@ -384,11 +868,17 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     setAiBusy('make')
     setAiError(null)
     setAiLive('')
-    const turn = await runDesignAi(aiApi, p.lang, w.aiErrors, briefRequest(aiRequest, format, p.lang, today()), {
-      signal: controller.signal,
-      maxChars: MAX_BRIEF_CHARS,
-      onProgress: setAiLive,
-    })
+    const turn = await runDesignAi(
+      aiApi,
+      p.lang,
+      w.aiErrors,
+      briefRequest(aiRequest, format, p.lang, today()),
+      {
+        signal: controller.signal,
+        maxChars: MAX_BRIEF_CHARS,
+        onProgress: setAiLive,
+      },
+    )
     setAiBusy(null)
     if (!turn.ok) {
       if (!turn.stopped) setAiError(`${w.aiFailed}: ${turn.error}`)
@@ -401,7 +891,6 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     setAiLive('')
     setAiMade(true)
   }
-
   const rewriteWithAi = async (id: string, mode: RewriteMode) => {
     const target = docRef.current.pages.flatMap((pg) => pg.elements).find((e) => e.id === id)
     if (aiBusy || !target?.text?.trim()) return
@@ -409,10 +898,16 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     aiAbort.current = controller
     setAiBusy('rewrite')
     setAiError(null)
-    const turn = await runDesignAi(aiApi, p.lang, w.aiErrors, rewriteRequest(target.text, mode, p.lang), {
-      signal: controller.signal,
-      maxChars: Math.max(2_000, target.text.length * 6),
-    })
+    const turn = await runDesignAi(
+      aiApi,
+      p.lang,
+      w.aiErrors,
+      rewriteRequest(target.text, mode, p.lang),
+      {
+        signal: controller.signal,
+        maxChars: Math.max(2_000, target.text.length * 6),
+      },
+    )
     setAiBusy(null)
     if (!turn.ok) {
       if (!turn.stopped) setAiError(`${w.aiFailed}: ${turn.error}`)
@@ -427,11 +922,15 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
         e.text = text
         // a longer text keeps its size and gets the height it needs
         const size = e.fontSize ?? 48
-        e.h = Math.max(e.h, Math.ceil(estimateLines(text, size, e.w, e.fontWeight ?? 400) * size * (e.lineHeight ?? 1.35)))
+        e.h = Math.max(
+          e.h,
+          Math.ceil(
+            estimateLines(text, size, e.w, e.fontWeight ?? 400) * size * (e.lineHeight ?? 1.35),
+          ),
+        )
       }
     })
   }
-
   // a closed window stops whatever the AI was doing
   useEffect(() => () => aiAbort.current?.abort(), [])
 
@@ -441,8 +940,12 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     setNotice(text)
     window.setTimeout(() => setNotice((n) => (n === text ? null : n)), 4000)
   }
-  const exportPng = async () => {
-    const path = await p.api.savePng(await pagePng(page, doc.width, doc.height), `${doc.name}-${pageIndex + 1}`)
+  const exportPicture = async (format: 'png' | 'jpg') => {
+    const bytes =
+      format === 'jpg'
+        ? await pageJpeg(page, doc.width, doc.height)
+        : await pagePng(page, doc.width, doc.height)
+    const path = await p.api.savePng(bytes, `${doc.name}-${pi + 1}`, format)
     if (path) say(`${w.saved}: ${path}`)
   }
   const exportPdf = async () => {
@@ -464,92 +967,144 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     if (parsed) replaceDoc({ ...parsed, name: file!.name })
   }
 
-  // ---- rendering ----
+  // ---- drawing the page ----
 
-  const box = (e: DesignElement) => {
-    if (e.kind === 'line') {
-      const x = Math.min(e.x, e.x + e.w)
-      const y = Math.min(e.y, e.y + e.h) - (e.strokeWidth ?? 4) / 2
-      return { left: x, top: y, width: Math.max(Math.abs(e.w), 1), height: Math.max(Math.abs(e.h), e.strokeWidth ?? 4) }
-    }
-    return { left: e.x, top: e.y, width: e.w, height: e.h }
+  const handlesFor = (e: DesignElement): Handle[] => {
+    if (e.kind === 'line') return ['nw', 'se']
+    if (e.kind === 'image' || e.kind === 'qr') return ['nw', 'ne', 'se', 'sw']
+    if (e.kind === 'text') return ['nw', 'ne', 'se', 'sw', 'e', 'w']
+    return ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w']
   }
 
-  const renderElement = (e: DesignElement) => {
-    const style: React.CSSProperties = { ...box(e), opacity: e.opacity ?? 1 }
-    let inner: React.ReactNode = null
-    if (e.kind === 'text') {
-      Object.assign(style, {
-        color: e.color,
-        fontSize: e.fontSize,
-        fontWeight: e.fontWeight,
-        fontFamily: `"${e.fontFamily}", sans-serif`,
-        textAlign: e.align,
-        lineHeight: e.lineHeight,
-      })
-      inner = e.text
-    } else if (e.kind === 'rect') {
-      Object.assign(style, { background: e.fill, borderRadius: e.radius, border: e.strokeWidth ? `${e.strokeWidth}px solid ${e.stroke}` : undefined })
-    } else if (e.kind === 'ellipse') {
-      Object.assign(style, { background: e.fill, borderRadius: '50%', border: e.strokeWidth ? `${e.strokeWidth}px solid ${e.stroke}` : undefined })
-    } else if (e.kind === 'line') {
-      const length = Math.hypot(e.w, e.h)
-      inner = (
-        <span
-          className="dz-line"
-          style={{
-            width: length,
-            height: e.strokeWidth,
-            background: e.stroke,
-            transform: `rotate(${Math.atan2(e.h, e.w)}rad)`,
-            left: e.w < 0 ? Math.abs(e.w) : 0,
-            top: e.h < 0 ? Math.abs(e.h) : 0,
-          }}
-        />
-      )
-    } else if (e.kind === 'image' && e.src) {
-      inner = <img src={e.src} alt="" draggable={false} />
+  /**
+   * The picked element's handles, above the page so the page edge never clips
+   * them. They keep their screen size at any zoom; a line's two sit on its ends.
+   */
+  const renderHandles = () => {
+    const e = single
+    if (
+      !e ||
+      e.locked ||
+      editing === e.id ||
+      (drag.current && drag.current.mode !== 'marquee' && drag.current.moved)
+    )
+      return null
+    const box = elementBox(e)
+    const counter = `translate(-50%, -50%) scale(${1 / scale})`
+    const handleAt = (h: Handle) => {
+      if (e.kind === 'line') {
+        const end = h === 'se'
+        return {
+          left: (end ? e.x + e.w : e.x) - box.left,
+          top: (end ? e.y + e.h : e.y) - box.top,
+          transform: counter,
+        }
+      }
+      const [sx, sy] = HANDLE_SIDES[h]
+      return {
+        left: ((sx + 1) / 2) * box.width,
+        top: ((sy + 1) / 2) * box.height,
+        transform: counter,
+      }
     }
     return (
       <div
-        key={e.id}
-        className={`dz-el dz-${e.kind}${e.id === selected ? ' selected' : ''}`}
-        style={style}
-        data-element={e.kind}
-        onPointerDown={(event) => startDrag(event, e, 'move')}
+        className={`dz-frame dz-frame-${e.kind}`}
+        style={{
+          ...box,
+          transform: e.rotation && e.kind !== 'line' ? `rotate(${e.rotation}deg)` : undefined,
+        }}
       >
-        {inner}
-        {e.id === selected && (
-          <span className="dz-handle" style={{ transform: `scale(${1 / scale})` }} onPointerDown={(event) => startDrag(event, e, 'resize')} />
+        {handlesFor(e).map((h) => (
+          <span
+            key={h}
+            className={`dz-handle dz-h-${h}`}
+            style={handleAt(h)}
+            onPointerDown={(event) => startResize(event, e, h)}
+            data-handle={h}
+          />
+        ))}
+        {e.kind !== 'line' && (
+          <span
+            className="dz-rotate"
+            style={{ left: box.width / 2, top: -30 / scale, transform: counter }}
+            onPointerDown={(event) => startRotate(event, e)}
+            data-handle="rotate"
+          />
         )}
       </div>
     )
   }
 
-  const swatches = (value: string | undefined, onPick: (c: string) => void) => (
-    <div className="dz-swatches">
-      {PALETTE.map((c) => (
-        <button key={c} type="button" className={`dz-swatch${value === c ? ' on' : ''}`} style={{ background: c }} title={c} onClick={() => onPick(c)} />
-      ))}
-      <input type="color" value={value && value.startsWith('#') && value.length === 7 ? value : '#000000'} onChange={(e) => onPick(e.target.value)} />
-    </div>
-  )
+  const renderElement = (e: DesignElement) => {
+    const { style, inner } = elementLook(e, `g-${e.id}`)
+    const isSelected = selected.includes(e.id)
+    const isEditing = editing === e.id
+    return (
+      <div
+        key={e.id}
+        className={`dz-el dz-${e.kind}${isSelected ? ' selected' : ''}${e.locked ? ' locked' : ''}${isEditing ? ' editing' : ''}`}
+        style={style}
+        data-element={e.kind}
+        data-id={e.id}
+        title={e.kind === 'text' && !isEditing ? w.editHint : undefined}
+        onPointerDown={(event) => startMove(event, e)}
+        onDoubleClick={() => startEdit(e)}
+      >
+        {isEditing ? (
+          <textarea
+            className="dz-inline"
+            defaultValue={e.text ?? ''}
+            autoFocus
+            onFocus={(ev) => ev.currentTarget.select()}
+            onPointerDown={(ev) => ev.stopPropagation()}
+            onKeyDown={(ev) => {
+              if (ev.key === 'Escape') ev.currentTarget.blur()
+            }}
+            onBlur={(ev) =>
+              finishEdit(
+                e.id,
+                ev.currentTarget.value,
+                ev.currentTarget.scrollHeight + 2 * textPadding(e).y,
+              )
+            }
+            data-hanpan="design-inline"
+          />
+        ) : (
+          inner
+        )}
+      </div>
+    )
+  }
+
+  const tabs: Tab[] = hasAi
+    ? ['ai', 'templates', 'elements', 'text', 'layers']
+    : ['templates', 'elements', 'text', 'layers']
+  const formatId = FORMATS.find((f) => f.width === doc.width && f.height === doc.height)?.id ?? ''
 
   return (
-    <div className="dz" onPointerMove={onPointerMove} onPointerUp={endDrag} onPointerCancel={endDrag}>
+    <div
+      className="dz"
+      onPointerMove={onPointerMove}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
+    >
       <header className="dz-top">
         <div className="dz-name">
-          <input value={doc.name} onChange={(e) => setDoc({ ...doc, name: e.target.value })} aria-label="name" />
+          <input
+            value={doc.name}
+            onChange={(e) => setDoc({ ...doc, name: e.target.value })}
+            aria-label="name"
+          />
         </div>
-        <label className="dz-field">
-          <span>{w.format}</span>
+        <label className="dz-field" title={w.resizeHint}>
+          <span>{w.resize}</span>
           <select
-            value={FORMATS.find((f) => f.width === doc.width && f.height === doc.height)?.id ?? ''}
-            onChange={(e) => {
-              const f = FORMATS.find((x) => x.id === e.target.value)
-              if (f) commit((d) => ((d.width = f.width), (d.height = f.height)))
-            }}
+            value={formatId}
+            onChange={(e) => changeFormat(e.target.value)}
+            data-hanpan="design-format"
           >
+            {!formatId && <option value="">{`${doc.width}×${doc.height}`}</option>}
             {FORMATS.map((f) => (
               <option key={f.id} value={f.id}>
                 {f.name} {f.width}×{f.height}
@@ -558,24 +1113,81 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
           </select>
         </label>
         <div className="dz-group">
-          <button type="button" onClick={undo} disabled={!past.length}>{w.undo}</button>
-          <button type="button" onClick={redo} disabled={!future.length}>{w.redo}</button>
+          <button type="button" onClick={undo} disabled={!past.length} title="Ctrl+Z">
+            {w.undo}
+          </button>
+          <button type="button" onClick={redo} disabled={!future.length} title="Ctrl+Y">
+            {w.redo}
+          </button>
         </div>
-        <div className="dz-group">
-          <button type="button" className="primary" data-action="design-copy" onClick={() => void copyImage()}>{w.copy}</button>
-          <button type="button" data-action="design-png" onClick={() => void exportPng()}>{w.png}</button>
-          <button type="button" data-action="design-pdf" onClick={() => void exportPdf()}>{w.pdf}</button>
-          <button type="button" onClick={() => void save()}>{w.save}</button>
-          <button type="button" onClick={() => void open()}>{w.open}</button>
+        <div className="dz-group dz-zoom">
+          <button
+            type="button"
+            onClick={() => setZoom((z) => Math.max(0.25, z / 1.2))}
+            aria-label={w.zoomOut}
+            title={w.zoomOut}
+          >
+            −
+          </button>
+          <button type="button" onClick={() => setZoom(1)} title={w.zoomFit} data-action="zoom-fit">
+            {Math.round(scale * 100)}%
+          </button>
+          <button
+            type="button"
+            onClick={() => setZoom((z) => Math.min(4, z * 1.2))}
+            aria-label={w.zoomIn}
+            title={w.zoomIn}
+          >
+            +
+          </button>
+        </div>
+        <div className="dz-group dz-export">
+          <button
+            type="button"
+            className="primary"
+            data-action="design-copy"
+            onClick={() => void copyImage()}
+          >
+            {w.copy}
+          </button>
+          <button type="button" data-action="design-png" onClick={() => void exportPicture('png')}>
+            {w.png}
+          </button>
+          <button type="button" data-action="design-jpg" onClick={() => void exportPicture('jpg')}>
+            {w.jpg}
+          </button>
+          <button type="button" data-action="design-pdf" onClick={() => void exportPdf()}>
+            {w.pdf}
+          </button>
+          <button type="button" onClick={() => void save()}>
+            {w.save}
+          </button>
+          <button type="button" onClick={() => void open()}>
+            {w.open}
+          </button>
         </div>
       </header>
       <div className="dz-main">
+        <nav className="dz-tabs" aria-label="panels">
+          {tabs.map((t) => (
+            <button
+              key={t}
+              type="button"
+              className={tab === t ? 'on' : ''}
+              onClick={() => setTab(t)}
+              data-tab={t}
+            >
+              {t === 'ai' ? '✦ ' : ''}
+              {w.tabs[t]}
+            </button>
+          ))}
+        </nav>
         <aside className="dz-left">
-          {hasAi && (
+          {tab === 'ai' && hasAi && (
             <section className="dz-ai" data-hanpan="design-ai">
               <h3>✦ {w.aiMake}</h3>
               <textarea
-                rows={4}
+                rows={5}
                 value={aiRequest}
                 placeholder={w.aiPlaceholder}
                 disabled={aiBusy !== null}
@@ -588,7 +1200,12 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
               <div className="dz-ai-opts">
                 <label>
                   <span>{w.aiFormat}</span>
-                  <select value={aiFormat} disabled={aiBusy !== null} onChange={(e) => setAiFormat(e.target.value)} data-hanpan="design-ai-format">
+                  <select
+                    value={aiFormat}
+                    disabled={aiBusy !== null}
+                    onChange={(e) => setAiFormat(e.target.value)}
+                    data-hanpan="design-ai-format"
+                  >
                     {FORMATS.map((f) => (
                       <option key={f.id} value={f.id}>
                         {f.name}
@@ -598,7 +1215,12 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                 </label>
                 <label>
                   <span>{w.aiMood}</span>
-                  <select value={aiMood} disabled={aiBusy !== null} onChange={(e) => setAiMood(e.target.value as DesignMood | 'auto')} data-hanpan="design-ai-mood">
+                  <select
+                    value={aiMood}
+                    disabled={aiBusy !== null}
+                    onChange={(e) => setAiMood(e.target.value as DesignMood | 'auto')}
+                    data-hanpan="design-ai-mood"
+                  >
                     <option value="auto">{w.aiAuto}</option>
                     {DESIGN_MOODS.map((m) => (
                       <option key={m} value={m}>
@@ -613,7 +1235,13 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                   {w.aiStop}
                 </button>
               ) : (
-                <button type="button" className="primary" disabled={aiBusy !== null} onClick={() => void makeWithAi()} data-action="design-ai-make">
+                <button
+                  type="button"
+                  className="primary"
+                  disabled={aiBusy !== null}
+                  onClick={() => void makeWithAi()}
+                  data-action="design-ai-make"
+                >
                   {aiMade ? w.aiAgain : w.aiGo}
                 </button>
               )}
@@ -631,182 +1259,398 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
               <p className="dz-muted">{w.aiHint}</p>
             </section>
           )}
-          <h3>{w.templates}</h3>
-          <div className="dz-templates">
-            {DESIGN_TEMPLATES.map((t) => (
-              <button key={t.id} type="button" data-template={t.id} onClick={() => replaceDoc(t.make())}>
-                {t.name}
-              </button>
-            ))}
-            {FORMATS.map((f) => (
-              <button key={f.id} type="button" className="ghost" onClick={() => replaceDoc(blankDoc(f))}>
-                + {f.name}
-              </button>
-            ))}
-          </div>
-          <button type="button" className="dz-outline-btn" data-action="design-outline" onClick={() => setOutlineOpen((o) => !o)}>
-            {w.outline}
-          </button>
-          {outlineOpen && (
-            <div className="dz-outline">
-              <p>{w.outlineHint}</p>
-              <textarea rows={8} value={outlineText} onChange={(e) => setOutlineText(e.target.value)} />
+
+          {tab === 'templates' && (
+            <>
+              <h3>{w.templates}</h3>
+              <div className="dz-template-grid">
+                {templatePreviews.map(({ t, doc: preview }) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    className="dz-template"
+                    data-template={t.id}
+                    onClick={() => replaceDoc(t.make())}
+                    title={t.name}
+                  >
+                    <PagePreview
+                      page={preview.pages[0]!}
+                      width={preview.width}
+                      height={preview.height}
+                      size={92}
+                    />
+                    <span>{t.name}</span>
+                  </button>
+                ))}
+              </div>
+              <h3>{w.blank}</h3>
+              <div className="dz-templates">
+                {FORMATS.map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    className="ghost"
+                    onClick={() => replaceDoc(blankDoc(f))}
+                  >
+                    + {f.name}
+                  </button>
+                ))}
+              </div>
               <button
                 type="button"
-                className="primary"
-                data-action="design-outline-make"
-                onClick={() => {
-                  replaceDoc(cardNewsFromOutline(outlineText))
-                  setOutlineOpen(false)
+                className="dz-outline-btn"
+                data-action="design-outline"
+                onClick={() => setOutlineOpen((o) => !o)}
+              >
+                {w.outline}
+              </button>
+              {outlineOpen && (
+                <div className="dz-outline">
+                  <p>{w.outlineHint}</p>
+                  <textarea
+                    rows={8}
+                    value={outlineText}
+                    onChange={(e) => setOutlineText(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="primary"
+                    data-action="design-outline-make"
+                    onClick={() => {
+                      replaceDoc(cardNewsFromOutline(outlineText))
+                      setOutlineOpen(false)
+                    }}
+                  >
+                    {w.make}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+          {tab === 'elements' && (
+            <>
+              <h3>{w.shapesTitle}</h3>
+              <div className="dz-shape-grid">
+                {(['rect', 'ellipse', 'line'] as const).map((k) => (
+                  <button
+                    key={k}
+                    type="button"
+                    data-add={k}
+                    onClick={() => addShape(k)}
+                    title={w[k]}
+                  >
+                    <svg viewBox="0 0 40 40" aria-hidden="true">
+                      {k === 'rect' && <rect x="4" y="8" width="32" height="24" rx="5" />}
+                      {k === 'ellipse' && <circle cx="20" cy="20" r="15" />}
+                      {k === 'line' && (
+                        <line
+                          x1="5"
+                          y1="20"
+                          x2="35"
+                          y2="20"
+                          strokeWidth="4"
+                          strokeLinecap="round"
+                        />
+                      )}
+                    </svg>
+                    <span>{w[k]}</span>
+                  </button>
+                ))}
+                {SHAPES.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    data-add={s}
+                    onClick={() => addShape(s)}
+                    title={w.shapes[s]}
+                  >
+                    <svg viewBox="0 0 40 40" aria-hidden="true">
+                      <path d={shapePath(s, 32, 32)} transform="translate(4 4)" />
+                    </svg>
+                    <span>{w.shapes[s]}</span>
+                  </button>
+                ))}
+              </div>
+              <h3>{w.image}</h3>
+              <button
+                type="button"
+                className="dz-wide"
+                data-add="image"
+                onClick={() => void addImage()}
+              >
+                {w.image}
+              </button>
+              <p className="dz-muted">{w.imageHint}</p>
+              <h3>{w.qr}</h3>
+              <div className="dz-col">
+                <input
+                  value={qrInput}
+                  placeholder={w.qrPlaceholder}
+                  onChange={(e) => setQrInput(e.target.value)}
+                  data-hanpan="qr-input"
+                />
+                <button type="button" onClick={addQr} data-add="qr">
+                  {w.qrAdd}
+                </button>
+              </div>
+            </>
+          )}
+
+          {tab === 'text' && (
+            <>
+              <div className="dz-text-adds">
+                <button
+                  type="button"
+                  className="dz-add-title"
+                  data-add="title"
+                  onClick={() => addTextPreset('title')}
+                >
+                  {w.addTitle}
+                </button>
+                <button
+                  type="button"
+                  className="dz-add-subtitle"
+                  data-add="subtitle"
+                  onClick={() => addTextPreset('subtitle')}
+                >
+                  {w.addSubtitle}
+                </button>
+                <button
+                  type="button"
+                  className="dz-add-body"
+                  data-add="body"
+                  onClick={() => addTextPreset('body')}
+                >
+                  {w.addBody}
+                </button>
+              </div>
+              <h3>{w.textStyles}</h3>
+              <div className="dz-presets">
+                <button type="button" data-add="badge" onClick={() => addTextPreset('badge')}>
+                  <span className="dz-pv-badge">{w.presets.badge}</span>
+                </button>
+                <button type="button" data-add="outlined" onClick={() => addTextPreset('outlined')}>
+                  <span className="dz-pv-outlined">{w.presets.outlined}</span>
+                </button>
+                <button type="button" data-add="shadowed" onClick={() => addTextPreset('shadowed')}>
+                  <span className="dz-pv-shadowed">{w.presets.shadowed}</span>
+                </button>
+                <button type="button" data-add="quote" onClick={() => addTextPreset('quote')}>
+                  <span className="dz-pv-quote">“{w.presets.quote}”</span>
+                </button>
+              </div>
+            </>
+          )}
+
+          {tab === 'layers' && (
+            <>
+              <p className="dz-muted">{w.layersHint}</p>
+              <ol className="dz-layers" data-hanpan="design-layers">
+                {[...page.elements].reverse().map((e) => (
+                  <li key={e.id} className={selected.includes(e.id) ? 'on' : ''}>
+                    <button
+                      type="button"
+                      className="dz-layer"
+                      data-layer={e.id}
+                      onClick={(ev) =>
+                        setSelected(
+                          ev.shiftKey
+                            ? selected.includes(e.id)
+                              ? selected.filter((x) => x !== e.id)
+                              : [...selected, e.id]
+                            : [e.id],
+                        )
+                      }
+                    >
+                      <span className="dz-layer-kind">
+                        {e.kind === 'text'
+                          ? 'T'
+                          : e.kind === 'image'
+                            ? '▣'
+                            : e.kind === 'qr'
+                              ? '▦'
+                              : e.kind === 'line'
+                                ? '╱'
+                                : '◆'}
+                      </span>
+                      <span className="dz-layer-name">
+                        {e.kind === 'text'
+                          ? (e.text ?? '').split('\n')[0] || w.text
+                          : e.kind === 'shape'
+                            ? w.shapes[e.shape ?? 'star']
+                            : e.kind === 'qr'
+                              ? w.qr
+                              : e.kind === 'image'
+                                ? w.image
+                                : w[e.kind]}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className={`dz-layer-lock${e.locked ? ' on' : ''}`}
+                      aria-label={e.locked ? w.unlock : w.lock}
+                      title={e.locked ? w.unlock : w.lock}
+                      onClick={() => changeElement(e.id, { locked: e.locked ? undefined : true })}
+                    >
+                      {e.locked ? '🔒' : '🔓'}
+                    </button>
+                  </li>
+                ))}
+              </ol>
+            </>
+          )}
+        </aside>
+        <section className="dz-center">
+          <div
+            className="dz-stage-wrap"
+            ref={stageWrap}
+            onPointerDown={startMarquee}
+            onDragOver={onDragOver}
+            onDrop={onDrop}
+          >
+            <div
+              className="dz-stage"
+              style={{ width: doc.width * scale, height: doc.height * scale }}
+            >
+              <div
+                className="dz-page"
+                ref={pageRef}
+                style={{
+                  width: doc.width,
+                  height: doc.height,
+                  background: pageBackground(page),
+                  transform: `scale(${scale})`,
+                  ['--dz-scale' as string]: scale,
                 }}
               >
-                {w.make}
-              </button>
+                {page.elements.map(renderElement)}
+                {guides.v.map((x) => (
+                  <span
+                    key={`v${x}`}
+                    className="dz-guide dz-guide-v"
+                    style={{ left: x, width: 1 / scale }}
+                  />
+                ))}
+                {guides.h.map((y) => (
+                  <span
+                    key={`h${y}`}
+                    className="dz-guide dz-guide-h"
+                    style={{ top: y, height: 1 / scale }}
+                  />
+                ))}
+                {marquee && (
+                  <span
+                    className="dz-marquee"
+                    style={{
+                      left: marquee.left,
+                      top: marquee.top,
+                      width: marquee.right - marquee.left,
+                      height: marquee.bottom - marquee.top,
+                      borderWidth: 1 / scale,
+                    }}
+                  />
+                )}
+              </div>
+              <div
+                className="dz-overlay"
+                style={{ width: doc.width, height: doc.height, transform: `scale(${scale})` }}
+              >
+                {renderHandles()}
+              </div>
             </div>
-          )}
-          <h3>+</h3>
-          <div className="dz-tools">
-            <button type="button" data-add="title" onClick={() => add(textElement({ ...center(doc.width * 0.8, 140), text: w.title, fontSize: 96, fontWeight: 900, color: inkFor(page.background) }))}>{w.title}</button>
-            <button type="button" data-add="body" onClick={() => add(textElement({ ...center(doc.width * 0.7, 200), text: w.newText, fontSize: 44, color: inkFor(page.background) }))}>{w.body}</button>
-            <button type="button" data-add="rect" onClick={() => add(shapeElement('rect', center(400, 260)))}>{w.rect}</button>
-            <button type="button" data-add="ellipse" onClick={() => add(shapeElement('ellipse', center(300, 300)))}>{w.ellipse}</button>
-            <button type="button" data-add="line" onClick={() => add(shapeElement('line', { ...center(500, 0), h: 0 }))}>{w.line}</button>
-            <button type="button" data-add="image" onClick={() => void addImage()}>{w.image}</button>
           </div>
-        </aside>
-        <section className="dz-stage-wrap" ref={stageWrap} onPointerDown={() => setSelected(null)}>
-          <div className="dz-stage" style={{ width: doc.width * scale, height: doc.height * scale }}>
-            <div className="dz-page" style={{ width: doc.width, height: doc.height, background: page.background, transform: `scale(${scale})` }}>
-              {page.elements.map(renderElement)}
-            </div>
-          </div>
-          <nav className="dz-pages" onPointerDown={(e) => e.stopPropagation()}>
+          <nav className="dz-pages">
             {doc.pages.map((pg, i) => (
-              <button key={pg.id} type="button" className={i === pageIndex ? 'on' : ''} onClick={() => (setPageIndex(i), setSelected(null))}>
+              <button
+                key={pg.id}
+                type="button"
+                className={i === pi ? 'on' : ''}
+                onClick={() => (setPageIndex(i), setSelected([]), setEditing(null))}
+              >
                 {i + 1}
               </button>
             ))}
-            <button type="button" onClick={() => (commit((d) => d.pages.splice(pageIndex + 1, 0, { id: newId('p'), background: '#FFFFFF', elements: [] })), setPageIndex(pageIndex + 1))}>
+            <button
+              type="button"
+              onClick={() => (
+                commit((d) =>
+                  d.pages.splice(pi + 1, 0, {
+                    id: newId('p'),
+                    background: '#FFFFFF',
+                    elements: [],
+                  }),
+                ),
+                setPageIndex(pi + 1),
+                setSelected([])
+              )}
+            >
               {w.addPage}
             </button>
             <button
               type="button"
-              onClick={() => (commit((d) => d.pages.splice(pageIndex + 1, 0, { ...clone(page), id: newId('p') })), setPageIndex(pageIndex + 1))}
+              onClick={() => (
+                commit((d) =>
+                  d.pages.splice(pi + 1, 0, {
+                    ...clone(page),
+                    id: newId('p'),
+                    elements: page.elements.map((e) => ({ ...clone(e), id: newId() })),
+                  }),
+                ),
+                setPageIndex(pi + 1),
+                setSelected([])
+              )}
             >
               {w.dupPage}
             </button>
             <button
               type="button"
               disabled={doc.pages.length < 2}
-              onClick={() => (commit((d) => d.pages.splice(pageIndex, 1)), setPageIndex(Math.max(0, pageIndex - 1)))}
+              onClick={() => (
+                commit((d) => d.pages.splice(pi, 1)),
+                setPageIndex(Math.max(0, pi - 1)),
+                setSelected([])
+              )}
             >
               {w.delPage}
             </button>
           </nav>
         </section>
         <aside className="dz-right">
-          {!element ? (
-            <>
-              <p className="dz-muted">{w.nothing}</p>
-              <h3>{w.background}</h3>
-              {swatches(page.background, (c) => changePage((pg) => (pg.background = c)))}
-            </>
-          ) : (
-            <div className="dz-props" data-props={element.kind}>
-              {element.kind === 'text' && (
-                <>
-                  <label className="dz-col">
-                    <span>{w.text}</span>
-                    <textarea rows={4} value={element.text ?? ''} onChange={(e) => changeElement(element.id, { text: e.target.value })} />
-                  </label>
-                  {hasAi && (
-                    <div className="dz-col" data-hanpan="design-ai-rewrite">
-                      <span className="dz-muted">✦ {w.aiRewrite}</span>
-                      <div className="dz-row">
-                        {REWRITE_MODES.map((m) => (
-                          <button key={m} type="button" disabled={aiBusy !== null} onClick={() => void rewriteWithAi(element.id, m)} data-ai-rewrite={m}>
-                            {w.rewrites[m]}
-                          </button>
-                        ))}
-                      </div>
-                      {aiBusy === 'rewrite' && (
-                        <div className="dz-row" role="status">
-                          <span className="dz-muted">{w.aiRewriting}</span>
-                          <button type="button" onClick={stopAi}>
-                            {w.aiStop}
-                          </button>
-                        </div>
-                      )}
-                      {aiError && !aiBusy && <p className="dz-ai-error">{aiError}</p>}
-                    </div>
-                  )}
-                  <label className="dz-row">
-                    <span>{w.font}</span>
-                    <select value={element.fontFamily} onChange={(e) => changeElement(element.id, { fontFamily: e.target.value })}>
-                      {FONTS.map((f) => (
-                        <option key={f}>{f}</option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="dz-row">
-                    <span>{w.size}</span>
-                    <input type="number" min={8} max={400} value={element.fontSize} onChange={(e) => changeElement(element.id, { fontSize: Number(e.target.value) || 12 })} />
-                  </label>
-                  <div className="dz-row">
-                    <span>{w.align}</span>
-                    {(['left', 'center', 'right'] as const).map((a) => (
-                      <button key={a} type="button" className={element.align === a ? 'on' : ''} onClick={() => changeElement(element.id, { align: a })}>
-                        {a === 'left' ? '⇤' : a === 'center' ? '↔' : '⇥'}
-                      </button>
-                    ))}
-                    <button type="button" className={(element.fontWeight ?? 400) >= 700 ? 'on' : ''} onClick={() => changeElement(element.id, { fontWeight: (element.fontWeight ?? 400) >= 700 ? 400 : 900 })}>
-                      {w.bold}
-                    </button>
-                  </div>
-                  <h3>{w.color}</h3>
-                  {swatches(element.color, (c) => changeElement(element.id, { color: c }))}
-                </>
-              )}
-              {(element.kind === 'rect' || element.kind === 'ellipse') && (
-                <>
-                  <h3>{w.fill}</h3>
-                  {swatches(element.fill, (c) => changeElement(element.id, { fill: c }))}
-                  {element.kind === 'rect' && (
-                    <label className="dz-row">
-                      <span>{w.radius}</span>
-                      <input type="range" min={0} max={300} value={element.radius ?? 0} onChange={(e) => changeElement(element.id, { radius: Number(e.target.value) })} />
-                    </label>
-                  )}
-                </>
-              )}
-              {(element.kind === 'line' || element.kind === 'rect' || element.kind === 'ellipse') && (
-                <>
-                  <h3>{w.stroke}</h3>
-                  {swatches(element.stroke, (c) => changeElement(element.id, { stroke: c, strokeWidth: element.strokeWidth || 4 }))}
-                  <label className="dz-row">
-                    <span>{w.strokeWidth}</span>
-                    <input type="range" min={0} max={40} value={element.strokeWidth ?? 0} onChange={(e) => changeElement(element.id, { strokeWidth: Number(e.target.value) })} />
-                  </label>
-                </>
-              )}
-              <label className="dz-row">
-                <span>{w.opacity}</span>
-                <input type="range" min={10} max={100} value={Math.round((element.opacity ?? 1) * 100)} onChange={(e) => changeElement(element.id, { opacity: Number(e.target.value) / 100 })} />
-              </label>
-              <div className="dz-row dz-actions">
-                <button type="button" onClick={() => changePage((pg) => { const i = pg.elements.findIndex((x) => x.id === element.id); if (i < pg.elements.length - 1) pg.elements.splice(i + 1, 0, pg.elements.splice(i, 1)[0]!) })}>{w.front}</button>
-                <button type="button" onClick={() => changePage((pg) => { const i = pg.elements.findIndex((x) => x.id === element.id); if (i > 0) pg.elements.splice(i - 1, 0, pg.elements.splice(i, 1)[0]!) })}>{w.back}</button>
-                <button type="button" onClick={() => add({ ...clone(element), id: newId(), x: element.x + 30, y: element.y + 30 })}>{w.duplicate}</button>
-                <button type="button" className="danger" onClick={() => (changePage((pg) => (pg.elements = pg.elements.filter((x) => x.id !== element.id))), setSelected(null))}>{w.remove}</button>
-              </div>
-            </div>
-          )}
+          <Inspector
+            w={w}
+            page={page}
+            selection={selection}
+            docColors={docColors}
+            change={changeElement}
+            changePage={changePage}
+            align={align}
+            spread={spread}
+            arrange={arrange}
+            duplicate={duplicate}
+            remove={remove}
+            toggleLock={toggleLock}
+            fillPage={fillPage}
+            replaceImage={(id) => void replaceImage(id)}
+            ai={
+              hasAi
+                ? {
+                    busy: aiBusy !== null,
+                    error: aiError,
+                    rewrite: (id, m) => void rewriteWithAi(id, m),
+                    stop: stopAi,
+                  }
+                : null
+            }
+          />
         </aside>
       </div>
       {notice && (
         <div className="dz-notice" role="status">
           {notice}
-          <button type="button" onClick={() => setNotice(null)} aria-label={w.close}>×</button>
+          <button type="button" onClick={() => setNotice(null)} aria-label={w.close}>
+            ×
+          </button>
         </div>
       )}
     </div>

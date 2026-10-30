@@ -51,6 +51,7 @@
     "electron-vite": "^5.0.0",
     "officecrypto-tool": "^0.0.19",
     "parse5": "^8.0.1",
+    "qrcode-generator": "^1.4.4",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "typescript": "^5.9.3",

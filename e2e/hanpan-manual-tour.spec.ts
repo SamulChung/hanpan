@@ -20,9 +20,17 @@ interface Tab {
   title: string
 }
 const listTabs = (page: Page): Promise<Tab[]> =>
-  page.evaluate(() => (window as unknown as { aiOfficeTabs: { list(): Promise<Tab[]> } }).aiOfficeTabs.list())
+  page.evaluate(() =>
+    (window as unknown as { aiOfficeTabs: { list(): Promise<Tab[]> } }).aiOfficeTabs.list(),
+  )
 const activate = (page: Page, id: string) =>
-  page.evaluate((tab) => (window as unknown as { aiOfficeTabs: { activate(id: string): Promise<void> } }).aiOfficeTabs.activate(tab), id)
+  page.evaluate(
+    (tab) =>
+      (
+        window as unknown as { aiOfficeTabs: { activate(id: string): Promise<void> } }
+      ).aiOfficeTabs.activate(tab),
+    id,
+  )
 
 /** One page (Home, an editor tab, the design window) as the person sees it. */
 async function shot(target: Page, name: string): Promise<void> {
@@ -33,21 +41,31 @@ async function shot(target: Page, name: string): Promise<void> {
 async function helpPage(app: ElectronApplication): Promise<Page> {
   for (let i = 0; i < 40; i++) {
     for (const candidate of app.windows()) {
-      if (await candidate.locator('.help-topic').count().catch(() => 0)) return candidate
+      if (
+        await candidate
+          .locator('.help-topic')
+          .count()
+          .catch(() => 0)
+      )
+        return candidate
     }
     await new Promise((r) => setTimeout(r, 250))
   }
   throw new Error('no help page')
 }
 
-const OUTLINE = '# 보고\n\n- 2026년 AI 연수 계획\n  - 추진 배경\n    - 교원 AI 활용 수요 증가\n    - 업무 경감 필요\n  - 추진 내용\n    - 기초 연수 (3월)\n    - 심화 연수 (5월)\n  - 기대 효과\n'
+const OUTLINE =
+  '# 보고\n\n- 2026년 AI 연수 계획\n  - 추진 배경\n    - 교원 AI 활용 수요 증가\n    - 업무 경감 필요\n  - 추진 내용\n    - 기초 연수 (3월)\n    - 심화 연수 (5월)\n  - 기대 효과\n'
 
 test('the manual tour, in Korean', async () => {
   test.setTimeout(300_000)
   mkdirSync(IMAGES, { recursive: true })
   const dir = await mkdtemp(join(tmpdir(), 'hanpan-tour-'))
   const mapPath = join(dir, 'AI 연수 계획.xmind')
-  await writeFile(mapPath, await (await createXmindDocumentFromOutline(OUTLINE, { untitled: '제목 없음' })).save())
+  await writeFile(
+    mapPath,
+    await (await createXmindDocumentFromOutline(OUTLINE, { untitled: '제목 없음' })).save(),
+  )
 
   const launched = await launchShell({ onboardingSeen: true, videoDir: 'hanpan-tour', lang: 'ko' })
   const { app, page } = launched
@@ -57,7 +75,13 @@ test('the manual tour, in Korean', async () => {
     await shot(page, '01-home')
 
     // the map and its send menu
-    await page.evaluate((path) => (window as unknown as { aiOffice: { openPath(p: string): Promise<void> } }).aiOffice.openPath(path), mapPath)
+    await page.evaluate(
+      (path) =>
+        (
+          window as unknown as { aiOffice: { openPath(p: string): Promise<void> } }
+        ).aiOffice.openPath(path),
+      mapPath,
+    )
     const map = await waitForPageWithUrl(app, '://mindmap/')
     await expect(map.locator('[data-action="send-to"]')).toBeVisible({ timeout: 30_000 })
     await map.waitForTimeout(1500)
@@ -75,17 +99,23 @@ test('the manual tour, in Korean', async () => {
     // a change on the map, synced into the report
     const mapTab = (await listTabs(page)).find((t) => t.kind === 'mindmap')!
     await activate(page, mapTab.id)
-    await map.locator('.mm-sheet-host:not([hidden]) me-tpc', { hasText: '업무 경감 필요' }).dblclick()
+    await map
+      .locator('.mm-sheet-host:not([hidden]) me-tpc', { hasText: '업무 경감 필요' })
+      .dblclick()
     await map.waitForSelector('#input-box')
     await map.keyboard.press('Control+A')
     await map.keyboard.type('교원 업무 경감 필요')
     await map.keyboard.press('Enter')
     await map.locator('[data-action="send-to"]').click()
     await map.locator('[data-send="sync"]').click()
-    await expect(map.locator('.hp-sync-link').first()).toContainText('교원 업무 경감 필요', { timeout: 30_000 })
+    await expect(map.locator('.hp-sync-link').first()).toContainText('교원 업무 경감 필요', {
+      timeout: 30_000,
+    })
     await shot(map, '05-sync')
     await map.locator('[data-action="sync-apply"]').first().click()
-    await expect(map.locator('.hp-sync-link [role="status"]').first()).toBeVisible({ timeout: 30_000 })
+    await expect(map.locator('.hp-sync-link [role="status"]').first()).toBeVisible({
+      timeout: 30_000,
+    })
     await map.locator('[data-action="sync-close"]').click()
 
     // the tools on the report
@@ -111,7 +141,10 @@ test('the manual tour, in Korean', async () => {
     await page.locator('[data-hanpan="design"]').click()
     const board = await waitForPageWithUrl(app, 'design.html')
     await expect(board.locator('.dz-page')).toBeVisible({ timeout: 30_000 })
-    await board.locator('[data-template="public-notice"]').click()
+    await board.locator('[data-tab="templates"]').click()
+    await board.locator('[data-template="seminar-invite"]').click()
+    // a title picked: its handles on the page and its settings on the right
+    await board.locator('.dz-stage [data-element="text"]').nth(1).click()
     await board.waitForTimeout(800)
     await shot(board, '08-design')
     await board.close()

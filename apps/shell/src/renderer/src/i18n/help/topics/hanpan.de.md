@@ -30,6 +30,7 @@ Hanpan schickt, was Sie in einer Mindmap geordnet haben, als Hangul-Bericht (HWP
 - Drücken Sie **Zum Einfügen in ein Dokument kopieren** und dann Strg+V in einem HWP-, Word- oder PowerPoint-Tab, um die Seite als Bild einzufügen. Seiten lassen sich auch als PNG und PDF speichern.
 - In einer Mindmap erstellt **An ein Dokument senden › Als Karten-News senden** eine Karte je Hauptzweig.
 - Schreiben Sie im Designfenster unter **Make with AI**, was entstehen soll, und drücken Sie **Make**: Die in den Einstellungen gewählte KI schreibt den Text, Hanpan gestaltet daraus ein bearbeitbares Design. Bei einem gewählten Textfeld glättet, kürzt, verschärft oder übersetzt **Edit with AI** (Englisch ↔ Koreanisch). Rückgängig stellt den vorigen Stand wieder her.
+- Im Designfenster fügen die Reiter **Templates**, **Elements** und **Text** Vorlagen, Formen, QR-Codes und Textstile ein. Mit Umschalt-Klick oder Ziehen über leere Fläche wählen Sie mehrere aus, verschieben sie an Hilfslinien entlang, ändern Größe und Drehung über die Griffe und bearbeiten ein Textfeld per Doppelklick direkt. Rechts stellen Sie Verläufe, Schatten, Konturen und Fotofilter ein, im Reiter **Layers** Reihenfolge und Sperre, und **Resize** ändert die Seitengröße unter Beibehaltung des Layouts. Seiten lassen sich auch als JPG speichern.
 
 ## Die KI auf diesem PC
 
