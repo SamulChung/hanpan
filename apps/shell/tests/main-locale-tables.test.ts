@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { LANGS } from '@genoffice/i18n'
 
 /**
  * The main-process locale table (src/main/index.ts) is an inline object handed
@@ -119,16 +120,15 @@ describe('the mind map strings', () => {
   })
 })
 
-/**
- * The app is still called AI Markdown. A rename of the app's name was started in
- * this branch and then dropped — the name is the maintainers' call, and README
- * and the docs still say Markdown — so no locale of the File > New menu may say
- * otherwise.
- */
+/** The menu keeps the Korean editor name localized, with AI Markdown in other languages. */
 describe('the File > New menu label', () => {
-  it('reads AI Markdown in every locale', () => {
+  it('uses the expected Markdown name in each locale', () => {
     const labels = [...source.matchAll(/menuNewMarkdown: '([^']*)'/g)].map((match) => match[1])
-    expect(labels.length).toBeGreaterThanOrEqual(19)
-    expect(new Set(labels)).toEqual(new Set(['AI Markdown']))
+    expect(labels).toHaveLength(LANGS.length)
+    for (const locale of LANGS) {
+      const block = localeBlock(locale === 'zh-TW' ? "'zh-TW'" : locale)
+      const label = block.match(/menuNewMarkdown: '([^']*)'/)?.[1]
+      expect(label, locale).toBe(locale === 'ko' ? 'AI 마크다운' : 'AI Markdown')
+    }
   })
 })

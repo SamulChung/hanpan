@@ -36,7 +36,9 @@ describe('feedback strings', () => {
   })
 
   it('never types the product name', () => {
-    expect(JSON.stringify(FEEDBACK_STRINGS)).not.toMatch(/IeumOffice|이음오피스|GenOffice/)
+    expect(JSON.stringify(FEEDBACK_STRINGS)).not.toMatch(
+      /Hanpan|한판|IeumOffice|이음오피스|GenOffice/,
+    )
   })
 })
 
