@@ -4,6 +4,7 @@ import { htmlLang } from '@genoffice/i18n'
 import '@genoffice/ui/tokens.css'
 import './design.css'
 import { DesignBoard, type DesignApi } from './DesignBoard'
+import { registerBundledFonts } from './fonts'
 
 type Theme = 'light' | 'dark' | 'system'
 
@@ -21,6 +22,7 @@ function applyTheme(theme: Theme): void {
   else document.documentElement.setAttribute('data-theme', theme)
 }
 
+registerBundledFonts()
 const api = window.hanpanDesign
 void api.getInit().then(({ lang, theme, outline }) => {
   applyTheme(theme)

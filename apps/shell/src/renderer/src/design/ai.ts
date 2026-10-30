@@ -703,6 +703,32 @@ function cardPages(brief: DesignBrief, W: number, pal: Palette): DesignPage[] {
   return pages
 }
 
+/**
+ * The title face for each mood, over Pretendard for everything else (all bundled,
+ * fonts.ts). A single-weight display face takes weight 400 so nothing smears it bold.
+ */
+const TITLE_FONTS: Record<DesignMood, { family: string; weight: 400 | 700 | 900 }> = {
+  formal: { family: 'Pretendard', weight: 900 },
+  calm: { family: 'Noto Serif KR', weight: 700 },
+  vivid: { family: 'Black Han Sans', weight: 400 },
+  warm: { family: 'Do Hyeon', weight: 400 },
+}
+
+/** Titles (the heaviest text) in the mood's title face, the rest in Pretendard. */
+function withFonts(pages: DesignPage[], mood: DesignMood): DesignPage[] {
+  const title = TITLE_FONTS[mood]
+  return pages.map((pg) => ({
+    ...pg,
+    elements: pg.elements.map((e) =>
+      e.kind !== 'text'
+        ? e
+        : e.fontWeight === 900
+          ? { ...e, fontFamily: title.family, fontWeight: title.weight }
+          : { ...e, fontFamily: 'Pretendard' },
+    ),
+  }))
+}
+
 /** The brief laid out on a format: card news for the 1:1 card, one page otherwise. */
 export function designFromBrief(brief: DesignBrief, formatId: string, name?: string): DesignDoc {
   const f = FORMATS.find((x) => x.id === formatId) ?? FORMATS[1]!
@@ -718,7 +744,7 @@ export function designFromBrief(brief: DesignBrief, formatId: string, name?: str
       name: docName,
       width: f.width,
       height: f.height,
-      pages: cardPages({ ...brief, cards }, f.width, pal),
+      pages: withFonts(cardPages({ ...brief, cards }, f.width, pal), brief.mood),
     }
   }
   const one = f.width > f.height * 1.2 ? landscapePage : portraitPage
@@ -734,7 +760,13 @@ export function designFromBrief(brief: DesignBrief, formatId: string, name?: str
   }
   for (let k = 0.92; made.bottom > made.footerTop && k > 0.55; k -= 0.08)
     made = one(brief, f.width, f.height, pal, k)
-  return { version: 1, name: docName, width: f.width, height: f.height, pages: [made.page] }
+  return {
+    version: 1,
+    name: docName,
+    width: f.width,
+    height: f.height,
+    pages: withFonts([made.page], brief.mood),
+  }
 }
 
 // ---- rewriting one text box ----

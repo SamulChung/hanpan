@@ -190,6 +190,23 @@ export function elementLook(
         </svg>
       )
       break
+    case 'icon':
+      inner = (
+        <svg width={e.w} height={e.h} viewBox="0 0 24 24" style={{ display: 'block' }}>
+          {(e.paths ?? []).map((d, i) => (
+            <path
+              key={i}
+              d={d}
+              fill="none"
+              stroke={e.stroke ?? '#0F172A'}
+              strokeWidth={e.strokeWidth ?? 2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          ))}
+        </svg>
+      )
+      break
     case 'qr': {
       const size = Math.min(e.w, e.h)
       inner = (

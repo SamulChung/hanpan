@@ -8,7 +8,6 @@ import {
   spreadMoves,
 } from '../src/renderer/src/design/geometry'
 import {
-  DESIGN_TEMPLATES,
   FORMATS,
   SHAPES,
   parseDesign,
@@ -27,6 +26,7 @@ import {
   shadowSpec,
   shapePath,
 } from '../src/renderer/src/design/style'
+import { DESIGN_TEMPLATES } from '../src/renderer/src/design/templates'
 
 const box = (x: number, y: number, w: number, h: number, id = `${x}-${y}`) =>
   shapeElement('rect', { id, x, y, w, h })

@@ -203,6 +203,14 @@ const KO = {
   fontTooBig: '글꼴 파일은 10MB까지 넣을 수 있습니다.',
   fontBad: '글꼴 파일을 읽지 못했습니다.',
   myFonts: '넣은 글꼴',
+  bundledFonts: '한판 글꼴 (어느 PC에서나 같게)',
+  systemFonts: '이 PC의 글꼴',
+  icons: '아이콘',
+  iconSearch: '아이콘 찾기 (예: 달력, 장소)',
+  iconNone: '맞는 아이콘이 없습니다.',
+  iconLook: '아이콘 색과 굵기',
+  icon: '아이콘',
+  iconCredit: '아이콘: Lucide (ISC 라이선스)',
 }
 export type Words = typeof KO
 
@@ -395,6 +403,14 @@ const EN: Words = {
   fontTooBig: 'A font file can be up to 10 MB.',
   fontBad: 'The font file could not be read.',
   myFonts: 'Added fonts',
+  bundledFonts: 'Hanpan fonts (same on every PC)',
+  systemFonts: 'Fonts on this PC',
+  icons: 'Icons',
+  iconSearch: 'Find an icon (e.g. calendar, place)',
+  iconNone: 'No icon matches.',
+  iconLook: 'Icon colour and weight',
+  icon: 'Icon',
+  iconCredit: 'Icons: Lucide (ISC licence)',
 }
 
 export const wordsFor = (lang: string): Words => (lang === 'ko' ? KO : EN)

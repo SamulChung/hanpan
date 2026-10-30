@@ -16,6 +16,7 @@ import {
   type ShadowKind,
 } from './model'
 import { REWRITE_MODES, type RewriteMode } from './ai'
+import { BUNDLED_FONTS, SYSTEM_FONTS } from './fonts'
 import type { AlignMode } from './geometry'
 import type { Words } from './words'
 
@@ -405,9 +406,20 @@ export function Inspector(p: InspectorProps) {
               }
               data-hanpan="font-select"
             >
-              {FONTS.map((f) => (
-                <option key={f}>{f}</option>
-              ))}
+              <optgroup label={w.bundledFonts}>
+                {BUNDLED_FONTS.map((f) => (
+                  <option key={f.family} value={f.family}>
+                    {f.label}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label={w.systemFonts}>
+                {SYSTEM_FONTS.map((f) => (
+                  <option key={f.family} value={f.family}>
+                    {f.label}
+                  </option>
+                ))}
+              </optgroup>
               {p.fonts.length > 0 && (
                 <optgroup label={w.myFonts}>
                   {p.fonts.map((f) => (
@@ -711,8 +723,9 @@ export function Inspector(p: InspectorProps) {
         e.kind === 'ellipse' ||
         e.kind === 'shape' ||
         e.kind === 'image' ||
-        e.kind === 'draw') && (
-        <Section title={w.stroke}>
+        e.kind === 'draw' ||
+        e.kind === 'icon') && (
+        <Section title={e.kind === 'icon' ? w.iconLook : w.stroke}>
           <ColorRow
             w={w}
             value={e.stroke}
@@ -722,8 +735,9 @@ export function Inspector(p: InspectorProps) {
           />
           <Slider
             label={w.strokeWidth}
-            min={e.kind === 'draw' ? 1 : 0}
-            max={e.kind === 'draw' ? 80 : 40}
+            min={e.kind === 'icon' ? 0.5 : e.kind === 'draw' ? 1 : 0}
+            max={e.kind === 'icon' ? 4 : e.kind === 'draw' ? 80 : 40}
+            step={e.kind === 'icon' ? 0.25 : 1}
             value={e.strokeWidth ?? 0}
             onChange={(v) => set({ strokeWidth: v }, 'sw')}
           />

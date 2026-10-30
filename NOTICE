@@ -196,6 +196,18 @@ The Apache License 2.0 grants no rights to the names or logos "IeumOffice",
 
 Hanpan (한판) is made by TenAI (www.tenai.kr), based on IeumOffice.
 
+Hanpan design board icons
+
+apps/shell/src/renderer/src/design/icons.ts holds 124 icons from Lucide
+1.65.0 (https://lucide.dev, npm package lucide-static), each icon's shapes
+rewritten as SVG path strings on the same 24 x 24 grid by
+tools/hanpan-design-icons.py; the drawing is otherwise unchanged. Lucide is
+distributed under the ISC License, Copyright (c) 2026 Lucide Icons and
+Contributors; icons derived from the Feather project are under the MIT
+License, Copyright (c) 2013-present Cole Bemis. The full texts are at
+https://github.com/lucide-icons/lucide/blob/main/LICENSE. The design board's
+templates use the slide design template fonts listed above.
+
 Contact
 
 Trademark and copyright reports and licensing questions about Hanpan: ten@tenai.kr

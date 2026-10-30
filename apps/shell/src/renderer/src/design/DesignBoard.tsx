@@ -54,11 +54,11 @@ import {
 } from './geometry'
 import { Inspector, type Arrange } from './Inspector'
 import {
-  DESIGN_TEMPLATES,
   FORMATS,
   SHAPES,
   blankDoc,
   cardNewsFromOutline,
+  iconElement,
   inkElement,
   newId,
   parseDesign,
@@ -73,6 +73,8 @@ import {
   type DesignPage,
   type ShapeName,
 } from './model'
+import { ICONS } from './icons'
+import { DESIGN_TEMPLATES } from './templates'
 import { coverRect, inkPath, shapePath, textPadding } from './style'
 import { PagePreview, elementBox, elementLook, pageBackground } from './view'
 import { wordsFor } from './words'
@@ -259,6 +261,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   const [marquee, setMarquee] = useState<Box | null>(null)
   const [editing, setEditing] = useState<string | null>(null)
   const [qrInput, setQrInput] = useState('')
+  const [iconQuery, setIconQuery] = useState('')
   const [cropping, setCropping] = useState<string | null>(null)
   const [cropNatural, setCropNatural] = useState<{ w: number; h: number } | null>(null)
   const [pen, setPen] = useState(false)
@@ -511,6 +514,10 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     if (kind === 'ellipse') return add(shapeElement('ellipse', center(s, s)))
     if (kind === 'line') return add(shapeElement('line', { ...center(s * 1.6, 0), h: 0 }))
     return add(pathElement(kind, center(kind === 'arrow' ? s * 1.4 : s, s)))
+  }
+  const addIcon = (name: string) => {
+    const s = Math.round(unit * 0.14)
+    add(iconElement(name, { ...center(s, s), stroke: ink }))
   }
   const placeImage = (picked: { dataUrl: string; width: number; height: number }, at?: Pt) => {
     const k = Math.min(1, (doc.width * 0.6) / picked.width, (doc.height * 0.6) / picked.height)
@@ -1542,6 +1549,11 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     )
   }
 
+  const iconWords = iconQuery.trim().toLowerCase().split(/\s+/).filter(Boolean)
+  const shownIcons = ICONS.filter((icon) =>
+    iconWords.every((q) => icon.label.includes(q) || icon.name.includes(q)),
+  )
+
   const tabs: Tab[] = hasAi
     ? ['ai', 'templates', 'elements', 'text', 'layers']
     : ['templates', 'elements', 'text', 'layers']
@@ -1915,6 +1927,35 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                 {w.image}
               </button>
               <p className="dz-muted">{w.imageHint}</p>
+              <h3>{w.icons}</h3>
+              <input
+                type="search"
+                className="dz-icon-search"
+                value={iconQuery}
+                placeholder={w.iconSearch}
+                onChange={(e) => setIconQuery(e.target.value)}
+                data-hanpan="icon-search"
+              />
+              <div className="dz-icon-grid">
+                {shownIcons.map((icon) => (
+                  <button
+                    key={icon.name}
+                    type="button"
+                    title={icon.label}
+                    aria-label={icon.label}
+                    onClick={() => addIcon(icon.name)}
+                    data-add-icon={icon.name}
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      {icon.paths.map((d, i) => (
+                        <path key={i} d={d} />
+                      ))}
+                    </svg>
+                  </button>
+                ))}
+              </div>
+              {!shownIcons.length && <p className="dz-muted">{w.iconNone}</p>}
+              <p className="dz-muted dz-credit">{w.iconCredit}</p>
               <h3>{w.qr}</h3>
               <div className="dz-col">
                 <input
@@ -2007,7 +2048,9 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                                 ? '╱'
                                 : e.kind === 'draw'
                                   ? '✎'
-                                  : '◆'}
+                                  : e.kind === 'icon'
+                                    ? '✦'
+                                    : '◆'}
                       </span>
                       <span className="dz-layer-name">
                         {e.kind === 'text'
@@ -2020,7 +2063,9 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                                 ? w.image
                                 : e.kind === 'draw'
                                   ? w.drawing
-                                  : w[e.kind]}
+                                  : e.kind === 'icon'
+                                    ? (ICONS.find((i) => i.name === e.icon)?.label ?? w.icon)
+                                    : w[e.kind]}
                       </span>
                       {e.group && (
                         <span className="dz-layer-group" title={w.grouped}>

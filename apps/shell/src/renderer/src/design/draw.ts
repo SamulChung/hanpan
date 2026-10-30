@@ -282,6 +282,20 @@ async function drawElement(
       ctx.stroke(new Path2D(inkPath(e.points, e.w, e.h)))
       break
     }
+    case 'icon': {
+      if (!e.paths?.length) break
+      // the 24 x 24 grid fitted into the box, centred, as the board's SVG shows it
+      const k = Math.min(e.w, e.h) / 24
+      ctx.translate(e.x + (e.w - 24 * k) / 2, e.y + (e.h - 24 * k) / 2)
+      ctx.scale(k, k)
+      applyShadow(ctx, e, scale)
+      ctx.strokeStyle = e.stroke ?? '#0F172A'
+      ctx.lineWidth = e.strokeWidth ?? 2
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
+      for (const d of e.paths) ctx.stroke(new Path2D(d))
+      break
+    }
     case 'qr': {
       const size = Math.min(e.w, e.h)
       const x = e.x + (e.w - size) / 2
@@ -317,10 +331,12 @@ export async function drawPage(
   canvas.height = Math.round(height * scale)
   const ctx = canvas.getContext('2d')!
   // fonts the page uses (added font files too) must be loaded before text is painted
-  const families = new Set(page.elements.filter((e) => e.kind === 'text').map((e) => e.fontFamily))
-  await Promise.all(
-    [...families].map((f) => (f ? document.fonts.load(`48px "${f}"`).catch(() => []) : [])),
+  const faces = new Set(
+    page.elements
+      .filter((e) => e.kind === 'text' && e.fontFamily)
+      .map((e) => `${e.italic ? 'italic ' : ''}${e.fontWeight ?? 400} 48px "${e.fontFamily}"`),
   )
+  await Promise.all([...faces].map((face) => document.fonts.load(face).catch(() => [])))
   ctx.scale(scale, scale)
   ctx.fillStyle = paint(
     ctx,
