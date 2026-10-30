@@ -18,7 +18,7 @@ import {
 import { expectOk, type HwpEngineDocument } from './hwp-engine'
 
 // eslint-disable-next-line no-control-regex
-const CONTROL = /[\u0000-\u001f​]/g
+const CONTROL = /[\u0000-\u001f\u200b]/g
 
 interface ParagraphText {
   para: number
@@ -61,7 +61,10 @@ function replaceDiff(doc: HwpEngineDocument, p: ParagraphText, after: string): v
 }
 
 /** Rewrites every editable paragraph through `change`; returns how many changed. */
-export function rewriteParagraphs(doc: HwpEngineDocument, change: (text: string, index: number) => string): number {
+export function rewriteParagraphs(
+  doc: HwpEngineDocument,
+  change: (text: string, index: number) => string,
+): number {
   let changed = 0
   for (const p of editableParagraphs(doc)) {
     const next = change(p.text, p.para)
@@ -106,7 +109,13 @@ export function markHwpReview(doc: HwpEngineDocument): Record<ReviewColor, numbe
   for (const mark of reviewMarks(paragraphs.map((p) => p.text))) {
     const p = paragraphs[mark.line]!
     expectOk(
-      doc.applyCharFormat(0, p.para, p.offset + mark.start, p.offset + mark.end, JSON.stringify({ shadeColor: REVIEW_SHADE[mark.color] })),
+      doc.applyCharFormat(
+        0,
+        p.para,
+        p.offset + mark.start,
+        p.offset + mark.end,
+        JSON.stringify({ shadeColor: REVIEW_SHADE[mark.color] }),
+      ),
       'highlight',
     )
     counts[mark.color]++

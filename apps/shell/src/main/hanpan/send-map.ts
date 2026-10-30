@@ -48,11 +48,21 @@ export interface SendMapDeps {
   now(): number
 }
 
-const EDITOR_OF: Record<SendRequest['target'], CopyEditor> = { hwp: 'hwp', slides: 'slides', docx: 'docs' }
+const EDITOR_OF: Record<SendRequest['target'], CopyEditor> = {
+  hwp: 'hwp',
+  slides: 'slides',
+  docx: 'docs',
+}
 
-export async function documentBytesFor(request: SendRequest, deps: Pick<SendMapDeps, 'loadHwpEngine' | 'buildDeck'>): Promise<Uint8Array> {
+export async function documentBytesFor(
+  request: SendRequest,
+  deps: Pick<SendMapDeps, 'loadHwpEngine' | 'buildDeck'>,
+): Promise<Uint8Array> {
   if (request.target === 'slides') {
-    return deps.buildDeck(outlineToSlides(request.outline, { includeNotes: request.includeNotes }), request.slideStyle)
+    return deps.buildDeck(
+      outlineToSlides(request.outline, { includeNotes: request.includeNotes }),
+      request.slideStyle,
+    )
   }
   const blocks = outlineToBlocks(request.outline, {
     style: request.style,
@@ -66,7 +76,10 @@ export async function documentBytesFor(request: SendRequest, deps: Pick<SendMapD
 }
 
 export function createMapSender(deps: SendMapDeps) {
-  return async function sendMap(rawRequest: unknown, mapContents: TabContents | null): Promise<SendResult> {
+  return async function sendMap(
+    rawRequest: unknown,
+    mapContents: TabContents | null,
+  ): Promise<SendResult> {
     let request: SendRequest
     try {
       request = checkSendRequest(rawRequest)
@@ -79,10 +92,17 @@ export function createMapSender(deps: SendMapDeps) {
     const title = fileName.slice(0, fileName.lastIndexOf('.'))
     const dir = await deps.makeCopyDir()
     const path = join(dir, fileName)
-    let opened: Awaited<ReturnType<SendMapDeps['openCopy']>> = null
+    let opened: Awaited<ReturnType<SendMapDeps['openCopy']>>
     try {
       await deps.writeFile(path, bytes)
-      opened = await deps.openCopy({ editor: EDITOR_OF[request.target], path, dir, bytes, fileName, title })
+      opened = await deps.openCopy({
+        editor: EDITOR_OF[request.target],
+        path,
+        dir,
+        bytes,
+        fileName,
+        title,
+      })
     } catch {
       opened = null
     }

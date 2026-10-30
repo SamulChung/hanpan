@@ -63,7 +63,12 @@ export function checkSendRequest(value: unknown): SendRequest {
     if (!Array.isArray(n.children)) throw new Error('bad topic')
     let image: PanOutline['nodes'][number]['image']
     const img = n.image as Record<string, unknown> | undefined
-    if (img && img.bytes instanceof Uint8Array && img.bytes.length <= MAX_IMAGE_BYTES && typeof img.mime === 'string') {
+    if (
+      img &&
+      img.bytes instanceof Uint8Array &&
+      img.bytes.length <= MAX_IMAGE_BYTES &&
+      typeof img.mime === 'string'
+    ) {
       image = {
         bytes: img.bytes,
         mime: img.mime,
@@ -103,6 +108,7 @@ export function checkSendRequest(value: unknown): SendRequest {
 export function documentFileName(title: string, extension: string): string {
   const base =
     title
+      // eslint-disable-next-line no-control-regex -- Windows file names must exclude ASCII controls.
       .replace(/[\\/:*?"<>|\u0000-\u001f]/g, ' ')
       .replace(/\s+/g, ' ')
       .trim()

@@ -12,14 +12,23 @@ import { useI18n } from '../locale'
 export type ConvertFormat = 'hwp' | 'hwpx' | 'docx' | 'odt' | 'pdf' | 'html'
 export type ConvertTheme = 'report' | 'plain' | 'gongmun'
 type ConvertOutcome =
-  | { ok: true; written: { format: ConvertFormat; path: string }[]; failed: { format: ConvertFormat; error: string }[] }
+  | {
+      ok: true
+      written: { format: ConvertFormat; path: string }[]
+      failed: { format: ConvertFormat; error: string }[]
+    }
   | { ok: false; error: string }
 
 export interface MarkdownConverterApi {
   mdFolder(): Promise<string>
   mdPickFile(): Promise<{ name: string; text: string; folder: string } | null>
   mdPickFolder(): Promise<string | null>
-  mdConvert(request: { markdown: string; name: string; formats: ConvertFormat[]; theme: ConvertTheme }): Promise<ConvertOutcome>
+  mdConvert(request: {
+    markdown: string
+    name: string
+    formats: ConvertFormat[]
+    theme: ConvertTheme
+  }): Promise<ConvertOutcome>
   mdShowFolder(): Promise<string>
 }
 
@@ -47,7 +56,13 @@ function storedFormats(): ConvertFormat[] {
 /** The document's own title, the first `# ` heading, as the default file name. */
 export function headingName(markdown: string): string {
   const m = /^#\s+(.+)$/m.exec(markdown)
-  return m ? m[1]!.replace(/[*_`]/g, '').replace(/[\\/:*?"<>|]/g, ' ').trim().slice(0, 100) : ''
+  return m
+    ? m[1]!
+        .replace(/[*_`]/g, '')
+        .replace(/[\\/:*?"<>|]/g, ' ')
+        .trim()
+        .slice(0, 100)
+    : ''
 }
 
 const fileName = (path: string) => path.split(/[\\/]/).pop() ?? path
@@ -61,27 +76,45 @@ function Preview(p: { blocks: DocBlock[] }) {
           case 'title':
             return b.text ? <h1 key={i}>{b.text}</h1> : null
           case 'meta':
-            return <p key={i} className="hp-conv-meta">{b.text}</p>
+            return (
+              <p key={i} className="hp-conv-meta">
+                {b.text}
+              </p>
+            )
           case 'chapter':
             return <h2 key={i}>{[b.label, b.text].filter(Boolean).join(' ')}</h2>
           case 'item':
             return (
-              <p key={i} className={b.marker ? 'hp-conv-item' : 'hp-conv-item is-head'} style={indent}>
+              <p
+                key={i}
+                className={b.marker ? 'hp-conv-item' : 'hp-conv-item is-head'}
+                style={indent}
+              >
                 {b.marker && <span className="hp-conv-marker">{b.marker}</span>}
                 {b.text}
               </p>
             )
           case 'para':
-            return <p key={i} className="hp-conv-para" style={indent}>{b.text}</p>
+            return (
+              <p key={i} className="hp-conv-para" style={indent}>
+                {b.text}
+              </p>
+            )
           case 'reference':
-            return <p key={i} className="hp-conv-ref" style={indent}>※ {b.text}</p>
+            return (
+              <p key={i} className="hp-conv-ref" style={indent}>
+                ※ {b.text}
+              </p>
+            )
           case 'table':
             return (
               <table key={i}>
                 <tbody>
                   {b.rows.map((row, r) => (
                     <tr key={r}>
-                      {row.map((cell, c) => (b.header && r === 0 ? <th key={c}>{cell}</th> : <td key={c}>{cell}</td>))}
+                      {row.map((cell, c) =>
+                        b.header && r === 0 ? <th key={c}>{cell}</th> : <td key={c}>{cell}</td>,
+                      )}
                     </tr>
                   ))}
                 </tbody>
@@ -90,7 +123,11 @@ function Preview(p: { blocks: DocBlock[] }) {
           case 'pageBreak':
             return <hr key={i} />
           case 'closing':
-            return <p key={i} className="hp-conv-para">{b.text}</p>
+            return (
+              <p key={i} className="hp-conv-para">
+                {b.text}
+              </p>
+            )
           default:
             return null
         }
@@ -119,7 +156,9 @@ export function MarkdownConverter(p: { api: MarkdownConverterApi; onClose(): voi
   }, [p.api])
 
   const toggle = (id: ConvertFormat) => {
-    const next = formats.includes(id) ? formats.filter((f) => f !== id) : FORMATS.map((f) => f.id).filter((f) => f === id || formats.includes(f))
+    const next = formats.includes(id)
+      ? formats.filter((f) => f !== id)
+      : FORMATS.map((f) => f.id).filter((f) => f === id || formats.includes(f))
     setFormats(next)
     try {
       localStorage.setItem(FORMATS_KEY, JSON.stringify(next))
@@ -152,7 +191,9 @@ export function MarkdownConverter(p: { api: MarkdownConverterApi; onClose(): voi
     setDropping(false)
     const file = event.dataTransfer.files[0]
     if (!file || !/\.(md|markdown|txt)$/i.test(file.name)) return
-    void file.text().then((text) => load(text.replace(/^﻿/, ''), file.name.replace(/\.[^.]+$/, '')))
+    void file
+      .text()
+      .then((text) => load(text.replace(/^\uFEFF/, ''), file.name.replace(/\.[^.]+$/, '')))
   }
 
   const convert = async () => {
@@ -171,7 +212,10 @@ export function MarkdownConverter(p: { api: MarkdownConverterApi; onClose(): voi
   const label = (id: ConvertFormat) => FORMATS.find((f) => f.id === id)?.label ?? id
 
   return (
-    <div className="hp-tpl-backdrop" onMouseDown={(e) => e.target === e.currentTarget && !busy && p.onClose()}>
+    <div
+      className="hp-tpl-backdrop"
+      onMouseDown={(e) => e.target === e.currentTarget && !busy && p.onClose()}
+    >
       <div
         className="hp-conv"
         role="dialog"
@@ -182,7 +226,13 @@ export function MarkdownConverter(p: { api: MarkdownConverterApi; onClose(): voi
       >
         <div className="hp-tpl-head">
           <h2>{t('hpConvTitle')}</h2>
-          <button type="button" className="hp-tpl-close" onClick={p.onClose} disabled={busy} aria-label={t('hpTemplatesClose')}>
+          <button
+            type="button"
+            className="hp-tpl-close"
+            onClick={p.onClose}
+            disabled={busy}
+            aria-label={t('hpTemplatesClose')}
+          >
             ×
           </button>
         </div>
@@ -190,10 +240,17 @@ export function MarkdownConverter(p: { api: MarkdownConverterApi; onClose(): voi
           <section className="hp-conv-pane">
             <div className="hp-conv-bar">
               <span className="hp-conv-label">{t('hpConvSource')}</span>
-              <button type="button" className="hp-conv-ghost" onClick={() => void openFile()} data-hanpan="md-open">
+              <button
+                type="button"
+                className="hp-conv-ghost"
+                onClick={() => void openFile()}
+                data-hanpan="md-open"
+              >
                 {t('hpConvOpenFile')}
               </button>
-              <span className="hp-conv-count">{t('hpConvChars', { n: markdown.length.toLocaleString() })}</span>
+              <span className="hp-conv-count">
+                {t('hpConvChars', { n: markdown.length.toLocaleString() })}
+              </span>
             </div>
             <textarea
               className={dropping ? 'hp-conv-source is-dropping' : 'hp-conv-source'}
@@ -220,7 +277,11 @@ export function MarkdownConverter(p: { api: MarkdownConverterApi; onClose(): voi
               <span className="hp-conv-label">{t('hpConvPreview')}</span>
             </div>
             <div className="hp-conv-preview" data-hanpan="md-preview">
-              {blocks.length > 0 ? <Preview blocks={blocks} /> : <p className="hp-conv-empty">{t('hpConvPreviewEmpty')}</p>}
+              {blocks.length > 0 ? (
+                <Preview blocks={blocks} />
+              ) : (
+                <p className="hp-conv-empty">{t('hpConvPreviewEmpty')}</p>
+              )}
             </div>
           </section>
         </div>
@@ -228,20 +289,37 @@ export function MarkdownConverter(p: { api: MarkdownConverterApi; onClose(): voi
           <div className="hp-conv-options">
             <label className="hp-conv-field">
               <span>{t('hpConvName')}</span>
-              <input value={name} placeholder={effectiveName} onChange={(e) => setName(e.target.value)} data-hanpan="md-name" />
+              <input
+                value={name}
+                placeholder={effectiveName}
+                onChange={(e) => setName(e.target.value)}
+                data-hanpan="md-name"
+              />
             </label>
             <fieldset className="hp-conv-formats">
               <legend>{t('hpConvFormats')}</legend>
               {FORMATS.map((f) => (
-                <label key={f.id} className={formats.includes(f.id) ? 'hp-conv-chip is-on' : 'hp-conv-chip'}>
-                  <input type="checkbox" checked={formats.includes(f.id)} onChange={() => toggle(f.id)} data-format={f.id} />
+                <label
+                  key={f.id}
+                  className={formats.includes(f.id) ? 'hp-conv-chip is-on' : 'hp-conv-chip'}
+                >
+                  <input
+                    type="checkbox"
+                    checked={formats.includes(f.id)}
+                    onChange={() => toggle(f.id)}
+                    data-format={f.id}
+                  />
                   {f.label}
                 </label>
               ))}
             </fieldset>
             <label className="hp-conv-field">
               <span>{t('hpConvStyle')}</span>
-              <select value={theme} onChange={(e) => setTheme(e.target.value as ConvertTheme)} data-hanpan="md-theme">
+              <select
+                value={theme}
+                onChange={(e) => setTheme(e.target.value as ConvertTheme)}
+                data-hanpan="md-theme"
+              >
                 <option value="report">{t('hpConvStyleReport')}</option>
                 <option value="plain">{t('hpConvStylePlain')}</option>
                 <option value="gongmun">{t('hpConvStyleGongmun')}</option>
@@ -252,34 +330,58 @@ export function MarkdownConverter(p: { api: MarkdownConverterApi; onClose(): voi
               <span className="hp-conv-path" title={folder}>
                 {folder}
               </span>
-              <button type="button" className="hp-conv-ghost" onClick={() => void changeFolder()} disabled={busy}>
+              <button
+                type="button"
+                className="hp-conv-ghost"
+                onClick={() => void changeFolder()}
+                disabled={busy}
+              >
                 {t('hpConvChangeFolder')}
               </button>
             </div>
           </div>
-          <button type="button" className="hp-conv-go" onClick={() => void convert()} disabled={busy} data-hanpan="md-convert">
+          <button
+            type="button"
+            className="hp-conv-go"
+            onClick={() => void convert()}
+            disabled={busy}
+            data-hanpan="md-convert"
+          >
             {busy ? t('hpConvBusy') : t('hpConvGo')}
           </button>
         </div>
         {(notice || outcome) && (
           <div className="hp-conv-result" role="status" data-hanpan="md-result">
             {notice && <p className="hp-tpl-error">{notice}</p>}
-            {outcome && !outcome.ok && <p className="hp-tpl-error">{t('hpConvError', { error: outcome.error })}</p>}
+            {outcome && !outcome.ok && (
+              <p className="hp-tpl-error">{t('hpConvError', { error: outcome.error })}</p>
+            )}
             {outcome?.ok && (
               <>
                 {outcome.written.length > 0 && (
                   <p className="hp-conv-done">
-                    {t('hpConvDone', { n: outcome.written.length })} <span>{t('hpConvOpenHint')}</span>
+                    {t('hpConvDone', { n: outcome.written.length })}{' '}
+                    <span>{t('hpConvOpenHint')}</span>
                   </p>
                 )}
                 <div className="hp-conv-files">
                   {outcome.written.map((w) => (
-                    <button key={w.path} type="button" className="hp-conv-file" title={w.path} onClick={() => void window.aiOffice.openPath(w.path)}>
+                    <button
+                      key={w.path}
+                      type="button"
+                      className="hp-conv-file"
+                      title={w.path}
+                      onClick={() => void window.aiOffice.openPath(w.path)}
+                    >
                       <b>{label(w.format)}</b> {fileName(w.path)}
                     </button>
                   ))}
                   {outcome.written.length > 0 && (
-                    <button type="button" className="hp-conv-ghost" onClick={() => void p.api.mdShowFolder()}>
+                    <button
+                      type="button"
+                      className="hp-conv-ghost"
+                      onClick={() => void p.api.mdShowFolder()}
+                    >
                       {t('hpConvShowFolder')}
                     </button>
                   )}

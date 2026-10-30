@@ -5,7 +5,15 @@
  * 글집 templates use, so a converted file looks like a Hanpan report. ODT is made
  * from the Word file; the PDF is the HTML page printed, laid out like the HWP.
  */
-import { DOC_THEMES, blocksToDocx, blocksToHtml, blocksToHwp, markdownToBlocks, type DocBlock, type HwpEngine } from '@genoffice/hanpan-core'
+import {
+  DOC_THEMES,
+  blocksToDocx,
+  blocksToHtml,
+  blocksToHwp,
+  markdownToBlocks,
+  type DocBlock,
+  type HwpEngine,
+} from '@genoffice/hanpan-core'
 import { join } from 'node:path'
 
 export const CONVERT_FORMATS = ['hwp', 'hwpx', 'docx', 'odt', 'pdf', 'html'] as const
@@ -40,6 +48,7 @@ const MAX_MARKDOWN = 5_000_000
 /** Characters Windows does not allow in a file name, and trailing dots and spaces. */
 export function safeFileName(name: string): string {
   const cleaned = name
+    // eslint-disable-next-line no-control-regex -- Windows file names must exclude ASCII controls.
     .replace(/[\\/:*?"<>|\u0000-\u001f]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
@@ -52,10 +61,17 @@ export function checkConvertRequest(raw: unknown): ConvertRequest {
   const value = (raw ?? {}) as Record<string, unknown>
   if (typeof value.markdown !== 'string' || !value.markdown.trim()) throw new Error('no markdown')
   if (value.markdown.length > MAX_MARKDOWN) throw new Error('the markdown is too long')
-  const formats = Array.isArray(value.formats) ? CONVERT_FORMATS.filter((f) => (value.formats as unknown[]).includes(f)) : []
+  const formats = Array.isArray(value.formats)
+    ? CONVERT_FORMATS.filter((f) => (value.formats as unknown[]).includes(f))
+    : []
   if (formats.length === 0) throw new Error('no format')
   const theme = CONVERT_THEMES.find((t) => t === value.theme) ?? 'report'
-  return { markdown: value.markdown, name: safeFileName(typeof value.name === 'string' ? value.name : ''), formats, theme }
+  return {
+    markdown: value.markdown,
+    name: safeFileName(typeof value.name === 'string' ? value.name : ''),
+    formats,
+    theme,
+  }
 }
 
 /** The document's own title: its first `# ` heading, else nothing. */
@@ -71,13 +87,22 @@ export function convertBlocks(request: ConvertRequest): DocBlock[] {
 }
 
 /** `name.ext`, or `name (2).ext` and on while a file of that name is already there. */
-export function freePath(folder: string, name: string, ext: string, exists: (path: string) => boolean): string {
+export function freePath(
+  folder: string,
+  name: string,
+  ext: string,
+  exists: (path: string) => boolean,
+): string {
   let path = join(folder, `${name}.${ext}`)
   for (let n = 2; exists(path); n++) path = join(folder, `${name} (${n}).${ext}`)
   return path
 }
 
-export async function convertMarkdown(request: ConvertRequest, folder: string, deps: ConvertDeps): Promise<ConvertResult> {
+export async function convertMarkdown(
+  request: ConvertRequest,
+  folder: string,
+  deps: ConvertDeps,
+): Promise<ConvertResult> {
   const blocks = convertBlocks(request)
   const theme = DOC_THEMES[request.theme]!
   const result: ConvertResult = { written: [], failed: [] }
@@ -97,7 +122,9 @@ export async function convertMarkdown(request: ConvertRequest, folder: string, d
   }
 
   for (const format of ['hwp', 'hwpx'] as const) {
-    await write(format, async (path) => deps.writeFile(path, blocksToHwp(await deps.loadHwpEngine(), blocks, theme, format).bytes))
+    await write(format, async (path) =>
+      deps.writeFile(path, blocksToHwp(await deps.loadHwpEngine(), blocks, theme, format).bytes),
+    )
   }
   await write('docx', async (path) => deps.writeFile(path, await docxBytes()))
   await write('odt', async (path) => deps.writeFile(path, await deps.docxToOdt(await docxBytes())))

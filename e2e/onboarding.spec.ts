@@ -27,7 +27,7 @@ test.describe('first-run onboarding', () => {
       // last slide's primary button finishes the onboarding
       await page.locator('.onb-next').click()
       await expect(overlay).toBeHidden()
-      await expect(page.locator('.home-hero')).toBeVisible()
+      await expect(page.locator('[data-hanpan="start-board"]')).toBeVisible()
       await page.screenshot({ path: screenshotPath('onboarding-done-home') })
 
       await expect
@@ -46,7 +46,7 @@ test.describe('first-run onboarding', () => {
       videoDir: 'onboarding-relaunch',
     })
     try {
-      await expect(relaunch.page.locator('.home-hero')).toBeVisible()
+      await expect(relaunch.page.locator('[data-hanpan="start-board"]')).toBeVisible()
       await expect(relaunch.page.locator('.onb-overlay')).toHaveCount(0)
       await relaunch.page.screenshot({ path: screenshotPath('onboarding-relaunch-no-overlay') })
     } finally {

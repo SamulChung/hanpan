@@ -8543,13 +8543,18 @@ const hanpan = setupHanpan({
   tabTitleOf: (contentsId) => {
     const manager = tabManager
     if (!manager) return null
-    return manager.list().find((t) => manager.webContentsForTab(t.id)?.id === contentsId)?.title ?? null
+    return (
+      manager.list().find((t) => manager.webContentsForTab(t.id)?.id === contentsId)?.title ?? null
+    )
   },
 })
 // Hanpan: the 글집 templates on the Home screen (and, in stage 4, the design board)
 ipcMain.handle('hanpan:templates', () => hanpan.templates())
 ipcMain.handle('hanpan:new-map', (_event, topic: unknown) =>
-  hanpan.newMap(topic).catch((error: unknown) => ({ ok: false as const, error: error instanceof Error ? error.message : String(error) })),
+  hanpan.newMap(topic).catch((error: unknown) => ({
+    ok: false as const,
+    error: error instanceof Error ? error.message : String(error),
+  })),
 )
 ipcMain.handle('hanpan:open-template', (_event, id: unknown, target: unknown) =>
   hanpan.openTemplate(id, target).catch((error: unknown) => ({
@@ -8572,12 +8577,19 @@ ipcMain.handle('hanpan:md-pick-file', async (event) => {
   const path = picked.canceled ? undefined : picked.filePaths[0]
   if (!path || statSync(path).size > 5_000_000) return null
   mdConvertFolder = dirname(path)
-  return { name: basename(path, extname(path)), text: readFileSync(path, 'utf8').replace(/^﻿/, ''), folder: mdConvertFolder }
+  return {
+    name: basename(path, extname(path)),
+    text: readFileSync(path, 'utf8').replace(/^\uFEFF/, ''),
+    folder: mdConvertFolder,
+  }
 })
 ipcMain.handle('hanpan:md-pick-folder', async (event) => {
   const win = BrowserWindow.fromWebContents(event.sender) ?? shellWindow
   if (!win) return null
-  const picked = await dialog.showOpenDialog(win, { properties: ['openDirectory', 'createDirectory'], defaultPath: mdFolder() })
+  const picked = await dialog.showOpenDialog(win, {
+    properties: ['openDirectory', 'createDirectory'],
+    defaultPath: mdFolder(),
+  })
   if (picked.canceled || !picked.filePaths[0]) return null
   mdConvertFolder = picked.filePaths[0]
   return mdConvertFolder
@@ -8585,7 +8597,10 @@ ipcMain.handle('hanpan:md-pick-folder', async (event) => {
 ipcMain.handle('hanpan:md-convert', (_event, request: unknown) =>
   hanpan.convertMarkdown(request, mdFolder()).then(
     (result) => ({ ok: true as const, ...result }),
-    (error: unknown) => ({ ok: false as const, error: error instanceof Error ? error.message : String(error) }),
+    (error: unknown) => ({
+      ok: false as const,
+      error: error instanceof Error ? error.message : String(error),
+    }),
   ),
 )
 ipcMain.handle('hanpan:md-show-folder', () => shell.openPath(mdFolder()))

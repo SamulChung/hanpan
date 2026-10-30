@@ -141,9 +141,9 @@ test.describe('mind map editor in the shell', () => {
     const { app, page } = launched
     try {
       // ── the Home card
-      const card = page.locator('.quick-card', { hasText: 'Mind Map' })
+      const card = page.locator('.quick-card[data-new="xmind"]')
       await expect(card).toHaveCount(1)
-      await expect(card.locator('.quick-sub')).toHaveText('.xmind')
+      await expect(card.locator('.quick-sub')).toHaveText('Organise ideas, send them to documents')
       // the card is named for the editor, never after another product
       await expect(card.locator('.quick-title')).toHaveText('Mind Map')
       await expect(card.locator('img')).toBeVisible()
@@ -508,8 +508,8 @@ test.describe('mind map editor in the shell', () => {
         },
         join(outside, 'picked.xmind'),
       )
-      // the browse card (the only one with a tip); the PDF tools card comes after it
-      await page.locator('.quick-card[data-tip]').click()
+      // Open the file picker by its action, independent of other tooltips.
+      await page.locator('.quick-card[data-new="open"]').click()
       await expect(tab.locator('.tab-title')).toHaveText('picked.xmind')
       const asked = (
         await app.evaluate(
