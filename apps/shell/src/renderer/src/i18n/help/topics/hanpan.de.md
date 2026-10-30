@@ -29,6 +29,7 @@ Hanpan schickt, was Sie in einer Mindmap geordnet haben, als Hangul-Bericht (HWP
 - Die Karte **Design** auf der Startseite erstellt Plakate, Karten-News, Aushänge und Vorschaubilder.
 - Drücken Sie **Zum Einfügen in ein Dokument kopieren** und dann Strg+V in einem HWP-, Word- oder PowerPoint-Tab, um die Seite als Bild einzufügen. Seiten lassen sich auch als PNG und PDF speichern.
 - In einer Mindmap erstellt **An ein Dokument senden › Als Karten-News senden** eine Karte je Hauptzweig.
+- Schreiben Sie im Designfenster unter **Make with AI**, was entstehen soll, und drücken Sie **Make**: Die in den Einstellungen gewählte KI schreibt den Text, Hanpan gestaltet daraus ein bearbeitbares Design. Bei einem gewählten Textfeld glättet, kürzt, verschärft oder übersetzt **Edit with AI** (Englisch ↔ Koreanisch). Rückgängig stellt den vorigen Stand wieder her.
 
 ## Die KI auf diesem PC
 

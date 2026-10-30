@@ -9,6 +9,20 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { pagePng } from './draw'
 import {
+  DESIGN_MOODS,
+  MAX_BRIEF_CHARS,
+  REWRITE_MODES,
+  briefRequest,
+  cleanRewrite,
+  designFromBrief,
+  estimateLines,
+  parseBrief,
+  rewriteRequest,
+  type DesignMood,
+  type RewriteMode,
+} from './ai'
+import { runDesignAi, type AiErrorWords, type DesignAiApi } from './ai-run'
+import {
   DESIGN_TEMPLATES,
   FONTS,
   FORMATS,
@@ -24,7 +38,7 @@ import {
   type DesignPage,
 } from './model'
 
-export interface DesignApi {
+export interface DesignApi extends Partial<DesignAiApi> {
   savePng(bytes: Uint8Array, name: string): Promise<string | null>
   savePdf(pages: Uint8Array[], size: { width: number; height: number }, name: string): Promise<string | null>
   copyImage(bytes: Uint8Array): Promise<boolean>
@@ -77,6 +91,31 @@ const KO = {
   nothing: '요소를 고르면 여기서 꾸밉니다.',
   close: '닫기',
   newText: '내용을 입력하세요',
+  aiMake: 'AI로 만들기',
+  aiPlaceholder: '무엇을 만들까요?\n예: 11월 20일 저녁 7시 본관 강당에서 여는 학부모 설명회 안내문',
+  aiFormat: '판형',
+  aiMood: '분위기',
+  aiAuto: 'AI가 고름',
+  moods: { formal: '공식적', calm: '차분한', vivid: '강렬한', warm: '따뜻한' } as Record<DesignMood, string>,
+  aiGo: '만들기',
+  aiAgain: '다시 만들기',
+  aiStop: '멈추기',
+  aiWriting: 'AI가 글을 쓰는 중…',
+  aiHint: '설정에서 고른 AI가 글을 쓰고, 배치와 색은 한판이 정합니다. 만든 뒤에도 하나하나 고칠 수 있고, 되돌리기로 이전 디자인에 돌아갑니다.',
+  aiNeedRequest: '무엇을 만들지 먼저 적어 주세요.',
+  aiUnreadable: 'AI의 답에서 쓸 글을 찾지 못했습니다. 한 번 더 누르거나 요청을 조금 바꿔 보세요.',
+  aiRewrite: 'AI로 고치기',
+  rewrites: { polish: '다듬기', shorter: '짧게', catchy: '눈길 끌게', translate: '영↔한 번역' } as Record<RewriteMode, string>,
+  aiRewriting: 'AI가 고치는 중…',
+  aiFailed: 'AI가 답하지 못했습니다',
+  aiErrors: {
+    unknown: 'AI가 알 수 없는 이유로 멈췄습니다.',
+    timeout: 'AI가 제때 답하지 않았습니다.',
+    credits: 'AI 사용 한도를 다 썼습니다.',
+    network: 'AI에 연결하지 못했습니다. 인터넷이나 로컬 AI 서버를 확인하세요.',
+    overloaded: 'AI 서비스가 혼잡합니다. 잠시 뒤 다시 해 보세요.',
+    noSettings: 'AI 설정을 읽지 못했습니다. 설정 › AI에서 쓸 AI를 고르세요.',
+  } as AiErrorWords,
 }
 type Words = typeof KO
 const EN: Words = {
@@ -123,6 +162,31 @@ const EN: Words = {
   nothing: 'Pick an element to style it here.',
   close: 'Close',
   newText: 'Type here',
+  aiMake: 'Make with AI',
+  aiPlaceholder: 'What should it be?\ne.g. A notice for a parents evening on 20 November, 7 pm, in the main hall',
+  aiFormat: 'Format',
+  aiMood: 'Mood',
+  aiAuto: 'AI picks',
+  moods: { formal: 'Formal', calm: 'Calm', vivid: 'Bold', warm: 'Warm' },
+  aiGo: 'Make',
+  aiAgain: 'Make again',
+  aiStop: 'Stop',
+  aiWriting: 'The AI is writing…',
+  aiHint: 'The AI you chose in Settings writes the words; Hanpan does the layout and colours. Everything stays editable, and Undo brings back the previous design.',
+  aiNeedRequest: 'Write what to make first.',
+  aiUnreadable: 'Nothing usable in the AI’s answer. Press again or change the request a little.',
+  aiRewrite: 'Edit with AI',
+  rewrites: { polish: 'Polish', shorter: 'Shorter', catchy: 'Catchier', translate: 'EN↔KO' },
+  aiRewriting: 'The AI is editing…',
+  aiFailed: 'The AI did not answer',
+  aiErrors: {
+    unknown: 'The AI stopped for an unknown reason.',
+    timeout: 'The AI did not answer in time.',
+    credits: 'The AI usage limit is used up.',
+    network: 'Could not reach the AI. Check the internet or the local AI server.',
+    overloaded: 'The AI service is busy. Try again shortly.',
+    noSettings: 'Could not read the AI settings. Choose an AI in Settings › AI.',
+  },
 }
 
 type Drag = { id: string; mode: 'move' | 'resize'; startX: number; startY: number; orig: DesignElement }
@@ -142,6 +206,18 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   const [outlineText, setOutlineText] = useState('공문서 작성 규칙\n  날짜 표기\n    2026. 10. 30. 처럼 씁니다\n  항목 번호\n    1. 가. 1) 가) 순서\n  끝 표시\n    본문 끝에 두 칸 띄우고 끝.')
   const stageWrap = useRef<HTMLDivElement>(null)
   const drag = useRef<Drag | null>(null)
+  // the latest doc, for changes that land after an await (an AI answer)
+  const docRef = useRef(doc)
+  docRef.current = doc
+  const hasAi = Boolean(p.api.aiStream && p.api.getAiSettings && p.api.onAiStream && p.api.aiStreamCancel)
+  const [aiRequest, setAiRequest] = useState('')
+  const [aiFormat, setAiFormat] = useState<string>(() => FORMATS.find((f) => f.width === doc.width && f.height === doc.height)?.id ?? 'a4')
+  const [aiMood, setAiMood] = useState<DesignMood | 'auto'>('auto')
+  const [aiBusy, setAiBusy] = useState<null | 'make' | 'rewrite'>(null)
+  const [aiLive, setAiLive] = useState('')
+  const [aiError, setAiError] = useState<string | null>(null)
+  const [aiMade, setAiMade] = useState(false)
+  const aiAbort = useRef<AbortController | null>(null)
 
   const page: DesignPage = doc.pages[Math.min(pageIndex, doc.pages.length - 1)]!
   const element = page.elements.find((e) => e.id === selected) ?? null
@@ -159,16 +235,15 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   }, [doc.width, doc.height])
 
   /** A change that can be undone. */
-  const commit = useCallback(
-    (change: (draft: DesignDoc) => void) => {
-      setPast((list) => [...list.slice(-49), doc])
-      setFuture([])
-      const next = clone(doc)
-      change(next)
-      setDoc(next)
-    },
-    [doc],
-  )
+  const commit = useCallback((change: (draft: DesignDoc) => void) => {
+    const current = docRef.current
+    setPast((list) => [...list.slice(-49), current])
+    setFuture([])
+    const next = clone(current)
+    change(next)
+    docRef.current = next
+    setDoc(next)
+  }, [])
   const changePage = (change: (pg: DesignPage) => void) => commit((d) => change(d.pages[pageIndex]!))
   const changeElement = (id: string, patch: Partial<DesignElement>) =>
     changePage((pg) => {
@@ -177,7 +252,8 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     })
 
   const replaceDoc = (next: DesignDoc) => {
-    setPast((list) => [...list.slice(-49), doc])
+    const current = docRef.current
+    setPast((list) => [...list.slice(-49), current])
     setFuture([])
     setDoc(next)
     setPageIndex(0)
@@ -289,6 +365,75 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   })
+
+  // ---- AI ----
+
+  const aiApi = p.api as DesignAiApi
+  const stopAi = () => aiAbort.current?.abort()
+  const today = () => {
+    const d = new Date()
+    return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`
+  }
+
+  const makeWithAi = async () => {
+    if (aiBusy) return
+    if (!aiRequest.trim()) return setAiError(w.aiNeedRequest)
+    const format = FORMATS.find((f) => f.id === aiFormat) ?? FORMATS[1]!
+    const controller = new AbortController()
+    aiAbort.current = controller
+    setAiBusy('make')
+    setAiError(null)
+    setAiLive('')
+    const turn = await runDesignAi(aiApi, p.lang, w.aiErrors, briefRequest(aiRequest, format, p.lang, today()), {
+      signal: controller.signal,
+      maxChars: MAX_BRIEF_CHARS,
+      onProgress: setAiLive,
+    })
+    setAiBusy(null)
+    if (!turn.ok) {
+      if (!turn.stopped) setAiError(`${w.aiFailed}: ${turn.error}`)
+      return
+    }
+    const brief = parseBrief(turn.text)
+    if (!brief) return setAiError(w.aiUnreadable)
+    if (aiMood !== 'auto') brief.mood = aiMood
+    replaceDoc(designFromBrief(brief, format.id))
+    setAiLive('')
+    setAiMade(true)
+  }
+
+  const rewriteWithAi = async (id: string, mode: RewriteMode) => {
+    const target = docRef.current.pages.flatMap((pg) => pg.elements).find((e) => e.id === id)
+    if (aiBusy || !target?.text?.trim()) return
+    const controller = new AbortController()
+    aiAbort.current = controller
+    setAiBusy('rewrite')
+    setAiError(null)
+    const turn = await runDesignAi(aiApi, p.lang, w.aiErrors, rewriteRequest(target.text, mode, p.lang), {
+      signal: controller.signal,
+      maxChars: Math.max(2_000, target.text.length * 6),
+    })
+    setAiBusy(null)
+    if (!turn.ok) {
+      if (!turn.stopped) setAiError(`${w.aiFailed}: ${turn.error}`)
+      return
+    }
+    const text = cleanRewrite(turn.text, target.text)
+    if (!text) return setAiError(w.aiUnreadable)
+    commit((d) => {
+      for (const pg of d.pages) {
+        const e = pg.elements.find((x) => x.id === id)
+        if (!e) continue
+        e.text = text
+        // a longer text keeps its size and gets the height it needs
+        const size = e.fontSize ?? 48
+        e.h = Math.max(e.h, Math.ceil(estimateLines(text, size, e.w, e.fontWeight ?? 400) * size * (e.lineHeight ?? 1.35)))
+      }
+    })
+  }
+
+  // a closed window stops whatever the AI was doing
+  useEffect(() => () => aiAbort.current?.abort(), [])
 
   // ---- export ----
 
@@ -426,6 +571,66 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
       </header>
       <div className="dz-main">
         <aside className="dz-left">
+          {hasAi && (
+            <section className="dz-ai" data-hanpan="design-ai">
+              <h3>✦ {w.aiMake}</h3>
+              <textarea
+                rows={4}
+                value={aiRequest}
+                placeholder={w.aiPlaceholder}
+                disabled={aiBusy !== null}
+                onChange={(e) => setAiRequest(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) void makeWithAi()
+                }}
+                data-hanpan="design-ai-request"
+              />
+              <div className="dz-ai-opts">
+                <label>
+                  <span>{w.aiFormat}</span>
+                  <select value={aiFormat} disabled={aiBusy !== null} onChange={(e) => setAiFormat(e.target.value)} data-hanpan="design-ai-format">
+                    {FORMATS.map((f) => (
+                      <option key={f.id} value={f.id}>
+                        {f.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>{w.aiMood}</span>
+                  <select value={aiMood} disabled={aiBusy !== null} onChange={(e) => setAiMood(e.target.value as DesignMood | 'auto')} data-hanpan="design-ai-mood">
+                    <option value="auto">{w.aiAuto}</option>
+                    {DESIGN_MOODS.map((m) => (
+                      <option key={m} value={m}>
+                        {w.moods[m]}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              {aiBusy === 'make' ? (
+                <button type="button" onClick={stopAi} data-action="design-ai-stop">
+                  {w.aiStop}
+                </button>
+              ) : (
+                <button type="button" className="primary" disabled={aiBusy !== null} onClick={() => void makeWithAi()} data-action="design-ai-make">
+                  {aiMade ? w.aiAgain : w.aiGo}
+                </button>
+              )}
+              {aiBusy === 'make' && (
+                <div className="dz-ai-live" role="status">
+                  <span>{w.aiWriting}</span>
+                  {aiLive && <pre>{aiLive}</pre>}
+                </div>
+              )}
+              {aiError && (
+                <p className="dz-ai-error" role="alert" data-hanpan="design-ai-error">
+                  {aiError}
+                </p>
+              )}
+              <p className="dz-muted">{w.aiHint}</p>
+            </section>
+          )}
           <h3>{w.templates}</h3>
           <div className="dz-templates">
             {DESIGN_TEMPLATES.map((t) => (
@@ -514,6 +719,27 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                     <span>{w.text}</span>
                     <textarea rows={4} value={element.text ?? ''} onChange={(e) => changeElement(element.id, { text: e.target.value })} />
                   </label>
+                  {hasAi && (
+                    <div className="dz-col" data-hanpan="design-ai-rewrite">
+                      <span className="dz-muted">✦ {w.aiRewrite}</span>
+                      <div className="dz-row">
+                        {REWRITE_MODES.map((m) => (
+                          <button key={m} type="button" disabled={aiBusy !== null} onClick={() => void rewriteWithAi(element.id, m)} data-ai-rewrite={m}>
+                            {w.rewrites[m]}
+                          </button>
+                        ))}
+                      </div>
+                      {aiBusy === 'rewrite' && (
+                        <div className="dz-row" role="status">
+                          <span className="dz-muted">{w.aiRewriting}</span>
+                          <button type="button" onClick={stopAi}>
+                            {w.aiStop}
+                          </button>
+                        </div>
+                      )}
+                      {aiError && !aiBusy && <p className="dz-ai-error">{aiError}</p>}
+                    </div>
+                  )}
                   <label className="dz-row">
                     <span>{w.font}</span>
                     <select value={element.fontFamily} onChange={(e) => changeElement(element.id, { fontFamily: e.target.value })}>

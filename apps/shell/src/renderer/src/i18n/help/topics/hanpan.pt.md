@@ -29,6 +29,7 @@ O Hanpan envia o que você organizou num mapa mental para um relatório Hangul (
 - O cartão **Design** no Início cria cartazes, cards de notícias, avisos e miniaturas.
 - Pressione **Copiar para colar num documento** e depois Ctrl+V numa aba HWP, Word ou PowerPoint para inserir a página como imagem. As páginas também são salvas em PNG e PDF.
 - Num mapa, **Enviar para um documento › Enviar como cards de notícias** cria um card por ramo principal.
+- Na janela de design, escreva o que quer em **Make with AI** e toque em **Make**: a IA escolhida nas Configurações escreve o texto e o Hanpan o diagrama como um design editável. Com uma caixa de texto selecionada, **Edit with AI** refina, encurta, deixa mais chamativo ou traduz entre inglês e coreano. Desfazer volta ao estado anterior.
 
 ## A IA deste PC
 

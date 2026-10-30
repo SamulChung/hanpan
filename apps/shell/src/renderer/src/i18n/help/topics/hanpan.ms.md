@@ -29,6 +29,7 @@ Hanpan menghantar apa yang anda susun dalam peta minda ke laporan Hangul (HWP), 
 - Kad **Reka bentuk** di Laman Utama membuat poster, kad berita, notis dan gambar kecil.
 - Tekan **Salin untuk ditampal dalam dokumen**, kemudian Ctrl+V dalam tab HWP, Word atau PowerPoint untuk memasukkan halaman sebagai gambar. Halaman juga boleh disimpan sebagai PNG dan PDF.
 - Dalam peta, **Hantar ke dokumen › Hantar sebagai kad berita** membuat satu kad bagi setiap cabang utama.
+- Dalam tetingkap reka bentuk, tulis apa yang anda mahu di bawah **Make with AI** dan tekan **Make**: AI yang dipilih dalam Tetapan menulis teks dan Hanpan menyusunnya menjadi reka bentuk yang boleh disunting. Dengan kotak teks dipilih, **Edit with AI** menghaluskan, memendekkan, menjadikannya lebih menarik atau menterjemah antara Inggeris dan Korea. Buat asal mengembalikan keadaan sebelumnya.
 
 ## AI pada PC ini
 

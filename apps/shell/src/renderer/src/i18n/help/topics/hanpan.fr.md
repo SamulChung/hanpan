@@ -29,6 +29,7 @@ Hanpan envoie ce que vous avez organisé dans une carte mentale vers un rapport 
 - La carte **Design** de l'accueil crée affiches, cartes d'actualité, avis et miniatures.
 - Appuyez sur **Copier pour coller dans un document**, puis Ctrl+V dans un onglet HWP, Word ou PowerPoint pour insérer la page comme image. Les pages s'enregistrent aussi en PNG et PDF.
 - Dans une carte, **Envoyer vers un document › Envoyer en cartes d'actualité** crée une carte par branche principale.
+- Dans la fenêtre de design, écrivez ce que vous voulez sous **Make with AI** et appuyez sur **Make** : l'IA choisie dans les réglages écrit le texte et Hanpan le met en page en un design modifiable. Une zone de texte sélectionnée, **Edit with AI** la peaufine, la raccourcit, la rend plus accrocheuse ou la traduit entre anglais et coréen. Annuler rétablit l'état précédent.
 
 ## L'IA de ce PC
 

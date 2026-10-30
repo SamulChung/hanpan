@@ -55,6 +55,10 @@ body {
   background: var(--accent);
   color: var(--dz-on-accent);
 }
+.dz button.primary:hover:not(:disabled) {
+  background: var(--accent);
+  filter: brightness(1.1);
+}
 .dz button.ghost {
   color: var(--text-secondary);
 }
@@ -146,6 +150,53 @@ body {
 .dz-muted {
   margin: 0;
   color: var(--text-secondary);
+  font-size: 12px;
+}
+.dz-ai {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.dz-ai h3 {
+  margin-top: 4px;
+  color: var(--accent);
+}
+.dz-ai textarea {
+  resize: vertical;
+}
+.dz-ai-opts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+.dz-ai-opts label {
+  display: grid;
+  gap: 2px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.dz-ai-live {
+  display: grid;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.dz-ai-live pre {
+  max-height: 140px;
+  margin: 0;
+  overflow: auto;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--hover);
+  font: 11px/1.4 ui-monospace, Consolas, monospace;
+  white-space: pre-wrap;
+}
+.dz-ai-error {
+  margin: 0;
+  color: var(--danger);
   font-size: 12px;
 }
 .dz-stage-wrap {

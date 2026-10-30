@@ -29,6 +29,7 @@ Hanpan sends what you sorted out in a mind map to a Hangul (HWP) report, a slide
 - The **Design** card on Home makes posters, card news, notices and thumbnails.
 - Press **Copy to paste in a document**, then Ctrl+V in a HWP, Word or PowerPoint tab to put the page in as a picture. Pages also save as PNG and PDF.
 - **Send to a document › Send to card news** in a mind map makes one card per main branch.
+- In the design window, write what you want under **Make with AI** and press **Make**: the AI you chose in Settings writes the words and Hanpan lays them out as an editable design. With a text box selected, **Edit with AI** polishes, shortens, makes it catchier or translates between English and Korean. Undo brings back what was there.
 
 ## The AI on this PC
 

@@ -29,6 +29,7 @@ Hanpan mengirim apa yang Anda susun di peta pikiran ke laporan Hangul (HWP), pre
 - Kartu **Desain** di Beranda membuat poster, kartu berita, pengumuman, dan gambar mini.
 - Tekan **Salin untuk ditempel di dokumen**, lalu Ctrl+V di tab HWP, Word, atau PowerPoint untuk menyisipkan halaman sebagai gambar. Halaman juga bisa disimpan sebagai PNG dan PDF.
 - Di peta, **Kirim ke dokumen › Kirim sebagai kartu berita** membuat satu kartu untuk tiap cabang utama.
+- Di jendela desain, tulis yang Anda inginkan di **Make with AI** lalu tekan **Make**: AI yang dipilih di Pengaturan menulis teksnya dan Hanpan menatanya menjadi desain yang bisa diedit. Dengan kotak teks terpilih, **Edit with AI** merapikan, memperpendek, membuatnya lebih menarik, atau menerjemahkan antara Inggris dan Korea. Urungkan mengembalikan keadaan sebelumnya.
 
 ## AI di PC ini
 

@@ -431,6 +431,35 @@ assert set(CONVERTER) == set(T), set(T) ^ set(CONVERTER)
 for lang, (_title, _intro, sections) in T.items():
     sections[2][2].append(CONVERTER[lang])
 
+# AI in the design board, one line under the design section (the board itself
+# speaks Korean or English, so other languages name its buttons in English)
+DESIGN_AI = {
+ 'ko': '디자인 창 왼쪽 위 **AI로 만들기**에 만들 것을 적고 **만들기**를 누르면, 설정에서 고른 AI가 글을 쓰고 한판이 배치와 색을 정해 편집할 수 있는 디자인을 만듭니다. 글 상자를 고르면 오른쪽 **AI로 고치기**에서 다듬기·짧게·눈길 끌게·영↔한 번역을 합니다. 되돌리기로 이전 상태에 돌아갑니다.',
+ 'en': 'In the design window, write what you want under **Make with AI** and press **Make**: the AI you chose in Settings writes the words and Hanpan lays them out as an editable design. With a text box selected, **Edit with AI** polishes, shortens, makes it catchier or translates between English and Korean. Undo brings back what was there.',
+ 'zh': '在设计窗口的 **Make with AI** 中写下要做的内容并按 **Make**：设置中选择的 AI 撰写文字，Hanpan 负责排版和配色，生成可编辑的设计。选中文本框后，可用 **Edit with AI** 润色、缩短、改得更吸引人或在英韩之间翻译。撤销可恢复之前的状态。',
+ 'zh-TW': '在設計視窗的 **Make with AI** 中寫下要做的內容並按 **Make**：設定中選擇的 AI 撰寫文字，Hanpan 負責排版與配色，產生可編輯的設計。選取文字方塊後，可用 **Edit with AI** 潤飾、縮短、改得更吸睛或在英韓之間翻譯。復原可回到先前的狀態。',
+ 'ja': 'デザイン画面の **Make with AI** に作りたいものを書いて **Make** を押すと、設定で選んだ AI が文章を書き、Hanpan がレイアウトと色を決めて編集できるデザインを作ります。テキストボックスを選ぶと **Edit with AI** で整える・短く・目を引く表現・英韓翻訳ができます。元に戻すで前の状態に戻ります。',
+ 'fr': "Dans la fenêtre de design, écrivez ce que vous voulez sous **Make with AI** et appuyez sur **Make** : l'IA choisie dans les réglages écrit le texte et Hanpan le met en page en un design modifiable. Une zone de texte sélectionnée, **Edit with AI** la peaufine, la raccourcit, la rend plus accrocheuse ou la traduit entre anglais et coréen. Annuler rétablit l'état précédent.",
+ 'de': 'Schreiben Sie im Designfenster unter **Make with AI**, was entstehen soll, und drücken Sie **Make**: Die in den Einstellungen gewählte KI schreibt den Text, Hanpan gestaltet daraus ein bearbeitbares Design. Bei einem gewählten Textfeld glättet, kürzt, verschärft oder übersetzt **Edit with AI** (Englisch ↔ Koreanisch). Rückgängig stellt den vorigen Stand wieder her.',
+ 'es': 'En la ventana de diseño, escribe lo que quieres en **Make with AI** y pulsa **Make**: la IA elegida en Ajustes escribe el texto y Hanpan lo maqueta como un diseño editable. Con un cuadro de texto seleccionado, **Edit with AI** lo pule, lo acorta, lo hace más llamativo o lo traduce entre inglés y coreano. Deshacer recupera lo anterior.',
+ 'it': "Nella finestra di design scrivi cosa vuoi sotto **Make with AI** e premi **Make**: l'IA scelta nelle Impostazioni scrive il testo e Hanpan lo impagina in un design modificabile. Con una casella di testo selezionata, **Edit with AI** la rifinisce, la accorcia, la rende più accattivante o la traduce tra inglese e coreano. Annulla ripristina lo stato precedente.",
+ 'pt': 'Na janela de design, escreva o que quer em **Make with AI** e toque em **Make**: a IA escolhida nas Configurações escreve o texto e o Hanpan o diagrama como um design editável. Com uma caixa de texto selecionada, **Edit with AI** refina, encurta, deixa mais chamativo ou traduz entre inglês e coreano. Desfazer volta ao estado anterior.',
+ 'nl': 'Schrijf in het ontwerpvenster onder **Make with AI** wat je wilt en druk op **Make**: de AI die je in Instellingen koos schrijft de tekst en Hanpan maakt er een bewerkbaar ontwerp van. Met een geselecteerd tekstvak kan **Edit with AI** het verfijnen, inkorten, pakkender maken of vertalen tussen Engels en Koreaans. Ongedaan maken zet het vorige terug.',
+ 'pl': 'W oknie projektu wpisz pod **Make with AI**, co chcesz uzyskać, i naciśnij **Make**: AI wybrana w Ustawieniach pisze tekst, a Hanpan układa z niego edytowalny projekt. Przy zaznaczonym polu tekstowym **Edit with AI** wygładza, skraca, uatrakcyjnia lub tłumaczy między angielskim a koreańskim. Cofnij przywraca poprzedni stan.',
+ 'cs': 'V okně návrhu napište pod **Make with AI**, co chcete, a stiskněte **Make**: AI zvolená v Nastavení napíše text a Hanpan z něj sestaví upravitelný návrh. U vybraného textového pole **Edit with AI** text vyladí, zkrátí, zatraktivní nebo přeloží mezi angličtinou a korejštinou. Zpět vrátí předchozí stav.',
+ 'id': 'Di jendela desain, tulis yang Anda inginkan di **Make with AI** lalu tekan **Make**: AI yang dipilih di Pengaturan menulis teksnya dan Hanpan menatanya menjadi desain yang bisa diedit. Dengan kotak teks terpilih, **Edit with AI** merapikan, memperpendek, membuatnya lebih menarik, atau menerjemahkan antara Inggris dan Korea. Urungkan mengembalikan keadaan sebelumnya.',
+ 'ms': 'Dalam tetingkap reka bentuk, tulis apa yang anda mahu di bawah **Make with AI** dan tekan **Make**: AI yang dipilih dalam Tetapan menulis teks dan Hanpan menyusunnya menjadi reka bentuk yang boleh disunting. Dengan kotak teks dipilih, **Edit with AI** menghaluskan, memendekkan, menjadikannya lebih menarik atau menterjemah antara Inggeris dan Korea. Buat asal mengembalikan keadaan sebelumnya.',
+ 'vi': 'Trong cửa sổ thiết kế, viết điều bạn muốn ở **Make with AI** rồi nhấn **Make**: AI đã chọn trong Cài đặt viết chữ và Hanpan dàn trang thành thiết kế có thể chỉnh sửa. Khi chọn một ô chữ, **Edit with AI** trau chuốt, rút gọn, làm nổi bật hơn hoặc dịch giữa tiếng Anh và tiếng Hàn. Hoàn tác đưa về trạng thái trước.',
+ 'ru': 'В окне дизайна напишите под **Make with AI**, что нужно, и нажмите **Make**: ИИ, выбранный в настройках, пишет текст, а Hanpan раскладывает его в редактируемый дизайн. Для выбранного текстового блока **Edit with AI** улучшает, сокращает, делает ярче или переводит между английским и корейским. Отмена возвращает прежнее состояние.',
+ 'ar': 'في نافذة التصميم اكتب ما تريده تحت **Make with AI** ثم اضغط **Make**: يكتب الذكاء الاصطناعي الذي اخترته في الإعدادات النص، ويرتّبه Hanpan في تصميم قابل للتعديل. عند تحديد مربع نص، يحسّنه **Edit with AI** أو يختصره أو يجعله أكثر جاذبية أو يترجمه بين الإنجليزية والكورية. يعيد التراجع الحالة السابقة.',
+ 'he': 'בחלון העיצוב כתבו מתחת ל-**Make with AI** מה אתם רוצים ולחצו **Make**: ה-AI שבחרתם בהגדרות כותב את הטקסט ו-Hanpan מסדר אותו לעיצוב שאפשר לערוך. כשתיבת טקסט נבחרה, **Edit with AI** מלטש, מקצר, הופך למושך יותר או מתרגם בין אנגלית לקוריאנית. ביטול מחזיר את המצב הקודם.',
+ 'hi': 'डिज़ाइन विंडो में **Make with AI** के नीचे लिखें कि क्या बनाना है और **Make** दबाएँ: सेटिंग्स में चुना गया AI शब्द लिखता है और Hanpan उन्हें संपादन योग्य डिज़ाइन में सजाता है। टेक्स्ट बॉक्स चुनने पर **Edit with AI** उसे निखारता, छोटा करता, आकर्षक बनाता या अंग्रेज़ी-कोरियाई में अनुवाद करता है। पूर्ववत करने से पिछली स्थिति लौटती है।',
+ 'th': 'ในหน้าต่างออกแบบ เขียนสิ่งที่ต้องการใต้ **Make with AI** แล้วกด **Make** AI ที่เลือกไว้ในการตั้งค่าจะเขียนข้อความ และ Hanpan จัดวางเป็นงานออกแบบที่แก้ไขได้ เมื่อเลือกกล่องข้อความ **Edit with AI** จะขัดเกลา ย่อ ทำให้สะดุดตา หรือแปลระหว่างอังกฤษกับเกาหลี การเลิกทำจะคืนสถานะก่อนหน้า',
+}
+assert set(DESIGN_AI) == set(T), set(T) ^ set(DESIGN_AI)
+for lang, (_title, _intro, sections) in T.items():
+    sections[4][2].append(DESIGN_AI[lang])
+
 for lang, (title, intro, sections) in T.items():
     lines = [f'# {title}', '', intro, '']
     for heading, kind, items in sections:

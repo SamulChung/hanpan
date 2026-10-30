@@ -29,6 +29,7 @@ Hanpan wysyła to, co uporządkowałeś na mapie myśli, do raportu Hangul (HWP)
 - Karta **Projekt** na ekranie startowym tworzy plakaty, karty informacyjne, ogłoszenia i miniatury.
 - Naciśnij **Kopiuj do wklejenia w dokumencie**, a potem Ctrl+V w karcie HWP, Word lub PowerPoint, aby wstawić stronę jako obraz. Strony można też zapisać jako PNG i PDF.
 - Na mapie **Wyślij do dokumentu › Wyślij jako karty informacyjne** tworzy jedną kartę na każdą główną gałąź.
+- W oknie projektu wpisz pod **Make with AI**, co chcesz uzyskać, i naciśnij **Make**: AI wybrana w Ustawieniach pisze tekst, a Hanpan układa z niego edytowalny projekt. Przy zaznaczonym polu tekstowym **Edit with AI** wygładza, skraca, uatrakcyjnia lub tłumaczy między angielskim a koreańskim. Cofnij przywraca poprzedni stan.
 
 ## AI na tym komputerze
 

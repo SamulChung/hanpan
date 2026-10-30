@@ -29,6 +29,7 @@ Hanpan invia ciò che hai organizzato in una mappa mentale a un rapporto Hangul 
 - La scheda **Design** nella Home crea poster, schede notizie, avvisi e miniature.
 - Premi **Copia per incollare in un documento**, poi Ctrl+V in una scheda HWP, Word o PowerPoint per inserire la pagina come immagine. Le pagine si salvano anche in PNG e PDF.
 - In una mappa, **Invia a un documento › Invia come schede notizie** crea una scheda per ogni ramo principale.
+- Nella finestra di design scrivi cosa vuoi sotto **Make with AI** e premi **Make**: l'IA scelta nelle Impostazioni scrive il testo e Hanpan lo impagina in un design modificabile. Con una casella di testo selezionata, **Edit with AI** la rifinisce, la accorcia, la rende più accattivante o la traduce tra inglese e coreano. Annulla ripristina lo stato precedente.
 
 ## L’IA di questo PC
 

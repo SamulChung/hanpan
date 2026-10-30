@@ -25,4 +25,14 @@ contextBridge.exposeInMainWorld('hanpanDesign', {
   saveDesign: (text: string, name: string) => ipcRenderer.invoke('hanpan-design:save', text, name),
   openDesign: () => ipcRenderer.invoke('hanpan-design:open'),
   pickImage: () => ipcRenderer.invoke('hanpan-design:pick-image'),
+  // the AI the person chose in Settings, through the same channels every editor
+  // uses (registered by the docs main): a provider that cannot run is refused there
+  getAiSettings: () => ipcRenderer.invoke('ai:get-settings'),
+  aiStream: (request: unknown) => ipcRenderer.invoke('ai:stream', request),
+  aiStreamCancel: (requestId: string) => ipcRenderer.invoke('ai:stream-cancel', requestId),
+  onAiStream(handler: (chunk: unknown) => void) {
+    const listener = (_event: IpcRendererEvent, chunk: unknown) => handler(chunk)
+    ipcRenderer.on('ai:stream-chunk', listener)
+    return () => ipcRenderer.removeListener('ai:stream-chunk', listener)
+  },
 })
