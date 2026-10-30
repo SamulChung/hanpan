@@ -6,7 +6,7 @@
  */
 import { outlineFromIndentedText } from '@genoffice/hanpan-core/renderer'
 
-export type ElementKind = 'text' | 'rect' | 'ellipse' | 'line' | 'image' | 'shape' | 'qr'
+export type ElementKind = 'text' | 'rect' | 'ellipse' | 'line' | 'image' | 'shape' | 'qr' | 'draw'
 
 /** Shapes drawn from a path that stretches with the box (style.ts draws them). */
 export type ShapeName =
@@ -44,6 +44,8 @@ export interface DesignElement {
   rotation?: number
   /** a locked element is not moved, resized or picked by a drag box */
   locked?: boolean
+  /** elements sharing a group id are picked and moved together */
+  group?: string
   /** text */
   text?: string
   fontSize?: number
@@ -75,6 +77,16 @@ export interface DesignElement {
   src?: string
   filter?: ImageFilter
   flipX?: boolean
+  /** the picture's own size, for cropping (it fills the box like CSS `object-fit: cover`) */
+  naturalW?: number
+  naturalH?: number
+  /** crop: how far the picture is zoomed in the box (1 = just covers it) */
+  cropZoom?: number
+  /** crop: which part shows, 0 (left / top) … 1 (right / bottom); 0.5 is the middle */
+  cropX?: number
+  cropY?: number
+  /** pen drawing: points as x, y pairs on a 0…1 box, so it stretches with the box */
+  points?: number[]
   /** QR code: what it opens (dark modules in `color`, the rest in `fill`) */
   qrText?: string
 }
@@ -94,6 +106,14 @@ export interface DesignDoc {
   width: number
   height: number
   pages: DesignPage[]
+  /** font files added by the person, kept in the file so the design opens the same elsewhere */
+  fonts?: DesignFont[]
+}
+
+export interface DesignFont {
+  family: string
+  /** a data URL of the font file (TTF, OTF, WOFF, WOFF2) */
+  src: string
 }
 
 export interface PageFormat {
@@ -171,6 +191,48 @@ export function qrElement(
   partial: Partial<DesignElement> & Pick<DesignElement, 'x' | 'y' | 'w' | 'h' | 'qrText'>,
 ): DesignElement {
   return { id: newId(), kind: 'qr', color: '#0F172A', fill: '#FFFFFF', ...partial }
+}
+
+/**
+ * A pen stroke from the points the pointer passed (page pixels, x, y pairs):
+ * its box is the stroke's extent, and the points are kept on a 0…1 box.
+ */
+export function inkElement(
+  pagePoints: number[],
+  partial: Partial<DesignElement> = {},
+): DesignElement | null {
+  if (pagePoints.length < 4) return null
+  const xs = pagePoints.filter((_, i) => i % 2 === 0)
+  const ys = pagePoints.filter((_, i) => i % 2 === 1)
+  const x = Math.min(...xs)
+  const y = Math.min(...ys)
+  // a straight stroke still has a box to hold
+  const w = Math.max(1, Math.max(...xs) - x)
+  const h = Math.max(1, Math.max(...ys) - y)
+  const points = pagePoints.map(
+    (v, i) => Math.round(((i % 2 === 0 ? v - x : v - y) / (i % 2 === 0 ? w : h)) * 10000) / 10000,
+  )
+  return {
+    id: newId(),
+    kind: 'draw',
+    x: Math.round(x),
+    y: Math.round(y),
+    w: Math.round(w),
+    h: Math.round(h),
+    points,
+    stroke: '#0F172A',
+    strokeWidth: 8,
+    ...partial,
+  }
+}
+
+/** The ids together with every element grouped with one of them. */
+export function withGroups(elements: readonly DesignElement[], ids: readonly string[]): string[] {
+  const groups = new Set(elements.filter((e) => ids.includes(e.id) && e.group).map((e) => e.group!))
+  if (!groups.size) return [...ids]
+  const out = new Set(ids)
+  for (const e of elements) if (e.group && groups.has(e.group)) out.add(e.id)
+  return [...out]
 }
 
 export function shapeElement(

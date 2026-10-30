@@ -107,6 +107,44 @@ const FILTERS: Record<ImageFilter, string> = {
 export const filterCss = (filter: ImageFilter | undefined): string =>
   filter ? FILTERS[filter] : 'none'
 
+// ---- pictures ----
+
+/**
+ * Where a picture lies in its box: it covers the box (CSS `object-fit:
+ * cover`), zoomed by `cropZoom` about the point `cropX`, `cropY` picks. The
+ * screen gets the same result from `object-position` and a scale about that
+ * point, so the canvas and the screen agree.
+ */
+export function coverRect(
+  e: Pick<DesignElement, 'w' | 'h' | 'cropZoom' | 'cropX' | 'cropY'>,
+  naturalW: number,
+  naturalH: number,
+): { x: number; y: number; w: number; h: number } {
+  const s = Math.max(e.w / naturalW, e.h / naturalH) * Math.max(1, e.cropZoom ?? 1)
+  const w = naturalW * s
+  const h = naturalH * s
+  return { x: (e.w - w) * (e.cropX ?? 0.5), y: (e.h - h) * (e.cropY ?? 0.5), w, h }
+}
+
+// ---- pen drawings ----
+
+/** A pen stroke on a w × h box, smoothed through the midpoints of its points. */
+export function inkPath(points: readonly number[], w: number, h: number): string {
+  const pts: [number, number][] = []
+  for (let i = 0; i + 1 < points.length; i += 2) pts.push([points[i]! * w, points[i + 1]! * h])
+  if (!pts.length) return ''
+  const f = (n: number) => String(Math.round(n * 100) / 100)
+  if (pts.length < 3) return `M ${pts.map(([x, y]) => `${f(x)} ${f(y)}`).join(' L ')}`
+  let d = `M ${f(pts[0]![0])} ${f(pts[0]![1])}`
+  for (let i = 1; i < pts.length - 1; i++) {
+    const [x, y] = pts[i]!
+    const [nx, ny] = pts[i + 1]!
+    d += ` Q ${f(x)} ${f(y)} ${f((x + nx) / 2)} ${f((y + ny) / 2)}`
+  }
+  const [lx, ly] = pts[pts.length - 1]!
+  return `${d} L ${f(lx)} ${f(ly)}`
+}
+
 // ---- text ----
 
 /** Inner space of a text box with a colour box behind it. */

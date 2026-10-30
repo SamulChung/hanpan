@@ -6,8 +6,10 @@
  */
 import type { DesignElement, DesignPage } from './model'
 import {
+  coverRect,
   filterCss,
   gradientLine,
+  inkPath,
   qrModules,
   shadowBase,
   shadowSpec,
@@ -255,7 +257,9 @@ async function drawElement(
         ctx.translate(e.x * 2 + e.w, 0)
         ctx.scale(-1, 1)
       }
-      ctx.drawImage(img, e.x, e.y, e.w, e.h)
+      // the picture covers the box, cropped as the board shows it
+      const at = coverRect(e, img.naturalWidth || e.w, img.naturalHeight || e.h)
+      ctx.drawImage(img, e.x + at.x, e.y + at.y, at.w, at.h)
       ctx.restore()
       if (e.stroke && e.strokeWidth) {
         const i = e.strokeWidth / 2
@@ -265,6 +269,17 @@ async function drawElement(
         ctx.lineWidth = e.strokeWidth
         ctx.stroke()
       }
+      break
+    }
+    case 'draw': {
+      if (!e.points?.length) break
+      ctx.translate(e.x, e.y)
+      applyShadow(ctx, e, scale)
+      ctx.strokeStyle = e.stroke ?? '#0F172A'
+      ctx.lineWidth = e.strokeWidth ?? 8
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
+      ctx.stroke(new Path2D(inkPath(e.points, e.w, e.h)))
       break
     }
     case 'qr': {
@@ -301,6 +316,11 @@ export async function drawPage(
   canvas.width = Math.round(width * scale)
   canvas.height = Math.round(height * scale)
   const ctx = canvas.getContext('2d')!
+  // fonts the page uses (added font files too) must be loaded before text is painted
+  const families = new Set(page.elements.filter((e) => e.kind === 'text').map((e) => e.fontFamily))
+  await Promise.all(
+    [...families].map((f) => (f ? document.fonts.load(`48px "${f}"`).catch(() => []) : [])),
+  )
   ctx.scale(scale, scale)
   ctx.fillStyle = paint(
     ctx,

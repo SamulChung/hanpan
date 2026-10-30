@@ -10,6 +10,7 @@ import {
   fillCss,
   filterCss,
   gradientLine,
+  inkPath,
   qrPath,
   shadowBase,
   shadowSpec,
@@ -137,21 +138,57 @@ export function elementLook(
       )
       break
     }
-    case 'image':
-      Object.assign(style, {
-        borderRadius: e.radius,
-        overflow: 'hidden',
-        border: e.strokeWidth ? `${e.strokeWidth}px solid ${e.stroke}` : undefined,
-      })
-      if (e.src)
-        inner = (
-          <img
-            src={e.src}
-            alt=""
-            draggable={false}
-            style={{ filter: filterCss(e.filter), transform: e.flipX ? 'scaleX(-1)' : undefined }}
+    case 'image': {
+      Object.assign(style, { borderRadius: e.radius, overflow: 'hidden' })
+      const x = (e.cropX ?? 0.5) * 100
+      const y = (e.cropY ?? 0.5) * 100
+      const zoom = Math.max(1, e.cropZoom ?? 1)
+      // the picture covers the whole box (as draw.ts paints it); a border lies on top of it
+      inner = (
+        <>
+          {e.src && (
+            <span className="dz-img-flip" style={{ transform: e.flipX ? 'scaleX(-1)' : undefined }}>
+              <img
+                src={e.src}
+                alt=""
+                draggable={false}
+                style={{
+                  filter: filterCss(e.filter),
+                  objectPosition: `${x}% ${y}%`,
+                  transform: zoom !== 1 ? `scale(${zoom})` : undefined,
+                  transformOrigin: `${x}% ${y}%`,
+                }}
+              />
+            </span>
+          )}
+          {e.strokeWidth ? (
+            <span
+              className="dz-img-border"
+              style={{ border: `${e.strokeWidth}px solid ${e.stroke}`, borderRadius: e.radius }}
+            />
+          ) : null}
+        </>
+      )
+      break
+    }
+    case 'draw':
+      inner = (
+        <svg
+          width={e.w}
+          height={e.h}
+          viewBox={`0 0 ${e.w} ${e.h}`}
+          style={{ overflow: 'visible', display: 'block' }}
+        >
+          <path
+            d={inkPath(e.points ?? [], e.w, e.h)}
+            fill="none"
+            stroke={e.stroke ?? '#0F172A'}
+            strokeWidth={e.strokeWidth ?? 8}
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
-        )
+        </svg>
+      )
       break
     case 'qr': {
       const size = Math.min(e.w, e.h)

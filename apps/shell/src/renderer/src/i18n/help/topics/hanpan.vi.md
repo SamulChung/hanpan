@@ -31,6 +31,7 @@ Hanpan gửi những gì bạn sắp xếp trong sơ đồ tư duy thành báo c
 - Trong sơ đồ, **Gửi sang tài liệu › Gửi thành thẻ tin** tạo một thẻ cho mỗi nhánh chính.
 - Trong cửa sổ thiết kế, viết điều bạn muốn ở **Make with AI** rồi nhấn **Make**: AI đã chọn trong Cài đặt viết chữ và Hanpan dàn trang thành thiết kế có thể chỉnh sửa. Khi chọn một ô chữ, **Edit with AI** trau chuốt, rút gọn, làm nổi bật hơn hoặc dịch giữa tiếng Anh và tiếng Hàn. Hoàn tác đưa về trạng thái trước.
 - Trong cửa sổ thiết kế, các thẻ **Templates**, **Elements** và **Text** thêm mẫu, hình, mã QR và kiểu chữ. Shift+nhấp hoặc kéo qua vùng trống để chọn nhiều; di chuyển theo đường gióng, đổi kích thước và xoay bằng tay nắm, và nhấp đúp vào ô chữ để sửa ngay tại chỗ. Bên phải chỉnh dải màu, bóng, viền và bộ lọc ảnh, thẻ **Layers** đặt thứ tự và khóa, còn **Resize** đổi khổ trang mà vẫn giữ bố cục. Trang cũng lưu được dạng JPG.
+- Chọn nhiều đối tượng rồi nhấn **Ctrl+G** để nhóm lại, khi đó chúng được chọn và di chuyển cùng nhau; **Ctrl+Shift+G** bỏ nhóm. Nhấp chuột phải vào đối tượng hoặc vùng trống để mở menu sao chép, dán, thứ tự và khóa. Nhấp đúp vào ảnh rồi kéo để chọn phần hiện ra, và phóng to ở mục **Crop** bên phải. Bút trong thẻ **Elements** vẽ nét viết tay hoặc bút dạ quang, nút **Rulers** phía trên đo vị trí, và giữ phím cách khi kéo sẽ dời khung nhìn. Phông thêm bằng **Add a font file…** trong danh sách phông được lưu ngay trong tệp thiết kế.
 
 ## AI trên máy tính này
 

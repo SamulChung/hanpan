@@ -1,8 +1,8 @@
 /**
  * Hanpan design board: the side panel that styles what is selected. One
  * element: its own settings (text, fill, picture, QR) and the common ones
- * (position, rotation, order, opacity, shadow, lock). Several: aligning and
- * spreading. Nothing: the page background. Every change goes through the
+ * (position, rotation, order, opacity, shadow, lock). Several: aligning,
+ * spreading and grouping. Nothing: the page background. Every change goes through the
  * board, so it can be undone.
  */
 import type { ReactNode } from 'react'
@@ -21,6 +21,9 @@ import type { Words } from './words'
 
 export type Arrange = 'toFront' | 'front' | 'back' | 'toBack'
 
+/** the font list's last choice: opens a font file */
+const ADD_FONT = '\u0000add-font'
+
 export interface InspectorProps {
   w: Words
   page: DesignPage
@@ -37,6 +40,13 @@ export interface InspectorProps {
   toggleLock(): void
   fillPage(id: string): void
   replaceImage(id: string): void
+  /** fonts the person added to this design (font files kept in it) */
+  fonts: string[]
+  addFont(): void
+  group(): void
+  ungroup(): void
+  /** a picture in crop mode: dragging it picks what shows */
+  startCrop(id: string): void
   ai: null | {
     busy: boolean
     error: string | null
@@ -249,9 +259,14 @@ export function Inspector(p: InspectorProps) {
   }
 
   if (p.selection.length > 1) {
+    const first = p.selection[0]!.group
+    const oneGroup = Boolean(first) && p.selection.every((e) => e.group === first)
     return (
       <div className="dz-props" data-props="many">
-        <p className="dz-muted">{w.selectedMany(p.selection.length)}</p>
+        <p className="dz-muted">
+          {oneGroup ? `${w.grouped} · ` : ''}
+          {w.selectedMany(p.selection.length)}
+        </p>
         <Section title={w.alignSelection}>
           <div className="dz-grid3">
             {ALIGNS.map((a) => (
@@ -285,6 +300,17 @@ export function Inspector(p: InspectorProps) {
             </button>
           </div>
         </Section>
+        <div className="dz-row dz-actions">
+          {oneGroup ? (
+            <button type="button" onClick={p.ungroup} data-action="ungroup" title="Ctrl+Shift+G">
+              {w.ungroup}
+            </button>
+          ) : (
+            <button type="button" onClick={p.group} data-action="group" title="Ctrl+G">
+              {w.group}
+            </button>
+          )}
+        </div>
         <div className="dz-row dz-actions">
           <button type="button" onClick={p.toggleLock}>
             {p.selection.every((e) => e.locked) ? w.unlock : w.lock}
@@ -325,6 +351,14 @@ export function Inspector(p: InspectorProps) {
   return (
     <div className="dz-props" data-props={e.kind}>
       {e.locked && <p className="dz-locked">🔒 {w.locked}</p>}
+      {e.group && (
+        <div className="dz-row dz-group-note">
+          <span className="dz-muted">{w.grouped}</span>
+          <button type="button" onClick={p.ungroup} data-action="ungroup">
+            {w.ungroup}
+          </button>
+        </div>
+      )}
       {e.kind === 'text' && (
         <>
           <label className="dz-col">
@@ -364,10 +398,27 @@ export function Inspector(p: InspectorProps) {
           )}
           <label className="dz-row">
             <span>{w.font}</span>
-            <select value={e.fontFamily} onChange={(ev) => set({ fontFamily: ev.target.value })}>
+            <select
+              value={e.fontFamily}
+              onChange={(ev) =>
+                ev.target.value === ADD_FONT ? p.addFont() : set({ fontFamily: ev.target.value })
+              }
+              data-hanpan="font-select"
+            >
               {FONTS.map((f) => (
                 <option key={f}>{f}</option>
               ))}
+              {p.fonts.length > 0 && (
+                <optgroup label={w.myFonts}>
+                  {p.fonts.map((f) => (
+                    <option key={f}>{f}</option>
+                  ))}
+                </optgroup>
+              )}
+              {e.fontFamily && !FONTS.includes(e.fontFamily) && !p.fonts.includes(e.fontFamily) && (
+                <option>{e.fontFamily}</option>
+              )}
+              <option value={ADD_FONT}>{w.addFont}</option>
             </select>
           </label>
           <label className="dz-row">
@@ -543,6 +594,44 @@ export function Inspector(p: InspectorProps) {
 
       {e.kind === 'image' && (
         <>
+          <Section title={w.crop}>
+            <Slider
+              label={w.cropZoom}
+              min={100}
+              max={400}
+              step={5}
+              value={Math.round((e.cropZoom ?? 1) * 100)}
+              onChange={(v) => set({ cropZoom: v / 100 }, 'crop-zoom')}
+              suffix="%"
+            />
+            <Slider
+              label={w.cropX}
+              min={0}
+              max={100}
+              value={Math.round((e.cropX ?? 0.5) * 100)}
+              onChange={(v) => set({ cropX: v / 100 }, 'crop-x')}
+            />
+            <Slider
+              label={w.cropY}
+              min={0}
+              max={100}
+              value={Math.round((e.cropY ?? 0.5) * 100)}
+              onChange={(v) => set({ cropY: v / 100 }, 'crop-y')}
+            />
+            <div className="dz-row">
+              <button type="button" onClick={() => p.startCrop(e.id)} data-action="crop">
+                {w.crop}
+              </button>
+              <button
+                type="button"
+                onClick={() => set({ cropZoom: undefined, cropX: undefined, cropY: undefined })}
+                data-action="crop-reset"
+              >
+                {w.cropReset}
+              </button>
+            </div>
+            <span className="dz-muted">{w.cropHint}</span>
+          </Section>
           <Section title={w.filter}>
             <Choice
               name="filter"
@@ -621,7 +710,8 @@ export function Inspector(p: InspectorProps) {
         e.kind === 'rect' ||
         e.kind === 'ellipse' ||
         e.kind === 'shape' ||
-        e.kind === 'image') && (
+        e.kind === 'image' ||
+        e.kind === 'draw') && (
         <Section title={w.stroke}>
           <ColorRow
             w={w}
@@ -632,8 +722,8 @@ export function Inspector(p: InspectorProps) {
           />
           <Slider
             label={w.strokeWidth}
-            min={0}
-            max={40}
+            min={e.kind === 'draw' ? 1 : 0}
+            max={e.kind === 'draw' ? 80 : 40}
             value={e.strokeWidth ?? 0}
             onChange={(v) => set({ strokeWidth: v }, 'sw')}
           />

@@ -3,9 +3,11 @@
  * Elements (text, shapes, lines, pictures, QR codes) are picked one by one or
  * several at once (Shift, or a drag box), moved with guides that click to the
  * page and to each other, resized from eight handles, turned by the rotation
- * handle, and text is typed in place with a double click. The side panel
- * styles the selection (Inspector.tsx); the left panel holds the AI, the
- * templates, elements, text styles and the layers. A design is saved as one
+ * handle, and text is typed in place with a double click. Elements group
+ * (Ctrl+G), pictures crop in place, the pen draws, a right click opens the
+ * usual commands, and rulers and Space-drag help on a large page. The side
+ * panel styles the selection (Inspector.tsx); the left panel holds the AI,
+ * the templates, elements, text styles and the layers. A design is saved as one
  * `.hpdesign` file (pictures inside), exported as PNG, JPG or PDF, or copied
  * as a picture to paste into a HWP, Word or PowerPoint tab.
  */
@@ -17,6 +19,8 @@ import {
   useRef,
   useState,
   type DragEvent,
+  type MouseEvent as ReactMouseEvent,
+  type ReactNode,
   type PointerEvent as ReactPointerEvent,
 } from 'react'
 import { pageJpeg, pagePng } from './draw'
@@ -55,6 +59,7 @@ import {
   SHAPES,
   blankDoc,
   cardNewsFromOutline,
+  inkElement,
   newId,
   parseDesign,
   pathElement,
@@ -62,12 +67,13 @@ import {
   resizeDoc,
   shapeElement,
   textElement,
+  withGroups,
   type DesignDoc,
   type DesignElement,
   type DesignPage,
   type ShapeName,
 } from './model'
-import { shapePath, textPadding } from './style'
+import { coverRect, inkPath, shapePath, textPadding } from './style'
 import { PagePreview, elementBox, elementLook, pageBackground } from './view'
 import { wordsFor } from './words'
 
@@ -99,6 +105,15 @@ type Drag =
   | { mode: 'resize'; start: Pt; handle: Handle; orig: DesignElement; moved: boolean }
   | { mode: 'rotate'; orig: DesignElement; moved: boolean }
   | { mode: 'marquee'; start: Pt; base: string[] }
+  | {
+      mode: 'crop'
+      start: Pt
+      orig: DesignElement
+      natural: { w: number; h: number }
+      moved: boolean
+    }
+  | { mode: 'pen'; points: number[] }
+  | { mode: 'pan'; x: number; y: number; left: number; top: number }
 
 interface Pt {
   x: number
@@ -117,7 +132,61 @@ function clone<T>(value: T): T {
 }
 
 const MAX_IMAGE_BYTES = 15 * 1024 * 1024
+const MAX_FONT_BYTES = 10 * 1024 * 1024
 const HISTORY = 80
+const PEN_COLORS = [
+  '#0F172A',
+  '#FFFFFF',
+  '#E11D48',
+  '#FF8A3D',
+  '#FACC15',
+  '#16A34A',
+  '#2563EB',
+  '#7C3AED',
+]
+const RULERS_KEY = 'hanpan.design.rulers'
+
+/** Copies of elements as new elements: new ids, shifted, groups kept among the copies only. */
+function copiesOf(list: DesignElement[], shift: number): DesignElement[] {
+  const groups = new Map<string, string>()
+  return list.map((e) => {
+    const group = e.group
+      ? (groups.get(e.group) ?? groups.set(e.group, newId('g')).get(e.group))
+      : undefined
+    return { ...clone(e), id: newId(), x: e.x + shift, y: e.y + shift, locked: undefined, group }
+  })
+}
+
+/** Ruler steps in page pixels: the smallest that leaves room for a label on screen. */
+function rulerStep(scale: number): number {
+  for (const step of [10, 20, 50, 100, 200, 500, 1000]) if (step * scale >= 56) return step
+  return 2000
+}
+
+function readFile(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onerror = () => reject(new Error('read'))
+    reader.onload = () => resolve(String(reader.result))
+    reader.readAsDataURL(file)
+  })
+}
+
+/** Fonts already handed to the page, by family. */
+const registeredFonts = new Set<string>()
+async function registerFont(family: string, src: string): Promise<boolean> {
+  // only fonts carried inside the design itself, never a web address
+  if (!src.startsWith('data:')) return false
+  if (registeredFonts.has(family)) return true
+  try {
+    const face = await new FontFace(family, `url(${src})`).load()
+    document.fonts.add(face)
+    registeredFonts.add(family)
+    return true
+  } catch {
+    return false
+  }
+}
 
 /** Text colour that reads on this page's background. */
 function inkFor(background: string): string {
@@ -190,6 +259,25 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   const [marquee, setMarquee] = useState<Box | null>(null)
   const [editing, setEditing] = useState<string | null>(null)
   const [qrInput, setQrInput] = useState('')
+  const [cropping, setCropping] = useState<string | null>(null)
+  const [cropNatural, setCropNatural] = useState<{ w: number; h: number } | null>(null)
+  const [pen, setPen] = useState(false)
+  const [penColor, setPenColor] = useState(PEN_COLORS[0]!)
+  const [penWidth, setPenWidth] = useState(8)
+  const [highlighter, setHighlighter] = useState(false)
+  const [inkLive, setInkLive] = useState<number[] | null>(null)
+  const [rulers, setRulers] = useState(() => {
+    try {
+      return localStorage.getItem(RULERS_KEY) === '1'
+    } catch {
+      return false
+    }
+  })
+  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null)
+  const [panning, setPanning] = useState(false)
+  const spaceDown = useRef(false)
+  const clip = useRef<DesignElement[]>([])
+  const fontInput = useRef<HTMLInputElement>(null)
   const stageWrap = useRef<HTMLDivElement>(null)
   const pageRef = useRef<HTMLDivElement>(null)
   const drag = useRef<Drag | null>(null)
@@ -231,6 +319,11 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     window.addEventListener('resize', measure)
     return () => window.removeEventListener('resize', measure)
   }, [doc.width, doc.height])
+
+  // fonts kept in the design are handed to the page (screen and export) as it opens
+  useEffect(() => {
+    for (const f of doc.fonts ?? []) void registerFont(f.family, f.src)
+  }, [doc.fonts])
 
   // ---- history ----
 
@@ -426,7 +519,14 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     const box = at
       ? { x: Math.round(at.x - wd / 2), y: Math.round(at.y - ht / 2), w: wd, h: ht }
       : center(wd, ht)
-    add({ id: newId(), kind: 'image', src: picked.dataUrl, ...box })
+    add({
+      id: newId(),
+      kind: 'image',
+      src: picked.dataUrl,
+      naturalW: picked.width,
+      naturalH: picked.height,
+      ...box,
+    })
   }
   const addImage = async () => {
     const picked = await p.api.pickImage()
@@ -447,14 +547,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
 
   const duplicate = () => {
     if (!selection.length) return
-    const copies = selection.map((e) => ({
-      ...clone(e),
-      id: newId(),
-      x: e.x + 30,
-      y: e.y + 30,
-      locked: false,
-    }))
-    add(...copies)
+    add(...copiesOf(selection, 30))
   }
   const remove = () => {
     const ids = new Set(selected)
@@ -466,6 +559,21 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     changePage((pg) =>
       pg.elements.forEach((e) => selected.includes(e.id) && (e.locked = lock || undefined)),
     )
+  }
+  const group = () => {
+    if (selection.length < 2) return
+    const id = newId('g')
+    changePage((pg) => pg.elements.forEach((e) => selected.includes(e.id) && (e.group = id)))
+  }
+  const ungroup = () =>
+    changePage((pg) => pg.elements.forEach((e) => selected.includes(e.id) && delete e.group))
+  const pasteElements = (list: DesignElement[]) => {
+    if (list.length) add(...copiesOf(list, 30))
+  }
+  const copySelection = (cut: boolean) => {
+    if (!selection.length) return
+    clip.current = selection.map(clone)
+    if (cut) remove()
   }
   const arrange = (where: Arrange) =>
     changePage((pg) => {
@@ -506,6 +614,11 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     if (!picked) return
     changeElement(id, {
       src: picked.dataUrl,
+      naturalW: picked.width,
+      naturalH: picked.height,
+      cropZoom: undefined,
+      cropX: undefined,
+      cropY: undefined,
       h: Math.round(
         (docRef.current.pages[pi]!.elements.find((e) => e.id === id)?.w ?? picked.width) *
           (picked.height / picked.width),
@@ -529,15 +642,23 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     (event.currentTarget as Element).setPointerCapture?.(event.pointerId)
 
   const startMove = (event: ReactPointerEvent, e: DesignElement) => {
-    if (event.button !== 0 || editing === e.id) return
+    // the pen and panning belong to the page behind
+    if (event.button !== 0 || editing === e.id || pen || spaceDown.current) return
     event.stopPropagation()
     event.preventDefault()
+    setMenu(null)
     if (editing) stopEditing()
+    if (cropping === e.id) return startCropDrag(event, e)
+    if (cropping) setCropping(null)
     const additive = event.shiftKey || event.ctrlKey || event.metaKey
+    // a click picks the element's whole group
+    const hit = withGroups(page.elements, [e.id])
     let next = selected
     if (additive)
-      next = selected.includes(e.id) ? selected.filter((x) => x !== e.id) : [...selected, e.id]
-    else if (!selected.includes(e.id)) next = [e.id]
+      next = selected.includes(e.id)
+        ? selected.filter((x) => !hit.includes(x))
+        : [...new Set([...selected, ...hit])]
+    else if (!selected.includes(e.id)) next = hit
     setSelected(next)
     const moving = page.elements.filter((x) => next.includes(x.id) && !x.locked)
     if (!moving.length || (additive && !next.includes(e.id))) return
@@ -549,7 +670,8 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
       others: page.elements.filter((x) => !ids.has(x.id)).map(bounds),
       moved: false,
       clicked: e.id,
-      collapse: !additive && next.length > 1,
+      // a second plain click on a picked group or set narrows it to the one element
+      collapse: !additive && next.length > 1 && selected.includes(e.id),
     }
     capture(event)
   }
@@ -571,9 +693,68 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     drag.current = { mode: 'rotate', orig: clone(e), moved: false }
     capture(event)
   }
+  /** Size of the picture file, for crop maths. */
+  const naturalOf = (e: DesignElement) => {
+    const img = pageRef.current?.querySelector<HTMLImageElement>(`[data-id="${e.id}"] img`)
+    return {
+      w: e.naturalW ?? (img?.naturalWidth || e.w),
+      h: e.naturalH ?? (img?.naturalHeight || e.h),
+    }
+  }
+  const startCropDrag = (event: ReactPointerEvent, e: DesignElement) => {
+    drag.current = {
+      mode: 'crop',
+      start: toPage(event.clientX, event.clientY),
+      orig: clone(e),
+      natural: naturalOf(e),
+      moved: false,
+    }
+    capture(event)
+  }
+  /** Crop mode: dragging the picture picks what shows in its box. */
+  const startCrop = (id: string) => {
+    const e = page.elements.find((x) => x.id === id)
+    if (e?.kind !== 'image' || e.locked) return
+    setCropNatural(naturalOf(e))
+    setSelected([id])
+    setCropping(id)
+  }
+  const startPan = (event: ReactPointerEvent) => {
+    const wrap = stageWrap.current
+    if (!wrap) return
+    event.preventDefault()
+    drag.current = {
+      mode: 'pan',
+      x: event.clientX,
+      y: event.clientY,
+      left: wrap.scrollLeft,
+      top: wrap.scrollTop,
+    }
+    setPanning(true)
+    capture(event)
+  }
+  const openMenu = (event: ReactMouseEvent, e?: DesignElement) => {
+    event.preventDefault()
+    event.stopPropagation()
+    if (editing) stopEditing()
+    if (!e) setSelected([])
+    else if (!selected.includes(e.id)) setSelected(withGroups(page.elements, [e.id]))
+    setMenu({ x: event.clientX, y: event.clientY })
+  }
   const startMarquee = (event: ReactPointerEvent) => {
+    setMenu(null)
+    if (event.button === 1 || (event.button === 0 && spaceDown.current)) return startPan(event)
     if (event.button !== 0) return
     if (editing) stopEditing()
+    if (cropping) setCropping(null)
+    if (pen) {
+      event.preventDefault()
+      const at = toPage(event.clientX, event.clientY)
+      drag.current = { mode: 'pen', points: [at.x, at.y] }
+      setInkLive([at.x, at.y])
+      capture(event)
+      return
+    }
     const additive = event.shiftKey || event.ctrlKey || event.metaKey
     if (!additive) setSelected([])
     drag.current = {
@@ -599,13 +780,49 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
       const hit = page.elements
         .filter((e) => !e.locked && overlaps(bounds(e), box))
         .map((e) => e.id)
-      setSelected([...new Set([...d.base, ...hit])])
+      setSelected([...new Set([...d.base, ...withGroups(page.elements, hit)])])
+      return
+    }
+    if (d.mode === 'pan') {
+      const wrap = stageWrap.current
+      if (!wrap) return
+      wrap.scrollLeft = d.left - (event.clientX - d.x)
+      wrap.scrollTop = d.top - (event.clientY - d.y)
+      return
+    }
+    if (d.mode === 'pen') {
+      const lx = d.points[d.points.length - 2]!
+      const ly = d.points[d.points.length - 1]!
+      // a point every couple of screen pixels is enough for a smooth stroke
+      if (Math.hypot(at.x - lx, at.y - ly) * scale < 2) return
+      d.points.push(Math.round(at.x * 10) / 10, Math.round(at.y * 10) / 10)
+      setInkLive([...d.points])
       return
     }
     if (!d.moved) {
       if (d.mode !== 'rotate' && Math.hypot(at.x - d.start.x, at.y - d.start.y) * scale < 3) return
       d.moved = true
       snapshot()
+    }
+    if (d.mode === 'crop') {
+      const o = d.orig
+      const a = ((o.rotation ?? 0) * Math.PI) / 180
+      // the pointer's move in the picture's own frame
+      const mx = at.x - d.start.x
+      const my = at.y - d.start.y
+      const lx = (o.flipX ? -1 : 1) * (mx * Math.cos(a) + my * Math.sin(a))
+      const ly = -mx * Math.sin(a) + my * Math.cos(a)
+      const r = coverRect(o, d.natural.w, d.natural.h)
+      // the picture's spare room on each axis is negative; 0 means nothing to move
+      const along = (offset: number, room: number) =>
+        room < -0.5 ? Math.round(Math.min(1, Math.max(0, offset / room)) * 1000) / 1000 : 0.5
+      live((draft) => {
+        const e = draft.pages[pi]!.elements.find((x) => x.id === o.id)
+        if (!e) return
+        e.cropX = along(r.x + lx, o.w - r.w)
+        e.cropY = along(r.y + ly, o.h - r.h)
+      })
+      return
     }
     if (d.mode === 'move') {
       let dx = at.x - d.start.x
@@ -674,6 +891,17 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     drag.current = null
     setGuides({ v: [], h: [] })
     setMarquee(null)
+    setPanning(false)
+    if (d?.mode === 'pen') {
+      setInkLive(null)
+      const stroke = inkElement(d.points, {
+        stroke: penColor,
+        strokeWidth: penWidth,
+        ...(highlighter ? { opacity: 0.45 } : {}),
+      })
+      if (stroke) changePage((pg) => pg.elements.push(stroke))
+      return
+    }
     // a plain click on one of several picked elements picks just that one
     if (d?.mode === 'move' && !d.moved && d.collapse) setSelected([d.clicked])
   }
@@ -681,6 +909,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   // ---- typing in place ----
 
   const startEdit = (e: DesignElement) => {
+    if (e.kind === 'image') return startCrop(e.id)
     if (e.kind !== 'text' || e.locked) return
     setSelected([e.id])
     setEditing(e.id)
@@ -702,6 +931,13 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      // Esc leaves the menu, crop mode or the pen even from a slider or field
+      if (event.key === 'Escape' && (menu || cropping || pen)) {
+        setMenu(null)
+        if (cropping) setCropping(null)
+        else if (pen) setPen(false)
+        return
+      }
       if (isTyping(event.target)) return
       const mod = event.ctrlKey || event.metaKey
       const key = event.key.toLowerCase()
@@ -718,6 +954,15 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
       } else if (mod && key === 'd') {
         event.preventDefault()
         duplicate()
+      } else if (mod && key === 'g') {
+        event.preventDefault()
+        if (event.shiftKey) ungroup()
+        else group()
+      } else if (event.key === ' ' && !mod) {
+        // Space held: dragging moves the view
+        event.preventDefault()
+        spaceDown.current = true
+        stageWrap.current?.classList.add('dz-can-pan')
       } else if (mod && (event.key === ']' || event.key === '[')) {
         event.preventDefault()
         if (selection.length)
@@ -757,9 +1002,15 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
         )
       }
     }
+    const onKeyUp = (event: KeyboardEvent) => {
+      if (event.key !== ' ') return
+      spaceDown.current = false
+      stageWrap.current?.classList.remove('dz-can-pan')
+    }
     const onCopy = (event: ClipboardEvent, cut: boolean) => {
       if (isTyping(event.target) || !selection.length || !event.clipboardData) return
       event.preventDefault()
+      clip.current = selection.map(clone)
       event.clipboardData.setData('application/x-hanpan-design', JSON.stringify(selection))
       event.clipboardData.setData(
         'text/plain',
@@ -781,15 +1032,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
           const list = (JSON.parse(ours) as DesignElement[]).filter(
             (e) => e && typeof e.kind === 'string',
           )
-          add(
-            ...list.map((e) => ({
-              ...e,
-              id: newId(),
-              x: e.x + 30,
-              y: e.y + 30,
-              locked: undefined,
-            })),
-          )
+          pasteElements(list)
         } catch {
           /* not ours after all */
         }
@@ -815,16 +1058,32 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
       }
     }
     window.addEventListener('keydown', onKey)
+    window.addEventListener('keyup', onKeyUp)
     window.addEventListener('copy', copy)
     window.addEventListener('cut', cut)
     window.addEventListener('paste', paste)
     return () => {
       window.removeEventListener('keydown', onKey)
+      window.removeEventListener('keyup', onKeyUp)
       window.removeEventListener('copy', copy)
       window.removeEventListener('cut', cut)
       window.removeEventListener('paste', paste)
     }
   })
+
+  // the menu closes on any press outside it, or when the window changes
+  useEffect(() => {
+    if (!menu) return
+    const close = () => setMenu(null)
+    window.addEventListener('pointerdown', close)
+    window.addEventListener('resize', close)
+    window.addEventListener('blur', close)
+    return () => {
+      window.removeEventListener('pointerdown', close)
+      window.removeEventListener('resize', close)
+      window.removeEventListener('blur', close)
+    }
+  }, [menu])
 
   useEffect(() => {
     const wrap = stageWrap.current
@@ -936,6 +1195,28 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
 
   // ---- export ----
 
+  const addFontFile = async (file: File) => {
+    if (file.size > MAX_FONT_BYTES) return say(w.fontTooBig)
+    const family =
+      file.name
+        .replace(/\.[^.]+$/, '')
+        .trim()
+        .slice(0, 60) || 'Font'
+    let src: string
+    try {
+      src = await readFile(file)
+    } catch {
+      return say(w.fontBad)
+    }
+    if (!(await registerFont(family, src))) return say(w.fontBad)
+    const target = single?.kind === 'text' ? single.id : null
+    commit((d) => {
+      d.fonts = [...(d.fonts ?? []).filter((f) => f.family !== family), { family, src }]
+      const e = target ? d.pages[pi]!.elements.find((x) => x.id === target) : undefined
+      if (e) e.fontFamily = family
+    })
+    say(w.fontAdded(family))
+  }
   const say = (text: string) => {
     setNotice(text)
     window.setTimeout(() => setNotice((n) => (n === text ? null : n)), 4000)
@@ -971,7 +1252,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
 
   const handlesFor = (e: DesignElement): Handle[] => {
     if (e.kind === 'line') return ['nw', 'se']
-    if (e.kind === 'image' || e.kind === 'qr') return ['nw', 'ne', 'se', 'sw']
+    if (e.kind === 'qr') return ['nw', 'ne', 'se', 'sw']
     if (e.kind === 'text') return ['nw', 'ne', 'se', 'sw', 'e', 'w']
     return ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w']
   }
@@ -986,7 +1267,8 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
       !e ||
       e.locked ||
       editing === e.id ||
-      (drag.current && drag.current.mode !== 'marquee' && drag.current.moved)
+      cropping === e.id ||
+      (drag.current && 'moved' in drag.current && drag.current.moved)
     )
       return null
     const box = elementBox(e)
@@ -1036,6 +1318,188 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     )
   }
 
+  /** Rulers along the top and left of the page, in page units, with the selection marked. */
+  const renderRulers = () => {
+    const step = rulerStep(scale)
+    const sel = selection.length ? union(selection.map(bounds)) : null
+    const ruler = (length: number, along: 'x' | 'y') => {
+      const ticks: ReactNode[] = []
+      for (let v = 0; v <= length; v += step / 5) {
+        const at = Math.round(v * scale) + 0.5
+        const major = Math.round(v) % step === 0
+        const tick = major ? 18 : 5
+        ticks.push(
+          along === 'x' ? (
+            <line key={v} x1={at} x2={at} y1={18 - tick} y2={18} />
+          ) : (
+            <line key={v} y1={at} y2={at} x1={18 - tick} x2={18} />
+          ),
+        )
+        if (major)
+          ticks.push(
+            along === 'x' ? (
+              <text key={`t${v}`} x={at + 3} y={9}>
+                {Math.round(v)}
+              </text>
+            ) : (
+              <text key={`t${v}`} x={9} y={at + 3} transform={`rotate(-90 9 ${at + 3})`}>
+                {Math.round(v)}
+              </text>
+            ),
+          )
+      }
+      const band = sel && (along === 'x' ? [sel.left, sel.right] : [sel.top, sel.bottom])
+      const size = length * scale
+      return (
+        <svg
+          className={`dz-ruler dz-ruler-${along === 'x' ? 'top' : 'left'}`}
+          width={along === 'x' ? size : 18}
+          height={along === 'x' ? 18 : size}
+          aria-hidden="true"
+        >
+          {band && (
+            <rect
+              className="dz-ruler-band"
+              x={along === 'x' ? band[0]! * scale : 0}
+              y={along === 'x' ? 0 : band[0]! * scale}
+              width={along === 'x' ? (band[1]! - band[0]!) * scale : 18}
+              height={along === 'x' ? 18 : (band[1]! - band[0]!) * scale}
+            />
+          )}
+          {ticks}
+        </svg>
+      )
+    }
+    return (
+      <>
+        {ruler(doc.width, 'x')}
+        {ruler(doc.height, 'y')}
+      </>
+    )
+  }
+
+  /** What sits over the page while working: the group frame, the crop ghost, the stroke being drawn. */
+  const renderOverlay = () => {
+    const frame = selection.length > 1 ? union(selection.map(bounds)) : null
+    const crop = cropping ? page.elements.find((x) => x.id === cropping) : undefined
+    const at = crop && cropNatural ? coverRect(crop, cropNatural.w, cropNatural.h) : null
+    return (
+      <>
+        {frame && (
+          <span
+            className="dz-group-frame"
+            style={{
+              left: frame.left,
+              top: frame.top,
+              width: frame.right - frame.left,
+              height: frame.bottom - frame.top,
+              borderWidth: 1 / scale,
+            }}
+          />
+        )}
+        {crop && at && (
+          <div
+            className="dz-crop-box"
+            style={{
+              left: crop.x,
+              top: crop.y,
+              width: crop.w,
+              height: crop.h,
+              transform:
+                [crop.rotation ? `rotate(${crop.rotation}deg)` : '', crop.flipX ? 'scaleX(-1)' : '']
+                  .join(' ')
+                  .trim() || undefined,
+              borderWidth: 2 / scale,
+            }}
+          >
+            <img
+              className="dz-crop-ghost"
+              src={crop.src}
+              alt=""
+              style={{ left: at.x, top: at.y, width: at.w, height: at.h }}
+            />
+          </div>
+        )}
+        {inkLive && (
+          <svg className="dz-ink-live" width={doc.width} height={doc.height} aria-hidden="true">
+            <path
+              d={inkPath(inkLive.length >= 4 ? inkLive : [...inkLive, ...inkLive], 1, 1)}
+              fill="none"
+              stroke={penColor}
+              strokeWidth={penWidth}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              opacity={highlighter ? 0.45 : 1}
+            />
+          </svg>
+        )}
+      </>
+    )
+  }
+
+  const menuItem = (key: string, label: string, run: () => void, disabled = false) => (
+    <button
+      type="button"
+      role="menuitem"
+      disabled={disabled}
+      data-menu={key}
+      onClick={() => {
+        setMenu(null)
+        run()
+      }}
+    >
+      {label}
+    </button>
+  )
+  /** The right-click menu: what can be done with the picked elements, or with the page. */
+  const renderMenu = () => {
+    if (!menu) return null
+    const first = selection[0]
+    const oneGroup = !!first?.group && selection.every((e) => e.group === first.group)
+    const pasteNow = () => pasteElements(clip.current)
+    return (
+      <div
+        className="dz-menu"
+        role="menu"
+        style={{
+          left: Math.min(menu.x, window.innerWidth - 220),
+          top: Math.max(8, Math.min(menu.y, window.innerHeight - (selection.length ? 430 : 100))),
+        }}
+        onPointerDown={(event) => event.stopPropagation()}
+        onContextMenu={(event) => event.preventDefault()}
+        data-hanpan="design-menu"
+      >
+        {selection.length ? (
+          <>
+            {menuItem('cut', w.cut, () => copySelection(true))}
+            {menuItem('copy', w.copyEl, () => copySelection(false))}
+            {menuItem('paste', w.paste, pasteNow, !clip.current.length)}
+            {menuItem('duplicate', w.duplicate, duplicate)}
+            {menuItem('remove', w.remove, remove)}
+            <hr />
+            {oneGroup
+              ? menuItem('ungroup', w.ungroup, ungroup)
+              : selection.length > 1 && menuItem('group', w.group, group)}
+            {single?.kind === 'image' && menuItem('crop', w.crop, () => startCrop(single.id))}
+            {menuItem('lock', selection.every((e) => e.locked) ? w.unlock : w.lock, toggleLock)}
+            <hr />
+            {menuItem('toFront', w.toFront, () => arrange('toFront'))}
+            {menuItem('front', w.front, () => arrange('front'))}
+            {menuItem('back', w.back, () => arrange('back'))}
+            {menuItem('toBack', w.toBack, () => arrange('toBack'))}
+          </>
+        ) : (
+          <>
+            {menuItem('paste', w.paste, pasteNow, !clip.current.length)}
+            {menuItem('selectAll', w.selectAll, () =>
+              setSelected(page.elements.filter((e) => !e.locked).map((e) => e.id)),
+            )}
+          </>
+        )}
+      </div>
+    )
+  }
+
   const renderElement = (e: DesignElement) => {
     const { style, inner } = elementLook(e, `g-${e.id}`)
     const isSelected = selected.includes(e.id)
@@ -1043,13 +1507,14 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     return (
       <div
         key={e.id}
-        className={`dz-el dz-${e.kind}${isSelected ? ' selected' : ''}${e.locked ? ' locked' : ''}${isEditing ? ' editing' : ''}`}
+        className={`dz-el dz-${e.kind}${isSelected ? ' selected' : ''}${e.locked ? ' locked' : ''}${isEditing ? ' editing' : ''}${cropping === e.id ? ' cropping' : ''}`}
         style={style}
         data-element={e.kind}
         data-id={e.id}
         title={e.kind === 'text' && !isEditing ? w.editHint : undefined}
         onPointerDown={(event) => startMove(event, e)}
         onDoubleClick={() => startEdit(e)}
+        onContextMenu={(event) => openMenu(event, e)}
       >
         {isEditing ? (
           <textarea
@@ -1139,6 +1604,24 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
             title={w.zoomIn}
           >
             +
+          </button>
+          <button
+            type="button"
+            className={rulers ? 'on' : undefined}
+            onClick={() => {
+              const next = !rulers
+              setRulers(next)
+              try {
+                localStorage.setItem(RULERS_KEY, next ? '1' : '0')
+              } catch {
+                /* the choice just isn't kept */
+              }
+            }}
+            aria-pressed={rulers}
+            title={w.panHint}
+            data-action="rulers"
+          >
+            {w.rulers}
           </button>
         </div>
         <div className="dz-group dz-export">
@@ -1372,6 +1855,56 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                   </button>
                 ))}
               </div>
+              <h3>{w.pen}</h3>
+              <div className="dz-pen-panel">
+                <button
+                  type="button"
+                  className={`dz-wide${pen ? ' on' : ''}`}
+                  aria-pressed={pen}
+                  onClick={() => {
+                    setPen(!pen)
+                    setCropping(null)
+                    if (!pen) setSelected([])
+                  }}
+                  data-action="pen"
+                >
+                  {w.pen}
+                </button>
+                <div className="dz-swatches">
+                  {PEN_COLORS.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      className={`dz-swatch${penColor === c ? ' on' : ''}`}
+                      style={{ background: c }}
+                      onClick={() => setPenColor(c)}
+                      aria-label={c}
+                      title={c}
+                      data-pen-color={c}
+                    />
+                  ))}
+                </div>
+                <label className="dz-field">
+                  <span>{w.penWidth}</span>
+                  <input
+                    type="range"
+                    min={2}
+                    max={60}
+                    value={penWidth}
+                    onChange={(e) => setPenWidth(Number(e.target.value))}
+                    data-hanpan="pen-width"
+                  />
+                </label>
+                <label className="dz-check">
+                  <input
+                    type="checkbox"
+                    checked={highlighter}
+                    onChange={(e) => setHighlighter(e.target.checked)}
+                  />
+                  {w.highlighter}
+                </label>
+                {pen && <p className="dz-muted">{w.penOn}</p>}
+              </div>
               <h3>{w.image}</h3>
               <button
                 type="button"
@@ -1472,7 +2005,9 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                               ? '▦'
                               : e.kind === 'line'
                                 ? '╱'
-                                : '◆'}
+                                : e.kind === 'draw'
+                                  ? '✎'
+                                  : '◆'}
                       </span>
                       <span className="dz-layer-name">
                         {e.kind === 'text'
@@ -1483,8 +2018,15 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                               ? w.qr
                               : e.kind === 'image'
                                 ? w.image
-                                : w[e.kind]}
+                                : e.kind === 'draw'
+                                  ? w.drawing
+                                  : w[e.kind]}
                       </span>
+                      {e.group && (
+                        <span className="dz-layer-group" title={w.grouped}>
+                          ⧉
+                        </span>
+                      )}
                     </button>
                     <button
                       type="button"
@@ -1503,9 +2045,10 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
         </aside>
         <section className="dz-center">
           <div
-            className="dz-stage-wrap"
+            className={`dz-stage-wrap${pen ? ' pen-on' : ''}${panning ? ' panning' : ''}`}
             ref={stageWrap}
             onPointerDown={startMarquee}
+            onContextMenu={(event) => openMenu(event)}
             onDragOver={onDragOver}
             onDrop={onDrop}
           >
@@ -1513,6 +2056,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
               className="dz-stage"
               style={{ width: doc.width * scale, height: doc.height * scale }}
             >
+              {rulers && renderRulers()}
               <div
                 className="dz-page"
                 ref={pageRef}
@@ -1556,6 +2100,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                 className="dz-overlay"
                 style={{ width: doc.width, height: doc.height, transform: `scale(${scale})` }}
               >
+                {renderOverlay()}
                 {renderHandles()}
               </div>
             </div>
@@ -1632,6 +2177,11 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
             toggleLock={toggleLock}
             fillPage={fillPage}
             replaceImage={(id) => void replaceImage(id)}
+            fonts={(doc.fonts ?? []).map((f) => f.family)}
+            addFont={() => fontInput.current?.click()}
+            group={group}
+            ungroup={ungroup}
+            startCrop={startCrop}
             ai={
               hasAi
                 ? {
@@ -1645,6 +2195,24 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
           />
         </aside>
       </div>
+      {renderMenu()}
+      <input
+        ref={fontInput}
+        type="file"
+        accept=".ttf,.otf,.woff,.woff2"
+        hidden
+        onChange={(event) => {
+          const file = event.target.files?.[0]
+          event.target.value = ''
+          if (file) void addFontFile(file)
+        }}
+        data-hanpan="font-file"
+      />
+      {cropping && !notice && (
+        <div className="dz-notice" role="status">
+          {w.cropping}
+        </div>
+      )}
       {notice && (
         <div className="dz-notice" role="status">
           {notice}

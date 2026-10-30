@@ -729,3 +729,138 @@ body {
   background: var(--surface);
   box-shadow: var(--shadow-modal-strong);
 }
+
+/* ---- pictures: crop and border ---- */
+.dz-img-flip {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+}
+.dz-img-border {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+.dz-stage .dz-el.cropping {
+  outline-style: dashed;
+  cursor: move;
+}
+.dz-crop-box {
+  position: absolute;
+  box-sizing: border-box;
+  border: dashed var(--dz-select);
+}
+.dz-crop-ghost {
+  position: absolute;
+  max-width: none;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* ---- groups, pen, panning, rulers ---- */
+.dz-group-frame {
+  position: absolute;
+  box-sizing: border-box;
+  border: dashed var(--dz-select);
+  pointer-events: none;
+}
+.dz-ink-live {
+  position: absolute;
+  inset: 0 auto auto 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.dz-stage-wrap.pen-on,
+.dz-stage-wrap.pen-on .dz-el {
+  cursor: crosshair;
+}
+.dz-stage-wrap.dz-can-pan,
+.dz-stage-wrap.dz-can-pan .dz-el {
+  cursor: grab;
+}
+.dz-stage-wrap.panning,
+.dz-stage-wrap.panning .dz-el {
+  cursor: grabbing;
+}
+.dz-pen-panel {
+  display: grid;
+  gap: 8px;
+}
+.dz-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dz-layer-group {
+  flex: none;
+  align-self: center;
+  color: var(--text-secondary);
+}
+.dz-group-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--hover);
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.dz-ruler {
+  position: absolute;
+  z-index: 4;
+  overflow: visible;
+  background: var(--surface);
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+.dz-ruler-top {
+  top: -22px;
+  left: 0;
+}
+.dz-ruler-left {
+  top: 0;
+  left: -22px;
+}
+.dz-ruler line {
+  stroke: currentColor;
+  stroke-width: 1;
+}
+.dz-ruler text {
+  fill: currentColor;
+  font-size: 9px;
+}
+.dz-ruler-band {
+  fill: color-mix(in srgb, var(--dz-select) 22%, transparent);
+}
+
+/* ---- right-click menu ---- */
+.dz-menu {
+  position: fixed;
+  z-index: 20;
+  display: grid;
+  min-width: 180px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow-menu);
+}
+.dz .dz-menu button {
+  border-color: transparent;
+  background: transparent;
+  text-align: start;
+}
+.dz .dz-menu button:hover:not(:disabled) {
+  background: var(--hover);
+}
+.dz-menu hr {
+  margin: 4px 2px;
+  border: 0;
+  border-top: 1px solid var(--border);
+}

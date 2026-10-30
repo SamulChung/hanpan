@@ -31,6 +31,7 @@ Hanpan pošle to, co jste uspořádali v myšlenkové mapě, do zprávy Hangul (
 - V mapě **Odeslat do dokumentu › Odeslat jako karty se zprávami** vytvoří jednu kartu na každou hlavní větev.
 - V okně návrhu napište pod **Make with AI**, co chcete, a stiskněte **Make**: AI zvolená v Nastavení napíše text a Hanpan z něj sestaví upravitelný návrh. U vybraného textového pole **Edit with AI** text vyladí, zkrátí, zatraktivní nebo přeloží mezi angličtinou a korejštinou. Zpět vrátí předchozí stav.
 - V okně návrhu přidávají karty **Templates**, **Elements** a **Text** šablony, tvary, QR kódy a styly textu. Shift+klik nebo tažení přes prázdné místo vybere více prvků; posouvejte je podél vodítek, měňte velikost a otočení úchyty a dvojklikem na textové pole pište přímo na místě. Vpravo nastavíte přechody, stíny, obrysy a filtry fotek, karta **Layers** určuje pořadí a zamčení a **Resize** mění velikost stránky se zachováním rozvržení. Stránky lze uložit i jako JPG.
+- Vyberte více prvků a stiskněte **Ctrl+G**, tím je seskupíte a budou se vybírat i posouvat spolu; **Ctrl+Shift+G** skupinu zruší. Pravé tlačítko na prvku nebo prázdném místě otevře kopírování, vložení, pořadí a zamčení. Dvakrát klikněte na fotku a tažením zvolte viditelnou část, přiblížení nastavíte vpravo v **Crop**. Pero na kartě **Elements** kreslí ručně psané tahy nebo zvýrazňovač, tlačítko **Rulers** nahoře měří polohu a tažení s podrženou mezerou posouvá zobrazení. Písma přidaná přes **Add a font file…** v seznamu písem se ukládají do souboru návrhu.
 
 ## AI na tomto počítači
 
