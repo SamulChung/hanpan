@@ -8,6 +8,7 @@ import logoLockup from './assets/genoffice-logo.svg'
 import { KbAskPanel } from './KbAskPanel'
 import { TemplatePicker } from './hanpan/TemplatePicker'
 import { StartBoard } from './hanpan/StartBoard'
+import { MarkdownConverter, type MarkdownConverterApi } from './hanpan/MarkdownConverter'
 import './hanpan/hanpan.css'
 import iconDocx from './assets/file-docx.svg'
 import iconXlsx from './assets/file-xlsx.svg'
@@ -1907,6 +1908,10 @@ export function Home({
 
   // Hanpan: the template picker
   const [templatesOpen, setTemplatesOpen] = useState(false)
+  const [converterOpen, setConverterOpen] = useState(false)
+  const hp = window.hanpanApi
+  const converterApi: MarkdownConverterApi | null =
+    hp?.mdFolder && hp.mdPickFile && hp.mdPickFolder && hp.mdConvert && hp.mdShowFolder ? (hp as MarkdownConverterApi) : null
 
   /**
    * Hanpan's order: the mind map first (every document starts there), then the
@@ -1929,7 +1934,11 @@ export function Home({
       ...(window.hanpanApi?.openDesign
         ? [{ key: 'design', icon: <span className="quick-folder hp-design-badge" aria-hidden="true">✦</span>, title: t('hpDesignCard'), ai: false, tip: t('hpDesignCardSub'), action: () => window.hanpanApi?.openDesign?.() }]
         : []),
-      ...['md', 'html', 'pdf'].map((ext) => ({ key: ext, icon: <FileBadge ext={ext} size={24} />, title: made(ext).title, ai: true, tip: undefined as string | undefined, action: made(ext).action })),
+      { key: 'md', icon: <FileBadge ext="md" size={24} />, title: made('md').title, ai: true, tip: undefined as string | undefined, action: made('md').action },
+      ...(converterApi
+        ? [{ key: 'md-convert', icon: <span className="quick-folder hp-conv-badge" aria-hidden="true">⇄</span>, title: t('hpConvCard'), ai: false, tip: t('hpConvCardSub'), action: () => setConverterOpen(true) }]
+        : []),
+      ...['html', 'pdf'].map((ext) => ({ key: ext, icon: <FileBadge ext={ext} size={24} />, title: made(ext).title, ai: true, tip: undefined as string | undefined, action: made(ext).action })),
       // decision 0030: PDF tasks without AI, in their own window
       { key: 'pdf-tools', icon: <FileBadge ext="pdf" size={24} />, title: t('pdfToolsCard'), ai: false, tip: t('pdfToolsCardSub'), action: () => window.aiOfficePdfToolsHome.open() },
       { key: 'open', icon: <span className="quick-folder"><FolderIcon size={16} /></span>, title: t('openLocal'), ai: false, tip: OPEN_LOCAL_EXTENSIONS, action: () => window.aiOffice.browse() },
@@ -1966,7 +1975,7 @@ export function Home({
               key={card.key}
               className="quick-card hp-compact"
               data-new={card.key}
-              data-hanpan={card.key === 'design' ? 'design' : undefined}
+              data-hanpan={card.key === 'design' || card.key === 'md-convert' ? card.key : undefined}
               data-tip={card.tip}
               onClick={() => void card.action()}
             >
@@ -1977,6 +1986,7 @@ export function Home({
           ))}
         </div>
         {templatesOpen && <TemplatePicker onClose={() => setTemplatesOpen(false)} />}
+        {converterOpen && converterApi && <MarkdownConverter api={converterApi} onClose={() => setConverterOpen(false)} />}
       </div>
     )
   }

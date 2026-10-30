@@ -17,6 +17,7 @@ O Hanpan envia o que você organizou num mapa mental para um relatório Hangul (
 ## Modelos do Hanpan
 
 - O cartão **Modelos do Hanpan** no Início abre 19 modelos (ofícios, relatórios, propostas, atas, planos) como HWP ou Word.
+- No cartão **Markdown converter** do início, cole Markdown ou abra um arquivo .md e toque em **Convert all**: cada formato marcado (HWP, HWPX, Word, ODT, PDF, HTML) é criado na mesma pasta.
 
 ## Ferramentas do Hanpan
 

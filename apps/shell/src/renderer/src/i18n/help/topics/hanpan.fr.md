@@ -17,6 +17,7 @@ Hanpan envoie ce que vous avez organisé dans une carte mentale vers un rapport 
 ## Modèles Hanpan
 
 - La carte **Modèles Hanpan** de l'accueil ouvre 19 modèles (lettres officielles, rapports, propositions, comptes rendus, plans) en HWP ou en Word.
+- Dans la carte **Markdown converter** de l'accueil, collez du Markdown ou ouvrez un fichier .md, puis appuyez sur **Convert all** : chaque format coché (HWP, HWPX, Word, ODT, PDF, HTML) est créé dans un même dossier.
 
 ## Outils Hanpan
 

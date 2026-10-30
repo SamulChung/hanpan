@@ -17,6 +17,7 @@ Hanpan mengirim apa yang Anda susun di peta pikiran ke laporan Hangul (HWP), pre
 ## Templat Hanpan
 
 - Kartu **Templat Hanpan** di Beranda membuka 19 templat (surat resmi, laporan, proposal, notulen, rencana) sebagai HWP atau Word.
+- Di kartu **Markdown converter** pada Beranda, tempel Markdown atau buka berkas .md lalu tekan **Convert all**: setiap format yang dicentang (HWP, HWPX, Word, ODT, PDF, HTML) dibuat berdampingan dalam satu folder.
 
 ## Alat Hanpan
 

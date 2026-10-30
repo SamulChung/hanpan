@@ -37,7 +37,10 @@ import { createSyncService, type SyncTab } from './sync-service'
 import { hwpReadBytes, hwpReplaceDocument } from '../../../../hwp/src/main/hwp-main'
 import { copyFileSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
-import { webContents as allWebContents } from 'electron'
+import { BrowserWindow, webContents as allWebContents } from 'electron'
+import { docxToOdt } from '@genoffice/odt-engine'
+import { dirname } from 'node:path'
+import { checkConvertRequest, convertMarkdown, type ConvertResult } from './markdown-convert'
 
 /** Where the rhwp engine's wasm is: the same search as packages/file-parse (dev node_modules, then Resources/wasm). */
 function rhwpWasmPath(): string {
@@ -54,6 +57,21 @@ function rhwpWasmPath(): string {
 }
 
 let engine: Promise<HwpEngine> | null = null
+
+/** A page of HTML printed to A4 PDF pages in a hidden window: no script, no preload, nothing fetched. */
+export async function printHtmlToPdf(html: string): Promise<Uint8Array> {
+  const win = new BrowserWindow({
+    show: false,
+    webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false, javascript: false },
+  })
+  try {
+    await win.loadURL(`data:text/html;charset=utf-8;base64,${Buffer.from(html, 'utf8').toString('base64')}`)
+    const pdf = await win.webContents.printToPDF({ pageSize: 'A4', printBackground: true, preferCSSPageSize: true })
+    return new Uint8Array(pdf)
+  } finally {
+    win.destroy()
+  }
+}
 
 export function loadHwpEngine(): Promise<HwpEngine> {
   if (!engine) {
@@ -111,6 +129,8 @@ export interface HanpanSetup {
   /** a new untitled mind map in a tab with `topic` as its central topic (Home's start box) */
   newMap(topic: unknown): Promise<{ ok: true } | { ok: false; error: string }>
   sync: ReturnType<typeof createSyncService>
+  /** the Markdown converter on Home: one text into every ticked format, in `folder` */
+  convertMarkdown(request: unknown, folder: string): Promise<ConvertResult>
 }
 
 export interface HanpanShellDeps {
@@ -248,6 +268,17 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
       opened.contents.once('destroyed', () => rmSync(dir, { recursive: true, force: true }))
       return { ok: true }
     },
+    convertMarkdown: (raw, folder) =>
+      convertMarkdown(checkConvertRequest(raw), folder, {
+        loadHwpEngine,
+        docxToOdt: async (docx) => (await docxToOdt(docx)).odtBytes,
+        htmlToPdf: printHtmlToPdf,
+        writeFile: async (path, bytes) => {
+          mkdirSync(dirname(path), { recursive: true })
+          await atomicWriteFile(path, Buffer.from(bytes))
+        },
+        exists: existsSync,
+      }),
     links,
     sendMap,
     sync,

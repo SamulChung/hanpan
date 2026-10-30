@@ -17,6 +17,7 @@ Hanpan pošle to, co jste uspořádali v myšlenkové mapě, do zprávy Hangul (
 ## Šablony Hanpan
 
 - Karta **Šablony Hanpan** na úvodní obrazovce otevře 19 šablon (úřední dopisy, zprávy, návrhy, zápisy, plány) jako HWP nebo Word.
+- Na kartě **Markdown converter** na úvodní stránce vložte Markdown nebo otevřete soubor .md a stiskněte **Convert all**: každý zaškrtnutý formát (HWP, HWPX, Word, ODT, PDF, HTML) vznikne v jedné složce.
 
 ## Nástroje Hanpan
 

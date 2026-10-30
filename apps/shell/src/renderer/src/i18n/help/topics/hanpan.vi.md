@@ -17,6 +17,7 @@ Hanpan gửi những gì bạn sắp xếp trong sơ đồ tư duy thành báo c
 ## Mẫu Hanpan
 
 - Thẻ **Mẫu Hanpan** ở Trang chủ mở 19 mẫu (công văn, báo cáo, đề xuất, biên bản, kế hoạch) dạng HWP hoặc Word.
+- Trong thẻ **Markdown converter** ở Trang chủ, dán Markdown hoặc mở tệp .md rồi nhấn **Convert all**: mọi định dạng đã chọn (HWP, HWPX, Word, ODT, PDF, HTML) được tạo cùng trong một thư mục.
 
 ## Công cụ Hanpan
 

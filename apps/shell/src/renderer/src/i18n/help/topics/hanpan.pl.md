@@ -17,6 +17,7 @@ Hanpan wysyła to, co uporządkowałeś na mapie myśli, do raportu Hangul (HWP)
 ## Szablony Hanpan
 
 - Karta **Szablony Hanpan** na ekranie startowym otwiera 19 szablonów (pisma urzędowe, raporty, oferty, protokoły, plany) jako HWP lub Word.
+- Na karcie **Markdown converter** na stronie głównej wklej Markdown lub otwórz plik .md i naciśnij **Convert all**: każdy zaznaczony format (HWP, HWPX, Word, ODT, PDF, HTML) powstaje w jednym folderze.
 
 ## Narzędzia Hanpan
 

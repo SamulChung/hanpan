@@ -5,6 +5,7 @@
  */
 import { useEffect, useMemo, useState } from 'react'
 import { useI18n } from '../locale'
+import type { MarkdownConverterApi } from './MarkdownConverter'
 
 export interface TemplateSummary {
   id: string
@@ -14,7 +15,7 @@ export interface TemplateSummary {
   icon: string
 }
 
-export interface HanpanApi {
+export interface HanpanApi extends Partial<MarkdownConverterApi> {
   templates(): Promise<TemplateSummary[]>
   openTemplate(id: string, target: 'hwp' | 'docx'): Promise<{ ok: true } | { ok: false; error: string }>
   openDesign?(): Promise<void>

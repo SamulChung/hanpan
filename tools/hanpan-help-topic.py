@@ -402,6 +402,35 @@ T['th'] = latin('th', 'เริ่มต้นใช้ Hanpan', 'Hanpan ส่
   ['เมื่อเปิดครั้งแรก Hanpan จะค้นหา AI บนพีซีเครื่องนี้ (Ollama, LM Studio, vLLM) และใช้งาน หากคุณยังไม่ได้เลือก AI',
    'หากต้องการ AI อื่น ให้เลือกใน **การตั้งค่า › AI**']])
 
+# the Markdown converter, one line under the templates (languages without their own
+# Home strings show the card and button in English, so the help names them so too)
+CONVERTER = {
+ 'ko': '홈 화면의 **마크다운 변환기** 카드에 마크다운을 붙여 넣거나 .md 파일을 열고 **한 번에 변환**을 누르면, 고른 형식(HWP, HWPX, 워드, ODT, PDF, HTML)이 한 폴더에 함께 만들어집니다.',
+ 'en': 'In the **Markdown converter** card on Home, paste Markdown or open a .md file and press **Convert all**: every format you ticked (HWP, HWPX, Word, ODT, PDF, HTML) is made side by side in one folder.',
+ 'zh': '在主页的 **Markdown 转换器** 卡片中粘贴 Markdown 或打开 .md 文件，按 **一键转换**，所选格式（HWP、HWPX、Word、ODT、PDF、HTML）会一起生成在同一个文件夹里。',
+ 'zh-TW': '在首頁的 **Markdown 轉換器** 卡片中貼上 Markdown 或開啟 .md 檔案，按 **一鍵轉換**，所選格式（HWP、HWPX、Word、ODT、PDF、HTML）會一起產生在同一個資料夾裡。',
+ 'ja': 'ホームの **Markdown 変換ツール** カードに Markdown を貼り付けるか .md ファイルを開き、**まとめて変換** を押すと、選んだ形式（HWP・HWPX・Word・ODT・PDF・HTML）が一つのフォルダーにまとめて作られます。',
+ 'fr': "Dans la carte **Markdown converter** de l'accueil, collez du Markdown ou ouvrez un fichier .md, puis appuyez sur **Convert all** : chaque format coché (HWP, HWPX, Word, ODT, PDF, HTML) est créé dans un même dossier.",
+ 'de': 'Fügen Sie in der Karte **Markdown converter** auf der Startseite Markdown ein oder öffnen Sie eine .md-Datei und drücken Sie **Convert all**: Jedes gewählte Format (HWP, HWPX, Word, ODT, PDF, HTML) entsteht nebeneinander in einem Ordner.',
+ 'es': 'En la tarjeta **Markdown converter** del inicio, pega Markdown o abre un archivo .md y pulsa **Convert all**: cada formato marcado (HWP, HWPX, Word, ODT, PDF, HTML) se crea en una misma carpeta.',
+ 'it': 'Nella scheda **Markdown converter** della Home incolla del Markdown o apri un file .md e premi **Convert all**: ogni formato scelto (HWP, HWPX, Word, ODT, PDF, HTML) viene creato nella stessa cartella.',
+ 'pt': 'No cartão **Markdown converter** do início, cole Markdown ou abra um arquivo .md e toque em **Convert all**: cada formato marcado (HWP, HWPX, Word, ODT, PDF, HTML) é criado na mesma pasta.',
+ 'nl': 'Plak in de kaart **Markdown converter** op de startpagina Markdown of open een .md-bestand en druk op **Convert all**: elk aangevinkt formaat (HWP, HWPX, Word, ODT, PDF, HTML) komt naast elkaar in één map.',
+ 'pl': 'Na karcie **Markdown converter** na stronie głównej wklej Markdown lub otwórz plik .md i naciśnij **Convert all**: każdy zaznaczony format (HWP, HWPX, Word, ODT, PDF, HTML) powstaje w jednym folderze.',
+ 'cs': 'Na kartě **Markdown converter** na úvodní stránce vložte Markdown nebo otevřete soubor .md a stiskněte **Convert all**: každý zaškrtnutý formát (HWP, HWPX, Word, ODT, PDF, HTML) vznikne v jedné složce.',
+ 'id': 'Di kartu **Markdown converter** pada Beranda, tempel Markdown atau buka berkas .md lalu tekan **Convert all**: setiap format yang dicentang (HWP, HWPX, Word, ODT, PDF, HTML) dibuat berdampingan dalam satu folder.',
+ 'ms': 'Dalam kad **Markdown converter** di Laman Utama, tampal Markdown atau buka fail .md dan tekan **Convert all**: setiap format yang ditanda (HWP, HWPX, Word, ODT, PDF, HTML) dibuat bersebelahan dalam satu folder.',
+ 'vi': 'Trong thẻ **Markdown converter** ở Trang chủ, dán Markdown hoặc mở tệp .md rồi nhấn **Convert all**: mọi định dạng đã chọn (HWP, HWPX, Word, ODT, PDF, HTML) được tạo cùng trong một thư mục.',
+ 'ru': 'В карточке **Конвертер Markdown** на главной вставьте Markdown или откройте файл .md и нажмите **Преобразовать всё**: все отмеченные форматы (HWP, HWPX, Word, ODT, PDF, HTML) появятся рядом в одной папке.',
+ 'ar': 'في بطاقة **محوّل Markdown** في الصفحة الرئيسية، الصق Markdown أو افتح ملف ‎.md ثم اضغط **تحويل الكل**: تُنشأ كل الصيغ المختارة (HWP وHWPX وWord وODT وPDF وHTML) معًا في مجلد واحد.',
+ 'he': 'בכרטיס **ממיר Markdown** במסך הבית הדביקו Markdown או פתחו קובץ ‎.md ולחצו **המר הכול**: כל הפורמטים שסימנתם (HWP, HWPX, Word, ODT, PDF, HTML) נוצרים יחד בתיקייה אחת.',
+ 'hi': 'होम पर **Markdown कनवर्टर** कार्ड में Markdown चिपकाएँ या .md फ़ाइल खोलें और **सब बदलें** दबाएँ: चुने गए सभी फ़ॉर्मैट (HWP, HWPX, Word, ODT, PDF, HTML) एक ही फ़ोल्डर में साथ बनते हैं।',
+ 'th': 'ในการ์ด **ตัวแปลง Markdown** ที่หน้าแรก วาง Markdown หรือเปิดไฟล์ .md แล้วกด **แปลงทั้งหมด** ทุกรูปแบบที่เลือก (HWP, HWPX, Word, ODT, PDF, HTML) จะถูกสร้างไว้ด้วยกันในโฟลเดอร์เดียว',
+}
+assert set(CONVERTER) == set(T), set(T) ^ set(CONVERTER)
+for lang, (_title, _intro, sections) in T.items():
+    sections[2][2].append(CONVERTER[lang])
+
 for lang, (title, intro, sections) in T.items():
     lines = [f'# {title}', '', intro, '']
     for heading, kind, items in sections:

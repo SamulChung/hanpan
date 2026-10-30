@@ -17,6 +17,7 @@ Hanpan 可以把心智圖整理的內容傳送為 Hangul (HWP) 報告、簡報�
 ## Hanpan 範本
 
 - 首頁的 **Hanpan 範本** 卡片可用 HWP 或 Word 開啟 19 種範本（公文、報告、提案、會議紀錄、企劃書）。
+- 在首頁的 **Markdown 轉換器** 卡片中貼上 Markdown 或開啟 .md 檔案，按 **一鍵轉換**，所選格式（HWP、HWPX、Word、ODT、PDF、HTML）會一起產生在同一個資料夾裡。
 
 ## Hanpan 工具
 

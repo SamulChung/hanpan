@@ -8557,6 +8557,38 @@ ipcMain.handle('hanpan:open-template', (_event, id: unknown, target: unknown) =>
     error: error instanceof Error ? error.message : String(error),
   })),
 )
+// Hanpan: the Markdown converter. The folder it writes to is chosen here only
+// (a picked file's folder, or the folder dialog), never taken from the page.
+let mdConvertFolder: string | null = null
+const mdFolder = () => mdConvertFolder ?? join(app.getPath('documents'), '한판 변환')
+ipcMain.handle('hanpan:md-folder', () => mdFolder())
+ipcMain.handle('hanpan:md-pick-file', async (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender) ?? shellWindow
+  if (!win) return null
+  const picked = await dialog.showOpenDialog(win, {
+    properties: ['openFile'],
+    filters: [{ name: 'Markdown', extensions: ['md', 'markdown', 'txt'] }],
+  })
+  const path = picked.canceled ? undefined : picked.filePaths[0]
+  if (!path || statSync(path).size > 5_000_000) return null
+  mdConvertFolder = dirname(path)
+  return { name: basename(path, extname(path)), text: readFileSync(path, 'utf8').replace(/^﻿/, ''), folder: mdConvertFolder }
+})
+ipcMain.handle('hanpan:md-pick-folder', async (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender) ?? shellWindow
+  if (!win) return null
+  const picked = await dialog.showOpenDialog(win, { properties: ['openDirectory', 'createDirectory'], defaultPath: mdFolder() })
+  if (picked.canceled || !picked.filePaths[0]) return null
+  mdConvertFolder = picked.filePaths[0]
+  return mdConvertFolder
+})
+ipcMain.handle('hanpan:md-convert', (_event, request: unknown) =>
+  hanpan.convertMarkdown(request, mdFolder()).then(
+    (result) => ({ ok: true as const, ...result }),
+    (error: unknown) => ({ ok: false as const, error: error instanceof Error ? error.message : String(error) }),
+  ),
+)
+ipcMain.handle('hanpan:md-show-folder', () => shell.openPath(mdFolder()))
 
 /** A template copy's new untitled tab: sheets here (its backing workbook), the others in the tab manager */
 async function openTemplateCopyTab(copy: TemplateCopy): Promise<OpenedCopyTab | null> {

@@ -17,6 +17,7 @@ Hanpan 可以把思维导图整理的内容发送为 Hangul (HWP) 报告、演�
 ## Hanpan 模板
 
 - 主页的 **Hanpan 模板** 卡片可用 HWP 或 Word 打开 19 种模板（公文、报告、提案、会议纪要、计划书）。
+- 在主页的 **Markdown 转换器** 卡片中粘贴 Markdown 或打开 .md 文件，按 **一键转换**，所选格式（HWP、HWPX、Word、ODT、PDF、HTML）会一起生成在同一个文件夹里。
 
 ## Hanpan 工具
 

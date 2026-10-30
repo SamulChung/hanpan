@@ -109,6 +109,12 @@
   --hp-chalk: #f2c94c;
   --hp-chalk-ink: #3a2e05;
   --hp-card-lift: 0 10px 28px rgb(24 63 51 / 14%);
+  --hp-paper: #ffffff;
+  --hp-paper-ink: #1f2421;
+  --hp-paper-muted: #5d6661;
+  --hp-paper-line: #c9cfcb;
+  --hp-paper-head: #eef3f0;
+  --hp-paper-shadow: 0 2px 10px rgb(24 63 51 / 12%);
 }
 
 [data-theme='dark'] {
@@ -122,6 +128,12 @@
   --hp-chalk: #f2c94c;
   --hp-chalk-ink: #3a2e05;
   --hp-card-lift: 0 10px 28px rgb(0 0 0 / 35%);
+  --hp-paper: #ffffff;
+  --hp-paper-ink: #1f2421;
+  --hp-paper-muted: #5d6661;
+  --hp-paper-line: #c9cfcb;
+  --hp-paper-head: #eef3f0;
+  --hp-paper-shadow: 0 2px 10px rgb(0 0 0 / 45%);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -136,6 +148,12 @@
     --hp-chalk: #f2c94c;
     --hp-chalk-ink: #3a2e05;
     --hp-card-lift: 0 10px 28px rgb(0 0 0 / 35%);
+    --hp-paper: #ffffff;
+    --hp-paper-ink: #1f2421;
+    --hp-paper-muted: #5d6661;
+    --hp-paper-line: #c9cfcb;
+    --hp-paper-head: #eef3f0;
+    --hp-paper-shadow: 0 2px 10px rgb(0 0 0 / 45%);
   }
 }
 
@@ -396,5 +414,386 @@
   }
   .hp-primary .quick-card.hp-primary-card:hover {
     transform: none;
+  }
+}
+
+/* ── Hanpan: the Markdown converter ── */
+
+.hp-conv-badge {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.hp-conv {
+  display: flex;
+  flex-direction: column;
+  width: min(1180px, calc(100vw - 40px));
+  height: min(820px, calc(100vh - 48px));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-modal-strong);
+  overflow: hidden;
+}
+
+.hp-conv-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  flex: 1;
+  min-height: 0;
+  padding: 0 20px 14px;
+}
+
+.hp-conv-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.hp-conv-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 34px;
+  margin-bottom: 6px;
+}
+
+.hp-conv-label {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.hp-conv-count {
+  margin-left: auto;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.hp-conv-ghost {
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.hp-conv-ghost:hover:not(:disabled) {
+  border-color: var(--text-secondary);
+}
+
+.hp-conv-source {
+  flex: 1;
+  min-height: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text-primary);
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, 'D2Coding', monospace;
+  font-size: 13px;
+  line-height: 1.65;
+  resize: none;
+}
+
+.hp-conv-source:focus-visible {
+  outline: 2px solid var(--hp-board);
+  outline-offset: -1px;
+}
+
+.hp-conv-source.is-dropping {
+  border-style: dashed;
+  border-color: var(--hp-board);
+}
+
+.hp-conv-preview {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 18px;
+  border-radius: 10px;
+  background: var(--hp-board);
+}
+
+.hp-conv-empty {
+  margin: 40px auto;
+  max-width: 22em;
+  color: var(--hp-board-muted);
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* the page itself is document content: it stays paper-white in dark mode */
+.hp-conv-page {
+  min-height: 100%;
+  padding: 36px 40px;
+  border-radius: 4px;
+  background: var(--hp-paper);
+  color: var(--hp-paper-ink);
+  box-shadow: var(--hp-paper-shadow);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+
+.hp-conv-page h1 {
+  margin: 0 0 18px;
+  font-size: 21px;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.hp-conv-page h2 {
+  margin: 20px 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--hp-board);
+  font-size: 16px;
+}
+
+.hp-conv-page p {
+  margin: 4px 0;
+}
+
+.hp-conv-meta {
+  color: var(--hp-paper-muted);
+  text-align: right;
+}
+
+.hp-conv-item.is-head {
+  margin-top: 10px;
+  font-weight: 700;
+}
+
+.hp-conv-marker {
+  display: inline-block;
+  min-width: 1.4em;
+}
+
+.hp-conv-ref {
+  color: var(--hp-paper-muted);
+  font-size: 12.5px;
+}
+
+.hp-conv-page table {
+  width: 100%;
+  margin: 10px 0;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.hp-conv-page th,
+.hp-conv-page td {
+  padding: 6px 8px;
+  border: 1px solid var(--hp-paper-line);
+  vertical-align: top;
+}
+
+.hp-conv-page th {
+  background: var(--hp-paper-head);
+}
+
+.hp-conv-foot {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  padding: 14px 20px;
+  background: var(--hp-board);
+  color: var(--hp-board-ink);
+}
+
+.hp-conv-options {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px 18px;
+  min-width: 0;
+}
+
+.hp-conv-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.hp-conv-field > span:first-child,
+.hp-conv-formats legend {
+  color: var(--hp-board-muted);
+}
+
+.hp-conv-field input,
+.hp-conv-field select {
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--hp-board-field);
+  color: var(--hp-board-field-ink);
+  font: inherit;
+  font-size: 13px;
+}
+
+.hp-conv-field input {
+  width: 220px;
+}
+
+.hp-conv-formats {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 12px;
+}
+
+.hp-conv-formats legend {
+  margin-bottom: 4px;
+  padding: 0;
+}
+
+.hp-conv-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--hp-board-line);
+  border-radius: 16px;
+  color: var(--hp-board-ink);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.hp-conv-chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hp-conv-chip.is-on {
+  border-color: var(--hp-chalk);
+  background: var(--hp-board-chip);
+  color: var(--hp-chalk);
+}
+
+.hp-conv-chip:has(input:focus-visible) {
+  outline: 2px solid var(--hp-chalk);
+  outline-offset: 2px;
+}
+
+.hp-conv-folder {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  max-width: 340px;
+}
+
+.hp-conv-folder > span:first-child {
+  flex-basis: 100%;
+}
+
+.hp-conv-path {
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hp-conv-folder .hp-conv-ghost {
+  border-color: var(--hp-board-line);
+  background: transparent;
+  color: var(--hp-board-ink);
+}
+
+.hp-conv-go {
+  flex: none;
+  height: 48px;
+  padding: 0 26px;
+  border: none;
+  border-radius: 12px;
+  background: var(--hp-chalk);
+  color: var(--hp-chalk-ink);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.hp-conv-go:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.hp-conv-go:focus-visible {
+  outline: 2px solid var(--hp-chalk);
+  outline-offset: 3px;
+}
+
+.hp-conv-result {
+  padding: 10px 20px 14px;
+  border-top: 1px solid var(--border);
+}
+
+.hp-conv-result .hp-tpl-error {
+  margin: 4px 0;
+}
+
+.hp-conv-done {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.hp-conv-done span {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.hp-conv-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hp-conv-file {
+  max-width: 320px;
+  overflow: hidden;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 12.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.hp-conv-file b {
+  margin-right: 6px;
+  color: var(--hp-board);
+}
+
+.hp-conv-file:hover {
+  border-color: var(--hp-board);
+}
+
+@media (max-width: 860px) {
+  .hp-conv-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+  .hp-conv-foot {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

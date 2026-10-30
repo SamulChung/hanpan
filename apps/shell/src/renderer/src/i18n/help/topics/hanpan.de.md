@@ -17,6 +17,7 @@ Hanpan schickt, was Sie in einer Mindmap geordnet haben, als Hangul-Bericht (HWP
 ## Hanpan-Vorlagen
 
 - Die Karte **Hanpan-Vorlagen** auf der Startseite öffnet 19 Vorlagen (amtliche Schreiben, Berichte, Angebote, Protokolle, Pläne) als HWP oder Word.
+- Fügen Sie in der Karte **Markdown converter** auf der Startseite Markdown ein oder öffnen Sie eine .md-Datei und drücken Sie **Convert all**: Jedes gewählte Format (HWP, HWPX, Word, ODT, PDF, HTML) entsteht nebeneinander in einem Ordner.
 
 ## Hanpan-Werkzeuge
 

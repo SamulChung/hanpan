@@ -29,6 +29,7 @@
     "@genoffice/google-drive": "*",
     "@genoffice/hanpan-core": "*",
     "@genoffice/local-ai": "*",
+    "@genoffice/odt-engine": "*",
     "@genoffice/xmind-engine": "*",
     "pdf-lib": "^1.17.1",
     "@genoffice/cli": "*",

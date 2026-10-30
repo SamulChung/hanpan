@@ -17,6 +17,7 @@ Hanpan envía lo que ordenaste en un mapa mental a un informe Hangul (HWP), una 
 ## Plantillas de Hanpan
 
 - La tarjeta **Plantillas de Hanpan** del inicio abre 19 plantillas (cartas oficiales, informes, propuestas, actas, planes) como HWP o Word.
+- En la tarjeta **Markdown converter** del inicio, pega Markdown o abre un archivo .md y pulsa **Convert all**: cada formato marcado (HWP, HWPX, Word, ODT, PDF, HTML) se crea en una misma carpeta.
 
 ## Herramientas de Hanpan
 

@@ -17,6 +17,7 @@ Hanpan stuurt wat u in een mindmap hebt geordend naar een Hangul-rapport (HWP), 
 ## Hanpan-sjablonen
 
 - De kaart **Hanpan-sjablonen** op Start opent 19 sjablonen (officiële brieven, rapporten, voorstellen, notulen, plannen) als HWP of Word.
+- Plak in de kaart **Markdown converter** op de startpagina Markdown of open een .md-bestand en druk op **Convert all**: elk aangevinkt formaat (HWP, HWPX, Word, ODT, PDF, HTML) komt naast elkaar in één map.
 
 ## Hanpan-hulpmiddelen
 

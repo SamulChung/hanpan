@@ -891,6 +891,11 @@ contextBridge.exposeInMainWorld('hanpanApi', {
   openTemplate: (id: string, target: 'hwp' | 'docx') => ipcRenderer.invoke('hanpan:open-template', id, target),
   openDesign: () => ipcRenderer.invoke('hanpan:open-design'),
   newMap: (topic: string) => ipcRenderer.invoke('hanpan:new-map', topic),
+  mdFolder: () => ipcRenderer.invoke('hanpan:md-folder'),
+  mdPickFile: () => ipcRenderer.invoke('hanpan:md-pick-file'),
+  mdPickFolder: () => ipcRenderer.invoke('hanpan:md-pick-folder'),
+  mdConvert: (request: unknown) => ipcRenderer.invoke('hanpan:md-convert', request),
+  mdShowFolder: () => ipcRenderer.invoke('hanpan:md-show-folder'),
 })
 // Home's entry point into the agent window (decision 0032); the window has its own preload
 contextBridge.exposeInMainWorld('aiOfficeAgent', {

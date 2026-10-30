@@ -17,6 +17,7 @@ Hanpan invia ciò che hai organizzato in una mappa mentale a un rapporto Hangul 
 ## Modelli Hanpan
 
 - La scheda **Modelli Hanpan** nella Home apre 19 modelli (lettere ufficiali, rapporti, proposte, verbali, piani) come HWP o Word.
+- Nella scheda **Markdown converter** della Home incolla del Markdown o apri un file .md e premi **Convert all**: ogni formato scelto (HWP, HWPX, Word, ODT, PDF, HTML) viene creato nella stessa cartella.
 
 ## Strumenti Hanpan
 

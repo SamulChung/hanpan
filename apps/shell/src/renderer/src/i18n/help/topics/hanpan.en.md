@@ -17,6 +17,7 @@ Hanpan sends what you sorted out in a mind map to a Hangul (HWP) report, a slide
 ## Hanpan templates
 
 - The **Hanpan templates** card on Home opens 19 templates (official letters, reports, proposals, minutes, plans) as HWP or Word.
+- In the **Markdown converter** card on Home, paste Markdown or open a .md file and press **Convert all**: every format you ticked (HWP, HWPX, Word, ODT, PDF, HTML) is made side by side in one folder.
 
 ## Hanpan tools
 
