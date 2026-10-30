@@ -117,15 +117,20 @@ test.describe('sheets: filter criteria survive save and reopen', () => {
       // the restore runs once the sheet finishes indexing — poll for it
       await sheets.waitForFunction(
         () => {
-          const debug = (window as unknown as Record<string, unknown>).__genofficeDebug as {
-            univerAPI: { getActiveWorkbook(): { getActiveSheet(): unknown } }
-          }
-          const sheet = debug.univerAPI.getActiveWorkbook().getActiveSheet() as {
-            getFilter(): {
-              getColumnFilterCriteria(column: number): unknown
-            } | null
-          }
-          return sheet.getFilter()?.getColumnFilterCriteria(1) != null
+          // The visible sheet can precede the debug bridge on a fresh launch.
+          const debug = (window as unknown as Record<string, unknown>).__genofficeDebug as
+            | {
+                univerAPI?: { getActiveWorkbook(): { getActiveSheet(): unknown } | null }
+              }
+            | undefined
+          const sheet = debug?.univerAPI?.getActiveWorkbook()?.getActiveSheet() as
+            | {
+                getFilter(): {
+                  getColumnFilterCriteria(column: number): unknown
+                } | null
+              }
+            | undefined
+          return sheet?.getFilter()?.getColumnFilterCriteria(1) != null
         },
         null,
         { timeout: 30_000 },
