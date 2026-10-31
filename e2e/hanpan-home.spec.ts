@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 import { closeAndSaveVideo, launchShell, screenshotPath, waitForPageWithUrl } from './helpers'
 
 /** Hanpan Home: the mind map leads, and a topic typed on the start board opens a map with it in the middle. */
@@ -25,6 +25,28 @@ test('Home leads with the mind map, and a typed topic opens a map with it', asyn
     const map = await waitForPageWithUrl(app, '://mindmap/', 30_000)
     await expect(map.locator('body')).toContainText('학부모 설명회 준비', { timeout: 30_000 })
     await map.screenshot({ path: screenshotPath('hanpan-home-new-map') })
+
+    // the user guide, one click from the top of the board: the help tab opens on Hanpan's guide
+    await page.evaluate(() =>
+      (window as unknown as { aiOfficeTabs: { activate(id: string): Promise<void> } }).aiOfficeTabs.activate('home'),
+    )
+    await page.locator('[data-hanpan="start-guide"]').click()
+    // the help tab's page is the one with the manual's topic list
+    let help: Page | undefined
+    await expect
+      .poll(
+        async () => {
+          for (const candidate of app.windows()) {
+            if (await candidate.locator('.help-topic').count().catch(() => 0)) help = candidate
+          }
+          return Boolean(help)
+        },
+        { timeout: 30_000 },
+      )
+      .toBe(true)
+    // it opens on Hanpan's own guide, which walks through the design AI helper
+    await expect(help!.locator('body')).toContainText('이 디자인에 글 채우기', { timeout: 15_000 })
+    await help!.screenshot({ path: screenshotPath('hanpan-home-guide') })
   } finally {
     await closeAndSaveVideo(launched)
   }

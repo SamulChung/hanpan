@@ -797,3 +797,46 @@
     align-items: stretch;
   }
 }
+
+/* the user guide, at the top of the start board */
+.hp-board-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 6px;
+}
+.hp-board-head .hp-board-greeting {
+  margin: 0;
+}
+.hp-guide {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--hp-board-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--hp-board-ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.hp-guide svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.hp-guide:hover {
+  border-color: var(--hp-chalk);
+  background: var(--hp-board-field);
+  color: var(--hp-board-field-ink);
+}
+.hp-guide:focus-visible {
+  outline: 2px solid var(--hp-chalk);
+  outline-offset: 2px;
+}
