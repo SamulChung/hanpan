@@ -375,3 +375,14 @@
   min-width: 1.5em;
   min-height: 1em;
 }
+
+/* ---- parts the user hid from view (View tab, map/hidden-parts.ts) ---- */
+
+.mm-card .map-container[data-mm-hide~='notes'] .mm-chip-note,
+.mm-card .map-container[data-mm-hide~='links'] .mm-chip-link,
+.mm-card .map-container[data-mm-hide~='labels'] .tags span:not(.mm-chip),
+.mm-card .map-container[data-mm-hide~='markers'] .mm-markers,
+.mm-card .map-container[data-mm-hide~='pictures'] .mm-picture,
+.mm-card .map-container[data-mm-hide~='pictures'] .mm-picture-missing {
+  display: none;
+}

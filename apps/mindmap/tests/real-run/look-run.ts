@@ -341,6 +341,16 @@ export async function startOutside(): Promise<{ server: Server; url: string; hit
   return { server, url: `http://127.0.0.1:${(server.address() as AddressInfo).port}`, hits }
 }
 
+/** Clicks a ribbon button, opening its tab first when another tab is showing. */
+export async function ribbonClick(page: Page, action: string): Promise<void> {
+  const tab = await page.evaluate((name) => {
+    const pane = document.querySelector(`[data-action="${name}"]`)?.closest('[data-ribbon-pane]')
+    return pane instanceof HTMLElement && pane.hidden ? (pane.dataset.ribbonPane ?? null) : null
+  }, action)
+  if (tab) await page.locator(`[data-ribbon-tab="${tab}"]`).click()
+  await page.locator(`[data-action="${action}"]`).click()
+}
+
 /** Records every address the app's session is asked for, from now on. */
 export async function watchRequests(app: ElectronApplication): Promise<() => Promise<string[]>> {
   await app.evaluate(({ session }) => {
@@ -369,7 +379,7 @@ export const leavesTheApp = (url: string): boolean =>
 
 async function openPanel(page: Page): Promise<void> {
   if ((await page.locator('.mm-theme-panel').count()) === 0) {
-    await page.locator('[data-action="theme"]').click()
+    await ribbonClick(page, 'theme')
     await page.waitForSelector('.mm-theme-panel')
   }
 }
@@ -413,7 +423,7 @@ async function frame(page: Page): Promise<void> {
     return map.width <= card.width && map.height <= card.height
   }, VISIBLE)
   if (!fits) {
-    await page.locator('[data-action="zoom-fit"]').click()
+    await ribbonClick(page, 'zoom-fit')
     await page.waitForTimeout(120)
   }
   // nothing selected, nothing focused and the pointer off the map: no ring, no hover handle
@@ -739,7 +749,7 @@ export async function lookRun(tools: LookRunTools): Promise<void> {
     await layout('right')
     await closePanel(again.page)
     await frame(again.page)
-    await again.page.locator('[data-action="zoom-fit"]').click()
+    await ribbonClick(again.page, 'zoom-fit')
     await again.page.mouse.move(4, 4)
     await again.page.waitForTimeout(400)
     await shot(again.page, '9-layout-1-right-line')
@@ -753,7 +763,7 @@ export async function lookRun(tools: LookRunTools): Promise<void> {
       await layout('down')
       await closePanel(again.page)
       await frame(again.page)
-      await again.page.locator('[data-action="zoom-fit"]').click()
+      await ribbonClick(again.page, 'zoom-fit')
       await again.page.mouse.move(4, 4)
       await again.page.waitForTimeout(400)
       await shot(again.page, `9-layout-${at + 2}-down-${skeleton}`)
@@ -897,7 +907,7 @@ async function decorationRun(tools: LookRunTools, dir: string): Promise<void> {
     const enlarged = async (name: string): Promise<void> => {
       await closePanel(page)
       await frame(page)
-      for (let step = 0; step < 5; step++) await page.locator('[data-action="zoom-in"]').click()
+      for (let step = 0; step < 5; step++) await ribbonClick(page, 'zoom-in')
       await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur())
       await page.mouse.move(4, 4)
       await page.waitForTimeout(400)
@@ -922,7 +932,7 @@ async function decorationRun(tools: LookRunTools, dir: string): Promise<void> {
     await pick(page, 'band', 'signal')
     await closePanel(page)
     await frame(page)
-    for (let step = 0; step < 5; step++) await page.locator('[data-action="zoom-in"]').click()
+    for (let step = 0; step < 5; step++) await ribbonClick(page, 'zoom-in')
     await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur())
     await page.mouse.move(4, 4)
     await page.waitForTimeout(400)
@@ -971,7 +981,7 @@ async function sampleFileRun(tools: LookRunTools, dir: string): Promise<void> {
     )
     await closePanel(page)
     await frame(page)
-    await page.locator('[data-action="zoom-fit"]').click()
+    await ribbonClick(page, 'zoom-fit')
     await page.mouse.move(4, 4)
     await page.waitForTimeout(400)
     await page.screenshot({ path: join(dir, '8-file-from-another-program-default-look.png') })

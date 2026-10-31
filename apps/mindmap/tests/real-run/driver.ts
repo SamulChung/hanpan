@@ -38,7 +38,7 @@ import {
   type XmindTopic,
 } from '@genoffice/xmind-engine'
 import { exportRun } from './export-run'
-import { lookRun } from './look-run'
+import { lookRun, ribbonClick } from './look-run'
 
 const APP_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const OUT = process.env.MINDMAP_REAL_RUN_OUT ?? mkdtempSync(join(tmpdir(), 'mindmap-real-run-'))
@@ -404,14 +404,14 @@ async function editingRun(): Promise<void> {
 
     // label, note, link through the toolbar
     await selectTopic(page, ID.gamma)
-    await page.locator('[data-action="label"]').click()
+    await ribbonClick(page, 'label')
     await page.locator('[data-dialog="topic-label"] .mm-field').fill('중요, <i>기울임</i>')
     await page.locator('[data-action="field-ok"]').click()
-    await page.locator('[data-action="note"]').click()
+    await ribbonClick(page, 'note')
     await page.locator('[data-note-panel] textarea').fill('메모 첫 줄\n<script>alert(1)</script>')
     await shot(page, '05-note-panel')
     // leaving the field (the next toolbar button) puts the note into the map
-    await page.locator('[data-action="link"]').click()
+    await ribbonClick(page, 'link')
     // an address nothing will open: kept and shown as text, said so beforehand, never opened
     await page.locator('[data-dialog="topic-link"] .mm-field').fill('javascript:alert(1)')
     check(
@@ -432,7 +432,7 @@ async function editingRun(): Promise<void> {
     await page.waitForTimeout(300)
     check((await openedLinks(app)).length === 0, 'pressing it opens nothing')
     // a reference into the file is turned down
-    await page.locator('[data-action="link"]').click()
+    await ribbonClick(page, 'link')
     check(
       (await page.locator('[data-dialog="topic-link"] .mm-field').inputValue()) ===
         'javascript:alert(1)',

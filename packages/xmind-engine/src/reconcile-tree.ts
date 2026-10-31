@@ -46,7 +46,7 @@ import {
   shownParts,
 } from './tree-walk'
 import { isRecord, type XmindSheet, type XmindTopic } from './types'
-import { formatRange, isShownLink } from './view'
+import { formatRange, imageToView, isShownLink } from './view'
 
 /**
  * The ids reconciling wrote in place of ids the state gave, by the id given.
@@ -208,13 +208,20 @@ function writeValues(topic: XmindTopic, want: StateTopic, run: Run): void {
  * holds. A state that still shows a web address or a path is left alone — the
  * editor never loaded it, so it is not a change of the picture — and a
  * reference to an entry the file does not have is refused rather than written
- * as a picture nothing can show. Removing a picture is not a state either: the
- * editor shows no way to do it, so an empty state value never deletes one.
+ * as a picture nothing can show. An empty state value takes off the picture
+ * the view showed for the topic (the editor hands that one back unchanged, so
+ * an empty one is the user's removal); an `image` value the view could not
+ * show stays. The archive entry stays either way: another topic may point at
+ * it, and undoing the removal needs it.
  */
 function writeImage(topic: XmindTopic, want: StateTopic, run: Run): void {
   const image = want.image
-  const entry = image?.entryName
-  if (!image || !entry) return
+  if (!image) {
+    if (imageToView(topic.image) !== null) delete topic.image
+    return
+  }
+  const entry = image.entryName
+  if (!entry) return
   const current = isRecord(topic.image) ? topic.image : null
   const currentEntry =
     current && typeof current.src === 'string' && current.src.startsWith('xap:')

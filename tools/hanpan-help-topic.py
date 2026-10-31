@@ -542,6 +542,117 @@ assert set(DESIGN_LOOK) == set(T), set(T) ^ set(DESIGN_LOOK)
 for lang, (_title, _intro, sections) in T.items():
     sections[4][2].append(DESIGN_LOOK[lang])
 
+# editing the map itself: the ribbon tabs, find and replace, pictures, sorting and
+# what the View tab shows. The button names are read from the editor's own strings.
+APP_STRINGS = pathlib.Path(__file__).resolve().parent.parent / 'apps/mindmap/src/renderer/i18n/app'
+LABEL_KEYS = {'home': 'tabHome', 'insert': 'tabInsert', 'format': 'tabFormat', 'view': 'tabView',
+              'picture': 'tbPicture', 'sort': 'tbSort', 'levels': 'tbFoldLevels', 'show': 'tbShowParts'}
+
+
+def editor_labels(lang):
+    import re
+    text = (APP_STRINGS / f'{lang}.ts').read_text(encoding='utf8')
+    out = {}
+    for name, key in LABEL_KEYS.items():
+        found = re.search(rf"^\s*{key}: (['\"])(.*?)\1,$", text, re.M)
+        assert found, (lang, key)
+        out[name] = found.group(2)
+    return out
+
+
+MAP_EDIT = {
+ 'ko': ('마인드맵 고치기', [
+  '마인드맵 위쪽 띠는 **{home}**·**{insert}**·**{format}**·**{view}** 탭으로 나뉩니다. Ctrl+F로 모든 시트의 토픽 제목을, 원하면 메모까지 찾고, Ctrl+H로 바꿉니다. 접힌 가지 안에 있는 토픽은 찾아가면 가지가 펼쳐집니다.',
+  '**{insert} › {picture}** 단추는 고른 토픽에 PNG·JPG·GIF 그림(10MB까지)을 넣고, 그림이 있으면 뺍니다. **{format} › {sort}** 단추는 고른 토픽의 가지를 가나다순으로 놓고, 한 번 더 누르면 거꾸로 놓습니다.',
+  '**{view} › {levels}**로 1·2·3단계까지만 펼쳐 보고, **{view} › {show}**로 메모·라벨·링크·아이콘·그림을 화면에서만 감춥니다. 감춰도 파일에는 그대로 남습니다.']),
+ 'en': ('Editing the mind map', [
+  'The band above the map has the **{home}**, **{insert}**, **{format}** and **{view}** tabs. Ctrl+F finds topic titles on every sheet, and notes too if you tick it; Ctrl+H replaces. Going to a topic inside a folded branch unfolds the branch.',
+  '**{insert} › {picture}** puts a PNG, JPG or GIF picture (10 MB at most) on the selected topic, or takes off the one it has. **{format} › {sort}** puts the branches of the selected topic in alphabetical order; press it again for the reverse order.',
+  '**{view} › {levels}** unfolds the map down to level 1, 2 or 3, and **{view} › {show}** hides notes, labels, links, icons or pictures on screen only. The file keeps them all.']),
+ 'zh': ('编辑思维导图', [
+  '导图上方的功能区分为 **{home}**、**{insert}**、**{format}**、**{view}** 选项卡。Ctrl+F 查找所有工作表的主题标题，勾选后也查找备注；Ctrl+H 替换。跳到折叠分支中的主题时，该分支会展开。',
+  '**{insert} › {picture}** 给所选主题加上 PNG、JPG 或 GIF 图片（最大 10 MB），已有图片时则移除。**{format} › {sort}** 按字母顺序排列所选主题的分支，再按一次则倒序排列。',
+  '**{view} › {levels}** 只展开到第 1、2 或 3 层，**{view} › {show}** 只在屏幕上隐藏备注、标签、链接、图标或图片。文件中的内容保持不变。']),
+ 'zh-TW': ('編輯心智圖', [
+  '心智圖上方的功能區分為 **{home}**、**{insert}**、**{format}**、**{view}** 索引標籤。Ctrl+F 尋找所有工作表的主題標題，勾選後也尋找備註；Ctrl+H 取代。跳到摺疊分支中的主題時，該分支會展開。',
+  '**{insert} › {picture}** 為所選主題加上 PNG、JPG 或 GIF 圖片（最大 10 MB），已有圖片時則移除。**{format} › {sort}** 依字母順序排列所選主題的分支，再按一次則反向排列。',
+  '**{view} › {levels}** 只展開到第 1、2 或 3 層，**{view} › {show}** 只在畫面上隱藏備註、標籤、連結、圖示或圖片。檔案中的內容保持不變。']),
+ 'ja': ('マインドマップを編集する', [
+  'マップ上部のリボンは **{home}**・**{insert}**・**{format}**・**{view}** タブに分かれています。Ctrl+F ですべてのシートのトピック名を、チェックすればメモも検索し、Ctrl+H で置換します。折りたたまれた枝の中のトピックに移動すると、その枝が開きます。',
+  '**{insert} › {picture}** は選んだトピックに PNG・JPG・GIF の画像（10 MB まで）を入れ、画像があれば外します。**{format} › {sort}** は選んだトピックの枝を五十音・アルファベット順に並べ、もう一度押すと逆順に並べます。',
+  '**{view} › {levels}** で 1・2・3 階層目まで開き、**{view} › {show}** でメモ・ラベル・リンク・アイコン・画像を画面上だけ隠します。ファイルにはそのまま残ります。']),
+ 'fr': ('Modifier la carte mentale', [
+  'Le ruban au-dessus de la carte comporte les onglets **{home}**, **{insert}**, **{format}** et **{view}**. Ctrl+F cherche les titres des sujets sur toutes les feuilles, et les notes si vous le cochez ; Ctrl+H remplace. Aller à un sujet dans une branche repliée déplie la branche.',
+  "**{insert} › {picture}** ajoute une image PNG, JPG ou GIF (10 Mo au plus) au sujet sélectionné, ou retire celle qu'il a. **{format} › {sort}** range les branches du sujet sélectionné par ordre alphabétique ; appuyez de nouveau pour l'ordre inverse.",
+  "**{view} › {levels}** déplie la carte jusqu'au niveau 1, 2 ou 3, et **{view} › {show}** masque les notes, étiquettes, liens, icônes ou images à l'écran seulement. Le fichier les garde tous."]),
+ 'de': ('Die Mindmap bearbeiten', [
+  'Das Menüband über der Karte hat die Registerkarten **{home}**, **{insert}**, **{format}** und **{view}**. Strg+F sucht Thementitel auf allen Blättern, auf Wunsch auch in Notizen; Strg+H ersetzt. Wer zu einem Thema in einem eingeklappten Zweig springt, klappt den Zweig auf.',
+  '**{insert} › {picture}** setzt ein PNG-, JPG- oder GIF-Bild (höchstens 10 MB) auf das gewählte Thema oder nimmt das vorhandene ab. **{format} › {sort}** ordnet die Zweige des gewählten Themas alphabetisch; erneut drücken ordnet umgekehrt.',
+  '**{view} › {levels}** klappt die Karte bis Ebene 1, 2 oder 3 auf, und **{view} › {show}** blendet Notizen, Etiketten, Links, Symbole oder Bilder nur am Bildschirm aus. Die Datei behält alles.']),
+ 'es': ('Editar el mapa mental', [
+  'La cinta sobre el mapa tiene las pestañas **{home}**, **{insert}**, **{format}** y **{view}**. Ctrl+F busca títulos de temas en todas las hojas, y también notas si lo marcas; Ctrl+H reemplaza. Ir a un tema dentro de una rama plegada despliega la rama.',
+  '**{insert} › {picture}** pone una imagen PNG, JPG o GIF (10 MB como máximo) en el tema seleccionado, o quita la que tiene. **{format} › {sort}** ordena alfabéticamente las ramas del tema seleccionado; púlsalo otra vez para el orden inverso.',
+  '**{view} › {levels}** despliega el mapa hasta el nivel 1, 2 o 3, y **{view} › {show}** oculta notas, etiquetas, enlaces, iconos o imágenes solo en pantalla. El archivo los conserva todos.']),
+ 'it': ('Modificare la mappa mentale', [
+  'La barra multifunzione sopra la mappa ha le schede **{home}**, **{insert}**, **{format}** e **{view}**. Ctrl+F cerca i titoli degli argomenti in tutti i fogli, e anche le note se lo spunti; Ctrl+H sostituisce. Andare a un argomento in un ramo chiuso apre il ramo.',
+  "**{insert} › {picture}** mette un'immagine PNG, JPG o GIF (al massimo 10 MB) sull'argomento selezionato, o toglie quella che ha. **{format} › {sort}** ordina alfabeticamente i rami dell'argomento selezionato; premilo di nuovo per l'ordine inverso.",
+  '**{view} › {levels}** apre la mappa fino al livello 1, 2 o 3, e **{view} › {show}** nasconde note, etichette, collegamenti, icone o immagini solo sullo schermo. Il file li conserva tutti.']),
+ 'pt': ('Editar o mapa mental', [
+  'A faixa acima do mapa tem as abas **{home}**, **{insert}**, **{format}** e **{view}**. Ctrl+F procura títulos de tópicos em todas as folhas, e também notas se você marcar; Ctrl+H substitui. Ir a um tópico dentro de um ramo recolhido expande o ramo.',
+  '**{insert} › {picture}** coloca uma imagem PNG, JPG ou GIF (no máximo 10 MB) no tópico selecionado, ou tira a que ele tem. **{format} › {sort}** põe os ramos do tópico selecionado em ordem alfabética; toque de novo para a ordem inversa.',
+  '**{view} › {levels}** expande o mapa até o nível 1, 2 ou 3, e **{view} › {show}** oculta notas, rótulos, links, ícones ou imagens só na tela. O arquivo mantém tudo.']),
+ 'nl': ('De mindmap bewerken', [
+  'Het lint boven de kaart heeft de tabbladen **{home}**, **{insert}**, **{format}** en **{view}**. Ctrl+F zoekt onderwerptitels op alle bladen, en ook notities als u dat aanvinkt; Ctrl+H vervangt. Naar een onderwerp in een samengevouwen tak gaan, vouwt de tak open.',
+  '**{insert} › {picture}** zet een PNG-, JPG- of GIF-afbeelding (hooguit 10 MB) op het gekozen onderwerp, of haalt de bestaande weg. **{format} › {sort}** zet de takken van het gekozen onderwerp op alfabetische volgorde; druk nogmaals voor de omgekeerde volgorde.',
+  '**{view} › {levels}** vouwt de kaart open tot niveau 1, 2 of 3, en **{view} › {show}** verbergt notities, labels, koppelingen, pictogrammen of afbeeldingen alleen op het scherm. Het bestand houdt ze allemaal.']),
+ 'pl': ('Edycja mapy myśli', [
+  'Wstążka nad mapą ma karty **{home}**, **{insert}**, **{format}** i **{view}**. Ctrl+F szuka tytułów tematów na wszystkich arkuszach, a po zaznaczeniu także w notatkach; Ctrl+H zamienia. Przejście do tematu w zwiniętej gałęzi rozwija tę gałąź.',
+  '**{insert} › {picture}** dodaje do zaznaczonego tematu obraz PNG, JPG lub GIF (najwyżej 10 MB) albo usuwa ten, który ma. **{format} › {sort}** układa gałęzie zaznaczonego tematu alfabetycznie; naciśnij ponownie, aby odwrócić kolejność.',
+  '**{view} › {levels}** rozwija mapę do poziomu 1, 2 lub 3, a **{view} › {show}** ukrywa notatki, etykiety, linki, ikony lub obrazy tylko na ekranie. Plik zachowuje je wszystkie.']),
+ 'cs': ('Úpravy myšlenkové mapy', [
+  'Pás nad mapou má karty **{home}**, **{insert}**, **{format}** a **{view}**. Ctrl+F hledá názvy témat na všech listech, po zaškrtnutí i v poznámkách; Ctrl+H nahrazuje. Přechod na téma ve sbalené větvi tuto větev rozbalí.',
+  '**{insert} › {picture}** vloží k vybranému tématu obrázek PNG, JPG nebo GIF (nejvýše 10 MB), nebo odebere ten, který má. **{format} › {sort}** seřadí větve vybraného tématu abecedně; dalším stisknutím v opačném pořadí.',
+  '**{view} › {levels}** rozbalí mapu do úrovně 1, 2 nebo 3 a **{view} › {show}** skryje poznámky, štítky, odkazy, ikony nebo obrázky jen na obrazovce. Soubor je zachová všechny.']),
+ 'id': ('Mengedit peta pikiran', [
+  'Pita di atas peta berisi tab **{home}**, **{insert}**, **{format}**, dan **{view}**. Ctrl+F mencari judul topik di semua lembar, dan juga catatan jika dicentang; Ctrl+H mengganti. Membuka topik di dalam cabang yang terlipat akan membentangkan cabang itu.',
+  '**{insert} › {picture}** memasang gambar PNG, JPG, atau GIF (paling besar 10 MB) pada topik terpilih, atau melepas gambar yang sudah ada. **{format} › {sort}** mengurutkan cabang topik terpilih menurut abjad; tekan lagi untuk urutan terbalik.',
+  '**{view} › {levels}** membentangkan peta sampai tingkat 1, 2, atau 3, dan **{view} › {show}** menyembunyikan catatan, label, tautan, ikon, atau gambar hanya di layar. Berkasnya tetap menyimpan semuanya.']),
+ 'ms': ('Menyunting peta minda', [
+  'Reben di atas peta mempunyai tab **{home}**, **{insert}**, **{format}** dan **{view}**. Ctrl+F mencari tajuk topik pada semua helaian, dan juga nota jika ditanda; Ctrl+H menggantikan. Pergi ke topik dalam cabang yang dilipat akan membuka cabang itu.',
+  '**{insert} › {picture}** meletakkan gambar PNG, JPG atau GIF (paling besar 10 MB) pada topik yang dipilih, atau menanggalkan gambar yang sedia ada. **{format} › {sort}** menyusun cabang topik yang dipilih mengikut abjad; tekan sekali lagi untuk susunan terbalik.',
+  '**{view} › {levels}** membuka peta hingga tahap 1, 2 atau 3, dan **{view} › {show}** menyembunyikan nota, label, pautan, ikon atau gambar pada skrin sahaja. Fail tetap menyimpan semuanya.']),
+ 'vi': ('Chỉnh sửa sơ đồ tư duy', [
+  'Dải phía trên sơ đồ có các thẻ **{home}**, **{insert}**, **{format}** và **{view}**. Ctrl+F tìm tiêu đề chủ đề trên mọi trang tính, và cả ghi chú nếu bạn đánh dấu; Ctrl+H thay thế. Đi tới một chủ đề trong nhánh đang thu gọn sẽ mở nhánh đó ra.',
+  '**{insert} › {picture}** gắn hình PNG, JPG hoặc GIF (tối đa 10 MB) vào chủ đề đang chọn, hoặc gỡ hình đang có. **{format} › {sort}** xếp các nhánh của chủ đề đang chọn theo thứ tự chữ cái; nhấn lần nữa để xếp ngược lại.',
+  '**{view} › {levels}** mở sơ đồ đến cấp 1, 2 hoặc 3, và **{view} › {show}** ẩn ghi chú, nhãn, liên kết, biểu tượng hoặc hình chỉ trên màn hình. Tệp vẫn giữ nguyên tất cả.']),
+ 'ru': ('Правка интеллект-карты', [
+  'Лента над картой состоит из вкладок **{home}**, **{insert}**, **{format}** и **{view}**. Ctrl+F ищет названия тем на всех листах, а если отметить, то и в заметках; Ctrl+H заменяет. Переход к теме в свёрнутой ветке раскрывает эту ветку.',
+  '**{insert} › {picture}** ставит на выбранную тему рисунок PNG, JPG или GIF (не больше 10 МБ) или снимает уже стоящий. **{format} › {sort}** располагает ветки выбранной темы по алфавиту; повторное нажатие — в обратном порядке.',
+  '**{view} › {levels}** раскрывает карту до уровня 1, 2 или 3, а **{view} › {show}** скрывает заметки, метки, ссылки, значки или рисунки только на экране. В файле всё остаётся.']),
+ 'ar': ('تحرير الخريطة الذهنية', [
+  'يضم الشريط أعلى الخريطة علامات التبويب **{home}** و**{insert}** و**{format}** و**{view}**. يبحث Ctrl+F في عناوين المواضيع في كل الأوراق، وفي الملاحظات أيضًا إن حدّدت ذلك؛ ويستبدل Ctrl+H. الانتقال إلى موضوع داخل فرع مطوي يفتح هذا الفرع.',
+  'يضع **{insert} › {picture}** صورة PNG أو JPG أو GIF (حتى 10 ميغابايت) على الموضوع المحدد، أو يزيل الصورة الموجودة. ويرتّب **{format} › {sort}** فروع الموضوع المحدد أبجديًا؛ اضغطه مرة أخرى للترتيب العكسي.',
+  'يفتح **{view} › {levels}** الخريطة حتى المستوى 1 أو 2 أو 3، ويُخفي **{view} › {show}** الملاحظات أو التسميات أو الروابط أو الرموز أو الصور على الشاشة فقط. ويبقى كل ذلك في الملف.']),
+ 'he': ('עריכת מפת החשיבה', [
+  'ברצועה שמעל המפה יש את הכרטיסיות **{home}**, **{insert}**, **{format}** ו-**{view}**. Ctrl+F מחפש כותרות נושאים בכל הגיליונות, ואם מסמנים גם בהערות; Ctrl+H מחליף. מעבר לנושא בתוך ענף מקופל פותח את הענף.',
+  '**{insert} › {picture}** מוסיף לנושא שנבחר תמונת PNG,‏ JPG או GIF (עד 10 MB), או מסיר את התמונה שכבר יש לו. **{format} › {sort}** מסדר את ענפי הנושא שנבחר לפי סדר האלף-בית; לחיצה נוספת הופכת את הסדר.',
+  '**{view} › {levels}** פותח את המפה עד רמה 1, 2 או 3, ו-**{view} › {show}** מסתיר הערות, תוויות, קישורים, סמלים או תמונות במסך בלבד. הקובץ שומר את כולם.']),
+ 'hi': ('माइंड मैप संपादित करना', [
+  'मैप के ऊपर की पट्टी में **{home}**, **{insert}**, **{format}** और **{view}** टैब हैं। Ctrl+F सभी शीटों में विषयों के शीर्षक खोजता है, और चुनने पर नोट्स में भी; Ctrl+H बदलता है। मुड़ी हुई शाखा के अंदर किसी विषय पर जाने से वह शाखा खुल जाती है।',
+  '**{insert} › {picture}** चुने गए विषय पर PNG, JPG या GIF चित्र (अधिकतम 10 MB) लगाता है, या पहले से लगा चित्र हटाता है। **{format} › {sort}** चुने गए विषय की शाखाओं को वर्णक्रम में रखता है; दोबारा दबाने पर उल्टे क्रम में।',
+  '**{view} › {levels}** मैप को स्तर 1, 2 या 3 तक खोलता है, और **{view} › {show}** नोट्स, लेबल, लिंक, आइकन या चित्र केवल स्क्रीन पर छिपाता है। फ़ाइल में सब कुछ बना रहता है।']),
+ 'th': ('แก้ไขแผนที่ความคิด', [
+  'แถบด้านบนแผนที่แบ่งเป็นแท็บ **{home}** **{insert}** **{format}** และ **{view}** กด Ctrl+F เพื่อค้นหาชื่อหัวข้อในทุกแผ่นงาน และค้นในบันทึกด้วยหากเลือกไว้ กด Ctrl+H เพื่อแทนที่ เมื่อไปยังหัวข้อที่อยู่ในกิ่งที่พับไว้ กิ่งนั้นจะกางออก',
+  '**{insert} › {picture}** ใส่รูป PNG, JPG หรือ GIF (ไม่เกิน 10 MB) ให้หัวข้อที่เลือก หรือเอารูปที่มีอยู่ออก **{format} › {sort}** เรียงกิ่งของหัวข้อที่เลือกตามตัวอักษร กดอีกครั้งเพื่อเรียงย้อนกลับ',
+  '**{view} › {levels}** กางแผนที่ถึงระดับ 1, 2 หรือ 3 และ **{view} › {show}** ซ่อนบันทึก ป้ายกำกับ ลิงก์ ไอคอน หรือรูปเฉพาะบนหน้าจอ ไฟล์ยังเก็บทุกอย่างไว้ครบ']),
+}
+assert set(MAP_EDIT) == set(T), set(T) ^ set(MAP_EDIT)
+for lang, (_title, _intro, sections) in T.items():
+    heading, items = MAP_EDIT[lang]
+    labels = editor_labels(lang)
+    # right after sending a map, before keeping map and document in step
+    sections.insert(1, (heading, 'ul', [item.format(**labels) for item in items]))
+
 for lang, (title, intro, sections) in T.items():
     lines = [f'# {title}', '', intro, '']
     for heading, kind, items in sections:

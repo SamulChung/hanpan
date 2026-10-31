@@ -1,41 +1,80 @@
 /**
- * The top of the editor: the quick-access row (save, undo, redo, auto save)
- * and one thin row of icon buttons for the map.
+ * The top of the editor: a ribbon. The upper row holds the quick-access
+ * buttons (save, undo, redo, auto save), the tabs and the save status; the
+ * band below shows the tab that is picked, with big buttons (a picture over
+ * its name), like the other editors' ribbons.
  *
- * Buttons are grouped as the editor's layout says, left to right:
- * topics | relationship, summary, note, label, link | layout, theme, fold |
- * zoom, export | "make another document from this one" | AI at the far end.
- * A group or button whose function is not built yet is not drawn; its place is
- * marked below so it lands where it belongs. The theme button opens and closes
- * the theme panel beside the map.
+ * Tabs, left to right: Home (topics, relationship and summary, find,
+ * delete), Insert (picture, link, note, label), Format (layout, sort, theme)
+ * and View (present, folding, what the map shows, zoom). Export, "make
+ * another document from this one", sending and the AI stay at the end of the
+ * band whatever tab is picked.
+ *
+ * Every tab is drawn and the ones not picked are hidden, so a button is
+ * always in the document; the tab picked last is remembered.
  */
+import { useEffect, useState, type ReactNode } from 'react'
 import type { SendTarget } from '@genoffice/hanpan-core/renderer'
 import { SendMenu } from '../hanpan/SendMenu'
 import { AiMark, aiSubscriptionText, Dropdown, type DropdownOption } from '@genoffice/ui'
 import type { ViewLayout } from '@genoffice/xmind-engine'
 import { useI18n } from '../i18n/locale'
 import type { ExportFormat } from '../../shared/ipc'
+import type { HiddenPart } from '../map/hidden-parts'
 import { ExportMenu } from './ExportMenu'
+import { RibbonMenu } from './RibbonMenu'
 import {
   IconChild,
+  IconDelete,
+  IconFind,
   IconFit,
   IconFoldAll,
+  IconFoldLevel,
   IconLabel,
   IconLayout,
   IconLink,
   IconMakeFrom,
   IconNote,
+  IconPicture,
+  IconPictureRemove,
+  IconPresent,
   IconRedo,
   IconRelationship,
   IconSave,
+  IconShow,
   IconSibling,
+  IconSort,
   IconSummary,
   IconTheme,
   IconUndo,
   IconUnfoldAll,
+  IconZoom100,
   IconZoomIn,
   IconZoomOut,
 } from './icons'
+
+export const RIBBON_TABS = ['home', 'insert', 'format', 'view'] as const
+export type RibbonTab = (typeof RIBBON_TABS)[number]
+
+const TAB_LABEL = {
+  home: 'tabHome',
+  insert: 'tabInsert',
+  format: 'tabFormat',
+  view: 'tabView',
+} as const
+
+const TAB_KEY = 'mindmapapp.ribbonTab'
+
+const PARTS: readonly {
+  part: HiddenPart
+  label: 'partNotes' | 'partLabels' | 'partLinks' | 'partMarkers' | 'partPictures'
+}[] = [
+  { part: 'notes', label: 'partNotes' },
+  { part: 'labels', label: 'partLabels' },
+  { part: 'links', label: 'partLinks' },
+  { part: 'markers', label: 'partMarkers' },
+  { part: 'pictures', label: 'partPictures' },
+]
 
 export interface ToolbarProps {
   disabled: boolean
@@ -47,6 +86,8 @@ export interface ToolbarProps {
   autoSave: boolean
   /** a topic is selected: the topic tools apply */
   hasTopic: boolean
+  /** the selected topic shows a picture: the picture button takes it off */
+  hasPicture: boolean
   layout: ViewLayout
   /** false while the layout shown stands in for one the editor cannot draw */
   layoutExact: boolean
@@ -57,6 +98,10 @@ export interface ToolbarProps {
   noteOpen: boolean
   /** the AI panel is open */
   aiOpen: boolean
+  /** the find bar is open */
+  findOpen: boolean
+  /** what the map does not show right now */
+  hiddenParts: readonly HiddenPart[]
   onSave(): void
   onSaveAs(): void
   onUndo(): void
@@ -66,15 +111,23 @@ export interface ToolbarProps {
   onAddSibling(): void
   onRelationship(): void
   onSummary(): void
+  onFind(): void
+  onDelete(): void
+  onPicture(): void
   onNote(): void
   onLabel(): void
   onLink(): void
   onLayout(layout: ViewLayout): void
+  onSort(): void
   onToggleTheme(): void
+  onPresent(): void
+  onFoldLevel(level: number): void
   onFoldAll(): void
   onUnfoldAll(): void
+  onToggleHiddenPart(part: HiddenPart): void
   onZoomIn(): void
   onZoomOut(): void
+  onZoomReset(): void
   onZoomFit(): void
   onToggleAi(): void
   onExport(format: ExportFormat): void
@@ -88,8 +141,25 @@ export interface ToolbarProps {
   onDesign?(): void
 }
 
+function rememberedTab(): RibbonTab {
+  try {
+    const saved = localStorage.getItem(TAB_KEY)
+    return (RIBBON_TABS as readonly string[]).includes(saved ?? '') ? (saved as RibbonTab) : 'home'
+  } catch {
+    return 'home'
+  }
+}
+
 export function Toolbar(p: ToolbarProps) {
   const { lang, t } = useI18n()
+  const [tab, setTab] = useState<RibbonTab>(rememberedTab)
+  useEffect(() => {
+    try {
+      localStorage.setItem(TAB_KEY, tab)
+    } catch {
+      // the tab is a convenience; without storage it starts on Home next time
+    }
+  }, [tab])
   const layouts: DropdownOption<ViewLayout>[] = [
     { value: 'right', label: t('layoutRight') },
     { value: 'left', label: t('layoutLeft') },
@@ -99,8 +169,13 @@ export function Toolbar(p: ToolbarProps) {
     { value: 'timeline', label: t('layoutTimeline') },
   ]
   const topicOff = p.disabled || !p.hasTopic
+  const pane = (name: RibbonTab, children: ReactNode) => (
+    <div className="mm-pane" data-ribbon-pane={name} hidden={tab !== name}>
+      {children}
+    </div>
+  )
   return (
-    <header className="ribbon">
+    <header className="ribbon mm-ribbon">
       <div className="ribbon-tabs">
         <button
           type="button"
@@ -153,55 +228,109 @@ export function Toolbar(p: ToolbarProps) {
             onChange={(e) => p.onToggleAutoSave(e.target.checked)}
           />
         </label>
+        <span className="qa-sep" />
+        <div className="mm-tab-row" role="tablist" aria-label={t('appName')}>
+          {RIBBON_TABS.map((name) => (
+            <button
+              key={name}
+              type="button"
+              role="tab"
+              aria-selected={tab === name}
+              className={`ribbon-tab${tab === name ? ' active' : ''}`}
+              data-ribbon-tab={name}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => setTab(name)}
+            >
+              {t(TAB_LABEL[name])}
+            </button>
+          ))}
+        </div>
         <span className="mm-save-status" data-dirty={p.dirty ? 'true' : 'false'} aria-live="polite">
           {p.statusText}
         </span>
       </div>
 
       <div className="ribbon-body mm-tools" role="toolbar" aria-label={t('appName')}>
-        <div className="ribbon-group">
-          <div className="ribbon-group-items">
-            <ToolButton
-              action="add-child"
-              label={t('tbAddChild')}
-              kbd="Tab"
+        {pane(
+          'home',
+          <>
+            <Group>
+              <Big
+                action="add-child"
+                label={t('tbAddChild')}
+                kbd="Tab"
+                disabled={topicOff}
+                onClick={p.onAddChild}
+              >
+                <IconChild />
+              </Big>
+              <Big
+                action="add-sibling"
+                label={t('tbAddSibling')}
+                kbd="Enter"
+                disabled={topicOff}
+                onClick={p.onAddSibling}
+              >
+                <IconSibling />
+              </Big>
+            </Group>
+            <Group>
+              <Big
+                action="relationship"
+                label={t('tbRelationship')}
+                active={p.pickingRelationship}
+                disabled={topicOff}
+                onClick={p.onRelationship}
+              >
+                <IconRelationship />
+              </Big>
+              <Big
+                action="summary"
+                label={t('tbSummary')}
+                disabled={topicOff}
+                onClick={p.onSummary}
+              >
+                <IconSummary />
+              </Big>
+            </Group>
+            <Group>
+              <Big
+                action="find"
+                label={t('tbFind')}
+                kbd="Ctrl+F"
+                active={p.findOpen}
+                disabled={p.disabled}
+                onClick={p.onFind}
+              >
+                <IconFind />
+              </Big>
+              <Big
+                action="delete-topic"
+                label={t('tbDelete')}
+                kbd="Delete"
+                disabled={topicOff}
+                onClick={p.onDelete}
+              >
+                <IconDelete />
+              </Big>
+            </Group>
+          </>,
+        )}
+        {pane(
+          'insert',
+          <Group>
+            <Big
+              action={p.hasPicture ? 'picture-remove' : 'picture'}
+              label={p.hasPicture ? t('tbPictureRemove') : t('tbPicture')}
               disabled={topicOff}
-              onClick={p.onAddChild}
+              onClick={p.onPicture}
             >
-              <IconChild />
-            </ToolButton>
-            <ToolButton
-              action="add-sibling"
-              label={t('tbAddSibling')}
-              kbd="Enter"
-              disabled={topicOff}
-              onClick={p.onAddSibling}
-            >
-              <IconSibling />
-            </ToolButton>
-          </div>
-        </div>
-        <span className="rb-sep" />
-        <div className="ribbon-group">
-          <div className="ribbon-group-items">
-            <ToolButton
-              action="relationship"
-              label={t('tbRelationship')}
-              active={p.pickingRelationship}
-              disabled={topicOff}
-              onClick={p.onRelationship}
-            >
-              <IconRelationship />
-            </ToolButton>
-            <ToolButton
-              action="summary"
-              label={t('tbSummary')}
-              disabled={topicOff}
-              onClick={p.onSummary}
-            >
-              <IconSummary />
-            </ToolButton>
-            <ToolButton
+              {p.hasPicture ? <IconPictureRemove /> : <IconPicture />}
+            </Big>
+            <Big action="link" label={t('tbLink')} disabled={topicOff} onClick={p.onLink}>
+              <IconLink />
+            </Big>
+            <Big
               action="note"
               label={t('tbNote')}
               active={p.noteOpen}
@@ -209,106 +338,167 @@ export function Toolbar(p: ToolbarProps) {
               onClick={p.onNote}
             >
               <IconNote />
-            </ToolButton>
-            <ToolButton action="label" label={t('tbLabel')} disabled={topicOff} onClick={p.onLabel}>
+            </Big>
+            <Big action="label" label={t('tbLabel')} disabled={topicOff} onClick={p.onLabel}>
               <IconLabel />
-            </ToolButton>
-            <ToolButton action="link" label={t('tbLink')} disabled={topicOff} onClick={p.onLink}>
-              <IconLink />
-            </ToolButton>
-          </div>
-        </div>
-        <span className="rb-sep" />
-        <div className="ribbon-group">
-          <div className="ribbon-group-items">
-            <span
-              className="mm-layout"
-              data-exact={p.layoutExact ? 'true' : 'false'}
-              data-tip={p.layoutExact ? t('tbLayout') : t('layoutStandIn')}
-            >
-              <IconLayout />
-              <Dropdown
-                className="mm-layout-pick"
-                value={p.layout}
-                options={layouts}
-                onPick={p.onLayout}
-                ariaLabel={t('tbLayout')}
+            </Big>
+          </Group>,
+        )}
+        {pane(
+          'format',
+          <>
+            <Group>
+              <span
+                className="mm-layout"
+                data-exact={p.layoutExact ? 'true' : 'false'}
+                data-tip={p.layoutExact ? t('tbLayout') : t('layoutStandIn')}
+              >
+                <IconLayout />
+                <Dropdown
+                  className="mm-layout-pick"
+                  value={p.layout}
+                  options={layouts}
+                  onPick={p.onLayout}
+                  ariaLabel={t('tbLayout')}
+                  disabled={p.disabled}
+                />
+              </span>
+              <Big
+                action="sort"
+                label={t('tbSort')}
+                tip={t('tbSortTip')}
+                disabled={topicOff}
+                onClick={p.onSort}
+              >
+                <IconSort />
+              </Big>
+            </Group>
+            <Group>
+              <Big
+                action="theme"
+                label={t('tbTheme')}
+                active={p.themeOpen}
                 disabled={p.disabled}
+                onClick={p.onToggleTheme}
+              >
+                <IconTheme />
+              </Big>
+            </Group>
+          </>,
+        )}
+        {pane(
+          'view',
+          <>
+            <Group>
+              <Big
+                action="present"
+                label={t('tbPresent')}
+                kbd="F5"
+                disabled={p.disabled}
+                onClick={p.onPresent}
+              >
+                <IconPresent />
+              </Big>
+            </Group>
+            <Group>
+              <RibbonMenu
+                action="fold-level"
+                label={t('tbFoldLevels')}
+                icon={<IconFoldLevel />}
+                disabled={p.disabled}
+                items={[1, 2, 3].map((n) => ({
+                  key: `fold-level-${n}`,
+                  label: t('tbFoldLevel', { n }),
+                  onPick: () => p.onFoldLevel(n),
+                }))}
               />
-            </span>
-            <ToolButton
-              action="theme"
-              label={t('tbTheme')}
-              active={p.themeOpen}
-              disabled={p.disabled}
-              onClick={p.onToggleTheme}
-            >
-              <IconTheme />
-            </ToolButton>
-            <ToolButton
-              action="fold-all"
-              label={t('tbFoldAll')}
-              disabled={p.disabled}
-              onClick={p.onFoldAll}
-            >
-              <IconFoldAll />
-            </ToolButton>
-            <ToolButton
-              action="unfold-all"
-              label={t('tbUnfoldAll')}
-              disabled={p.disabled}
-              onClick={p.onUnfoldAll}
-            >
-              <IconUnfoldAll />
-            </ToolButton>
-          </div>
-        </div>
-        <span className="rb-sep" />
-        <div className="ribbon-group">
-          <div className="ribbon-group-items">
-            <ToolButton
-              action="zoom-out"
-              label={t('zoomOut')}
-              disabled={p.disabled}
-              onClick={p.onZoomOut}
-            >
-              <IconZoomOut />
-            </ToolButton>
-            <ToolButton
-              action="zoom-in"
-              label={t('zoomIn')}
-              disabled={p.disabled}
-              onClick={p.onZoomIn}
-            >
-              <IconZoomIn />
-            </ToolButton>
-            <ToolButton
-              action="zoom-fit"
-              label={t('zoomFit')}
-              disabled={p.disabled}
-              onClick={p.onZoomFit}
-            >
-              <IconFit />
-            </ToolButton>
-            <ExportMenu disabled={p.disabled} onExport={p.onExport} />
-          </div>
-        </div>
-        {/* "make another document from this one", after its own separator */}
-        <span className="rb-sep" />
-        <div className="ribbon-group">
-          <div className="ribbon-group-items">
-            <ToolButton
-              action="make-from-document"
-              label={t('tbMakeFromDocument')}
-              disabled={p.disabled}
-              onClick={p.onMakeFromDocument}
-            >
-              <IconMakeFrom />
-            </ToolButton>
-            {p.onSendTo && <SendMenu disabled={p.disabled} onPick={p.onSendTo} onSync={p.onSync} onDesign={p.onDesign} />}
-          </div>
-        </div>
+              <Big
+                action="fold-all"
+                label={t('tbFoldAll')}
+                disabled={p.disabled}
+                onClick={p.onFoldAll}
+              >
+                <IconFoldAll />
+              </Big>
+              <Big
+                action="unfold-all"
+                label={t('tbUnfoldAll')}
+                disabled={p.disabled}
+                onClick={p.onUnfoldAll}
+              >
+                <IconUnfoldAll />
+              </Big>
+            </Group>
+            <Group>
+              <RibbonMenu
+                action="show-parts"
+                label={t('tbShowParts')}
+                icon={<IconShow />}
+                disabled={p.disabled}
+                items={PARTS.map(({ part, label }) => ({
+                  key: `show-${part}`,
+                  label: t(label),
+                  checked: !p.hiddenParts.includes(part),
+                  onPick: () => p.onToggleHiddenPart(part),
+                }))}
+              />
+            </Group>
+            <Group>
+              <Big
+                action="zoom-out"
+                label={t('zoomOut')}
+                disabled={p.disabled}
+                onClick={p.onZoomOut}
+              >
+                <IconZoomOut />
+              </Big>
+              <Big action="zoom-in" label={t('zoomIn')} disabled={p.disabled} onClick={p.onZoomIn}>
+                <IconZoomIn />
+              </Big>
+              <Big
+                action="zoom-100"
+                label="100%"
+                tip={t('zoomReset')}
+                disabled={p.disabled}
+                onClick={p.onZoomReset}
+              >
+                <IconZoom100 />
+              </Big>
+              <Big
+                action="zoom-fit"
+                label={t('zoomFit')}
+                disabled={p.disabled}
+                onClick={p.onZoomFit}
+              >
+                <IconFit />
+              </Big>
+            </Group>
+          </>,
+        )}
         <span className="mm-tools-end">
+          <ExportMenu disabled={p.disabled} onExport={p.onExport} />
+          {/* "make another document from this one", after its own separator */}
+          <span className="rb-sep" />
+          <div className="ribbon-group">
+            <div className="ribbon-group-items">
+              <ToolButton
+                action="make-from-document"
+                label={t('tbMakeFromDocument')}
+                disabled={p.disabled}
+                onClick={p.onMakeFromDocument}
+              >
+                <IconMakeFrom />
+              </ToolButton>
+              {p.onSendTo && (
+                <SendMenu
+                  disabled={p.disabled}
+                  onPick={p.onSendTo}
+                  onSync={p.onSync}
+                  onDesign={p.onDesign}
+                />
+              )}
+            </div>
+          </div>
           <button
             type="button"
             className={`mm-ai-entry ai-entry${p.aiOpen ? ' active' : ''}`}
@@ -327,6 +517,48 @@ export function Toolbar(p: ToolbarProps) {
   )
 }
 
+function Group({ children }: { children: ReactNode }) {
+  return (
+    <>
+      <div className="ribbon-group">
+        <div className="ribbon-group-items">{children}</div>
+      </div>
+      <span className="rb-sep" />
+    </>
+  )
+}
+
+/** A big ribbon button: the picture over its name. */
+function Big(p: {
+  action: string
+  label: string
+  tip?: string
+  kbd?: string
+  active?: boolean
+  disabled: boolean
+  onClick(): void
+  children: ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      className={`rb-big mm-big${p.active ? ' active' : ''}`}
+      data-action={p.action}
+      data-tip={p.tip ?? p.label}
+      data-tip-kbd={p.kbd}
+      aria-label={p.label}
+      aria-pressed={p.active ? true : undefined}
+      disabled={p.disabled}
+      // the map keeps the keyboard: a button must not take the focus away from it
+      onMouseDown={(e) => e.preventDefault()}
+      onClick={p.onClick}
+    >
+      <span className="rb-big-icon">{p.children}</span>
+      <span>{p.label}</span>
+    </button>
+  )
+}
+
 function ToolButton(p: {
   action: string
   label: string
@@ -334,7 +566,7 @@ function ToolButton(p: {
   active?: boolean
   disabled: boolean
   onClick(): void
-  children: React.ReactNode
+  children: ReactNode
 }) {
   return (
     <button
@@ -346,7 +578,6 @@ function ToolButton(p: {
       aria-label={p.label}
       aria-pressed={p.active ? true : undefined}
       disabled={p.disabled}
-      // the map keeps the keyboard: a button must not take the focus away from it
       onMouseDown={(e) => e.preventDefault()}
       onClick={p.onClick}
     >

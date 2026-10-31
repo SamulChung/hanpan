@@ -36,7 +36,7 @@ export function Modal(p: { title: string; onCancel(): void; children: ReactNode;
 }
 
 export interface ConfirmRequest {
-  kind: 'delete-sheet' | 'delete-hidden'
+  kind: 'delete-sheet' | 'delete-hidden' | 'sort-narrow'
   title: string
   body: string
   confirmLabel: string

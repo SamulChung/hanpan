@@ -25,6 +25,7 @@
  */
 import type { MindElixirInstance, Topic } from 'mind-elixir'
 import type { ViewImage } from '@genoffice/xmind-engine'
+import { isHiddenPart } from '../map/hidden-parts'
 import { archivePictureEntry, pictureType } from '../map/images'
 
 /** A copy of a sheet, ready to be written out. */
@@ -242,6 +243,9 @@ export async function copyDrawing(source: SnapshotSource, box: DrawnBox): Promis
     const value = mind.container.dataset[name]
     if (value && /^[\w-]+$/.test(value)) container.dataset[name] = value
   }
+  // what the user hid on screen stays hidden in the copy; only the known names pass
+  const hidden = (mind.container.dataset.mmHide ?? '').split(' ').filter(isHiddenPart)
+  if (hidden.length > 0) container.dataset.mmHide = hidden.join(' ')
   const canvas = doc.createElement('div')
   canvas.className = 'map-canvas'
   canvas.style.left = `${-box.left}px`

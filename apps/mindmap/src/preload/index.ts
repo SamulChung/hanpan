@@ -163,6 +163,7 @@ const ai: MindmapAiApi = {
     ipcRenderer.invoke(AI_CHANNELS.imageSearch, query, maxResults),
   generateImage: (op) => ipcRenderer.invoke(MINDMAP_CHANNELS.aiGenerateImage, op),
   fetchImage: (url) => ipcRenderer.invoke(MINDMAP_CHANNELS.fetchImage, url),
+  pickPicture: () => ipcRenderer.invoke(MINDMAP_CHANNELS.pickPicture),
   aiToolCapabilities: () => ipcRenderer.invoke(AI_CHANNELS.toolCapabilities),
 }
 

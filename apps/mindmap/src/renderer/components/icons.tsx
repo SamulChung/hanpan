@@ -197,3 +197,79 @@ export const IconClose = () => (
     <path d="m3.25 3.25 5.5 5.5M8.75 3.25l-5.5 5.5" />
   </Icon>
 )
+
+/** Find: a lens over the middle, its handle to the lower right. */
+export const IconFind = () => (
+  <Icon>
+    <circle cx="8.75" cy="8.75" r="4.5" />
+    <path d="m12.25 12.25 4 4" />
+  </Icon>
+)
+
+/** Delete: a bin with its lid. */
+export const IconDelete = () => (
+  <Icon>
+    <path d="M4.25 6.25h11.5M8.25 6.25V4.75h3.5v1.5" />
+    <path d="M5.75 6.25 6.5 16.25h7l.75-10M8.75 9v4.5M11.25 9v4.5" />
+  </Icon>
+)
+
+/** Picture: a frame with a hill and a sun. */
+export const IconPicture = () => (
+  <Icon>
+    <rect x="3.75" y="4.75" width="12.5" height="10.5" rx="1" />
+    <path d="m3.75 13.25 3.5-3.5 3 3 2-2 4 4" />
+    <Dot cx={12.75} cy={8} />
+  </Icon>
+)
+
+/** Remove picture: the frame, crossed out. */
+export const IconPictureRemove = () => (
+  <Icon>
+    <rect x="3.75" y="4.75" width="12.5" height="10.5" rx="1" />
+    <path d="m7.5 7.5 5 5M12.5 7.5l-5 5" />
+  </Icon>
+)
+
+/** Sort: three bars of growing length beside a downward arrow. */
+export const IconSort = () => (
+  <Icon>
+    <path d="M3.75 5.75h4.5M3.75 10h6.5M3.75 14.25h8.5" />
+    <path d="M15.25 4.25v11.5M13 13.5l2.25 2.25 2.25-2.25" />
+  </Icon>
+)
+
+/** Fold to a level: a topic with its branches, the lower ones cut short. */
+export const IconFoldLevel = () => (
+  <Icon>
+    <rect x="3.25" y="8.25" width="5" height="3.5" rx="1.75" />
+    <path d="M8.25 10c2 0 2-4.25 4-4.25h3.5M8.25 10c2 0 2 4.25 4 4.25h1" />
+    <Dot cx={15.75} cy={14.25} />
+  </Icon>
+)
+
+/** Show and hide: an eye. */
+export const IconShow = () => (
+  <Icon>
+    <path d="M2.75 10s2.75-5 7.25-5 7.25 5 7.25 5-2.75 5-7.25 5-7.25-5-7.25-5z" />
+    <circle cx="10" cy="10" r="2.25" />
+  </Icon>
+)
+
+/** Present: a screen on a stand with a play mark. */
+export const IconPresent = () => (
+  <Icon>
+    <rect x="3.25" y="3.75" width="13.5" height="9.5" rx="1" />
+    <path d="M10 13.25v3M7.25 16.25h5.5M8.75 6.75v3.5l3-1.75z" />
+  </Icon>
+)
+
+/** The map at its own size: a box with 1:1 inside. */
+export const IconZoom100 = () => (
+  <Icon>
+    <rect x="3.25" y="4.75" width="13.5" height="10.5" rx="1" />
+    <path d="M7.25 8.25 8 7.5v5M12.25 8.25l.75-.75v5" />
+    <Dot cx={10} cy={9} />
+    <Dot cx={10} cy={11.5} />
+  </Icon>
+)

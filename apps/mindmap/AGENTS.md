@@ -12,7 +12,7 @@
     - `decorate.ts`: 라이브러리가 만든 토픽에 이 편집기가 더하는 것. 큰 가지 색, 표식, 그림, 토픽 자체 스타일. 라이브러리가 선을 재기 직전(`before`)과 직후(`after`)에 돈다(`controller.ts`가 `linkDiv`를 감싼다). `after`는 모든 선을 실제 상자 크기로 다시 그린다.
     - `style-values.ts`: 파일의 스타일 값이 화면 스타일이 되기 전에 지나는 거름망. `markers.ts`: 표식 그림. `images.ts`: 어떤 그림을 보여 주는지, 그림 바이트의 종류, 객체 URL.
   - `export/`: 내보내기(PNG, PDF, 마크다운 개요), 인쇄, 저장 때 넣는 미리보기 그림. 아래 "내보내기와 인쇄"를 본다.
-  - `components/`: 도구 줄, 시트 탭, 대화 상자와 안내, 테마 패널(`ThemePanel.tsx`), 선택한 토픽의 메모를 지도 옆에서 고치는 메모 패널(`NotePanel.tsx`), 내보내기 단추(`ExportMenu.tsx`), 직접 그린 그림(`icons.tsx`).
+  - `components/`: 리본(`Toolbar.tsx`, 펼침 단추는 `RibbonMenu.tsx`), 찾기 막대(`FindBar.tsx`), 시트 탭, 대화 상자와 안내, 테마 패널(`ThemePanel.tsx`), 선택한 토픽의 메모를 지도 옆에서 고치는 메모 패널(`NotePanel.tsx`), 내보내기 단추(`ExportMenu.tsx`), 직접 그린 그림(`icons.tsx`).
   - `i18n/`: 21개 언어 문구(`app/<언어>.ts`)와 mind-elixir 메뉴 문구(`map-strings.ts`).
   - `ai/`: AI 창(`AiPanel.tsx`), 창을 지도 오른쪽에 붙이는 자리와 AI가 지도를 보는 창구(`AiDock.tsx`의 `useMindmapAi`·`MindmapAiDock`), 도구가 지도에 하는 일(`map-tools.ts`), 지도 skill과 지시문(`mindmap-skill.ts`), 첨부·검색 skill, 전송과 연결 상태. 문구는 `i18n/ai/<언어>.ts`.
 - 메인 프로세스(`src/main/mindmap-main.ts`): 파일 읽기·쓰기, 뷰마다 허용된 경로, 닫기 전 저장 확인, 이름 바뀜 따라가기, 링크 열기, 단독 실행. 내보내기·인쇄 창구는 `src/main/export-main.ts`.
@@ -65,6 +65,13 @@
 - 잘라내어 같은 시트에 붙이면 옮기기다. 잘라낼 때 원본 토픽의 사본을 쥐어 두었다가, 클립보드에 그 토픽들이 그대로 있을 때 붙이면 원본 토픽을 통째로 되넣는다(`session.reinsertTopics`. 식별자, 모르는 키, 보이지 않는 가지, 함께 지워졌던 연결선까지). 두 번째 붙이기, 다른 시트나 다른 문서에 붙이기, 복사해 붙이기는 보이는 값으로 새 토픽을 만든다. 다른 것을 복사하거나 잘라내면 쥐어 둔 사본을 버린다.
 - 제목을 치고 있는 입력 상자는 포커스를 잃을 때에야 지도에 들어간다. 그래서 저장하거나 지도를 읽어 주기 전에는 열려 있는 입력 상자를 먼저 넣는다(`commitEdit`. `App.tsx`의 `flushAll`). 조합 중인 글자는 브라우저가 포커스를 옮기며 확정하므로 남는다. 30초 자동 저장은 치는 도중의 입력 상자를 닫지 않고 그 차례를 건너뛴다. 입력 상자 안에서는 Ctrl+방향키를 막지 않는다.
 - **메모는 팝업이 아니라 지도 옆의 패널에서 고친다.** 도구 줄·토픽의 메모 꼬리표·오른쪽 클릭 메뉴가 모두 `NotePanel`을 연다. 패널은 마지막으로 고른 토픽의 메모를 보여 주고, 입력 중인 초안은 포커스를 잃을 때·선택이나 시트가 바뀔 때·패널을 닫을 때·저장할 때 한 번에 지도에 넣는다(`setNote` 한 번 = 되돌리기 한 단계). 그래서 저장은 아직 입력 중인 글을 빠뜨리지 않고, 한 글자마다 되돌리기 단계가 생기지 않는다. 열림 여부는 `mindmapapp.showNotes`에 기억하고, 테마·AI 패널과 같은 쪽에서 하나만 연다.
+- **위쪽 띠는 홈·삽입·서식·보기 탭의 리본이다**(`Toolbar.tsx`). 고른 탭은 `mindmapapp.ribbonTab`에 기억한다. 네 탭의 단추는 모두 그려 두고 고르지 않은 탭만 `hidden`으로 감춘다. 그래서 `[data-action]`으로 단추를 찾는 테스트와 실제 실행 대본은 탭과 상관없이 단추를 찾지만, 사람처럼 누르려면 먼저 `[data-ribbon-tab]`을 누른다. 내보내기·만들기·보내기·AI 단추는 탭과 상관없이 오른쪽 끝에 있다.
+- **찾기(Ctrl+F)와 바꾸기(Ctrl+H)는 엔진의 보기를 읽는다**(`map/find.ts`). 그래서 접힌 가지와 아직 보지 않은 시트의 토픽도 찾는다. 글자를 치는 동안은 개수만 세고, 다음·이전으로 갈 때에야 그 시트를 띄우고 위 가지를 펼치고 고른다(`revealTopic`). 펼친 것은 접기 손잡이처럼 파일에 남는다. 바꾸기는 토픽 제목만 바꾼다. 모두 바꾸기는 시트마다 `edit()` 한 번이고, 보지 않은 시트는 `controllerFor`로 띄운 뒤 원래 시트로 돌아온다. 찾기 전에 치던 제목을 먼저 넣는다(`flushAll`).
+- **그림 넣기·빼기는 `setPicture`다.** 파일은 `mindmap:pick-picture`(`src/main/picture-pick.ts`)로 고른다. 메인은 PNG·JPG·GIF만 보여 주고, 10MB를 넘으면 읽지 않고 `too-large`로 답한다. 화면은 바이트의 앞머리로 종류를 다시 확인한다(`pictureFromBase64`). 빼기는 `metadata.image`를 비우고, 엔진은 보기가 보여 주던 그림일 때만 주제의 `image`를 지운다. 항목은 파일에 남는다(되돌리면 같은 참조가 돌아온다).
+- **단계별 보기(`foldToLevel`)는 접기다.** 그 깊이의 가지를 접고 얕은 것은 펼치고, 더 깊은 것은 그대로 둔다. 되돌리기 단계가 아니다.
+- **가나다 정렬(`sortChildren`)은 고른 토픽의 바로 아래 가지만 한 단계로 놓는다.** `Intl.Collator`(앱 언어, 숫자는 수로)로 견주고 같은 이름은 원래 순서를 지킨다. 이미 오름차순이면 내림차순으로 놓는다. 화면의 요약 범위는 위치이므로 엔진과 같은 규칙(첫 가지 + 끊기지 않은 줄, `map/sort.ts`의 `followRange`)으로 옮긴다. 경계는 엔진이 따라 옮긴다. 범위가 좁아지면 먼저 묻는다(`sortNarrowsRanges`).
+- **보이기(`setHiddenParts`)는 화면에서만 감춘다.** 지도 그릇의 `data-mm-hide`에 감출 것(`map/hidden-parts.ts`의 `HIDDEN_PARTS`)을 적고 `map.css`가 감춘다. 파일과 되돌리기는 모른다. 고른 것은 `mindmapapp.hiddenParts`에 기억하고, 내보낸 그림·PDF도 따른다(`export/snapshot.ts`).
+- `edit()`는 다시 그린 뒤 그대로 남은 토픽의 선택을 되살린다. 그래서 리본 단추를 누른 뒤에도 같은 토픽이 골라져 있다.
 - 메인 코드는 shell 번들에 들어간다. `src/main`을 고친 뒤에는 shell을 다시 빌드한다.
 - 문자열은 `src/renderer/i18n/app/`의 언어별 조각이고 `zh.ts`가 키 집합을 정한다. 21개 언어 모두에 넣는다.
 
@@ -104,7 +111,7 @@
 
 - 실행: `npm run test -w @genoffice/mindmap`, `npm run typecheck -w @genoffice/mindmap`. Windows에서 전부 통과한다.
 - 환경은 jsdom이다. 실제 mind-elixir를 그대로 돌린다. jsdom에 없는 것(`innerText`, `matchMedia`, 포인터 잡기)과 형식 배열의 종류 차이는 `tests/setup.ts`가 메운다.
-- 바꾸면 반드시 테스트하는 것: 열기만 한 지도가 "바뀜 없음"으로 맞춰지는지(`tests/convert.test.ts`), 지운 뒤 되돌리면 원본 나무가 글자 그대로 돌아오고 저장이 원본 바이트인지(`tests/session.test.ts`, `tests/controller.test.ts`), HTML처럼 생긴 글이 요소를 만들지 않는지, 열리지 않을 주소가 글자로 보이고 파일 값이 그대로인지, 잘라내어 붙인 토픽이 원본 그대로 도착하는지, 여기서 열린 적 없는 파일에 어떤 저장 길로도 쓰지 않는지와 링크 거절(`tests/main.test.ts`), 삭제 확인이 뜨는 조건과 치던 제목이 저장에 들어가는지(`tests/app.test.ts`), 메모 패널의 초안이 포커스를 잃거나 선택이 바뀌거나 저장할 때 지도에 한 번에 들어가는지(`tests/app.test.ts`).
+- 바꾸면 반드시 테스트하는 것: 열기만 한 지도가 "바뀜 없음"으로 맞춰지는지(`tests/convert.test.ts`), 지운 뒤 되돌리면 원본 나무가 글자 그대로 돌아오고 저장이 원본 바이트인지(`tests/session.test.ts`, `tests/controller.test.ts`), HTML처럼 생긴 글이 요소를 만들지 않는지, 열리지 않을 주소가 글자로 보이고 파일 값이 그대로인지, 잘라내어 붙인 토픽이 원본 그대로 도착하는지, 여기서 열린 적 없는 파일에 어떤 저장 길로도 쓰지 않는지와 링크 거절(`tests/main.test.ts`), 삭제 확인이 뜨는 조건과 치던 제목이 저장에 들어가는지(`tests/app.test.ts`), 리본 탭·찾기와 바꾸기·그림 넣기와 빼기·단계별 보기·감춰도 저장이 원본 바이트인 것(`tests/app.test.ts`), 정렬과 요약 범위·찾기 규칙(`tests/sort.test.ts`, `tests/find.test.ts`, `tests/controller.test.ts`), 그림 고르기의 크기·종류 검사(`tests/picture-pick.test.ts`), 메모 패널의 초안이 포커스를 잃거나 선택이 바뀌거나 저장할 때 지도에 한 번에 들어가는지(`tests/app.test.ts`).
 - 바꾸면 반드시 테스트하는 것(모양): 스타일 값 거름망의 표(`tests/style-values.test.ts`), 바깥 그림이 출처 있는 요소를 만들지 않는 것과 표식·그림 규칙(`tests/markers-images.test.ts`, `tests/decorate.test.ts`), 96개 테마를 고르면 파일에 적히고 다시 열면 같은 모양인 것, 앱이 밝든 어둡든 지도 색이 같은 것, 세 단계 아래의 글자 크기를 한 단계씩 줄이고 더 깊으면 마지막 크기를 쓰는 것(`tests/look.test.ts`, `tests/decorate.test.ts`), 지도 CSS·그리는 코드가 화면 틀 토큰을 쓰지 않는 것(`tests/look.test.ts`), 테마 패널(`tests/app.test.ts`).
 - 바꾸면 반드시 테스트하는 것(AI): 도구마다(`tests/ai-tools.test.ts`: 편집 하나씩의 검사, 50개 상한, 보이지 않는 요소가 딸린 토픽의 지우기 거절, 새 시트·빈 새 지도 채우기·덮어쓰지 않기, 묶음 하나가 되돌리기 한 단계, 차례 되돌리기가 더한 시트를 지우는 것, 꺾쇠가 든 글, 그림 넣기·되돌리기·없는 토픽이면 항목을 도로 빼기, 생성 도구 문지기), 창(`tests/ai-panel.test.ts`: 대본으로 쓴 모델의 답으로 지도가 바뀌고 Ctrl+Z로 물러나는 것, 밖에서 시작한 실행이 막히면 글과 첨부가 남는 것, 그림 채널·가용성 문구), 첨부(`tests/ai-attachments.test.ts`), 그림 채널(`tests/ai-image-ipc.test.ts`: 두 채널 이름, 화면 경로·상태·문서 폴더·붙여 넣기 폴더). 제공자가 구독으로 정해지는 테스트는 전송 창구(`aiStream`)를 가짜로 바꾼다. 실제 `claude`·`codex`에 닿는 테스트를 두지 않는다.
 - 바꾸면 반드시 테스트하는 것(내보내기): 적대적인 글·스타일·바깥 그림을 가진 지도의 페이지와 SVG에 글에서 온 요소, 바깥 주소, 거르지 않은 스타일이 없는 것, 앱이 밝든 어둡든 결과가 같은 것(`tests/export.test.ts`), 마크다운 개요가 `sheetsToOutline`과 글자 그대로 같은 것과 미리보기 그림을 못 만들 때 예전 그림이 남는 것(`tests/app-export.test.ts`), 파일 이름과 확장자(`tests/export-main.test.ts`).

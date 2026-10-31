@@ -33,6 +33,11 @@ import { deleteSheetAfterConfirm } from './document/sheet-actions'
 import { thumbnailForSave } from './document/thumbnail'
 import { useMapExport } from './export/use-map-export'
 import { MapController, type MapHost, type TopicRequest } from './map/controller'
+import { findMatches, type FindMatch, type FindOptions } from './map/find'
+import { HIDDEN_PARTS, type HiddenPart } from './map/hidden-parts'
+import { FindBar } from './components/FindBar'
+import { controllerFor } from './ai/map-tools'
+import { pictureFromBase64 } from './ai/image-tools'
 import { Toolbar } from './components/Toolbar'
 import { SheetTabs } from './components/SheetTabs'
 import { ThemePanel } from './components/ThemePanel'
@@ -64,6 +69,28 @@ const AUTO_SAVE_INTERVAL_MS = 30_000
 const LABEL_SEPARATORS = /[,\uFF0C\u3001]/
 const TOAST_MS = 4000
 
+const HIDDEN_PARTS_KEY = 'mindmapapp.hiddenParts'
+
+function rememberedHiddenParts(): HiddenPart[] {
+  try {
+    const saved = (localStorage.getItem(HIDDEN_PARTS_KEY) ?? '').split(',')
+    return HIDDEN_PARTS.filter((part) => saved.includes(part))
+  } catch {
+    return []
+  }
+}
+
+/** The find bar while it is open: what it looks for and where it stands. */
+interface FindState {
+  withReplace: boolean
+  query: string
+  options: FindOptions
+  matches: FindMatch[]
+  /** the match shown now, -1 before the first step */
+  index: number
+  message: string | null
+}
+
 /** true while the keyboard is in a text field or in a title being typed on the map */
 function typingInText(): boolean {
   const active = document.activeElement
@@ -92,6 +119,10 @@ export default function App() {
   const [themeOpen, setThemeOpen] = useState(false)
   /** F5: the map alone, shell chrome covered by HTML fullscreen */
   const [presenting, setPresenting] = useState(false)
+  const [hiddenParts, setHiddenParts] = useState<HiddenPart[]>(rememberedHiddenParts)
+  const [find, setFind] = useState<FindState | null>(null)
+  const hiddenPartsRef = useRef(hiddenParts)
+  hiddenPartsRef.current = hiddenParts
   const [noteOpen, setNoteOpen] = useState(
     () => localStorage.getItem('mindmapapp.showNotes') === '1',
   )
@@ -285,9 +316,20 @@ export default function App() {
       strings: mapStrings(langRef.current),
       host,
     })
+    created.setHiddenParts(hiddenPartsRef.current)
     controllers.current.set(activeKey, created)
     setMapTick((tick) => tick + 1)
   }, [session, activeKey, host, tabs])
+
+  // what the View tab hides applies to every sheet, and is remembered
+  useEffect(() => {
+    for (const each of controllers.current.values()) each.setHiddenParts(hiddenParts)
+    try {
+      localStorage.setItem(HIDDEN_PARTS_KEY, hiddenParts.join(','))
+    } catch {
+      // a convenience: without storage the map shows everything next time
+    }
+  }, [hiddenParts])
 
   // a sheet that comes on screen catches up on what could not be measured while it was hidden
   useEffect(() => {
@@ -627,6 +669,164 @@ export default function App() {
     }
   }, [doSave, flushAll, runCommand, activeController])
 
+  // ---- find and replace (Ctrl+F, Ctrl+H) ----
+
+  /** Every sheet as the engine sees it now, folded branches included. */
+  const findSheets = useCallback(() => {
+    const current = sessionRef.current
+    if (!current) return []
+    return current.tabs().map((tab) => ({ key: tab.key, root: current.view(tab.key).root }))
+  }, [])
+
+  const openFind = useCallback(
+    (withReplace: boolean) => {
+      // a title still being typed is part of what is searched
+      flushAll()
+      setFind((was) =>
+        was
+          ? { ...was, withReplace: was.withReplace || withReplace }
+          : {
+              withReplace,
+              query: '',
+              options: { matchCase: false, inNotes: false },
+              matches: [],
+              index: -1,
+              message: null,
+            },
+      )
+    },
+    [flushAll],
+  )
+
+  const findQuery = (query: string, options: FindOptions): void => {
+    flushAll()
+    const matches = findMatches(findSheets(), query, options)
+    setFind((was) => was && { ...was, query, options, matches, index: -1, message: null })
+  }
+
+  /** Shows one match: its sheet comes up, the branches above it unfold, it is selected. */
+  const showMatch = async (state: FindState, target: FindMatch): Promise<void> => {
+    const map = await controllerFor(ai.host, target.sheetKey)
+    map?.revealTopic(target.topicId)
+    // showing it may have unfolded a branch: the matches are read again
+    const matches = findMatches(findSheets(), state.query, state.options)
+    const index = matches.findIndex(
+      (match) => match.sheetKey === target.sheetKey && match.topicId === target.topicId,
+    )
+    setFind((was) => was && { ...was, matches, index, message: null })
+  }
+
+  const findStep = async (direction: 1 | -1): Promise<void> => {
+    if (!find) return
+    flushAll()
+    const matches = findMatches(findSheets(), find.query, find.options)
+    if (matches.length === 0) {
+      setFind((was) => was && { ...was, matches, index: -1 })
+      return
+    }
+    const was = find.matches[find.index]
+    const at = was
+      ? matches.findIndex(
+          (match) => match.sheetKey === was.sheetKey && match.topicId === was.topicId,
+        )
+      : -1
+    const next =
+      at < 0
+        ? direction === 1
+          ? 0
+          : matches.length - 1
+        : (at + direction + matches.length) % matches.length
+    await showMatch(find, matches[next]!)
+  }
+
+  const findReplace = async (replacement: string): Promise<void> => {
+    if (!find) return
+    const current = find.matches[find.index]
+    if (current?.where !== 'title') {
+      await findStep(1)
+      return
+    }
+    const map = await controllerFor(ai.host, current.sheetKey)
+    map?.replaceInTitles(find.query, replacement, find.options.matchCase, current.topicId)
+    const matches = findMatches(findSheets(), find.query, find.options)
+    if (matches.length === 0) {
+      setFind((was) => was && { ...was, matches, index: -1 })
+      return
+    }
+    // the next match has moved into the place of the one replaced
+    await showMatch(find, matches[Math.min(find.index, matches.length - 1)]!)
+  }
+
+  const findReplaceAll = async (replacement: string): Promise<void> => {
+    if (!find) return
+    flushAll()
+    const back = activeKey
+    const titlesOnly = { ...find.options, inNotes: false }
+    const keys = [
+      ...new Set(findMatches(findSheets(), find.query, titlesOnly).map((match) => match.sheetKey)),
+    ]
+    let sheets = 0
+    let count = 0
+    for (const key of keys) {
+      const map = await controllerFor(ai.host, key)
+      const replaced = map?.replaceInTitles(find.query, replacement, find.options.matchCase) ?? 0
+      if (replaced > 0) {
+        sheets++
+        count += replaced
+      }
+    }
+    if (back) setActiveKey(back)
+    const matches = findMatches(findSheets(), find.query, find.options)
+    setFind(
+      (was) => was && { ...was, matches, index: -1, message: t('findReplaced', { sheets, count }) },
+    )
+  }
+
+  // ---- the picture of the selected topic (Insert tab) ----
+
+  const pickPicture = async (): Promise<void> => {
+    const map = controller
+    const topicId = map?.selectedTopicIds().at(-1)
+    if (!map || !topicId) {
+      say('selectTopicFirst')
+      return
+    }
+    if (map.hasPicture(topicId)) {
+      map.setPicture(topicId, null)
+      return
+    }
+    const picked = await window.mindmapApi.pickPicture()
+    if (picked.status === 'canceled') return
+    if (picked.status === 'too-large') return say('pictureTooLarge')
+    if (picked.status === 'unreadable') return say('pictureFailed')
+    const picture = pictureFromBase64(picked.base64)
+    if (!picture) return say('pictureUnsupported')
+    if (!map.setPicture(topicId, picture)) say('pictureFailed')
+  }
+
+  // ---- sorting the branches of the selected topic (Format tab) ----
+
+  const sortSelected = async (): Promise<void> => {
+    const map = controller
+    const topicId = map?.selectedTopicIds().at(-1)
+    if (!map || !topicId) {
+      say('selectTopicFirst')
+      return
+    }
+    // a second press on branches already in order turns them the other way
+    const descending = map.sortDirection(topicId, lang)
+    if (map.sortNarrowsRanges(topicId, descending, lang)) {
+      const ok = await ask({
+        kind: 'sort-narrow',
+        title: t('sortNarrowTitle'),
+        body: t('sortNarrowBody'),
+        confirmLabel: t('sortConfirm'),
+      })
+      if (!ok) return
+    }
+    map.sortChildren(topicId, descending, lang)
+  }
+
   // Ctrl+S / Ctrl+Shift+S, and undo or redo pressed while the map itself does not have the keyboard
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
@@ -635,6 +835,11 @@ export default function App() {
       if (key === 's') {
         event.preventDefault()
         void doSave(event.shiftKey ? 'saveAs' : 'save')
+        return
+      }
+      if ((key === 'f' || key === 'h') && !event.shiftKey && statusRef.current === 'ready') {
+        event.preventDefault()
+        openFind(key === 'h')
         return
       }
       if (key !== 'z' && key !== 'y') return
@@ -647,7 +852,7 @@ export default function App() {
     // Captured: the edit box of a title keeps its keys to itself, and Ctrl+S has to work while typing.
     window.addEventListener('keydown', onKeyDown, true)
     return () => window.removeEventListener('keydown', onKeyDown, true)
-  }, [doSave, runCommand])
+  }, [doSave, runCommand, openFind])
 
   // export, print and the preview picture a save writes (export/use-map-export.ts)
   const exporter = useMapExport({ session, controllers, activeKey, path, flushAll, say })
@@ -772,6 +977,9 @@ export default function App() {
         canRedo={controller?.canRedo ?? false}
         autoSave={autoSave}
         hasTopic={hasTopic}
+        hasPicture={selectedId ? (controller?.hasPicture(selectedId) ?? false) : false}
+        findOpen={find !== null}
+        hiddenParts={hiddenParts}
         layout={controller?.layout ?? 'both'}
         layoutExact={controller?.layoutExact ?? true}
         pickingRelationship={picking}
@@ -792,6 +1000,22 @@ export default function App() {
         onSummary={() => {
           if (!controller?.addSummary()) say('selectTopicFirst')
         }}
+        onFind={() => (find ? setFind(null) : openFind(false))}
+        onDelete={() => {
+          const ids = controller?.selectedTopicIds() ?? []
+          if (ids.length === 0) say('selectTopicFirst')
+          else void controller?.removeTopics(ids)
+        }}
+        onPicture={() => void pickPicture()}
+        onSort={() => void sortSelected()}
+        onPresent={enterPresent}
+        onFoldLevel={(level) => controller?.foldToLevel(level)}
+        onToggleHiddenPart={(part) =>
+          setHiddenParts((parts) =>
+            parts.includes(part) ? parts.filter((each) => each !== part) : [...parts, part],
+          )
+        }
+        onZoomReset={() => runCommand('zoom-reset')}
         onNote={() => requestField('note')}
         onLabel={() => requestField('label')}
         onLink={() => requestField('link')}
@@ -828,7 +1052,13 @@ export default function App() {
       />
 
       {syncOpen && session && (
-        <SyncDialog session={session} host={ai.host} mapPath={path} flush={flushAll} onClose={() => setSyncOpen(false)} />
+        <SyncDialog
+          session={session}
+          host={ai.host}
+          mapPath={path}
+          flush={flushAll}
+          onClose={() => setSyncOpen(false)}
+        />
       )}
 
       {sendTarget && session && activeKey && (
@@ -848,7 +1078,9 @@ export default function App() {
 
       {(notices.preserved > 0 || notices.unknownTheme || picking || sendNotice) && (
         <div className="mm-notices">
-          {sendNotice && <Notice kind="hanpan-send" text={sendNotice} onClose={() => setSendNotice(null)} />}
+          {sendNotice && (
+            <Notice kind="hanpan-send" text={sendNotice} onClose={() => setSendNotice(null)} />
+          )}
           {notices.preserved > 0 && (
             <Notice
               kind="preserved"
@@ -876,6 +1108,20 @@ export default function App() {
       <main className="mm-stage">
         {/* the theme panel and the AI panel dock at this element's end side, one open at a time */}
         <div className="mm-card" aria-label={t('appName')}>
+          {find && !presenting && (
+            <FindBar
+              withReplace={find.withReplace}
+              matches={find.matches}
+              index={find.index}
+              message={find.message}
+              onQuery={findQuery}
+              onStep={(direction) => void findStep(direction)}
+              onReplace={(replacement) => void findReplace(replacement)}
+              onReplaceAll={(replacement) => void findReplaceAll(replacement)}
+              onShowReplace={() => openFind(true)}
+              onClose={() => setFind(null)}
+            />
+          )}
           {tabs.map((tab) => (
             <div
               key={tab.key}

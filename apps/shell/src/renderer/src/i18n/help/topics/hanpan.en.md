@@ -8,6 +8,12 @@ Hanpan sends what you sorted out in a mind map to a Hangul (HWP) report, a slide
 2. Choose the layout (point-form report, report with chapters, official letter numbering), the date and department, and whether to send **exactly what the map says** or **let the AI write the sentences**.
 3. Press **Send**: the document opens in a new tab of the same window. Its first save asks where to keep it.
 
+## Editing the mind map
+
+- The band above the map has the **Home**, **Insert**, **Format** and **View** tabs. Ctrl+F finds topic titles on every sheet, and notes too if you tick it; Ctrl+H replaces. Going to a topic inside a folded branch unfolds the branch.
+- **Insert › Picture** puts a PNG, JPG or GIF picture (10 MB at most) on the selected topic, or takes off the one it has. **Format › Sort** puts the branches of the selected topic in alphabetical order; press it again for the reverse order.
+- **View › Levels** unfolds the map down to level 1, 2 or 3, and **View › Show** hides notes, labels, links, icons or pictures on screen only. The file keeps them all.
+
 ## Sync the map and the document
 
 - Press **Send to a document › Sync with linked documents** to see what changed in the map and in the HWP document.

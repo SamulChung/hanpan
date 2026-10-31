@@ -8,6 +8,12 @@ Hanpan menghantar apa yang anda susun dalam peta minda ke laporan Hangul (HWP), 
 2. Pilih susun atur (laporan berpoin, laporan berbab, penomboran surat rasmi), tarikh dan bahagian, serta sama ada menghantar **teks peta seadanya** atau **membiarkan AI menulis ayat**.
 3. Tekan **Hantar**: dokumen dibuka dalam tab baharu tetingkap yang sama. Simpanan pertama bertanya di mana hendak menyimpannya.
 
+## Menyunting peta minda
+
+- Reben di atas peta mempunyai tab **Utama**, **Sisip**, **Format** dan **Paparan**. Ctrl+F mencari tajuk topik pada semua helaian, dan juga nota jika ditanda; Ctrl+H menggantikan. Pergi ke topik dalam cabang yang dilipat akan membuka cabang itu.
+- **Sisip › Gambar** meletakkan gambar PNG, JPG atau GIF (paling besar 10 MB) pada topik yang dipilih, atau menanggalkan gambar yang sedia ada. **Format › Isih** menyusun cabang topik yang dipilih mengikut abjad; tekan sekali lagi untuk susunan terbalik.
+- **Paparan › Tahap** membuka peta hingga tahap 1, 2 atau 3, dan **Paparan › Tunjuk** menyembunyikan nota, label, pautan, ikon atau gambar pada skrin sahaja. Fail tetap menyimpan semuanya.
+
 ## Menyelaraskan peta dan dokumen
 
 - Tekan **Hantar ke dokumen › Selaraskan dengan dokumen berpaut** untuk melihat apa yang berubah dalam peta dan dokumen HWP.

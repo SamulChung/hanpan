@@ -96,6 +96,55 @@ describe('a picture set from the state', () => {
   })
 })
 
+describe('a picture the state takes off', () => {
+  it('deletes the image key of a topic whose picture the view showed, and keeps the entry', async () => {
+    const bytes = await buildMapFile({
+      content: sampleSheets(),
+      extra: [{ name: 'resources/picture.png', data: fakePng(9) }],
+    })
+    const document = await openOk(bytes)
+    const view = document.viewSheets()[0]!
+    expect(inView(view, 'b').image).not.toBeNull()
+    inView(view, 'b').image = null
+    const result = reconcileSheet(document, 0, view)
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.changed).toBe(true)
+    expect(result.inSync).toBe(true)
+    expect(inSource(document.sheets[0]!, 'b')?.image).toBeUndefined()
+    expect(await document.readEntry('resources/picture.png')).not.toBeNull()
+  })
+
+  it('takes off a picture at a web address as well', async () => {
+    const content = sampleSheets() as Record<string, unknown>[]
+    const beta = inSource(content[0] as unknown as XmindSheet, 'b')!
+    beta.image = { src: 'https://example.com/p.png' }
+    const document = await openSheets([content[0]])
+    const view = document.viewSheets()[0]!
+    inView(view, 'b').image = null
+    const result = reconcileSheet(document, 0, view)
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.changed).toBe(true)
+    expect(inSource(document.sheets[0]!, 'b')?.image).toBeUndefined()
+  })
+
+  it('leaves an image value the view could not show where it is', async () => {
+    const content = sampleSheets() as Record<string, unknown>[]
+    const beta = inSource(content[0] as unknown as XmindSheet, 'b')!
+    beta.image = { src: '', note: 'kept' }
+    const document = await openSheets([content[0]])
+    const before = copyOf(document.sheets)
+    const view = document.viewSheets()[0]!
+    expect(inView(view, 'b').image).toBeNull()
+    const result = reconcileSheet(document, 0, view)
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.changed).toBe(false)
+    expect(document.sheets).toEqual(before)
+  })
+})
+
 describe('a picture entry added since the last save', () => {
   it('is readable before the save, listed in the manifest, and kept in the file', async () => {
     const document = await openSheets(sampleSheets())

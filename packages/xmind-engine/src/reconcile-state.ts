@@ -4,8 +4,8 @@
  * The state comes from a renderer window and is not trusted: it is typed as
  * view data, but nothing has checked that. Everything reconciling reads is
  * checked and copied here first, so the rest works on values of a known shape
- * and never on the caller's objects. What reconciling never writes (pictures,
- * markers, styles, the sheet's own title) is not looked at.
+ * and never on the caller's objects. What reconciling never writes (markers,
+ * styles, the sheet's own title) is not looked at.
  */
 
 import { VIEW_LAYOUTS, type ViewLayout } from './layout'
@@ -37,7 +37,8 @@ export interface StateTopic {
   /**
    * The picture the state shows. Only an entry under `resources/` is ever
    * written from this (see `reconcile-tree.ts`); any other reference is kept
-   * here only so that the state and the view compare equal.
+   * here only so that the state and the view compare equal. Null takes off
+   * the picture the view showed.
    */
   image: ViewImage | null
   summaries: StateSummary[]

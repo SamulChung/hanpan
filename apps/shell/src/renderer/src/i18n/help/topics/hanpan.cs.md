@@ -8,6 +8,12 @@ Hanpan pošle to, co jste uspořádali v myšlenkové mapě, do zprávy Hangul (
 2. Vyberte rozvržení (zpráva v bodech, zpráva s kapitolami, číslování úředního dopisu), datum a oddělení a zda poslat **přesně text mapy**, nebo **nechat věty napsat AI**.
 3. Stiskněte **Odeslat**: dokument se otevře na nové kartě stejného okna. Při prvním uložení se zeptá, kam jej uložit.
 
+## Úpravy myšlenkové mapy
+
+- Pás nad mapou má karty **Domů**, **Vložení**, **Formát** a **Zobrazení**. Ctrl+F hledá názvy témat na všech listech, po zaškrtnutí i v poznámkách; Ctrl+H nahrazuje. Přechod na téma ve sbalené větvi tuto větev rozbalí.
+- **Vložení › Obrázek** vloží k vybranému tématu obrázek PNG, JPG nebo GIF (nejvýše 10 MB), nebo odebere ten, který má. **Formát › Seřadit** seřadí větve vybraného tématu abecedně; dalším stisknutím v opačném pořadí.
+- **Zobrazení › Úrovně** rozbalí mapu do úrovně 1, 2 nebo 3 a **Zobrazení › Zobrazit** skryje poznámky, štítky, odkazy, ikony nebo obrázky jen na obrazovce. Soubor je zachová všechny.
+
 ## Sladění mapy a dokumentu
 
 - Stiskněte **Odeslat do dokumentu › Sladit s propojenými dokumenty** a uvidíte, co se změnilo v mapě a v dokumentu HWP.

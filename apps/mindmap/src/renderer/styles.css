@@ -110,12 +110,13 @@ html.genoffice-popover-open .ribbon-tabs {
   -webkit-app-region: no-drag;
 }
 
-/* one thin row of icon buttons: the buttons, gaps and separators of a ribbon, without its tall body */
+/* the band under the tabs: big buttons, a picture over a name. The height is
+   fixed so switching tabs never moves the map below. */
 .ribbon-body {
   display: flex;
   align-items: stretch;
-  padding: 4px 12px 6px;
-  height: 42px;
+  padding: 4px 12px 4px;
+  height: 66px;
   box-sizing: border-box;
   overflow-x: auto;
   overflow-y: hidden;
@@ -295,6 +296,233 @@ html.genoffice-popover-open .ribbon-tabs {
   display: flex;
   align-items: center;
   margin-inline-start: auto;
+}
+
+/* ---- ribbon tabs and big buttons ---- */
+
+.qa-sep {
+  width: 1px;
+  height: 16px;
+  margin: 0 6px;
+  background: var(--border-strong);
+  flex-shrink: 0;
+}
+
+.mm-tab-row {
+  display: flex;
+  align-items: flex-end;
+  align-self: stretch;
+}
+
+.ribbon-tab {
+  position: relative;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  border-radius: 4px 4px 0 0;
+  background: none;
+  padding: 7px 9px 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+
+.ribbon-tab:hover {
+  color: var(--accent);
+}
+
+.ribbon-tab.active {
+  color: var(--accent);
+}
+
+/* the underline is as wide as the label, not the padded button */
+.ribbon-tab.active::after {
+  content: '';
+  position: absolute;
+  left: 9px;
+  right: 9px;
+  bottom: -2.5px;
+  height: 2.5px;
+  border-radius: 1px;
+  background: var(--accent);
+}
+
+/* one tab's buttons; the others stay in the page, hidden */
+.mm-pane {
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+}
+
+.mm-pane[hidden] {
+  display: none;
+}
+
+.rb-big {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 46px;
+  border: none;
+  background: none;
+  border-radius: 4px;
+  padding: 3px 6px 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.rb-big-icon {
+  flex: 1;
+  align-self: stretch;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  padding: 3px 4px;
+  margin: 0 -4px;
+  color: var(--text-primary);
+}
+
+/* hover paints the picture row only, the name below stays clear */
+.rb-big:hover:not(:disabled) .rb-big-icon,
+.rb-big.active .rb-big-icon {
+  background: var(--hover);
+}
+
+.rb-big.active .rb-big-icon {
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+
+.rb-big:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.rb-big svg {
+  width: 22px;
+  height: 22px;
+}
+
+.mm-ribbon-menu {
+  display: flex;
+  align-items: stretch;
+}
+
+.mm-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.mm-menu-check {
+  display: inline-block;
+  width: 14px;
+  text-align: center;
+  color: var(--accent);
+}
+
+/* ---- find and replace (Ctrl+F, Ctrl+H) ---- */
+
+.mm-find {
+  position: absolute;
+  top: 10px;
+  inset-inline-end: 12px;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 340px;
+  max-width: calc(100% - 24px);
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow-menu);
+  color: var(--text-primary);
+  font-size: 12.5px;
+}
+
+.mm-find-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mm-find-input {
+  flex: 1;
+  min-width: 0;
+  height: 26px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.mm-find-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.mm-find-count {
+  min-width: 44px;
+  text-align: center;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.mm-find-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+}
+
+.mm-find-text {
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+.mm-find-btn:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+.mm-find-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.mm-find-options {
+  gap: 12px;
+  color: var(--text-secondary);
+}
+
+.mm-find-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.mm-find-note {
+  margin: 0;
+  color: var(--text-secondary);
 }
 
 /* ---- notices ---- */

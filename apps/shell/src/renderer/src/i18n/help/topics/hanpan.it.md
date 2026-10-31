@@ -8,6 +8,12 @@ Hanpan invia ciò che hai organizzato in una mappa mentale a un rapporto Hangul 
 2. Scegli il layout (rapporto a punti, rapporto a capitoli, numerazione da lettera ufficiale), la data e l’ufficio, e se inviare **il testo della mappa così com’è** o **far scrivere le frasi all’IA**.
 3. Premi **Invia**: il documento si apre in una nuova scheda della stessa finestra. Il primo salvataggio chiede dove salvarlo.
 
+## Modificare la mappa mentale
+
+- La barra multifunzione sopra la mappa ha le schede **Home**, **Inserisci**, **Formato** e **Visualizza**. Ctrl+F cerca i titoli degli argomenti in tutti i fogli, e anche le note se lo spunti; Ctrl+H sostituisce. Andare a un argomento in un ramo chiuso apre il ramo.
+- **Inserisci › Immagine** mette un'immagine PNG, JPG o GIF (al massimo 10 MB) sull'argomento selezionato, o toglie quella che ha. **Formato › Ordina** ordina alfabeticamente i rami dell'argomento selezionato; premilo di nuovo per l'ordine inverso.
+- **Visualizza › Livelli** apre la mappa fino al livello 1, 2 o 3, e **Visualizza › Mostra** nasconde note, etichette, collegamenti, icone o immagini solo sullo schermo. Il file li conserva tutti.
+
 ## Allineare mappa e documento
 
 - Premi **Invia a un documento › Sincronizza con i documenti collegati** per vedere cosa è cambiato nella mappa e nel documento HWP.

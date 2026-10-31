@@ -167,7 +167,8 @@ export function isShownLink(href: unknown): href is string {
 
 const ATTACHMENT_SCHEME = 'xap:'
 
-function imageToView(image: unknown): ViewImage | null {
+/** The picture a topic's `image` value shows, or null when the view shows none for it. */
+export function imageToView(image: unknown): ViewImage | null {
   if (!isRecord(image) || typeof image.src !== 'string' || image.src === '') return null
   const { src } = image
   return {

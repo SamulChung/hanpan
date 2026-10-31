@@ -379,9 +379,12 @@ describe('the colours of a map are document content', () => {
     expect(mapCode.map(([name]) => name).sort()).toEqual([
       'branches.ts',
       'decorate.ts',
+      'find.ts',
+      'hidden-parts.ts',
       'images.ts',
       'look.ts',
       'markers.ts',
+      'sort.ts',
       'style-values.ts',
       'timeline-keys.ts',
     ])

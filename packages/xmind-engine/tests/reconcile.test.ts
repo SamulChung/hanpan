@@ -104,8 +104,8 @@ describe('reconcileSheet: a state that changes nothing', () => {
 
   it('does not count the parts of the state it never writes', async () => {
     const { document, result } = await edit((view) => {
+      // (an empty picture is written: it takes the picture off, see resource-image.test.ts)
       const beta = inView(view, 'b')
-      beta.image = null
       beta.markers = ['flag-red']
       beta.style = { color: '#000000' }
       view.title = 'not applied here'

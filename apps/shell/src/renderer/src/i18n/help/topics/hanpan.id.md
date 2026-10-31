@@ -8,6 +8,12 @@ Hanpan mengirim apa yang Anda susun di peta pikiran ke laporan Hangul (HWP), pre
 2. Pilih tata letak (laporan poin, laporan berbab, penomoran surat resmi), tanggal dan bagian, serta apakah mengirim **persis teks di peta** atau **membiarkan AI menulis kalimat**.
 3. Tekan **Kirim**: dokumen terbuka di tab baru pada jendela yang sama. Penyimpanan pertama menanyakan lokasinya.
 
+## Mengedit peta pikiran
+
+- Pita di atas peta berisi tab **Beranda**, **Sisipkan**, **Format**, dan **Tampilan**. Ctrl+F mencari judul topik di semua lembar, dan juga catatan jika dicentang; Ctrl+H mengganti. Membuka topik di dalam cabang yang terlipat akan membentangkan cabang itu.
+- **Sisipkan › Gambar** memasang gambar PNG, JPG, atau GIF (paling besar 10 MB) pada topik terpilih, atau melepas gambar yang sudah ada. **Format › Urutkan** mengurutkan cabang topik terpilih menurut abjad; tekan lagi untuk urutan terbalik.
+- **Tampilan › Tingkat** membentangkan peta sampai tingkat 1, 2, atau 3, dan **Tampilan › Tampilkan** menyembunyikan catatan, label, tautan, ikon, atau gambar hanya di layar. Berkasnya tetap menyimpan semuanya.
+
 ## Menyelaraskan peta dan dokumen
 
 - Tekan **Kirim ke dokumen › Selaraskan dengan dokumen tertaut** untuk melihat apa yang berubah di peta dan di dokumen HWP.

@@ -29,6 +29,7 @@ import {
   newXmindId,
   type NewSheetOptions,
   openXmind,
+  parseRange,
   reconcileSheet,
   type ReconcileResult,
   recogniseSheetTheme,
@@ -348,6 +349,28 @@ export class DocumentSession {
   /** How many preserve-only elements would go with these topics (or summaries, by summary topic id). */
   preservedWith(key: string, topicIds: readonly string[]): number {
     return countPreservedWithTopics(this.sheet(key), topicIds)
+  }
+
+  /**
+   * The boundaries over a topic's branches, as positions. The editor does not
+   * draw them, but a change of the branches' order moves them (see `map/sort.ts`).
+   * A range that cannot be read or covers the whole map is left out.
+   */
+  boundariesUnder(key: string, topicId: string): { start: number; end: number }[] {
+    const find = (topic: XmindTopic): XmindTopic | null => {
+      if (topic.id === topicId) return topic
+      for (const child of topic.children?.attached ?? []) {
+        const found = find(child)
+        if (found) return found
+      }
+      return null
+    }
+    const owner = find(this.sheet(key).rootTopic)
+    if (!owner || !Array.isArray(owner.boundaries)) return []
+    return owner.boundaries.flatMap((record: unknown) => {
+      const range = isRecord(record) ? parseRange(record.range) : null
+      return range ? [range] : []
+    })
   }
 
   // ---- the theme of a sheet: picked in the theme panel, outside the map's history ----

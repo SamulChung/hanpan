@@ -12,6 +12,7 @@ import {
   openXmind,
   recogniseSheetTheme,
   type XmindSheet,
+  type XmindTopic,
 } from '@genoffice/xmind-engine'
 import App from '../src/renderer/App'
 import { LocaleProvider } from '../src/renderer/i18n/locale'
@@ -767,5 +768,186 @@ describe('presentation mode', () => {
     })
     await settle()
     expect(container.querySelector('.app')!.classList.contains('mm-presenting')).toBe(false)
+  })
+})
+
+// ---- the ribbon tabs, find and replace, folding to a level, the parts shown ----
+
+const ctrlKey = async (key: string): Promise<void> => {
+  await act(async () => {
+    document.body.dispatchEvent(
+      new KeyboardEvent('keydown', { key, ctrlKey: true, bubbles: true, cancelable: true }),
+    )
+  })
+  await settle()
+}
+
+/** Types into a React field the way a person would: the value, then an input event. */
+async function typeInto(selector: string, text: string): Promise<void> {
+  const input = container.querySelector<HTMLInputElement>(selector)!
+  const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!
+  await act(async () => {
+    setValue.call(input, text)
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+  })
+  await settle()
+}
+
+async function pressIn(selector: string, key: string): Promise<void> {
+  const input = container.querySelector<HTMLElement>(selector)!
+  await act(async () => {
+    input.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
+  })
+  await settle()
+}
+
+const pane = (name: string): HTMLElement =>
+  container.querySelector<HTMLElement>(`[data-ribbon-pane="${name}"]`)!
+
+describe('the ribbon', () => {
+  it('shows one tab at a time, and remembers the one picked', async () => {
+    await openWith(plainSheet())
+    expect(pane('home').hidden).toBe(false)
+    expect(pane('insert').hidden).toBe(true)
+
+    await click('[data-ribbon-tab="insert"]')
+    expect(pane('home').hidden).toBe(true)
+    expect(pane('insert').hidden).toBe(false)
+    expect(
+      container.querySelector('[data-ribbon-tab="insert"]')!.getAttribute('aria-selected'),
+    ).toBe('true')
+    expect(localStorage.getItem('mindmapapp.ribbonTab')).toBe('insert')
+  })
+
+  it('Delete on the Home tab removes the selected topic', async () => {
+    await openWith(richSheet())
+    await selectOnMap(IDS.b)
+    await click('[data-action="delete-topic"]')
+    expect(container.querySelector(`[data-nodeid="me${IDS.b}"]`)).toBeNull()
+  })
+
+  it('folding to one level closes the branches of the first level, and Undo is not needed to open them', async () => {
+    const { fake } = await openWith(richSheet())
+    expect(container.querySelector(`[data-nodeid="me${IDS.a1}"]`)).not.toBeNull()
+    await click('[data-ribbon-tab="view"]')
+    await click('[data-action="fold-level"]')
+    await click('[data-menu-item="fold-level-1"]')
+    expect(container.querySelector(`[data-nodeid="me${IDS.a1}"]`)).toBeNull()
+
+    await click('[data-action="fold-level"]')
+    await click('[data-menu-item="fold-level-2"]')
+    expect(container.querySelector(`[data-nodeid="me${IDS.a1}"]`)).not.toBeNull()
+    // folding is kept in the file like the fold handle, but it is no step of the history
+    expect(fake.dirty.at(-1)).toBe(true)
+  })
+
+  it('hiding labels takes them off the screen only: the save is still the original bytes', async () => {
+    const { fake, bytes } = await openWith(richSheet())
+    await click('[data-ribbon-tab="view"]')
+    await click('[data-action="show-parts"]')
+    await click('[data-menu-item="show-labels"]')
+    const map = container.querySelector<HTMLElement>('.map-container')!
+    expect(map.dataset.mmHide).toBe('labels')
+    expect(localStorage.getItem('mindmapapp.hiddenParts')).toContain('labels')
+    expect(
+      document.querySelector('[data-menu-item="show-labels"]')!.getAttribute('aria-checked'),
+    ).toBe('false')
+
+    fake.emit.saveRequest('save')
+    await savesReach(fake)
+    expect(fake.saves[0]!.bytes).toEqual(bytes)
+  })
+})
+
+describe('find and replace', () => {
+  it('Ctrl+F finds a topic in a folded branch, and stepping to it unfolds the branch and selects it', async () => {
+    await openWith(richSheet())
+    expect(container.querySelector(`[data-nodeid="me${IDS.b1}"]`)).toBeNull()
+    await ctrlKey('f')
+    expect(container.querySelector('[data-hanpan="mm-find"]')).not.toBeNull()
+
+    await typeInto('[data-find="query"]', 'beta one')
+    expect(container.querySelector('[data-find="count"]')!.textContent).toBe('0/1')
+    expect(container.querySelector('[data-find="folded"]')).not.toBeNull()
+
+    await pressIn('[data-find="query"]', 'Enter')
+    expect(container.querySelector('[data-find="count"]')!.textContent).toBe('1/1')
+    expect(topicEl(IDS.b1)).not.toBeNull()
+    expect(topicEl(IDS.b1).classList.contains('selected')).toBe(true)
+
+    await pressIn('[data-find="query"]', 'Escape')
+    expect(container.querySelector('[data-hanpan="mm-find"]')).toBeNull()
+  })
+
+  it('Ctrl+F while a title is being typed searches the title as typed', async () => {
+    await openWith(plainSheet())
+    await typeTitle('cccccccc-cccc-4ccc-8ccc-ccccccccccc1', 'Uno')
+    await ctrlKey('f')
+    await typeInto('[data-find="query"]', 'uno')
+    expect(container.querySelector('[data-find="count"]')!.textContent).toBe('0/1')
+  })
+
+  it('Replace all changes the titles of every sheet, one step on each, and says how many', async () => {
+    const { fake } = await openWith(richSheet(), plainSheet())
+    await ctrlKey('h')
+    expect(container.querySelector('[data-find="replace"]')).not.toBeNull()
+    await typeInto('[data-find="query"]', 'one')
+    await typeInto('[data-find="replace"]', 'uno')
+    await click('[data-action="replace-all"]')
+    await until(() => !!container.querySelector('[data-find="message"]'), 'the replace-all message')
+    expect(container.querySelector('[data-find="message"]')!.textContent).toBe(
+      'Replaced 3 on 2 sheet(s)',
+    )
+    expect(container.querySelector('[data-find="count"]')!.textContent).toBe('No results')
+
+    fake.emit.saveRequest('save')
+    await savesReach(fake)
+    const saved = await openXmind(fake.saves[0]!.bytes)
+    if (saved.status !== 'ok') throw new Error('did not open')
+    const titles = (topic: XmindTopic): string[] => [
+      topic.title ?? '',
+      ...(topic.children?.attached ?? []).flatMap(titles),
+    ]
+    const all = saved.document.sheets.flatMap((sheet) => titles(sheet.rootTopic))
+    expect(all).toContain('Alpha uno')
+    expect(all).toContain('Beta uno')
+    expect(all).toContain('uno')
+    expect(all.some((title) => /one/i.test(title))).toBe(false)
+  })
+})
+
+describe('the picture of a topic', () => {
+  const PNG =
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
+
+  it('Insert puts the picked file on the selected topic, and the same button then takes it off', async () => {
+    const { fake } = await openWith(plainSheet())
+    let picks = 0
+    fake.api.pickPicture = async () => {
+      picks++
+      return { status: 'ok', base64: PNG }
+    }
+    await selectOnMap('cccccccc-cccc-4ccc-8ccc-ccccccccccc1')
+    await click('[data-ribbon-tab="insert"]')
+    await click('[data-action="picture"]')
+    await until(() => !!container.querySelector('[data-action="picture-remove"]'), 'the picture')
+    expect(picks).toBe(1)
+    expect(fake.dirty.at(-1)).toBe(true)
+
+    await click('[data-action="picture-remove"]')
+    expect(container.querySelector('[data-action="picture"]')).not.toBeNull()
+    // taking it off asks the file picker nothing
+    expect(picks).toBe(1)
+  })
+
+  it('a file over the size limit is refused with a message, and nothing changes', async () => {
+    const { fake } = await openWith(plainSheet())
+    fake.api.pickPicture = async () => ({ status: 'too-large' })
+    await selectOnMap('cccccccc-cccc-4ccc-8ccc-ccccccccccc1')
+    await click('[data-ribbon-tab="insert"]')
+    await click('[data-action="picture"]')
+    expect(container.textContent).toContain('10 MB')
+    expect(container.querySelector('[data-action="picture-remove"]')).toBeNull()
+    expect(fake.dirty).not.toContain(true)
   })
 })

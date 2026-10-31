@@ -8,6 +8,12 @@ O Hanpan envia o que você organizou num mapa mental para um relatório Hangul (
 2. Escolha o layout (relatório em tópicos, relatório com capítulos, numeração de ofício), a data e o setor, e se envia **exatamente o texto do mapa** ou **deixa a IA escrever as frases**.
 3. Pressione **Enviar**: o documento abre numa nova aba da mesma janela. O primeiro salvamento pergunta onde guardá-lo.
 
+## Editar o mapa mental
+
+- A faixa acima do mapa tem as abas **Página inicial**, **Inserir**, **Formatar** e **Exibir**. Ctrl+F procura títulos de tópicos em todas as folhas, e também notas se você marcar; Ctrl+H substitui. Ir a um tópico dentro de um ramo recolhido expande o ramo.
+- **Inserir › Imagem** coloca uma imagem PNG, JPG ou GIF (no máximo 10 MB) no tópico selecionado, ou tira a que ele tem. **Formatar › Classificar** põe os ramos do tópico selecionado em ordem alfabética; toque de novo para a ordem inversa.
+- **Exibir › Níveis** expande o mapa até o nível 1, 2 ou 3, e **Exibir › Mostrar** oculta notas, rótulos, links, ícones ou imagens só na tela. O arquivo mantém tudo.
+
 ## Sincronizar o mapa e o documento
 
 - Pressione **Enviar para um documento › Sincronizar com documentos vinculados** para ver o que mudou no mapa e no documento HWP.

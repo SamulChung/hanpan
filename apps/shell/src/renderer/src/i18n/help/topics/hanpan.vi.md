@@ -8,6 +8,12 @@ Hanpan gửi những gì bạn sắp xếp trong sơ đồ tư duy thành báo c
 2. Chọn bố cục (báo cáo gạch đầu dòng, báo cáo có chương, đánh số công văn), ngày và bộ phận, rồi chọn gửi **đúng chữ trong sơ đồ** hay **để AI viết câu**.
 3. Nhấn **Gửi**: tài liệu mở trong một thẻ mới của cùng cửa sổ. Lần lưu đầu tiên sẽ hỏi nơi lưu.
 
+## Chỉnh sửa sơ đồ tư duy
+
+- Dải phía trên sơ đồ có các thẻ **Trang chủ**, **Chèn**, **Định dạng** và **Xem**. Ctrl+F tìm tiêu đề chủ đề trên mọi trang tính, và cả ghi chú nếu bạn đánh dấu; Ctrl+H thay thế. Đi tới một chủ đề trong nhánh đang thu gọn sẽ mở nhánh đó ra.
+- **Chèn › Hình ảnh** gắn hình PNG, JPG hoặc GIF (tối đa 10 MB) vào chủ đề đang chọn, hoặc gỡ hình đang có. **Định dạng › Sắp xếp** xếp các nhánh của chủ đề đang chọn theo thứ tự chữ cái; nhấn lần nữa để xếp ngược lại.
+- **Xem › Cấp độ** mở sơ đồ đến cấp 1, 2 hoặc 3, và **Xem › Hiển thị** ẩn ghi chú, nhãn, liên kết, biểu tượng hoặc hình chỉ trên màn hình. Tệp vẫn giữ nguyên tất cả.
+
 ## Đồng bộ sơ đồ và tài liệu
 
 - Nhấn **Gửi sang tài liệu › Đồng bộ với tài liệu liên kết** để xem những gì đã thay đổi trong sơ đồ và tài liệu HWP.

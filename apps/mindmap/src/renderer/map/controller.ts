@@ -35,6 +35,7 @@ import {
   type ThemeLook,
   type ViewLayout,
   type ViewSheet,
+  type ViewTopic,
   type XmindTopic,
 } from '@genoffice/xmind-engine'
 import {
@@ -60,6 +61,9 @@ import { type DecorationStrings, TopicDecorator } from './decorate'
 import { PictureStore } from './images'
 import { libraryTheme, lookOfSheet } from './look'
 import { escapeMapText } from './text-guard'
+import { replaceText } from './find'
+import { HIDDEN_PARTS, type HiddenPart } from './hidden-parts'
+import { followRange, rangeNarrows, sortedOrder } from './sort'
 import { isArrowKey, timelineArrowTarget } from './timeline-keys'
 
 type MenuOption = Exclude<NonNullable<Options['contextMenu']>, boolean>
@@ -412,6 +416,186 @@ export class MapController {
     return this.#patchMeta(topicId, { link: address })
   }
 
+  /** Whether the topic shows a picture (from the file or put on it here). */
+  hasPicture(topicId: string): boolean {
+    const node = this.#node(topicId)
+    return node ? this.#meta(node).image !== null : false
+  }
+
+  /**
+   * Puts a picture on a topic, in the place of the one it had, or takes it off
+   * (`null`), as one step. The bytes become a new entry of the map file first,
+   * so reconciling can check the reference; when the picture does not land
+   * the entry is taken out again and the answer is false. Taking a picture off
+   * leaves its entry in the file: undo puts the same reference back.
+   */
+  setPicture(
+    topicId: string,
+    picture: { bytes: Uint8Array; ext: 'png' | 'jpg' | 'gif' } | null,
+  ): boolean {
+    if (!this.#node(topicId)) return false
+    this.commitEdit()
+    if (picture === null) {
+      if (!this.hasPicture(topicId)) return false
+      this.#editMeta(topicId, { image: null })
+      return true
+    }
+    const entryName = this.#session.addPicture(picture.bytes, picture.ext)
+    this.#editMeta(topicId, {
+      image: { src: `xap:${entryName}`, entryName, width: null, height: null },
+    })
+    if (this.#shownEntry(topicId) === entryName) return true
+    this.#session.removePicture(entryName)
+    return false
+  }
+
+  /**
+   * Shows the map down to `level` (the central topic is 0, its branches 1):
+   * topics at that depth with branches below are folded, the ones above
+   * unfolded. Deeper topics keep their own folding. Not a step of the history,
+   * like folding one branch.
+   */
+  foldToLevel(level: number): void {
+    const visit = (node: NodeObj, depth: number): void => {
+      if (depth > level) return
+      if (depth > 0) {
+        if (depth === level && node.children?.length) node.expanded = false
+        else delete node.expanded
+      }
+      node.children?.forEach((child) => visit(child, depth + 1))
+    }
+    visit(this.mind.nodeData, 0)
+    this.mind.refresh()
+    this.#sync({ step: false })
+  }
+
+  /**
+   * Brings a topic into sight: the branches folded above it are unfolded (as
+   * the fold handle would, written without a history step), the topic is
+   * selected and scrolled to the middle. False when the sheet has no such topic.
+   */
+  revealTopic(topicId: string): boolean {
+    const node = this.#node(topicId)
+    if (!node) return false
+    this.commitEdit()
+    let unfolded = false
+    for (let above = node.parent; above; above = above.parent) {
+      if (above.expanded === false) {
+        delete above.expanded
+        unfolded = true
+      }
+    }
+    if (unfolded) {
+      this.mind.refresh()
+      this.#sync({ step: false })
+    }
+    const element = this.#element(topicId)
+    if (!element) return false
+    this.mind.selectNode(element)
+    this.mind.scrollIntoView(element, true)
+    return true
+  }
+
+  /**
+   * Replaces text in every title of the sheet (or only in `onlyId`'s), as one
+   * step. Returns how many titles changed; nothing is recorded when none did.
+   */
+  replaceInTitles(query: string, replacement: string, matchCase: boolean, onlyId?: string): number {
+    if (query === '') return 0
+    this.commitEdit()
+    const changed: { id: string; title: string }[] = []
+    const visit = (node: NodeObj): void => {
+      const title = replaceText(node.topic, query, replacement, matchCase)
+      if (title !== node.topic && (onlyId === undefined || node.id === onlyId)) {
+        changed.push({ id: node.id, title })
+      }
+      node.children?.forEach(visit)
+    }
+    visit(this.mind.nodeData)
+    if (changed.length === 0) return 0
+    this.edit((root) => {
+      for (const { id, title } of changed) {
+        const target = this.mind.getObjById(id, root as NodeObj)
+        if (target) target.topic = title
+      }
+    })
+    return changed.length
+  }
+
+  /**
+   * Hides parts of every topic from view (`map.css` follows the mark on the
+   * map's container, and an export copies it). Nothing changes in the map.
+   */
+  setHiddenParts(parts: readonly HiddenPart[]): void {
+    const value = HIDDEN_PARTS.filter((part) => parts.includes(part)).join(' ')
+    const { dataset } = this.mind.container
+    if ((dataset.mmHide ?? '') === value) return
+    if (value) dataset.mmHide = value
+    else delete dataset.mmHide
+    // the topics changed size: the lines are drawn again around them
+    this.mind.linkDiv()
+  }
+
+  /** Whether sorting the topic's branches now would be in descending order (it was ascending already). */
+  sortDirection(topicId: string, lang: string): boolean {
+    const titles = (this.#node(topicId)?.children ?? []).map((child) => child.topic)
+    return sortedOrder(titles, lang, false).every((at, position) => at === position)
+  }
+
+  /**
+   * Whether sorting would leave a summary or a boundary over the topic's
+   * branches with fewer branches than it covers now: the user is asked first.
+   */
+  sortNarrowsRanges(topicId: string, descending: boolean, lang: string): boolean {
+    const children = this.#node(topicId)?.children ?? []
+    const before = children.map((child) => child.id)
+    const order = sortedOrder(
+      children.map((child) => child.topic),
+      lang,
+      descending,
+    )
+    const after = order.map((at) => before[at]!)
+    const ranges = [
+      ...this.mind.summaries.filter((summary) => summary.parent === topicId),
+      ...this.#session.boundariesUnder(this.#key, topicId),
+    ]
+    return ranges.some((range) => range.end < before.length && rangeNarrows(before, after, range))
+  }
+
+  /**
+   * Orders a topic's branches by title, as one step. A summary over them
+   * follows its branches the way the engine moves every range (see `sort.ts`).
+   */
+  sortChildren(
+    topicId: string,
+    descending: boolean,
+    lang: string,
+  ): 'sorted' | 'unchanged' | 'no-children' {
+    const node = this.#node(topicId)
+    const children = node?.children ?? []
+    if (children.length < 2) return 'no-children'
+    const order = sortedOrder(
+      children.map((child) => child.topic),
+      lang,
+      descending,
+    )
+    if (order.every((at, position) => at === position)) return 'unchanged'
+    this.commitEdit()
+    const before = children.map((child) => child.id)
+    const after = order.map((at) => before[at]!)
+    this.edit((root) => {
+      const target = this.mind.getObjById(topicId, root as NodeObj)
+      if (!target?.children) return
+      const byId = new Map(target.children.map((child) => [child.id, child]))
+      target.children = after.map((id) => byId.get(id)!)
+      for (const summary of this.mind.summaries) {
+        if (summary.parent !== topicId || summary.end >= before.length) continue
+        Object.assign(summary, followRange(before, after, summary))
+      }
+    })
+    return 'sorted'
+  }
+
   /**
    * Deletes topics with everything below them. When that would take elements
    * the editor does not show, the user is asked first (`ask`) or the deletion
@@ -559,9 +743,13 @@ export class MapController {
    */
   edit(change: (root: MapNode) => void): void {
     const mind = this.mind
+    const selected = this.selectedTopicIds()
     change(mind.nodeData as MapNode)
     normaliseTree(mind.nodeData, topicIdsOf(this.#lastView))
     mind.refresh()
+    // drawing again drops the selection; the topics still on the map keep it
+    const again = selected.map((id) => this.#element(id)).filter((topic) => topic !== null)
+    if (again.length > 0) mind.selectNodes(again)
     mind.bus.fire('operation', {
       name: 'reshapeNode',
       obj: mind.nodeData,
@@ -790,6 +978,27 @@ export class MapController {
     const node = this.#node(topicId)
     if (!node) return false
     return this.#patch(topicId, nodePatch({ ...this.#meta(node), ...change }))
+  }
+
+  /** Changes the metadata of one topic as one step, as data (a picture is not a field the library edits). */
+  #editMeta(topicId: string, change: Partial<MapNodeMeta>): void {
+    this.edit((root) => {
+      const target = this.mind.getObjById(topicId, root as NodeObj)
+      if (target) Object.assign(target, nodePatch({ ...this.#meta(target), ...change }))
+    })
+  }
+
+  /** The archive entry of the picture the source tree now holds for a topic, or null. */
+  #shownEntry(topicId: string): string | null {
+    const find = (topic: ViewTopic): ViewTopic | null => {
+      if (topic.id === topicId) return topic
+      for (const child of topic.children) {
+        const found = find(child)
+        if (found) return found
+      }
+      return null
+    }
+    return find(this.#session.view(this.#key).root)?.image?.entryName ?? null
   }
 
   /** Changes fields of one topic as one step: through the library when the topic is drawn, as data when it is folded away. */

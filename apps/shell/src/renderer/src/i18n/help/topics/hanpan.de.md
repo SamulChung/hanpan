@@ -8,6 +8,12 @@ Hanpan schickt, was Sie in einer Mindmap geordnet haben, als Hangul-Bericht (HWP
 2. Wählen Sie das Layout (Stichpunktbericht, Bericht mit Kapiteln, Nummerierung amtlicher Schreiben), Datum und Abteilung sowie **genau den Text der Karte** oder **die KI die Sätze schreiben lassen**.
 3. Drücken Sie **Senden**: Das Dokument öffnet sich in einem neuen Tab desselben Fensters. Beim ersten Speichern wird nach dem Ort gefragt.
 
+## Die Mindmap bearbeiten
+
+- Das Menüband über der Karte hat die Registerkarten **Start**, **Einfügen**, **Format** und **Ansicht**. Strg+F sucht Thementitel auf allen Blättern, auf Wunsch auch in Notizen; Strg+H ersetzt. Wer zu einem Thema in einem eingeklappten Zweig springt, klappt den Zweig auf.
+- **Einfügen › Bild** setzt ein PNG-, JPG- oder GIF-Bild (höchstens 10 MB) auf das gewählte Thema oder nimmt das vorhandene ab. **Format › Sortieren** ordnet die Zweige des gewählten Themas alphabetisch; erneut drücken ordnet umgekehrt.
+- **Ansicht › Ebenen** klappt die Karte bis Ebene 1, 2 oder 3 auf, und **Ansicht › Anzeigen** blendet Notizen, Etiketten, Links, Symbole oder Bilder nur am Bildschirm aus. Die Datei behält alles.
+
 ## Karte und Dokument abgleichen
 
 - Drücken Sie **An ein Dokument senden › Mit verknüpften Dokumenten abgleichen**, um zu sehen, was sich in Karte und HWP-Dokument geändert hat.

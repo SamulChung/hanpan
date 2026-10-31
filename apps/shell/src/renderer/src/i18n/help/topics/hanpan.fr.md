@@ -8,6 +8,12 @@ Hanpan envoie ce que vous avez organisé dans une carte mentale vers un rapport 
 2. Choisissez la mise en page (rapport à puces, rapport en chapitres, numérotation de lettre officielle), la date et le service, puis **le texte de la carte tel quel** ou **laisser l'IA rédiger les phrases**.
 3. Appuyez sur **Envoyer** : le document s'ouvre dans un nouvel onglet de la même fenêtre. Le premier enregistrement demande où le ranger.
 
+## Modifier la carte mentale
+
+- Le ruban au-dessus de la carte comporte les onglets **Accueil**, **Insertion**, **Format** et **Affichage**. Ctrl+F cherche les titres des sujets sur toutes les feuilles, et les notes si vous le cochez ; Ctrl+H remplace. Aller à un sujet dans une branche repliée déplie la branche.
+- **Insertion › Image** ajoute une image PNG, JPG ou GIF (10 Mo au plus) au sujet sélectionné, ou retire celle qu'il a. **Format › Trier** range les branches du sujet sélectionné par ordre alphabétique ; appuyez de nouveau pour l'ordre inverse.
+- **Affichage › Niveaux** déplie la carte jusqu'au niveau 1, 2 ou 3, et **Affichage › Afficher** masque les notes, étiquettes, liens, icônes ou images à l'écran seulement. Le fichier les garde tous.
+
 ## Synchroniser la carte et le document
 
 - Appuyez sur **Envoyer vers un document › Synchroniser avec les documents liés** pour voir ce qui a changé dans la carte et dans le document HWP.

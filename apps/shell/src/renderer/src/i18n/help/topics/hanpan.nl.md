@@ -8,6 +8,12 @@ Hanpan stuurt wat u in een mindmap hebt geordend naar een Hangul-rapport (HWP), 
 2. Kies de opmaak (puntsgewijs rapport, rapport met hoofdstukken, nummering van een officiële brief), de datum en de afdeling, en of u **precies de tekst van de kaart** stuurt of **de AI de zinnen laat schrijven**.
 3. Druk op **Sturen**: het document opent in een nieuw tabblad van hetzelfde venster. Bij de eerste keer opslaan wordt gevraagd waar.
 
+## De mindmap bewerken
+
+- Het lint boven de kaart heeft de tabbladen **Start**, **Invoegen**, **Opmaak** en **Beeld**. Ctrl+F zoekt onderwerptitels op alle bladen, en ook notities als u dat aanvinkt; Ctrl+H vervangt. Naar een onderwerp in een samengevouwen tak gaan, vouwt de tak open.
+- **Invoegen › Afbeelding** zet een PNG-, JPG- of GIF-afbeelding (hooguit 10 MB) op het gekozen onderwerp, of haalt de bestaande weg. **Opmaak › Sorteren** zet de takken van het gekozen onderwerp op alfabetische volgorde; druk nogmaals voor de omgekeerde volgorde.
+- **Beeld › Niveaus** vouwt de kaart open tot niveau 1, 2 of 3, en **Beeld › Weergeven** verbergt notities, labels, koppelingen, pictogrammen of afbeeldingen alleen op het scherm. Het bestand houdt ze allemaal.
+
 ## Kaart en document gelijkzetten
 
 - Druk op **Naar een document sturen › Gelijkzetten met gekoppelde documenten** om te zien wat er in de kaart en in het HWP-document is veranderd.

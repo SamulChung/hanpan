@@ -81,6 +81,8 @@ export const MINDMAP_CHANNELS = {
   aiGenerateImage: 'mindmap:ai-generate-image',
   /** invoke(url) → `{base64, mime} | null`: a web image or a file of the generated-image store */
   fetchImage: 'mindmap:fetch-image',
+  /** invoke → `PickPictureResult`: a picture file the user picks for a topic */
+  pickPicture: 'mindmap:pick-picture',
 
   // ---- questions from the in-app MCP server (T13 sends them; the renderer already answers) ----
   /** main → renderer: "give me the current outline" */
@@ -303,6 +305,13 @@ export interface WebSearchResult {
   error?: string
 }
 
+/** A picture file picked for a topic; the renderer checks the format of the bytes itself. */
+export type PickPictureResult =
+  | { status: 'ok'; base64: string }
+  | { status: 'canceled' }
+  | { status: 'too-large' }
+  | { status: 'unreadable' }
+
 export interface ImageSearchResult {
   images: Array<{ title?: string; imageUrl: string; width?: number; height?: number }>
   method: string
@@ -454,6 +463,8 @@ export interface MindmapAiApi {
   }>
   /** Download an image URL (or a file of the generated-image store) in the main process */
   fetchImage(url: string): Promise<{ base64: string; mime: string } | null>
+  /** A picture file the user picks for a topic (Insert tab → Picture) */
+  pickPicture(): Promise<PickPictureResult>
   /** which search/media tools can run right now — gates generate_image */
   aiToolCapabilities(): Promise<AiToolCapabilities | null>
 }

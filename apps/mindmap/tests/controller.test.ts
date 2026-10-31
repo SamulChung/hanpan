@@ -582,6 +582,100 @@ describe('summaries, relationships and the layout', () => {
   })
 })
 
+describe('pictures, folding to a level and sorting', () => {
+  const PNG = { bytes: Uint8Array.from([0x89, 0x50, 0x4e, 0x47, 1, 2, 3]), ext: 'png' as const }
+
+  it('setPicture puts a picture entry on a topic as one step, and undo takes it off', async () => {
+    const { controller, attached, doc } = await mount()
+    const before = JSON.stringify(doc.sheets[0])
+    expect(controller.hasPicture(IDS.c)).toBe(false)
+    expect(controller.setPicture(IDS.c, PNG)).toBe(true)
+    const gamma = attached()[2]!
+    expect(gamma.image).toMatchObject({ src: expect.stringMatching(/^xap:resources\/.+\.png$/) })
+    expect(controller.hasPicture(IDS.c)).toBe(true)
+    controller.undo()
+    expect(attached()[2]!.image).toBeUndefined()
+    // the tree is the one from before; the added bytes stay in the archive, as with the AI's pictures
+    expect(JSON.stringify(doc.sheets[0])).toBe(before)
+  })
+
+  it('setPicture(null) takes the picture off and the save drops the image key', async () => {
+    const { controller, attached, session } = await mount()
+    expect(controller.hasPicture(IDS.a)).toBe(true)
+    expect(controller.setPicture(IDS.a, null)).toBe(true)
+    expect(attached()[0]!.image).toBeUndefined()
+    expect(attached()[0]!.unknownTopicKey).toEqual({ nested: ['kept', 1, true] })
+    expect(await session.produceBytes()).toBeInstanceOf(Uint8Array)
+    expect(controller.setPicture(IDS.c, null)).toBe(false)
+  })
+
+  it('foldToLevel(1) folds every main topic with branches and unfolds what is above', async () => {
+    const { controller, attached } = await mount()
+    controller.foldToLevel(1)
+    expect(attached()[0]!.branch).toBe('folded')
+    expect(attached()[1]!.branch).toBe('folded')
+    expect(attached()[2]!).not.toHaveProperty('branch')
+    expect(controller.canUndo).toBe(false)
+    controller.foldToLevel(2)
+    expect(attached()[0]!).not.toHaveProperty('branch')
+    expect(attached()[1]!).not.toHaveProperty('branch')
+  })
+
+  it('sortChildren orders branches by title as one step; a sorted list says unchanged', async () => {
+    const { controller, attached } = await mount()
+    expect(controller.sortChildren(IDS.root, false, 'en')).toBe('unchanged')
+    expect(controller.sortDirection(IDS.root, 'en')).toBe(true)
+    expect(controller.sortChildren(IDS.root, true, 'en')).toBe('sorted')
+    expect(attached().map((each) => each.id)).toEqual([IDS.c, IDS.b, IDS.a])
+    expect(controller.sortChildren(IDS.c, false, 'en')).toBe('no-children')
+    controller.undo()
+    expect(attached().map((each) => each.id)).toEqual([IDS.a, IDS.b, IDS.c])
+  })
+
+  it('sortNarrowsRanges sees a summary whose branches the sort would put apart', async () => {
+    const { controller } = await mount()
+    // Alpha one, Alpha two, Alpha three: the summary covers the first two; sorted, three comes between
+    expect(controller.sortNarrowsRanges(IDS.a, false, 'en')).toBe(true)
+    expect(controller.sortNarrowsRanges(IDS.root, true, 'en')).toBe(false)
+  })
+
+  it('revealTopic unfolds the branch above a topic, selects it, and records no step', async () => {
+    const { controller, attached, mind } = await mount()
+    expect(attached()[1]!.branch).toBe('folded')
+    expect(controller.revealTopic(IDS.b1)).toBe(true)
+    expect(attached()[1]!).not.toHaveProperty('branch')
+    expect(controller.selectedTopicIds()).toEqual([IDS.b1])
+    expect(controller.canUndo).toBe(false)
+    expect(mind.currentNode?.nodeObj.id).toBe(IDS.b1)
+    expect(controller.revealTopic('no-such-topic')).toBe(false)
+  })
+
+  it('replaceInTitles changes every matching title of the sheet as one step', async () => {
+    const { controller, attached } = await mount()
+    expect(controller.replaceInTitles('alpha', 'Omega', false)).toBe(4)
+    expect(attached()[0]!.title).toBe('Omega')
+    expect(attached(attached()[0]!).map((each) => each.title)).toEqual([
+      'Omega one',
+      'Omega two',
+      'Omega three',
+    ])
+    expect(controller.replaceInTitles('nothing here', 'x', false)).toBe(0)
+    controller.undo()
+    expect(attached()[0]!.title).toBe('Alpha')
+  })
+
+  it('a summary follows its branches through a sort', async () => {
+    const { controller, attached } = await mount()
+    expect(controller.sortChildren(IDS.a, false, 'en')).toBe('sorted')
+    const alpha = attached()[0]!
+    expect(alpha.children!.attached!.map((each) => each.id)).toEqual([IDS.a1, IDS.a3, IDS.a2])
+    const [summary] = alpha.summaries as { range: string }[]
+    expect(summary!.range).toBe('(0,0)')
+    // the boundary over all three stays over all three
+    expect((alpha.boundaries as { range: string }[])[0]!.range).toBe('(0,2)')
+  })
+})
+
 describe('text from the file is never markup', () => {
   const HOSTILE = '<img src=x onerror="window.pwned=1"><script>window.pwned=1</script><b>bold</b>'
 
