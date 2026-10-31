@@ -29,7 +29,7 @@ test('the design board makes, copies and exports a page; a map becomes card news
 
     await page.locator('[data-hanpan="design"]').click()
     const board = await waitForPageWithUrl(app, 'design.html')
-    await expect(board.locator('.dz-page')).toBeVisible({ timeout: 30_000 })
+    await expect(board.locator('.dz-stage .dz-page')).toBeVisible({ timeout: 30_000 })
     await board.locator('[data-tab="templates"]').click()
     await board.locator('[data-template="event-poster"]').click()
     await board.locator('[data-tab="text"]').click()

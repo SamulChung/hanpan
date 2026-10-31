@@ -5,9 +5,10 @@
  * page and to each other, resized from eight handles, turned by the rotation
  * handle, and text is typed in place with a double click. Elements group
  * (Ctrl+G), pictures crop in place, the pen draws, a right click opens the
- * usual commands, and rulers and Space-drag help on a large page. The side
- * panel styles the selection (Inspector.tsx); the left panel holds the AI,
- * the templates, elements, text styles and the layers. A design is saved as one
+ * usual commands, and rulers and Space-drag help on a large page. The right
+ * side styles the selection (Inspector.tsx) or holds the AI helper
+ * (DesignAiPanel.tsx), with a quick AI rewrite over a picked text box; the
+ * left panel holds the templates, elements, text styles and the layers. A design is saved as one
  * `.hpdesign` file (pictures inside), exported as PNG, JPG or PDF, or copied
  * as a picture to paste into a HWP, Word or PowerPoint tab.
  */
@@ -24,19 +25,10 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from 'react'
 import { pageJpeg, pagePng } from './draw'
-import {
-  DESIGN_MOODS,
-  MAX_BRIEF_CHARS,
-  briefRequest,
-  cleanRewrite,
-  designFromBrief,
-  estimateLines,
-  parseBrief,
-  rewriteRequest,
-  type DesignMood,
-  type RewriteMode,
-} from './ai'
-import { runDesignAi, type DesignAiApi } from './ai-run'
+import { REWRITE_MODES } from './ai'
+import type { DesignAiApi } from './ai-run'
+import { DesignAiPanel } from './DesignAiPanel'
+import { useDesignAi, type DesignAiSettingsApi } from './use-design-ai'
 import {
   HANDLE_SIDES,
   alignMoves,
@@ -79,7 +71,7 @@ import { coverRect, inkPath, shapePath, textPadding } from './style'
 import { PagePreview, elementBox, elementLook, pageBackground } from './view'
 import { wordsFor } from './words'
 
-export interface DesignApi extends Partial<DesignAiApi> {
+export interface DesignApi extends Partial<DesignAiApi & DesignAiSettingsApi> {
   savePng(bytes: Uint8Array, name: string, format?: 'png' | 'jpg'): Promise<string | null>
   savePdf(
     pages: Uint8Array[],
@@ -92,7 +84,7 @@ export interface DesignApi extends Partial<DesignAiApi> {
   pickImage(): Promise<{ dataUrl: string; width: number; height: number } | null>
 }
 
-type Tab = 'ai' | 'templates' | 'elements' | 'text' | 'layers'
+type Tab = 'templates' | 'elements' | 'text' | 'layers'
 
 type Drag =
   | {
@@ -249,11 +241,17 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   const [fit, setFit] = useState(0.4)
   const [zoom, setZoom] = useState(1)
   const [notice, setNotice] = useState<string | null>(null)
-  // the AI first when there is one (it makes a whole design from a request); a map's card news opens on its layers
-  const [tab, setTab] = useState<Tab>(() =>
-    p.outline ? 'layers' : p.api.aiStream ? 'ai' : 'templates',
-  )
+  // a map's card news opens on its layers
+  const [tab, setTab] = useState<Tab>(() => (p.outline ? 'layers' : 'templates'))
   const [outlineOpen, setOutlineOpen] = useState(false)
+  // the right side: the selection's properties, or the AI helper (first, when there is an AI)
+  const [side, setSide] = useState<'props' | 'ai'>(() =>
+    !p.outline && p.api.aiStream ? 'ai' : 'props',
+  )
+  /** the side switched to the properties for a selection: it goes back when nothing is picked */
+  const returnToAi = useRef(false)
+  /** the page is a template just picked: the templates panel offers to fill it with AI */
+  const [fromTemplate, setFromTemplate] = useState(false)
   const [outlineText, setOutlineText] = useState(
     '공문서 작성 규칙\n  날짜 표기\n    2026. 10. 30. 처럼 씁니다\n  항목 번호\n    1. 가. 1) 가) 순서\n  끝 표시\n    본문 끝에 두 칸 띄우고 끝.',
   )
@@ -288,20 +286,6 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   const docRef = useRef(doc)
   docRef.current = doc
   const lastMerge = useRef<{ key: string; at: number } | null>(null)
-
-  const hasAi = Boolean(
-    p.api.aiStream && p.api.getAiSettings && p.api.onAiStream && p.api.aiStreamCancel,
-  )
-  const [aiRequest, setAiRequest] = useState('')
-  const [aiFormat, setAiFormat] = useState<string>(
-    () => FORMATS.find((f) => f.width === doc.width && f.height === doc.height)?.id ?? 'a4',
-  )
-  const [aiMood, setAiMood] = useState<DesignMood | 'auto'>('auto')
-  const [aiBusy, setAiBusy] = useState<null | 'make' | 'rewrite'>(null)
-  const [aiLive, setAiLive] = useState('')
-  const [aiError, setAiError] = useState<string | null>(null)
-  const [aiMade, setAiMade] = useState(false)
-  const aiAbort = useRef<AbortController | null>(null)
 
   const pi = Math.min(pageIndex, doc.pages.length - 1)
   const page: DesignPage = doc.pages[pi]!
@@ -379,16 +363,17 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
       }
     })
 
-  const replaceDoc = (next: DesignDoc) => {
+  const replaceDoc = (next: DesignDoc, keepPage = false) => {
     const before = docRef.current
     setPast((list) => [...list.slice(-(HISTORY - 1)), before])
     setFuture([])
     lastMerge.current = null
     docRef.current = next
     setDoc(next)
-    setPageIndex(0)
+    if (!keepPage) setPageIndex(0)
     setSelected([])
     setEditing(null)
+    setFromTemplate(false)
   }
   const undo = () => {
     const prev = past[past.length - 1]
@@ -1119,86 +1104,47 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
 
   // ---- AI ----
 
-  const aiApi = p.api as DesignAiApi
-  const stopAi = () => aiAbort.current?.abort()
-  const today = () => {
-    const d = new Date()
-    return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`
-  }
-  const makeWithAi = async () => {
-    if (aiBusy) return
-    if (!aiRequest.trim()) return setAiError(w.aiNeedRequest)
-    const format = FORMATS.find((f) => f.id === aiFormat) ?? FORMATS[1]!
-    const controller = new AbortController()
-    aiAbort.current = controller
-    setAiBusy('make')
-    setAiError(null)
-    setAiLive('')
-    const turn = await runDesignAi(
-      aiApi,
-      p.lang,
-      w.aiErrors,
-      briefRequest(aiRequest, format, p.lang, today()),
-      {
-        signal: controller.signal,
-        maxChars: MAX_BRIEF_CHARS,
-        onProgress: setAiLive,
-      },
-    )
-    setAiBusy(null)
-    if (!turn.ok) {
-      if (!turn.stopped) setAiError(`${w.aiFailed}: ${turn.error}`)
-      return
+  const ai = useDesignAi({
+    lang: p.lang,
+    w,
+    api: p.api,
+    docRef,
+    replaceDoc,
+    restoreDoc: (next) => replaceDoc(next, true),
+    setPages: (pages) =>
+      commit((d) => {
+        d.pages = pages
+      }),
+    showPanel: () => openAi(),
+  })
+  const hasAi = ai.available
+  const picked = selected.length > 0
+  useEffect(() => {
+    if (
+      picked &&
+      side === 'ai' &&
+      ai.busy === null &&
+      !ai.gate.connectChoice &&
+      !ai.gate.noticeDue
+    ) {
+      returnToAi.current = true
+      setSide('props')
+    } else if (!picked && returnToAi.current) {
+      returnToAi.current = false
+      setSide('ai')
     }
-    const brief = parseBrief(turn.text)
-    if (!brief) return setAiError(w.aiUnreadable)
-    if (aiMood !== 'auto') brief.mood = aiMood
-    replaceDoc(designFromBrief(brief, format.id))
-    setAiLive('')
-    setAiMade(true)
+    // only a change of "anything picked" moves the side (the rest is read as it is then)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [picked])
+  /** focus the composer: bumped when the panel opens for a request */
+  const [aiFocus, setAiFocus] = useState(0)
+  const openAi = (mode?: 'make' | 'fill') => {
+    if (!hasAi) return
+    if (mode) ai.setMode(mode)
+    returnToAi.current = false
+    setSide('ai')
+    if (mode) setAiFocus((n) => n + 1)
   }
-  const rewriteWithAi = async (id: string, mode: RewriteMode) => {
-    const target = docRef.current.pages.flatMap((pg) => pg.elements).find((e) => e.id === id)
-    if (aiBusy || !target?.text?.trim()) return
-    const controller = new AbortController()
-    aiAbort.current = controller
-    setAiBusy('rewrite')
-    setAiError(null)
-    const turn = await runDesignAi(
-      aiApi,
-      p.lang,
-      w.aiErrors,
-      rewriteRequest(target.text, mode, p.lang),
-      {
-        signal: controller.signal,
-        maxChars: Math.max(2_000, target.text.length * 6),
-      },
-    )
-    setAiBusy(null)
-    if (!turn.ok) {
-      if (!turn.stopped) setAiError(`${w.aiFailed}: ${turn.error}`)
-      return
-    }
-    const text = cleanRewrite(turn.text, target.text)
-    if (!text) return setAiError(w.aiUnreadable)
-    commit((d) => {
-      for (const pg of d.pages) {
-        const e = pg.elements.find((x) => x.id === id)
-        if (!e) continue
-        e.text = text
-        // a longer text keeps its size and gets the height it needs
-        const size = e.fontSize ?? 48
-        e.h = Math.max(
-          e.h,
-          Math.ceil(
-            estimateLines(text, size, e.w, e.fontWeight ?? 400) * size * (e.lineHeight ?? 1.35),
-          ),
-        )
-      }
-    })
-  }
-  // a closed window stops whatever the AI was doing
-  useEffect(() => () => aiAbort.current?.abort(), [])
 
   // ---- export ----
 
@@ -1320,6 +1266,56 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
             onPointerDown={(event) => startRotate(event, e)}
             data-handle="rotate"
           />
+        )}
+      </div>
+    )
+  }
+
+  /**
+   * The quick AI rewrite over a picked text box, clear of the rotation handle
+   * (under the box when the page's top leaves no room): one click polishes,
+   * shortens, sharpens or translates it, through the same send gate as the AI helper.
+   */
+  const renderQuickAi = (e: DesignElement) => {
+    const b = bounds(e)
+    const width = 320
+    const above = b.top * scale - 84
+    const top = above >= -24 ? above : b.bottom * scale + 12
+    const left = Math.min(Math.max(0, b.left * scale), Math.max(0, doc.width * scale - width))
+    return (
+      <div
+        className="dz-ai-quick"
+        style={{ left, top }}
+        onPointerDown={(event) => event.stopPropagation()}
+        onDoubleClick={(event) => event.stopPropagation()}
+        role="toolbar"
+        aria-label={w.aiRewrite}
+        data-hanpan="design-ai-quick"
+      >
+        <span className="dz-ai-quick-mark" aria-hidden>
+          ✦
+        </span>
+        {ai.busy === 'rewrite' ? (
+          <>
+            <span className="dz-ai-quick-busy" role="status">
+              {w.aiRewriting}
+            </span>
+            <button type="button" onClick={ai.stop}>
+              {w.aiStop}
+            </button>
+          </>
+        ) : (
+          REWRITE_MODES.map((m) => (
+            <button
+              key={m}
+              type="button"
+              disabled={ai.busy !== null}
+              onClick={() => ai.send({ mode: 'rewrite', id: e.id, rewrite: m })}
+              data-ai-quick={m}
+            >
+              {w.rewrites[m]}
+            </button>
+          ))
         )}
       </div>
     )
@@ -1554,9 +1550,17 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     iconWords.every((q) => icon.label.includes(q) || icon.name.includes(q)),
   )
 
-  const tabs: Tab[] = hasAi
-    ? ['ai', 'templates', 'elements', 'text', 'layers']
-    : ['templates', 'elements', 'text', 'layers']
+  const tabs: Tab[] = ['templates', 'elements', 'text', 'layers']
+  const quickText =
+    hasAi &&
+    single?.kind === 'text' &&
+    !single.locked &&
+    editing !== single.id &&
+    !cropping &&
+    !marquee &&
+    !(drag.current && 'moved' in drag.current && drag.current.moved)
+      ? single
+      : null
   const formatId = FORMATS.find((f) => f.width === doc.width && f.height === doc.height)?.id ?? ''
 
   return (
@@ -1636,6 +1640,18 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
             {w.rulers}
           </button>
         </div>
+        {hasAi && (
+          <button
+            type="button"
+            className={`dz-ai-open${side === 'ai' ? ' on' : ''}`}
+            onClick={() => openAi()}
+            title={w.aiOpen}
+            aria-pressed={side === 'ai'}
+            data-action="design-ai-open"
+          >
+            {w.side.ai}
+          </button>
+        )}
         <div className="dz-group dz-export">
           <button
             type="button"
@@ -1672,92 +1688,24 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
               onClick={() => setTab(t)}
               data-tab={t}
             >
-              {t === 'ai' ? '✦ ' : ''}
               {w.tabs[t]}
             </button>
           ))}
         </nav>
         <aside className="dz-left">
-          {tab === 'ai' && hasAi && (
-            <section className="dz-ai" data-hanpan="design-ai">
-              <h3>✦ {w.aiMake}</h3>
-              <textarea
-                rows={5}
-                value={aiRequest}
-                placeholder={w.aiPlaceholder}
-                disabled={aiBusy !== null}
-                onChange={(e) => setAiRequest(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) void makeWithAi()
-                }}
-                data-hanpan="design-ai-request"
-              />
-              <div className="dz-ai-opts">
-                <label>
-                  <span>{w.aiFormat}</span>
-                  <select
-                    value={aiFormat}
-                    disabled={aiBusy !== null}
-                    onChange={(e) => setAiFormat(e.target.value)}
-                    data-hanpan="design-ai-format"
-                  >
-                    {FORMATS.map((f) => (
-                      <option key={f.id} value={f.id}>
-                        {f.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  <span>{w.aiMood}</span>
-                  <select
-                    value={aiMood}
-                    disabled={aiBusy !== null}
-                    onChange={(e) => setAiMood(e.target.value as DesignMood | 'auto')}
-                    data-hanpan="design-ai-mood"
-                  >
-                    <option value="auto">{w.aiAuto}</option>
-                    {DESIGN_MOODS.map((m) => (
-                      <option key={m} value={m}>
-                        {w.moods[m]}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-              {aiBusy === 'make' ? (
-                <button type="button" onClick={stopAi} data-action="design-ai-stop">
-                  {w.aiStop}
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="primary"
-                  disabled={aiBusy !== null}
-                  onClick={() => void makeWithAi()}
-                  data-action="design-ai-make"
-                >
-                  {aiMade ? w.aiAgain : w.aiGo}
-                </button>
-              )}
-              {aiBusy === 'make' && (
-                <div className="dz-ai-live" role="status">
-                  <span>{w.aiWriting}</span>
-                  {aiLive && <pre>{aiLive}</pre>}
-                </div>
-              )}
-              {aiError && (
-                <p className="dz-ai-error" role="alert" data-hanpan="design-ai-error">
-                  {aiError}
-                </p>
-              )}
-              <p className="dz-muted">{w.aiHint}</p>
-            </section>
-          )}
-
           {tab === 'templates' && (
             <>
               <h3>{w.templates}</h3>
+              {hasAi && fromTemplate && (
+                <button
+                  type="button"
+                  className="dz-ai-nudge"
+                  onClick={() => openAi('fill')}
+                  data-action="design-ai-fill-template"
+                >
+                  {w.aiTemplateNudge}
+                </button>
+              )}
               <div className="dz-template-grid">
                 {templatePreviews.map(({ t, doc: preview }) => (
                   <button
@@ -1765,7 +1713,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                     type="button"
                     className="dz-template"
                     data-template={t.id}
-                    onClick={() => replaceDoc(t.make())}
+                    onClick={() => (replaceDoc(t.make()), setFromTemplate(true))}
                     title={t.name}
                   >
                     <PagePreview
@@ -2148,6 +2096,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                 {renderOverlay()}
                 {renderHandles()}
               </div>
+              {quickText && renderQuickAi(quickText)}
             </div>
           </div>
           <nav className="dz-pages">
@@ -2206,38 +2155,60 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
             </button>
           </nav>
         </section>
-        <aside className="dz-right">
-          <Inspector
-            w={w}
-            page={page}
-            selection={selection}
-            docColors={docColors}
-            change={changeElement}
-            changePage={changePage}
-            align={align}
-            spread={spread}
-            arrange={arrange}
-            duplicate={duplicate}
-            remove={remove}
-            toggleLock={toggleLock}
-            fillPage={fillPage}
-            replaceImage={(id) => void replaceImage(id)}
-            fonts={(doc.fonts ?? []).map((f) => f.family)}
-            addFont={() => fontInput.current?.click()}
-            group={group}
-            ungroup={ungroup}
-            startCrop={startCrop}
-            ai={
-              hasAi
-                ? {
-                    busy: aiBusy !== null,
-                    error: aiError,
-                    rewrite: (id, m) => void rewriteWithAi(id, m),
-                    stop: stopAi,
-                  }
-                : null
-            }
-          />
+        <aside className={`dz-right${hasAi && side === 'ai' ? ' dz-right-ai' : ''}`}>
+          {hasAi && (
+            <div className="dz-side-tabs" role="tablist">
+              {(['props', 'ai'] as const).map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  role="tab"
+                  aria-selected={side === s}
+                  className={side === s ? 'on' : ''}
+                  onClick={() => ((returnToAi.current = false), setSide(s))}
+                  data-side={s}
+                >
+                  {w.side[s]}
+                </button>
+              ))}
+            </div>
+          )}
+          {hasAi && side === 'ai' ? (
+            <DesignAiPanel lang={p.lang} w={w} ai={ai} doc={doc} focusKey={aiFocus} />
+          ) : (
+            <Inspector
+              w={w}
+              page={page}
+              selection={selection}
+              docColors={docColors}
+              change={changeElement}
+              changePage={changePage}
+              align={align}
+              spread={spread}
+              arrange={arrange}
+              duplicate={duplicate}
+              remove={remove}
+              toggleLock={toggleLock}
+              fillPage={fillPage}
+              replaceImage={(id) => void replaceImage(id)}
+              fonts={(doc.fonts ?? []).map((f) => f.family)}
+              addFont={() => fontInput.current?.click()}
+              group={group}
+              ungroup={ungroup}
+              startCrop={startCrop}
+              ai={
+                hasAi
+                  ? {
+                      busy: ai.busy !== null,
+                      error:
+                        ai.busy === null && ai.thread.at(-1)?.mode === 'rewrite' ? ai.error : null,
+                      rewrite: (id, rewrite) => ai.send({ mode: 'rewrite', id, rewrite }),
+                      stop: ai.stop,
+                    }
+                  : null
+              }
+            />
+          )}
         </aside>
       </div>
       {renderMenu()}

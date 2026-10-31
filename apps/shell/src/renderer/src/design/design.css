@@ -896,3 +896,227 @@ body {
 .dz-credit {
   font-size: 11px;
 }
+
+/* ---- the AI helper (right side), its entry in the top bar and the quick rewrite ---- */
+.dz button.dz-ai-open {
+  margin-inline-start: auto;
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.dz button.dz-ai-open.on {
+  background: var(--accent);
+  color: var(--dz-on-accent);
+}
+.dz-side-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-bottom: 8px;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--hover);
+}
+.dz .dz-side-tabs button {
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-secondary);
+}
+.dz .dz-side-tabs button.on {
+  background: var(--surface);
+  color: var(--text-primary);
+  font-weight: 600;
+  box-shadow: 0 0 0 1px var(--border);
+}
+.dz-right.dz-right-ai {
+  display: flex;
+  flex-direction: column;
+  width: 336px;
+  overflow: hidden;
+  padding-bottom: 10px;
+}
+.dz-right-ai .dz-ai {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+.dz-ai-modes {
+  display: flex;
+  gap: 4px;
+}
+.dz .dz-ai-modes button {
+  flex: 1;
+  border-radius: 99px;
+  font-size: 12px;
+}
+.dz .dz-ai-modes button.on {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.dz-ai-intro {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.dz-ai-thread {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 80px;
+  overflow: auto;
+  padding: 2px;
+}
+.dz-ai-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto;
+}
+.dz .dz-ai-chip {
+  border-style: dashed;
+  border-radius: 10px;
+  color: var(--text-secondary);
+  text-align: start;
+}
+.dz .dz-ai-chip:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+.dz-ai-turn {
+  display: grid;
+  gap: 4px;
+}
+.dz-ai-asked {
+  display: -webkit-box;
+  justify-self: end;
+  max-width: 88%;
+  margin: 0;
+  overflow: hidden;
+  padding: 6px 10px;
+  border-radius: 12px 12px 2px 12px;
+  background: var(--hover);
+  white-space: pre-wrap;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+.dz-ai-undone .dz-ai-asked {
+  opacity: 0.6;
+}
+.dz-ai-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.dz-ai-note::before {
+  color: var(--accent);
+  content: '✦';
+}
+.dz .dz-ai-note button {
+  padding: 2px 8px;
+  font-size: 12px;
+}
+.dz-ai .ai-input-box {
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-16);
+  background: var(--color-bg-page);
+  box-shadow: var(--shadow-btn-hover);
+}
+.dz-ai .ai-input-box textarea {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  max-height: 168px;
+  margin: 10px 0 2px;
+  overflow-y: auto;
+  padding: 0 12px;
+  border: none;
+  background: none;
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: 14px;
+  line-height: 21px;
+  outline: none;
+  resize: none;
+}
+.dz-ai .ai-input-box textarea::placeholder {
+  color: var(--color-text-tertiary);
+}
+.dz-ai .ai-input-footer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 2px 6px 6px 8px;
+}
+.dz .dz-ai .ai-send-btn {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-inline-start: auto;
+  padding: 0;
+  border: none;
+  border-radius: 35%;
+  background: transparent;
+}
+.dz .dz-ai .ai-send-btn img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.dz .dz-ai .ai-send-btn:disabled {
+  opacity: 1;
+}
+.dz-ai-foot {
+  margin: 0;
+  font-size: 11px;
+}
+.dz .dz-ai-nudge {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  border-color: var(--accent);
+  border-radius: 10px;
+  color: var(--accent);
+  font-weight: 600;
+  text-align: start;
+}
+.dz-ai-quick {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: var(--shadow-menu);
+  white-space: nowrap;
+}
+.dz .dz-ai-quick button {
+  padding: 4px 8px;
+  border-color: transparent;
+  font-size: 12px;
+}
+.dz-ai-quick-mark {
+  padding: 0 4px 0 6px;
+  color: var(--accent);
+  font-weight: 700;
+}
+.dz-ai-quick-busy {
+  padding: 0 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}

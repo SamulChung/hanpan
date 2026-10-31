@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { IpcRendererEvent } from 'electron'
+import { subscriptionApi } from './subscription-bridge'
 
 // Hanpan design board window: save and open through main's dialogs, copy a
 // picture to the clipboard, bind pages into a PDF. Paths never reach the page.
@@ -38,6 +39,13 @@ contextBridge.exposeInMainWorld('hanpanDesign', {
   // the AI the person chose in Settings, through the same channels every editor
   // uses (registered by the docs main): a provider that cannot run is refused there
   getAiSettings: () => ipcRenderer.invoke('ai:get-settings'),
+  setAiSettings: (settings: unknown) => ipcRenderer.invoke('ai:set-settings', settings),
+  onAiSettingsChanged(handler: (settings: unknown) => void) {
+    const listener = (_event: IpcRendererEvent, settings: unknown) => handler(settings)
+    ipcRenderer.on('ai:settings-changed', listener)
+    return () => ipcRenderer.removeListener('ai:settings-changed', listener)
+  },
+  openAiModelSettings: () => ipcRenderer.invoke('ai:open-model-settings'),
   aiStream: (request: unknown) => ipcRenderer.invoke('ai:stream', request),
   aiStreamCancel: (requestId: string) => ipcRenderer.invoke('ai:stream-cancel', requestId),
   onAiStream(handler: (chunk: unknown) => void) {
@@ -46,3 +54,6 @@ contextBridge.exposeInMainWorld('hanpanDesign', {
     return () => ipcRenderer.removeListener('ai:stream-chunk', listener)
   },
 })
+
+// the connect cards' statuses and actions, the same bridge the main window has
+contextBridge.exposeInMainWorld('aiOfficeSubscription', subscriptionApi)

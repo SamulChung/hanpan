@@ -5,7 +5,6 @@ import {
   AI_PROVIDERS,
   AI_SEARCH_PROVIDERS,
   FREE_AI_IPC_CHANNELS,
-  SUBSCRIPTION_IPC_CHANNELS,
   freeAiConnectResultOf,
   freeAiQuotaOf,
   getProviderAdapter,
@@ -70,12 +69,7 @@ import {
   type QuickLookSettings,
 } from '../shared/quick-look-home'
 import type { QuickLookPayload } from '../shared/quick-look-api'
-import type { SubscriptionApi } from '../shared/subscription-api'
-import {
-  SHELL_SUBSCRIPTION_CHANNELS,
-  subscriptionLaunchResultOf,
-  subscriptionStatusMapOf,
-} from '../shared/subscription-api'
+import { subscriptionApi } from './subscription-bridge'
 
 const UI_LANGUAGES: readonly UiLanguage[] = [
   'zh',
@@ -707,73 +701,6 @@ contextBridge.exposeInMainWorld('aiOfficeDrive', driveApi)
 // skill reads and cards (the main process checks every request again)
 contextBridge.exposeInMainWorld(USER_SKILLS_BRIDGE_KEY, userSkillsBridge())
 
-// Subscription channels are registered once for the whole app by the docs main.
-// Until that handler exists an invoke rejects; the renderer reads that as
-// "still checking" (see renderer/src/subscription-client.ts).
-const subscriptionApi: SubscriptionApi = {
-  async statuses() {
-    return subscriptionStatusMapOf(await ipcRenderer.invoke(SUBSCRIPTION_IPC_CHANNELS.statuses))
-  },
-  async recheck(providers) {
-    return subscriptionStatusMapOf(
-      await ipcRenderer.invoke(
-        SUBSCRIPTION_IPC_CHANNELS.recheck,
-        providers ? { providers } : undefined,
-      ),
-    )
-  },
-  async login(provider, mode) {
-    return subscriptionLaunchResultOf(
-      await ipcRenderer.invoke(
-        SUBSCRIPTION_IPC_CHANNELS.login,
-        mode ? { provider, mode } : { provider },
-      ),
-    )
-  },
-  async logout(provider) {
-    return subscriptionLaunchResultOf(
-      await ipcRenderer.invoke(SUBSCRIPTION_IPC_CHANNELS.logout, { provider }),
-    )
-  },
-  async install(provider) {
-    return subscriptionLaunchResultOf(
-      await ipcRenderer.invoke(SUBSCRIPTION_IPC_CHANNELS.install, { provider }),
-    )
-  },
-  async update(provider) {
-    return subscriptionLaunchResultOf(
-      await ipcRenderer.invoke(SUBSCRIPTION_IPC_CHANNELS.update, { provider }),
-    )
-  },
-  async cancelLogin(provider) {
-    return subscriptionLaunchResultOf(
-      await ipcRenderer.invoke(SUBSCRIPTION_IPC_CHANNELS.cancelLogin, { provider }),
-    )
-  },
-  async setMeteredAccepted(provider, accepted) {
-    const result: unknown = await ipcRenderer.invoke(SUBSCRIPTION_IPC_CHANNELS.metered, {
-      provider,
-      accepted,
-    })
-    const raw = (result ?? {}) as { ok?: unknown; statuses?: unknown }
-    return { ok: raw.ok === true, statuses: subscriptionStatusMapOf(raw.statuses) }
-  },
-  async codexImageAvailable() {
-    return (await ipcRenderer.invoke(SUBSCRIPTION_IPC_CHANNELS.codexImage)) === true
-  },
-  onChanged(handler) {
-    const listener = (_event: IpcRendererEvent, statuses: unknown) =>
-      handler(subscriptionStatusMapOf(statuses))
-    ipcRenderer.on(SUBSCRIPTION_IPC_CHANNELS.changed, listener)
-    return () => ipcRenderer.removeListener(SUBSCRIPTION_IPC_CHANNELS.changed, listener)
-  },
-  async openInstallHelp(provider) {
-    await ipcRenderer.invoke(SHELL_SUBSCRIPTION_CHANNELS.openInstallHelp, provider)
-  },
-  async openConnectHelp(path) {
-    await ipcRenderer.invoke(SHELL_SUBSCRIPTION_CHANNELS.openConnectHelp, path)
-  },
-}
 contextBridge.exposeInMainWorld('aiOfficeSubscription', subscriptionApi)
 
 const tabsApi: TabsApi = {
@@ -888,7 +815,8 @@ contextBridge.exposeInMainWorld('aiOfficePdfToolsHome', pdfToolsHomeApi)
 // Hanpan: templates (and the design board) from the Home screen
 contextBridge.exposeInMainWorld('hanpanApi', {
   templates: () => ipcRenderer.invoke('hanpan:templates'),
-  openTemplate: (id: string, target: 'hwp' | 'docx') => ipcRenderer.invoke('hanpan:open-template', id, target),
+  openTemplate: (id: string, target: 'hwp' | 'docx') =>
+    ipcRenderer.invoke('hanpan:open-template', id, target),
   openDesign: () => ipcRenderer.invoke('hanpan:open-design'),
   newMap: (topic: string) => ipcRenderer.invoke('hanpan:new-map', topic),
   mdFolder: () => ipcRenderer.invoke('hanpan:md-folder'),

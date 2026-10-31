@@ -1,14 +1,19 @@
 import { describe, expect, it } from 'vitest'
 import {
+  applyFill,
   briefRequest,
   cleanRewrite,
   designFromBrief,
   estimateLines,
+  fillRequest,
+  fillSlots,
   fitSize,
   parseBrief,
+  parseFill,
   rewriteRequest,
 } from '../src/renderer/src/design/ai'
 import { FORMATS } from '../src/renderer/src/design/model'
+import { DESIGN_TEMPLATES } from '../src/renderer/src/design/templates'
 
 const POSTER = `**KICKER:** ○○초등학교
 TITLE: 2026 학부모 설명회
@@ -66,7 +71,9 @@ describe('designFromBrief', () => {
     const doc = designFromBrief(parseBrief(POSTER)!, 'a4')
     expect([doc.width, doc.height, doc.pages.length]).toEqual([1240, 1754, 1])
     const texts = doc.pages[0]!.elements.filter((e) => e.kind === 'text')
-    expect(texts.map((e) => e.text)).toEqual(expect.arrayContaining(['2026 학부모 설명회', '○○초등학교장']))
+    expect(texts.map((e) => e.text)).toEqual(
+      expect.arrayContaining(['2026 학부모 설명회', '○○초등학교장']),
+    )
     expect(texts.find((e) => e.text?.includes('□ 일시: 2026. 11. 20.(목) 19:00'))).toBeTruthy()
     const footer = texts.find((e) => e.text === '○○초등학교장')!
     for (const e of doc.pages[0]!.elements) {
@@ -77,18 +84,30 @@ describe('designFromBrief', () => {
   })
 
   it('shrinks a crowded page until it clears the footer', () => {
-    const items = Array.from({ length: 8 }, (_, i) => `ITEM: 항목 ${i + 1} | 아주 길게 늘어놓은 설명 문장이 들어가는 자리입니다 ${i}`).join('\n')
-    const doc = designFromBrief(parseBrief(`TITLE: 아주 긴 제목이 들어가는 행사 안내문의 제목 줄입니다\nSUBTITLE: 부제\nBODY: ${'본문 '.repeat(60)}\n${items}\nFOOTER: 끝`)!, 'a4')
+    const items = Array.from(
+      { length: 8 },
+      (_, i) => `ITEM: 항목 ${i + 1} | 아주 길게 늘어놓은 설명 문장이 들어가는 자리입니다 ${i}`,
+    ).join('\n')
+    const doc = designFromBrief(
+      parseBrief(
+        `TITLE: 아주 긴 제목이 들어가는 행사 안내문의 제목 줄입니다\nSUBTITLE: 부제\nBODY: ${'본문 '.repeat(60)}\n${items}\nFOOTER: 끝`,
+      )!,
+      'a4',
+    )
     const texts = doc.pages[0]!.elements.filter((e) => e.kind === 'text')
     const footer = texts.find((e) => e.text === '끝')!
-    expect(Math.max(...texts.filter((e) => e !== footer).map((e) => e.y + e.h))).toBeLessThanOrEqual(footer.y)
+    expect(
+      Math.max(...texts.filter((e) => e !== footer).map((e) => e.y + e.h)),
+    ).toBeLessThanOrEqual(footer.y)
   })
 
   it('makes card news: a cover, a card per CARD, and the pages are card-sized', () => {
     const doc = designFromBrief(parseBrief(CARDS)!, 'card')
     expect(doc.pages).toHaveLength(3)
     expect([doc.width, doc.height]).toEqual([1080, 1080])
-    expect(doc.pages[1]!.elements.map((e) => e.text)).toEqual(expect.arrayContaining(['01', '날짜 표기']))
+    expect(doc.pages[1]!.elements.map((e) => e.text)).toEqual(
+      expect.arrayContaining(['01', '날짜 표기']),
+    )
   })
 
   it('lays out every format without a text box leaving the page sideways', () => {
@@ -106,10 +125,21 @@ describe('designFromBrief', () => {
 
 describe('text fitting', () => {
   it('counts Hangul as wider than Latin and shrinks to the line limit', () => {
-    expect(estimateLines('가'.repeat(20), 50, 500)).toBeGreaterThan(estimateLines('a'.repeat(20), 50, 500))
-    const size = fitSize('아주 긴 제목이 들어가는 행사 안내문의 제목 줄입니다', 800, 120, 40, 2, 900)
+    expect(estimateLines('가'.repeat(20), 50, 500)).toBeGreaterThan(
+      estimateLines('a'.repeat(20), 50, 500),
+    )
+    const size = fitSize(
+      '아주 긴 제목이 들어가는 행사 안내문의 제목 줄입니다',
+      800,
+      120,
+      40,
+      2,
+      900,
+    )
     expect(size).toBeLessThan(120)
-    expect(estimateLines('아주 긴 제목이 들어가는 행사 안내문의 제목 줄입니다', size, 800, 900)).toBeLessThanOrEqual(2)
+    expect(
+      estimateLines('아주 긴 제목이 들어가는 행사 안내문의 제목 줄입니다', size, 800, 900),
+    ).toBeLessThanOrEqual(2)
   })
 })
 
@@ -129,8 +159,61 @@ describe('asking and rewriting', () => {
   })
 
   it('cleans a lead-in, quotes and fences off a rewrite', () => {
-    expect(cleanRewrite('다듬은 글:\n"함께 만드는 우리 학교"', '우리 학교')).toBe('함께 만드는 우리 학교')
+    expect(cleanRewrite('다듬은 글:\n"함께 만드는 우리 학교"', '우리 학교')).toBe(
+      '함께 만드는 우리 학교',
+    )
     expect(cleanRewrite("```\nHere's the text:\nJoin us\n```", 'x')).toBe('Join us')
     expect(cleanRewrite('   ', 'x')).toBeNull()
+  })
+})
+
+describe('template fill', () => {
+  const doc = DESIGN_TEMPLATES.find((t) => t.id === 'event-poster')!.make()
+
+  it('offers every unlocked text box, top to bottom, and keys the request by T number', () => {
+    const slots = fillSlots(doc)
+    expect(slots.length).toBeGreaterThan(2)
+    const ys = slots.map((s) => doc.pages[0]!.elements.find((e) => e.id === s.id)!.y)
+    expect([...ys].sort((a, b) => a - b)).toEqual(ys)
+    const req = fillRequest(slots, '가을 독서 축제', 'ko', '2026. 10. 31.')
+    expect(req.user).toContain('가을 독서 축제')
+    expect(req.user).toContain(`T1: ${slots[0]!.text.split('\n')[0]}`)
+    expect(req.system).toContain('T번호')
+  })
+
+  it('reads keyed lines, continuation lines and stray decoration, and drops unknown keys', () => {
+    const words = parseFill(
+      '여기 있습니다:\n**T1:** 가을 독서 축제\nT2: [1] 책과 함께\n두 번째 줄\n\nT99: 없는 상자\n- T3. 11월 2일',
+      5,
+    )
+    expect(words.get(0)).toBe('가을 독서 축제')
+    expect(words.get(1)).toBe('책과 함께\n두 번째 줄')
+    expect(words.get(2)).toBe('11월 2일')
+    expect(words.size).toBe(3)
+  })
+
+  it('puts the words in place, shrinking a longer text to the lines its box had', () => {
+    const slots = fillSlots(doc)
+    const first = doc.pages[0]!.elements.find((e) => e.id === slots[0]!.id)!
+    const long = `${first.text} ${first.text} ${first.text} ${first.text}`
+    const { doc: next, changed } = applyFill(
+      doc,
+      slots,
+      new Map([
+        [0, long],
+        [1, slots[1]!.text],
+      ]),
+    )
+    expect(changed).toBe(1)
+    const after = next.pages[0]!.elements.find((e) => e.id === first.id)!
+    expect(after.text).toBe(long)
+    expect(after.fontSize!).toBeLessThan(first.fontSize!)
+    expect(after.fontSize!).toBeGreaterThanOrEqual(Math.round(first.fontSize! * 0.6))
+    expect(after.x).toBe(first.x)
+    expect(after.w).toBe(first.w)
+    // the rest of the design is untouched
+    expect(next.pages[0]!.elements.filter((e) => e.kind !== 'text')).toEqual(
+      doc.pages[0]!.elements.filter((e) => e.kind !== 'text'),
+    )
   })
 })

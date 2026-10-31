@@ -2,6 +2,16 @@ import { resolve } from 'node:path'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'electron-vite'
 
+// The preloads are built one by one (isolatedEntries below), and electron-vite's
+// progress line for that assumes a terminal. A CI or release log is not one, so
+// the cursor calls do nothing there instead of failing the build.
+const out = process.stdout as Partial<typeof process.stdout>
+if (typeof out.clearLine !== 'function') {
+  out.clearLine = () => true
+  out.cursorTo = () => true
+  out.moveCursor = () => true
+}
+
 export default defineConfig({
   // Bundle everything into the shell main (same policy as apps/docs): the
   // imported docs/sheets main modules are TS source with no build artifacts,
@@ -20,6 +30,9 @@ export default defineConfig({
   },
   preload: {
     build: {
+      // a sandboxed preload cannot load a second file: each one is bundled whole,
+      // even when two share a module (the subscription bridge of index and design)
+      isolatedEntries: true,
       rollupOptions: {
         input: {
           index: resolve(__dirname, 'src/preload/index.ts'),

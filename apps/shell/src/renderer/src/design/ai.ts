@@ -823,3 +823,146 @@ export function cleanRewrite(raw: string, original: string): string | null {
   const limit = Math.max(original.split('\n').length * 2 + 2, 6)
   return text.split('\n').slice(0, limit).join('\n')
 }
+
+// ---- filling a design's own words ----
+
+/** One text box the AI may rewrite: where it is and what it says now. */
+export interface FillSlot {
+  id: string
+  page: number
+  text: string
+}
+
+/** Longest answer taken for a fill (every box of a long card news fits in a fraction). */
+export const MAX_FILL_CHARS = 12_000
+/** Boxes offered at most; a design with more keeps the rest as they are. */
+const MAX_FILL_SLOTS = 80
+
+/** The design's text boxes, page by page, top to bottom: the slots a fill answers. */
+export function fillSlots(doc: DesignDoc): FillSlot[] {
+  const slots: FillSlot[] = []
+  doc.pages.forEach((pg, page) => {
+    const texts = pg.elements
+      .filter((e) => e.kind === 'text' && !e.locked && e.text?.trim())
+      .sort((a, b) => a.y - b.y || a.x - b.x)
+    for (const e of texts) slots.push({ id: e.id, page, text: e.text! })
+  })
+  return slots.slice(0, MAX_FILL_SLOTS)
+}
+
+/**
+ * Ask for new words for every slot, keyed `T1:` … in the order given. The
+ * design stays: the AI sees each box's words and length, and answers only the
+ * boxes it changes.
+ */
+export function fillRequest(
+  slots: readonly FillSlot[],
+  request: string,
+  lang: string,
+  today: string,
+): { system: string; user: string } {
+  const multi = slots.some((s) => s.page > 0)
+  const listed = slots
+    .map((s, i) => {
+      const lines = s.text.split('\n')
+      const where = multi ? `[${s.page + 1}] ` : ''
+      return `T${i + 1}: ${where}${lines.join('\n')}`
+    })
+    .join('\n')
+  const system =
+    lang === 'ko'
+      ? [
+          '당신은 이미 디자인된 포스터·안내문·카드뉴스의 글을 바꿔 쓰는 카피라이터입니다. 배치와 색은 그대로 두고 글만 바꿉니다.',
+          `오늘: ${today}.`,
+          '아래 글 상자 목록은 지금 디자인에 들어 있는 글입니다. 요청에 맞게 각 상자의 글을 새로 쓰세요.',
+          '- 상자마다 지금 글과 비슷한 길이와 줄 수로 씁니다. 제목은 짧게, 날짜·장소 같은 칸은 그 역할 그대로 씁니다.',
+          '- 숫자 하나, 기호, 쪽 번호처럼 꾸밈으로 보이는 상자는 그대로 둡니다.',
+          '- 요청에 없는 사실(날짜, 장소, 전화번호, 이름)은 지어내지 말고 "(날짜)"처럼 빈칸으로 남깁니다.',
+          '- [2]처럼 대괄호의 숫자는 그 상자가 있는 쪽입니다. 답에는 쓰지 않습니다.',
+          '답은 바꾼 상자만 "T번호: 새 글" 줄로 씁니다. 여러 줄 글은 다음 줄에 이어 씁니다. 설명, 머리말, 코드 블록, 마크다운 강조는 쓰지 않습니다.',
+        ].join('\n')
+      : [
+          'You rewrite the words of a poster, notice or card news that is already designed. The layout and colours stay; only the words change.',
+          `Today: ${today}.`,
+          'The list below is the text boxes in the design now. Write new words for each box to fit the request.',
+          '- Keep each box close to its current length and number of lines. Titles stay short; a date or place box stays a date or place.',
+          '- Leave boxes that look decorative (a lone number, a symbol, a page number) as they are.',
+          '- Do not invent facts the request does not give (dates, places, phone numbers, names): leave a blank such as "(date)".',
+          '- A number in brackets such as [2] is the page the box is on. Do not write it in the answer.',
+          'Answer only the boxes you change, one "T<number>: new text" line each; a text of several lines continues on the next lines. No explanation, preamble, code block or markdown emphasis.',
+        ].join('\n')
+  const user =
+    lang === 'ko'
+      ? `요청:\n${request.trim()}\n\n글 상자:\n${listed}`
+      : `Request:\n${request.trim()}\n\nText boxes:\n${listed}`
+  return { system, user }
+}
+
+/**
+ * The new words in an answer, by slot index (0-based). Lines before the first
+ * key are dropped; a line with no key continues the box above it; a page mark
+ * the model copied is taken off.
+ */
+export function parseFill(raw: string, count: number): Map<number, string> {
+  const out = new Map<number, string[]>()
+  let current: number | null = null
+  for (const line of raw.replace(/```[a-z]*/gi, '').split('\n')) {
+    const key = /^\s*(?:[-*]\s*)?\**\s*T\s*(\d+)\s*\**\s*[:：.)]\s*(.*)$/i.exec(line)
+    if (key) {
+      const index = Number(key[1]) - 1
+      current = index >= 0 && index < count ? index : null
+      if (current !== null) out.set(current, [tidy(key[2]!.replace(/^\[\d+\]\s*/, ''))])
+      continue
+    }
+    if (current === null) continue
+    const text = tidy(line)
+    if (text) out.get(current)!.push(text)
+    else current = null
+  }
+  const result = new Map<number, string>()
+  for (const [index, lines] of out) {
+    const text = lines.join('\n').trim()
+    if (text) result.set(index, text)
+  }
+  return result
+}
+
+/**
+ * The design with the new words in place. Each box keeps its width and look;
+ * a longer text gets a smaller size (down to 60%) so it keeps to the lines the
+ * box had, and the box grows only if it still does not fit. Returns how many
+ * boxes changed.
+ */
+export function applyFill(
+  doc: DesignDoc,
+  slots: readonly FillSlot[],
+  words: ReadonlyMap<number, string>,
+): { doc: DesignDoc; changed: number } {
+  const byId = new Map<string, string>()
+  words.forEach((text, index) => {
+    const slot = slots[index]
+    if (slot && text !== slot.text) byId.set(slot.id, text)
+  })
+  const pages = doc.pages.map((pg) => ({
+    ...pg,
+    elements: pg.elements.map((e) => {
+      const text = byId.get(e.id)
+      if (text === undefined || !e.text) return e
+      const size = e.fontSize ?? 48
+      const weight = e.fontWeight ?? 400
+      const lineHeight = e.lineHeight ?? 1.35
+      const room = Math.max(
+        estimateLines(e.text, size, e.w, weight),
+        Math.floor(e.h / (size * lineHeight)),
+        1,
+      )
+      const fontSize = fitSize(text, e.w, size, Math.max(10, Math.round(size * 0.6)), room, weight)
+      const h = Math.max(
+        e.h,
+        Math.ceil(estimateLines(text, fontSize, e.w, weight) * fontSize * lineHeight),
+      )
+      return { ...e, text, fontSize, h }
+    }),
+  }))
+  return { doc: { ...doc, pages }, changed: byId.size }
+}

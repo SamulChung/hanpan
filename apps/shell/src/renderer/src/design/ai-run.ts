@@ -3,11 +3,18 @@
  * AI the person chose in Settings. Nothing stands in for a provider that cannot
  * run: main refuses, and the reason comes back as the error.
  */
-import { createIpcTransport, streamText, type IpcStreamChunk, type IpcStreamStart } from '@genoffice/agent-core'
+import {
+  createIpcTransport,
+  streamText,
+  type IpcStreamChunk,
+  type IpcStreamError,
+  type IpcStreamStart,
+} from '@genoffice/agent-core'
 import type { AiSettings } from '@genoffice/ai-provider'
 import { localContextLimit } from '@genoffice/ai-provider/browser'
 import type { Lang } from '@genoffice/i18n'
 import { aiContextConfirmText, aiRunErrorText } from '@genoffice/ui'
+import { askBlockedRunOf, type AskBlockedRun } from '../kb-ask-connection'
 
 export interface DesignAiApi {
   getAiSettings(): Promise<AiSettings | null>
@@ -25,7 +32,10 @@ export interface AiErrorWords {
   noSettings: string
 }
 
-export type AiTurn = { ok: true; text: string } | { ok: false; error: string; stopped?: boolean }
+/** `blocked`: the run stopped because its connection cannot go on (shown as the blocked notice) */
+export type AiTurn =
+  | { ok: true; text: string }
+  | { ok: false; error: string; stopped?: boolean; blocked?: AskBlockedRun }
 
 export async function runDesignAi(
   api: DesignAiApi,
@@ -36,7 +46,7 @@ export async function runDesignAi(
 ): Promise<AiTurn> {
   const settings = await api.getAiSettings().catch(() => null)
   if (!settings) return { ok: false, error: words.noSettings }
-  let lastError: string | null = null
+  let lastError: IpcStreamError | null = null
   const transport = createIpcTransport<AiSettings>({
     onStream: (listener) => api.onAiStream(listener),
     start: (request) => api.aiStream(request),
@@ -51,7 +61,7 @@ export async function runDesignAi(
     contextLimit: (s) => localContextLimit(s),
     confirmContext: (warning) => window.confirm(aiContextConfirmText(lang as Lang, warning)),
     onStreamError: (error) => {
-      lastError = error.message
+      lastError = error
     },
   })
   const outcome = await streamText({
@@ -64,7 +74,15 @@ export async function runDesignAi(
     ...(opts.onProgress ? { onProgress: opts.onProgress } : {}),
   })
   if (opts.signal.aborted) return { ok: false, error: '', stopped: true }
-  if (outcome.status === 'empty') return { ok: false, error: outcome.error || lastError || words.unknown }
+  if (outcome.status === 'empty') {
+    const failure = lastError as IpcStreamError | null
+    const blocked = askBlockedRunOf(failure)
+    return {
+      ok: false,
+      error: outcome.error || failure?.message || words.unknown,
+      ...(blocked ? { blocked } : {}),
+    }
+  }
   // a reply cut short (length cap, error late in the turn) is still worth reading
   return { ok: true, text: outcome.text }
 }

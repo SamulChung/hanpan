@@ -140,7 +140,7 @@ test('the manual tour, in Korean', async () => {
     // the design board
     await page.locator('[data-hanpan="design"]').click()
     const board = await waitForPageWithUrl(app, 'design.html')
-    await expect(board.locator('.dz-page')).toBeVisible({ timeout: 30_000 })
+    await expect(board.locator('.dz-stage .dz-page')).toBeVisible({ timeout: 30_000 })
     await board.locator('[data-tab="templates"]').click()
     await board.locator('[data-template="seminar-invite"]').click()
     // a title picked: its handles on the page and its settings on the right
