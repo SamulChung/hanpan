@@ -29,4 +29,47 @@ export const de = {
     'Das Portal für öffentliche Daten ist nicht erreichbar. Prüfen Sie Ihre Internetverbindung.',
   gonguErrService:
     'Das Portal für öffentliche Daten antwortet gerade nicht richtig. Versuchen Sie es gleich noch einmal.',
+  gpFind: 'In Gongu suchen',
+  gpPlaceholder: 'Titel oder Künstler (z. B. 호랑이, 김홍도)',
+  gpSearch: 'Suchen',
+  gpSearching: 'Suche läuft…',
+  gpNoResults:
+    'Keine Bilder gefunden. Versuchen Sie ein einzelnes Wort aus dem Titel oder dem Namen.',
+  gpTotal: '{count} Treffer',
+  gpMore: 'Mehr',
+  gpInsert: 'Einfügen',
+  gpInserting: 'Wird eingefügt…',
+  gpNoKey:
+    'Kein Gongu-Schlüssel vorhanden. Geben Sie ihn unter Einstellungen → Integrationen → „Gongu-Bilder“ ein.',
+  gpFooter:
+    'Gongu-Werke stellt die Koreanische Urheberrechtskommission bereit. Die Quellenangabe eines eingefügten Bildes wird automatisch geschrieben.',
+  gpPictureFailed: 'Das Bild konnte nicht geladen werden. Versuchen Sie es gleich noch einmal.',
+  gpYear: 'Jahr',
+  gpProvider: 'Bereitgestellt von',
+  gpWarnNc: 'Nicht für kommerzielle Dokumente.',
+  gpWarnNd: 'Darf nicht verändert werden, etwa durch Zuschneiden oder Umfärben.',
+  gpWarnSa:
+    'Was durch Veränderung entsteht, muss unter denselben Bedingungen weitergegeben werden.',
+  gpConfirm: 'Für dieses Bild gelten Nutzungsbedingungen.\n{conditions}\nTrotzdem einfügen?',
+  gpLocked:
+    'Dieses Bild darf nicht verändert werden. Sie können es verschieben und unter Beibehaltung des Seitenverhältnisses skalieren.',
+  gpCreditList: 'Bildquellenliste hinzufügen',
+  gpCheck: 'Quellen prüfen',
+  gpCheckTitle: 'Bildquellen prüfen',
+  gpCheckClean: 'Nichts zu prüfen.',
+  gpIssueNoCredit:
+    'Dieses Bild hat keine Quellenangabe. Klären Sie die Herkunft und geben Sie die Quelle an.',
+  gpIssueConditions: 'Nutzungsbedingungen: {conditions}',
+  gpIssueChanged:
+    'Dieses Bild ohne Bearbeitungsrecht zeigt noch Änderungen (Zuschnitt, Filter, Spiegelung usw.).',
+  gpIssueNoLine: 'Seine Quellenzeile steht nicht im Entwurf.',
+  gpGoTo: 'Zum Bild',
+  gpReAdd: 'Quellenzeile neu einfügen',
+  gpPage: 'Seite {page}',
+  gpCondNc: 'nicht kommerziell',
+  gpCondNd: 'keine Bearbeitung',
+  gpCondSa: 'Weitergabe unter gleichen Bedingungen',
+  gpExportWarn: 'Einige Bilder brauchen eine Quellenprüfung. Siehe Quellen prüfen.',
+  gpClose: 'Schließen',
+  gpPicture: 'Bild',
 } satisfies Record<keyof typeof zh, string>

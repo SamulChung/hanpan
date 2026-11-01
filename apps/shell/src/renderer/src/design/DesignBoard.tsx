@@ -24,7 +24,23 @@ import {
   type ReactNode,
   type PointerEvent as ReactPointerEvent,
 } from 'react'
+import { gonguCreditOf, licenseTerms } from '@genoffice/hanpan-core/renderer'
+import { gonguUiText, type GonguStringKey } from '../i18n/strings-gongu'
 import { pageJpeg, pagePng } from './draw'
+import {
+  allowedChange,
+  creditIssues,
+  creditLineElement,
+  creditedPicture,
+  creditsOf,
+  exportWarnings,
+  modifyLocked,
+  withCreditList,
+  type CreditIssue,
+  type GonguApi,
+  type GonguPictureAnswer,
+} from './credits'
+import { GonguPanel } from './GonguPanel'
 import { REWRITE_MODES } from './ai'
 import type { DesignAiApi } from './ai-run'
 import { DesignAiPanel } from './DesignAiPanel'
@@ -71,7 +87,7 @@ import { coverRect, inkPath, shapePath, textPadding } from './style'
 import { PagePreview, elementBox, elementLook, pageBackground } from './view'
 import { wordsFor } from './words'
 
-export interface DesignApi extends Partial<DesignAiApi & DesignAiSettingsApi> {
+export interface DesignApi extends Partial<DesignAiApi & DesignAiSettingsApi & GonguApi> {
   savePng(bytes: Uint8Array, name: string, format?: 'png' | 'jpg'): Promise<string | null>
   savePdf(
     pages: Uint8Array[],
@@ -231,6 +247,9 @@ const isTyping = (target: EventTarget | null) => {
 
 export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string | undefined }) {
   const w = wordsFor(p.lang)
+  // Gongu pictures and credits speak every UI language (the rest of the board: Korean or English)
+  const g = (key: GonguStringKey, params?: Record<string, string | number>) =>
+    gonguUiText(p.lang as never, key, params)
   const [doc, setDoc] = useState<DesignDoc>(() =>
     p.outline ? cardNewsFromOutline(p.outline) : DESIGN_TEMPLATES[0]!.make(),
   )
@@ -275,6 +294,9 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     }
   })
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null)
+  /** export draws a list of the Gongu credits at the foot of the page (not kept) */
+  const [creditList, setCreditList] = useState(true)
+  const [checkOpen, setCheckOpen] = useState(false)
   const [panning, setPanning] = useState(false)
   const spaceDown = useRef(false)
   const clip = useRef<DesignElement[]>([])
@@ -293,6 +315,8 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   const single = selection.length === 1 ? selection[0]! : null
   const scale = fit * zoom
   const docColors = useMemo(() => colorsOf(doc), [doc])
+  const credited = useMemo(() => creditsOf(doc.pages).length > 0, [doc.pages])
+  const issues = useMemo(() => creditIssues(doc, creditList), [doc, creditList])
   const templatePreviews = useMemo(() => DESIGN_TEMPLATES.map((t) => ({ t, doc: t.make() })), [])
 
   // the page fits the space it has; zoom multiplies that
@@ -349,7 +373,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   const changeElement = (id: string, patch: Partial<DesignElement>, merge?: string) =>
     changePage((pg) => {
       const e = pg.elements.find((x) => x.id === id)
-      if (e) Object.assign(e, patch)
+      if (e) Object.assign(e, allowedChange(e, patch))
       // a QR code stays square
       if (e?.kind === 'qr' && ('w' in patch || 'h' in patch)) e.h = e.w = Math.max(e.w, e.h)
     }, merge)
@@ -524,6 +548,29 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     const picked = await p.api.pickImage()
     if (picked) placeImage(picked)
   }
+  /** A Gongu picture with its credit line under it, the two grouped (4.4). */
+  const placeGonguPicture = (picked: Extract<GonguPictureAnswer, { ok: true }>): boolean => {
+    const credit = gonguCreditOf(picked.work)
+    const terms = licenseTerms(credit.license)
+    const warnings = [
+      ...(terms.nonCommercial ? [g('gpWarnNc')] : []),
+      ...(!terms.mayModify ? [g('gpWarnNd')] : []),
+      ...(terms.shareAlike ? [g('gpWarnSa')] : []),
+    ]
+    if (warnings.length && !window.confirm(g('gpConfirm', { conditions: warnings.join('\n') })))
+      return false
+    const k = Math.min(1, (doc.width * 0.6) / picked.width, (doc.height * 0.5) / picked.height)
+    const image: DesignElement = {
+      id: newId(),
+      kind: 'image',
+      src: picked.dataUrl,
+      naturalW: picked.width,
+      naturalH: picked.height,
+      ...center(picked.width * k, picked.height * k),
+    }
+    add(...creditedPicture(image, credit, p.lang, doc, page.background))
+    return true
+  }
   const addImageFile = async (file: File, at?: Pt) => {
     if (!file.type.startsWith('image/')) return
     if (file.size > MAX_IMAGE_BYTES) return say(w.imageTooBig)
@@ -590,7 +637,8 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     changePage((pg) => {
       const i = pg.elements.findIndex((x) => x.id === id)
       const e = pg.elements[i]
-      if (!e) return
+      // filling the page crops the picture, which a no-derivatives licence forbids
+      if (!e || modifyLocked(e)) return
       const k = Math.max(doc.width / e.w, doc.height / e.h)
       e.w = Math.round(e.w * k)
       e.h = Math.round(e.h * k)
@@ -604,6 +652,11 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   const replaceImage = async (id: string) => {
     const picked = await p.api.pickImage()
     if (!picked) return
+    changePage((pg) => {
+      // another picture in its place no longer carries this credit
+      const e = pg.elements.find((x) => x.id === id)
+      if (e) delete e.credit
+    })
     changeElement(id, {
       src: picked.dataUrl,
       naturalW: picked.width,
@@ -682,6 +735,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   const startRotate = (event: ReactPointerEvent, e: DesignElement) => {
     event.stopPropagation()
     event.preventDefault()
+    if (modifyLocked(e)) return
     drag.current = { mode: 'rotate', orig: clone(e), moved: false }
     capture(event)
   }
@@ -706,7 +760,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   /** Crop mode: dragging the picture picks what shows in its box. */
   const startCrop = (id: string) => {
     const e = page.elements.find((x) => x.id === id)
-    if (e?.kind !== 'image' || e.locked) return
+    if (e?.kind !== 'image' || e.locked || modifyLocked(e)) return
     setCropNatural(naturalOf(e))
     setSelected([id])
     setCropping(id)
@@ -857,6 +911,8 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
         }
         const [sx, sy] = HANDLE_SIDES[d.handle]
         const corner = sx !== 0 && sy !== 0
+        // a no-derivatives picture is only scaled, never stretched
+        if (!corner && modifyLocked(o)) return
         // pictures, QR codes and text keep their shape from a corner; Shift does it for the rest
         const keep =
           corner && (o.kind === 'image' || o.kind === 'qr' || o.kind === 'text' || event.shiftKey)
@@ -1174,22 +1230,64 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     setNotice(text)
     window.setTimeout(() => setNotice((n) => (n === text ? null : n)), 4000)
   }
+  /** A page as it is exported: with the credit list of `pages` at its foot when that is on. */
+  const exportPage = (pg: DesignPage, pages: DesignPage[]) =>
+    creditList ? withCreditList(pg, creditsOf(pages), p.lang, doc) : pg
+  /** After an export, a word when pictures need a credit check (it does not stop the export). */
+  const saidAfterExport = (done: string) =>
+    say(
+      exportWarnings(creditIssues(doc, creditList)).length ? `${done} ${g('gpExportWarn')}` : done,
+    )
   const exportPicture = async (format: 'png' | 'jpg') => {
+    const shown = exportPage(page, [page])
     const bytes =
       format === 'jpg'
-        ? await pageJpeg(page, doc.width, doc.height)
-        : await pagePng(page, doc.width, doc.height)
+        ? await pageJpeg(shown, doc.width, doc.height)
+        : await pagePng(shown, doc.width, doc.height)
     const path = await p.api.savePng(bytes, `${doc.name}-${pi + 1}`, format)
-    if (path) say(`${w.saved}: ${path}`)
+    if (path) saidAfterExport(`${w.saved}: ${path}`)
   }
   const exportPdf = async () => {
     const pages = []
-    for (const pg of doc.pages) pages.push(await pagePng(pg, doc.width, doc.height))
+    const last = doc.pages.length - 1
+    for (const [i, pg] of doc.pages.entries())
+      pages.push(await pagePng(i === last ? exportPage(pg, doc.pages) : pg, doc.width, doc.height))
     const path = await p.api.savePdf(pages, { width: doc.width, height: doc.height }, doc.name)
-    if (path) say(`${w.saved}: ${path}`)
+    if (path) saidAfterExport(`${w.saved}: ${path}`)
   }
   const copyImage = async () => {
-    if (await p.api.copyImage(await pagePng(page, doc.width, doc.height))) say(w.copied)
+    const png = await pagePng(exportPage(page, [page]), doc.width, doc.height)
+    if (await p.api.copyImage(png)) saidAfterExport(w.copied)
+  }
+  // ---- credit check (4.8) ----
+  const goToIssue = (issue: CreditIssue) => {
+    setPageIndex(issue.page)
+    setSelected([issue.id])
+    setSide('props')
+  }
+  /** Puts the picture's credit line back under it, on its page. */
+  const readdCreditLine = (issue: CreditIssue) => {
+    const target = doc.pages[issue.page]?.elements.find((e) => e.id === issue.id)
+    if (!target?.credit) return
+    const background = doc.pages[issue.page]!.background
+    const line = creditLineElement(target, target.credit, p.lang, doc, background)
+    commit((d) => {
+      const pg = d.pages[issue.page]!
+      const e = pg.elements.find((x) => x.id === issue.id)
+      if (!e) return
+      const group = e.group ?? newId('g')
+      e.group = group
+      pg.elements.push({ ...line, group })
+    })
+  }
+  const issueText = (issue: CreditIssue) => {
+    if (issue.kind === 'no-credit') return g('gpIssueNoCredit')
+    if (issue.kind === 'locked-changed') return g('gpIssueChanged')
+    if (issue.kind === 'no-line') return g('gpIssueNoLine')
+    const names = { nc: g('gpCondNc'), nd: g('gpCondNd'), sa: g('gpCondSa') }
+    return g('gpIssueConditions', {
+      conditions: (issue.conditions ?? []).map((c) => names[c]).join(', '),
+    })
   }
   const save = async () => {
     const path = await p.api.saveDesign(JSON.stringify(doc), doc.name)
@@ -1670,6 +1768,64 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
           <button type="button" data-action="design-pdf" onClick={() => void exportPdf()}>
             {w.pdf}
           </button>
+          {credited && (
+            <label className="dz-export-check">
+              <input
+                type="checkbox"
+                checked={creditList}
+                onChange={(e) => setCreditList(e.target.checked)}
+                data-hanpan="credit-list"
+              />
+              {g('gpCreditList')}
+            </label>
+          )}
+          <span className="dz-credit-wrap">
+            <button
+              type="button"
+              aria-expanded={checkOpen}
+              onClick={() => setCheckOpen((open) => !open)}
+              data-action="credit-check"
+            >
+              {g('gpCheck')}
+            </button>
+            {checkOpen && (
+              <div className="dz-credit-check" role="dialog" data-hanpan="credit-check">
+                <h3>{g('gpCheckTitle')}</h3>
+                {issues.length === 0 ? (
+                  <p className="dz-muted">{g('gpCheckClean')}</p>
+                ) : (
+                  <ul>
+                    {issues.map((issue) => (
+                      <li key={`${issue.kind}:${issue.id}`} data-credit-issue={issue.kind}>
+                        <strong>
+                          {g('gpPage', { page: issue.page + 1 })} ·{' '}
+                          {issue.credit?.title ?? g('gpPicture')}
+                        </strong>
+                        <span className="dz-muted">{issueText(issue)}</span>
+                        <span className="dz-row">
+                          <button type="button" onClick={() => goToIssue(issue)}>
+                            {g('gpGoTo')}
+                          </button>
+                          {issue.kind === 'no-line' && (
+                            <button
+                              type="button"
+                              onClick={() => readdCreditLine(issue)}
+                              data-action="credit-readd"
+                            >
+                              {g('gpReAdd')}
+                            </button>
+                          )}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <button type="button" onClick={() => setCheckOpen(false)}>
+                  {g('gpClose')}
+                </button>
+              </div>
+            )}
+          </span>
           <button type="button" onClick={() => void save()}>
             {w.save}
           </button>
@@ -1875,6 +2031,16 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                 {w.image}
               </button>
               <p className="dz-muted">{w.imageHint}</p>
+              {p.api.gonguSearch && p.api.gonguPicture && (
+                <>
+                  <h3>{g('gpFind')}</h3>
+                  <GonguPanel
+                    lang={p.lang}
+                    api={{ gonguSearch: p.api.gonguSearch, gonguPicture: p.api.gonguPicture }}
+                    insert={placeGonguPicture}
+                  />
+                </>
+              )}
               <h3>{w.icons}</h3>
               <input
                 type="search"
@@ -2196,6 +2362,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
               group={group}
               ungroup={ungroup}
               startCrop={startCrop}
+              lockNote={single && modifyLocked(single) ? g('gpLocked') : null}
               ai={
                 hasAi
                   ? {

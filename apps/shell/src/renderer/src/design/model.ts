@@ -4,7 +4,7 @@
  * card news. Pure data and functions; the board (DesignBoard.tsx) edits a
  * `DesignDoc`, and `draw.ts` paints a page for export.
  */
-import { outlineFromIndentedText } from '@genoffice/hanpan-core/renderer'
+import { outlineFromIndentedText, type ImageCredit } from '@genoffice/hanpan-core/renderer'
 import { BUNDLED_FONTS, GONGU_FONTS, SYSTEM_FONTS } from './fonts'
 import { iconPaths } from './icons'
 
@@ -88,6 +88,9 @@ export interface DesignElement {
   /** crop: which part shows, 0 (left / top) … 1 (right / bottom); 0.5 is the middle */
   cropX?: number
   cropY?: number
+  /** image: where a picture from Gongu came from (docs/plans/gongu-images.md); absent for
+   *  a picture from a file, the clipboard or a design made before credits */
+  credit?: ImageCredit
   /** pen drawing: points as x, y pairs on a 0…1 box, so it stretches with the box */
   points?: number[]
   /** icon: its name in the set, and its strokes as SVG paths on a 24 x 24 grid (kept in

@@ -22,7 +22,7 @@ import { zhTW } from './gongu/zh-TW'
 import { vi } from './gongu/vi'
 
 /**
- * Hanpan's Gongu picture search key in Settings → Integrations (docs/plans/gongu-images.md). Sharded per language; `zh` defines the key set.
+ * Hanpan Gongu pictures (docs/plans/gongu-images.md): the key card in Settings → Integrations and the design board panel, check and change lock. Sharded per language; `zh` defines the key set.
  */
 export const gonguUiStrings = defineStrings({
   zh,

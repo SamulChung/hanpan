@@ -8902,6 +8902,7 @@ app.whenReady().then(async () => {
     lang: () => currentLang(),
     theme: () => currentTheme(),
     title: (lang) => `${lang === 'ko' ? '디자인' : 'Design'} - ${productName(lang as never)}`,
+    gonguKey: () => readStoredAiSettings().gongu?.apiKey ?? '',
   })
   configurePdfToolsWindow({
     parentWindow: () => shellWindow,

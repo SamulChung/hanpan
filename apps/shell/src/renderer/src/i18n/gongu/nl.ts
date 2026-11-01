@@ -27,4 +27,46 @@ export const nl = {
     'Kan het portaal voor open data niet bereiken. Controleer uw internetverbinding.',
   gonguErrService:
     'Het portaal voor open data antwoordt op dit moment niet goed. Probeer het zo meteen opnieuw.',
+  gpFind: 'Zoeken in Gongu',
+  gpPlaceholder: 'Titel of kunstenaar (bijv. 호랑이, 김홍도)',
+  gpSearch: 'Zoeken',
+  gpSearching: 'Zoeken…',
+  gpNoResults:
+    'Geen afbeeldingen gevonden. Probeer één woord uit de titel of de naam van de kunstenaar.',
+  gpTotal: '{count} gevonden',
+  gpMore: 'Meer',
+  gpInsert: 'Invoegen',
+  gpInserting: 'Invoegen…',
+  gpNoKey:
+    'Er is geen Gongu-sleutel. Voer er een in bij Instellingen → Integraties → "Gongu-afbeeldingen".',
+  gpFooter:
+    'Gongu-werken worden aangeboden door de Koreaanse auteursrechtcommissie. De bronvermelding van een ingevoegde afbeelding wordt automatisch geschreven.',
+  gpPictureFailed: 'De afbeelding kon niet worden opgehaald. Probeer het zo meteen opnieuw.',
+  gpYear: 'Jaar',
+  gpProvider: 'Aangeboden door',
+  gpWarnNc: 'Niet voor gebruik in commerciële documenten.',
+  gpWarnNd: 'Mag niet worden gewijzigd, zoals bijsnijden of herkleuren.',
+  gpWarnSa: 'Wat je maakt door haar te wijzigen, moet onder dezelfde voorwaarden worden gedeeld.',
+  gpConfirm: 'Voor deze afbeelding gelden gebruiksvoorwaarden.\n{conditions}\nToch invoegen?',
+  gpLocked:
+    'Deze afbeelding mag niet worden gewijzigd. Je kunt haar alleen verplaatsen en schalen met behoud van verhoudingen.',
+  gpCreditList: 'Lijst met bronvermeldingen toevoegen',
+  gpCheck: 'Bronnen controleren',
+  gpCheckTitle: 'Bronvermeldingen controleren',
+  gpCheckClean: 'Niets te controleren.',
+  gpIssueNoCredit:
+    'Deze afbeelding heeft geen bronvermelding. Zoek uit waar ze vandaan komt en vermeld de bron.',
+  gpIssueConditions: 'Gebruiksvoorwaarden: {conditions}',
+  gpIssueChanged:
+    'Deze afbeelding zonder afgeleide werken toont nog wijzigingen (bijsnijden, filter, spiegelen enz.).',
+  gpIssueNoLine: 'Haar bronregel staat niet in het ontwerp.',
+  gpGoTo: 'Naar afbeelding',
+  gpReAdd: 'Bronregel opnieuw invoegen',
+  gpPage: 'Pagina {page}',
+  gpCondNc: 'niet-commercieel',
+  gpCondNd: 'geen afgeleide werken',
+  gpCondSa: 'gelijk delen',
+  gpExportWarn: 'Sommige afbeeldingen hebben een broncontrole nodig. Zie Bronnen controleren.',
+  gpClose: 'Sluiten',
+  gpPicture: 'Afbeelding',
 } satisfies Record<keyof typeof zh, string>

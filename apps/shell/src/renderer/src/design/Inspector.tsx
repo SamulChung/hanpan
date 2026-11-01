@@ -48,6 +48,8 @@ export interface InspectorProps {
   ungroup(): void
   /** a picture in crop mode: dragging it picks what shows */
   startCrop(id: string): void
+  /** why the picked picture keeps its look (a no-derivatives licence); null otherwise */
+  lockNote: string | null
   ai: null | {
     busy: boolean
     error: string | null
@@ -611,7 +613,13 @@ export function Inspector(p: InspectorProps) {
         </>
       )}
 
-      {e.kind === 'image' && (
+      {e.kind === 'image' && p.lockNote && (
+        <p className="dz-muted" data-hanpan="image-lock">
+          {p.lockNote}
+        </p>
+      )}
+
+      {e.kind === 'image' && !p.lockNote && (
         <>
           <Section title={w.crop}>
             <Slider
@@ -729,7 +737,7 @@ export function Inspector(p: InspectorProps) {
         e.kind === 'rect' ||
         e.kind === 'ellipse' ||
         e.kind === 'shape' ||
-        e.kind === 'image' ||
+        (e.kind === 'image' && !p.lockNote) ||
         e.kind === 'draw' ||
         e.kind === 'icon') && (
         <Section title={e.kind === 'icon' ? w.iconLook : w.stroke}>
@@ -751,7 +759,7 @@ export function Inspector(p: InspectorProps) {
         </Section>
       )}
 
-      {e.kind !== 'text' && (
+      {e.kind !== 'text' && !p.lockNote && (
         <Section title={w.shadow}>
           <Choice
             name="shadow"
@@ -762,14 +770,16 @@ export function Inspector(p: InspectorProps) {
         </Section>
       )}
 
-      <Slider
-        label={w.opacity}
-        min={10}
-        max={100}
-        value={Math.round((e.opacity ?? 1) * 100)}
-        onChange={(v) => set({ opacity: v / 100 }, 'opacity')}
-        suffix="%"
-      />
+      {!p.lockNote && (
+        <Slider
+          label={w.opacity}
+          min={10}
+          max={100}
+          value={Math.round((e.opacity ?? 1) * 100)}
+          onChange={(v) => set({ opacity: v / 100 }, 'opacity')}
+          suffix="%"
+        />
+      )}
 
       <Section title={w.position}>
         <div className="dz-grid-num">
@@ -777,7 +787,7 @@ export function Inspector(p: InspectorProps) {
           {num('Y', 'y')}
           {num(e.kind === 'line' ? 'ΔX' : 'W', 'w', e.kind === 'line' ? undefined : 10)}
           {num(e.kind === 'line' ? 'ΔY' : 'H', 'h', e.kind === 'line' ? undefined : 10)}
-          {e.kind !== 'line' && num(`${w.rotation}°`, 'rotation')}
+          {e.kind !== 'line' && !p.lockNote && num(`${w.rotation}°`, 'rotation')}
         </div>
         <span className="dz-muted">{w.alignPage}</span>
         <div className="dz-grid3">

@@ -36,6 +36,10 @@ contextBridge.exposeInMainWorld('hanpanDesign', {
   saveDesign: (text: string, name: string) => ipcRenderer.invoke('hanpan-design:save', text, name),
   openDesign: () => ipcRenderer.invoke('hanpan-design:open'),
   pickImage: () => ipcRenderer.invoke('hanpan-design:pick-image'),
+  // Gongu pictures: main searches with the key from Settings and fetches the pictures
+  gonguSearch: (query: string, page: number) =>
+    ipcRenderer.invoke('hanpan-design:gongu-search', query, page),
+  gonguPicture: (workId: string) => ipcRenderer.invoke('hanpan-design:gongu-picture', workId),
   // the AI the person chose in Settings, through the same channels every editor
   // uses (registered by the docs main): a provider that cannot run is refused there
   getAiSettings: () => ipcRenderer.invoke('ai:get-settings'),
