@@ -88,6 +88,57 @@ describe('reading the answer', () => {
     expect(parsed.items[0]!.writingName).toBe('a b')
   })
 
+  it('reads a real detail answer: https picture addresses, year from the file name', () => {
+    // shape of the service's answer for work 3066 as seen with a key on 2026-11-01
+    const picture = (size: string) =>
+      `http://gongu.copyright.or.kr/gongu/wrt/cmmn/wrtFileImageView.do?thumbAt=Y&amp;thumbSe=${size}&amp;wrtSn=4534&amp;fileSn=1`
+    const parsed = parseGonguXml(
+      '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response><header>' +
+        '<resultCode>00</resultCode><resultMsg>NORMAL SERVICE.</resultMsg></header><body><item>' +
+        '<authorNameKor>저작자 미상</authorNameKor><fileNameG>작자미상_호작도(까치호랑이)_18-19세기_4534.jpg</fileNameG>' +
+        `<fileTypeG>image/pjpeg</fileTypeG><icnNo>ICN.914=0000000004534</icnNo><limgpath>${picture('b_thumb')}</limgpath>` +
+        '<officialCountry>대한민국</officialCountry><provideGovName>한국미술정보센터</provideGovName>' +
+        `<simgpath>${picture('t_thumb')}</simgpath><writingName>호작도(까치호랑이)</writingName>` +
+        '<writingSeq>4534</writingSeq></item></body></response>',
+    )
+    expect(gonguErrorOf(parsed)).toBeNull()
+    expect(gonguWorkOf(parsed.items[0]!)).toEqual({
+      workId: '4534',
+      title: '호작도(까치호랑이)',
+      author: '저작자 미상',
+      year: '18-19세기',
+      country: '대한민국',
+      provider: '한국미술정보센터',
+      thumbUrl:
+        'https://gongu.copyright.or.kr/gongu/wrt/cmmn/wrtFileImageView.do?thumbAt=Y&thumbSe=t_thumb&wrtSn=4534&fileSn=1',
+      imageUrl:
+        'https://gongu.copyright.or.kr/gongu/wrt/cmmn/wrtFileImageView.do?thumbAt=Y&thumbSe=b_thumb&wrtSn=4534&fileSn=1',
+      fileType: 'image/pjpeg',
+    })
+  })
+
+  it('reads no year out of an unknown year or a file name of another shape', () => {
+    const year = (fileNameG: string, createYear?: string) =>
+      gonguWorkOf({
+        writingSeq: '3066',
+        writingName: '호랑이',
+        fileNameG,
+        ...(createYear ? { createYear } : {}),
+      })?.year
+    expect(year('서병갑_호랑이_년도미상_3066.jpg')).toBeUndefined()
+    expect(year('서병갑_호랑이_1950_9999.jpg')).toBeUndefined()
+    expect(year('호랑이.jpg')).toBeUndefined()
+    expect(year('서병갑_호랑이_1950_3066.jpg')).toBe('1950')
+    expect(year('서병갑_호랑이_1950_3066.jpg', '1951')).toBe('1951')
+  })
+
+  it('leaves picture addresses on other hosts as they are', () => {
+    expect(
+      gonguWorkOf({ writingSeq: '1', writingName: 'a', simgpath: 'http://img.example/s.jpg' })
+        ?.thumbUrl,
+    ).toBe('http://img.example/s.jpg')
+  })
+
   it('skips items without a number or a title', () => {
     expect(gonguWorkOf({ writingName: '제목' })).toBeNull()
     expect(gonguWorkOf({ writingSeq: '1', writingName: '  ' })).toBeNull()
@@ -106,6 +157,15 @@ describe('errors', () => {
     expect(kind('23', 'LIMITED_NUMBER_OF_SERVICE_REQUESTS_PER_SECOND_EXCEEDS_ERROR')).toBe('rate')
     expect(kind('29', 'BLACKLIST_IP_ACCESS_ERROR')).toBe('blocked')
     expect(kind('12', 'NO_OPENAPI_SERVICE_ERROR')).toBe('service')
+  })
+
+  it('reads the real answer to an unregistered key (HTTP 403, Korean message)', () => {
+    const body =
+      '<?xml version="1.0" encoding="UTF-8"?>\n<OpenAPI_ServiceResponse>\n<cmmMsgHeader>\n' +
+      '  <errMsg>SERVICE_KEY_IS_NOT_REGISTERED_ERROR</errMsg>\n' +
+      '  <returnAuthMsg>등록되지 않은 서비스키</returnAuthMsg>\n' +
+      '  <returnReasonCode>30</returnReasonCode>\n</cmmMsgHeader>\n</OpenAPI_ServiceResponse>'
+    expect(gonguErrorOf(parseGonguXml(body), 403)).toBe('bad-key')
   })
 
   it('reads the HTTP status when the body says nothing', () => {

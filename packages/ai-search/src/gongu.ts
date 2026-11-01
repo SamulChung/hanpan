@@ -16,7 +16,7 @@ export interface GonguWork {
   workId: string
   title: string
   author?: string
-  /** year of creation (detail only) */
+  /** year of creation: createYear, else read from the file name */
   year?: string
   /** country of publication (detail only) */
   country?: string
@@ -129,9 +129,29 @@ const clip = (s: string | undefined): string | undefined => {
   return v ? v.slice(0, MAX_TEXT) : undefined
 }
 
+/** The host the service's picture addresses point at (checked with a key, 2026-11-01). */
+export const GONGU_IMAGE_HOST = 'gongu.copyright.or.kr'
+
 const webUrl = (s: string | undefined): string | undefined => {
   const v = s?.trim()
-  return v && /^https?:\/\/[^\s]+$/i.test(v) ? v : undefined
+  if (!v || !/^https?:\/\/[^\s]+$/i.test(v)) return undefined
+  // The service hands out http:// picture addresses, but the host answers 503
+  // over plain http and serves the same file over https.
+  const http = /^http:\/\/([^/?#]+)/i.exec(v)
+  return http && http[1]!.toLowerCase() === GONGU_IMAGE_HOST ? `https${v.slice(4)}` : v
+}
+
+/**
+ * The year from the registered file name, for records without createYear.
+ * The service names files "author_title_year_number.ext" (e.g.
+ * "작자미상_호작도(까치호랑이)_18-19세기_4534.jpg"); the year is read only when
+ * the last part is the work's own number, and "unknown" is not a year.
+ */
+function yearFromFileName(fileName: string | undefined, workId: string): string | undefined {
+  const parts = fileName?.replace(/\.[A-Za-z0-9]{1,5}$/, '').split('_') ?? []
+  if (parts.length < 4 || parts[parts.length - 1] !== workId) return undefined
+  const year = clip(parts[parts.length - 2])
+  return year && !/미상/.test(year) ? year : undefined
 }
 
 /** One item's fields as a work; null when it has no number or title to show. */
@@ -144,7 +164,7 @@ export function gonguWorkOf(fields: Record<string, string>): GonguWork | null {
     clip(fields.authorNameKor) ?? clip(fields.authorNameEng) ?? clip(fields.authorNameChn)
   const entries: [keyof GonguWork, string | undefined][] = [
     ['author', author],
-    ['year', clip(fields.createYear)],
+    ['year', clip(fields.createYear) ?? yearFromFileName(fields.fileNameG, workId)],
     ['country', clip(fields.officialCountry)],
     ['provider', clip(fields.provideGovName)],
     ['thumbUrl', webUrl(fields.simgpath)],
