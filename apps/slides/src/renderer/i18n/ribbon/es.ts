@@ -264,6 +264,17 @@ export const es = {
   ribbonVideoTip: 'Insertar un vídeo local (incrustado en pptx, reproducible en PowerPoint)',
   ribbonAudio: 'Audio',
   ribbonAudioTip: 'Insertar un audio local (incrustado en pptx, reproducible en PowerPoint)',
+  ribbonSoundEffects: 'Efectos de sonido',
+  ribbonSoundEffectsTip:
+    'Insertar un efecto de sonido de música tradicional coreana (incrustado en pptx, fuente en el nombre del sonido)',
+  ribbonSoundEffectsCredit:
+    'Efectos de sonido: 주식회사 아이티앤, 공유마당, CC BY. La fuente se escribe en el nombre del sonido insertado.',
+  ribbonSoundCelebrate: 'Celebración',
+  ribbonSoundFresh: 'Fresco',
+  ribbonSoundCurious: 'Curioso',
+  ribbonSoundRising: 'Creciente',
+  ribbonSoundRefreshed: 'Refrescante',
+  ribbonSoundFinish: 'Cierre limpio',
   ribbonScreenRec: 'Grabación de pantalla',
   ribbonStopRec: 'Detener grabación',
   ribbonScreenRecTip:

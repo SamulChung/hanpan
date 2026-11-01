@@ -259,6 +259,17 @@ export const id = {
   ribbonVideoTip: 'Sisipkan video lokal (disematkan di pptx, dapat diputar di PowerPoint)',
   ribbonAudio: 'Audio',
   ribbonAudioTip: 'Sisipkan audio lokal (disematkan di pptx, dapat diputar di PowerPoint)',
+  ribbonSoundEffects: 'Efek Suara',
+  ribbonSoundEffectsTip:
+    'Sisipkan efek suara musik tradisional Korea (disematkan di pptx, sumber ditulis di nama suara)',
+  ribbonSoundEffectsCredit:
+    'Efek suara: 주식회사 아이티앤, 공유마당, CC BY. Sumber ditulis di nama suara yang disisipkan.',
+  ribbonSoundCelebrate: 'Perayaan',
+  ribbonSoundFresh: 'Segar',
+  ribbonSoundCurious: 'Penasaran',
+  ribbonSoundRising: 'Membuncah',
+  ribbonSoundRefreshed: 'Lega',
+  ribbonSoundFinish: 'Penutup rapi',
   ribbonScreenRec: 'Rekaman Layar',
   ribbonStopRec: 'Hentikan Rekaman',
   ribbonScreenRecTip: 'Rekam layar; setelah dihentikan disisipkan sebagai video ke slide saat ini',

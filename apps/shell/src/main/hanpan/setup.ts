@@ -6,6 +6,10 @@
 import {
   DOC_TEMPLATES,
   DOC_THEMES,
+  PICTURE_TEMPLATES,
+  TEMPLATE_PICTURES,
+  pictureCredit,
+  templateMapOutline,
   changeHwpTone,
   checkHwpGongmun,
   markHwpReview,
@@ -16,6 +20,7 @@ import {
   markdownToBlocks,
   styledDeckOps,
   type HwpEngine,
+  type MarkdownPicture,
   type SlidePlan,
   type SlideStyleId,
 } from '@genoffice/hanpan-core'
@@ -41,6 +46,37 @@ import { BrowserWindow, webContents as allWebContents } from 'electron'
 import { docxToOdt } from '@genoffice/odt-engine'
 import { dirname } from 'node:path'
 import { checkConvertRequest, convertMarkdown, type ConvertResult } from './markdown-convert'
+import chuseongJpg from './pictures/chuseong.jpg?asset'
+import geumgangJpg from './pictures/geumgang.jpg?asset'
+import inwangJpg from './pictures/inwang.jpg?asset'
+import seodangJpg from './pictures/seodang.jpg?asset'
+import ssireumJpg from './pictures/ssireum.jpg?asset'
+
+/** The 글집 templates, then Hanpan's own with pictures. */
+const ALL_TEMPLATES = [...DOC_TEMPLATES, ...PICTURE_TEMPLATES]
+
+/** Where each template picture's bytes are; what each one is lives in hanpan-core (`TEMPLATE_PICTURES`). */
+const PICTURE_FILES: Record<string, string> = {
+  chuseong: chuseongJpg,
+  geumgang: geumgangJpg,
+  inwang: inwangJpg,
+  seodang: seodangJpg,
+  ssireum: ssireumJpg,
+}
+
+/** A template picture with its credit, or undefined (the line stays its caption) when it cannot be read. */
+function templatePicture(id: string): MarkdownPicture | undefined {
+  const known = TEMPLATE_PICTURES.find((p) => p.id === id)
+  const file = PICTURE_FILES[id]
+  if (!known || !file) return undefined
+  try {
+    const bytes = new Uint8Array(readFileSync(file))
+    return { image: { bytes, mime: 'image/jpeg', width: known.width, height: known.height }, credit: pictureCredit(known) }
+  } catch (error) {
+    console.warn('[hanpan] template picture missing', id, error)
+    return undefined
+  }
+}
 
 /** Where the rhwp engine's wasm is: the same search as packages/file-parse (dev node_modules, then Resources/wasm). */
 function rhwpWasmPath(): string {
@@ -125,6 +161,7 @@ export interface HanpanSetup {
   /** the 글집 templates, for the Home picker */
   templates(): { id: string; title: string; category: string; description: string; icon: string }[]
   /** a template as a new untitled HWP or Word document in a tab */
+  /** `xmind` opens the template's headings and lists as a mind map */
   openTemplate(id: unknown, target: unknown): Promise<{ ok: true } | { ok: false; error: string }>
   /** a new untitled mind map in a tab with `topic` as its central topic (Home's start box) */
   newMap(topic: unknown): Promise<{ ok: true } | { ok: false; error: string }>
@@ -195,6 +232,22 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
     mkdirSync(dir, { recursive: true })
     return dir
   }
+  /** A new untitled mind map from outline text, opened in its own tab. */
+  const openMap = async (outline: string, title: string): Promise<{ ok: true } | { ok: false; error: string }> => {
+    const map = await createXmindDocumentFromOutline(outline, { untitled: title })
+    const bytes = await map.save()
+    const fileName = documentFileName(title, 'xmind')
+    const dir = await makeCopyDir()
+    const path = join(dir, fileName)
+    await atomicWriteFile(path, Buffer.from(bytes))
+    const opened = await deps.openCopy({ editor: 'mindmap', path, dir, bytes, fileName, title })
+    if (!opened) {
+      rmSync(dir, { recursive: true, force: true })
+      return { ok: false, error: 'the new tab did not open' }
+    }
+    opened.contents.once('destroyed', () => rmSync(dir, { recursive: true, force: true }))
+    return { ok: true }
+  }
   return {
     hwpTool: async (wc, raw) => {
       const request = (raw ?? {}) as { tool?: unknown; target?: unknown }
@@ -231,11 +284,12 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
         doc.free()
       }
     },
-    templates: () => DOC_TEMPLATES.map(({ id, title, category, description, icon }) => ({ id, title, category, description, icon })),
+    templates: () => ALL_TEMPLATES.map(({ id, title, category, description, icon }) => ({ id, title, category, description, icon })),
     openTemplate: async (id, target) => {
-      const template = DOC_TEMPLATES.find((t) => t.id === id)
-      if (!template || (target !== 'hwp' && target !== 'docx')) return { ok: false, error: 'no such template' }
-      const blocks = markdownToBlocks(template.markdown)
+      const template = ALL_TEMPLATES.find((t) => t.id === id)
+      if (!template || (target !== 'hwp' && target !== 'docx' && target !== 'xmind')) return { ok: false, error: 'no such template' }
+      if (target === 'xmind') return openMap(templateMapOutline(template.markdown), template.title)
+      const blocks = markdownToBlocks(template.markdown, { picture: templatePicture })
       const theme = template.category === '공문' ? DOC_THEMES.gongmun! : template.category === '보고서' ? DOC_THEMES.report! : DOC_THEMES.plain!
       const bytes = target === 'hwp' ? blocksToHwp(await loadHwpEngine(), blocks, theme, 'hwpx').bytes : await blocksToDocx(blocks, theme)
       const fileName = documentFileName(template.title, target === 'hwp' ? 'hwpx' : 'docx')
@@ -254,19 +308,7 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
       // one line of plain text: list and heading marks at its start would read as structure
       const topic = typeof raw === 'string' ? raw.replace(/\s+/g, ' ').replace(/^[#>*+\-\s]+/, '').trim().slice(0, 120) : ''
       if (!topic) return { ok: false, error: 'no topic' }
-      const map = await createXmindDocumentFromOutline(`- ${topic}\n`, { untitled: topic })
-      const bytes = await map.save()
-      const fileName = documentFileName(topic, 'xmind')
-      const dir = await makeCopyDir()
-      const path = join(dir, fileName)
-      await atomicWriteFile(path, Buffer.from(bytes))
-      const opened = await deps.openCopy({ editor: 'mindmap', path, dir, bytes, fileName, title: topic })
-      if (!opened) {
-        rmSync(dir, { recursive: true, force: true })
-        return { ok: false, error: 'the new tab did not open' }
-      }
-      opened.contents.once('destroyed', () => rmSync(dir, { recursive: true, force: true }))
-      return { ok: true }
+      return openMap(`- ${topic}\n`, topic)
     },
     convertMarkdown: (raw, folder) =>
       convertMarkdown(checkConvertRequest(raw), folder, {

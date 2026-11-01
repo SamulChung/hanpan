@@ -257,6 +257,17 @@ export const vi = {
   ribbonVideoTip: 'Chèn video cục bộ (nhúng trong pptx, phát được trong PowerPoint)',
   ribbonAudio: 'Âm thanh',
   ribbonAudioTip: 'Chèn âm thanh cục bộ (nhúng trong pptx, phát được trong PowerPoint)',
+  ribbonSoundEffects: 'Hiệu ứng âm thanh',
+  ribbonSoundEffectsTip:
+    'Chèn hiệu ứng âm thanh nhạc truyền thống Hàn Quốc (nhúng trong pptx, ghi nguồn trong tên âm thanh)',
+  ribbonSoundEffectsCredit:
+    'Hiệu ứng âm thanh: 주식회사 아이티앤, 공유마당, CC BY. Nguồn được ghi trong tên âm thanh đã chèn.',
+  ribbonSoundCelebrate: 'Chúc mừng',
+  ribbonSoundFresh: 'Tươi tắn',
+  ribbonSoundCurious: 'Tò mò',
+  ribbonSoundRising: 'Dâng trào',
+  ribbonSoundRefreshed: 'Sảng khoái',
+  ribbonSoundFinish: 'Kết thúc gọn',
   ribbonScreenRec: 'Ghi màn hình',
   ribbonStopRec: 'Dừng ghi',
   ribbonScreenRecTip:

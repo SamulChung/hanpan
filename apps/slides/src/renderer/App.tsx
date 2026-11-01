@@ -1726,6 +1726,10 @@ export function App() {
     (kind: 'video' | 'audio') => insertActions.insertMediaFile(ctxRef.current, kind),
     [],
   )
+  const insertSoundEffect = useCallback(
+    (id: string) => insertActions.insertSoundEffect(ctxRef.current, id),
+    [],
+  )
   const insertModel3dFile = useCallback(() => insertActions.insertModel3dFile(ctxRef.current), [])
   const toggleScreenRecord = useCallback(() => insertActions.toggleScreenRecord(ctxRef.current), [])
 
@@ -3484,6 +3488,7 @@ export function App() {
         onOpenHeaderFooter={() => void openHeaderFooter()}
         onOpenEquation={() => setEqDialogOpen(true)}
         onInsertMedia={(kind) => void insertMediaFile(kind)}
+        onInsertSoundEffect={(id) => void insertSoundEffect(id)}
         onInsertModel3d={() => void insertModel3dFile()}
         recording={recording}
         onToggleScreenRecord={() => void toggleScreenRecord()}

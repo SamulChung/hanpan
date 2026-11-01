@@ -21,7 +21,7 @@ T['ko'] = ('한판 시작하기', '한판은 마인드맵으로 정리한 생각
   '마인드맵에서 고친 것은 문서로, 문서에서 고친 것은 마인드맵으로 갑니다. 양쪽에서 다르게 고친 곳은 마인드맵 쪽, 문서 쪽, 나중에 가운데 고릅니다.',
   '문서에서 쓴 본문 문장은 그대로 지켜집니다. 워드·PPT 문서는 지금은 보내기만 됩니다.']),
  ('한판 양식', 'ul', [
-  '홈 화면의 **한판 양식** 카드에서 공문, 보고서, 제안서, 회의록, 기획서 양식 19가지를 한글이나 워드로 엽니다.']),
+  '홈 화면의 **한판 양식** 카드에서 공문, 보고서, 제안서, 회의록, 기획서 양식 22가지를 한글이나 워드로 엽니다.']),
  ('한판 도구', 'ul', [
   '한글 탭 위쪽 띠의 **한판 도구**에 공문 정돈, 공문 점검, 세대별 톤 바꾸기, 3색 검토 표시, 역관목조분 프롬프트가 있습니다.',
   '문서를 고치는 도구는 결과를 탭에 바로 보여 줍니다. 저장하지 않고 닫으면 원래대로 남습니다.']),
@@ -44,7 +44,7 @@ T['en'] = ('Getting started with Hanpan', 'Hanpan sends what you sorted out in a
   'Changes made in the map go to the document, and changes made in the document come to the map. Where both sides changed a topic differently, choose the map\'s, the document\'s, or later.',
   'Sentences written in the document are kept. Word and PowerPoint documents can be sent but not synced back yet.']),
  ('Hanpan templates', 'ul', [
-  'The **Hanpan templates** card on Home opens 19 templates (official letters, reports, proposals, minutes, plans) as HWP or Word.']),
+  'The **Hanpan templates** card on Home opens 22 templates (official letters, reports, proposals, minutes, plans) as HWP or Word.']),
  ('Hanpan tools', 'ul', [
   '**Hanpan tools** in the strip above a HWP tab tidy and check an official letter, change its tone for a generation, mark a three-colour review and build a structured prompt.',
   'Tools that change the document show the result in the tab right away. Closing without saving leaves the file as it was.']),
@@ -67,7 +67,7 @@ T['zh'] = ('Hanpan 入门', 'Hanpan 可以把思维导图整理的内容发送�
   '导图中的修改会进入文档，文档中的修改会回到导图。两边改得不同的地方，可选择以导图为准、以文档为准或稍后。',
   '在文档中写的正文会被保留。Word 和 PowerPoint 文档目前只能发送，不能回同步。']),
  ('Hanpan 模板', 'ul', [
-  '主页的 **Hanpan 模板** 卡片可用 HWP 或 Word 打开 19 种模板（公文、报告、提案、会议纪要、计划书）。']),
+  '主页的 **Hanpan 模板** 卡片可用 HWP 或 Word 打开 22 种模板（公文、报告、提案、会议纪要、计划书）。']),
  ('Hanpan 工具', 'ul', [
   'HWP 标签页上方的 **Hanpan 工具** 可整理和检查公文、按年龄层转换语气、标记三色审阅并生成结构化提示词。',
   '修改文档的工具会立即在标签页中显示结果。不保存就关闭，文件保持原样。']),
@@ -90,7 +90,7 @@ T['zh-TW'] = ('Hanpan 入門', 'Hanpan 可以把心智圖整理的內容傳送�
   '導圖中的修改會進入文件，文件中的修改會回到導圖。兩邊改得不同的地方，可選擇以導圖為準、以文件為準或稍後。',
   '在文件中寫的內文會被保留。Word 和 PowerPoint 文件目前只能傳送，不能回同步。']),
  ('Hanpan 範本', 'ul', [
-  '首頁的 **Hanpan 範本** 卡片可用 HWP 或 Word 開啟 19 種範本（公文、報告、提案、會議紀錄、企劃書）。']),
+  '首頁的 **Hanpan 範本** 卡片可用 HWP 或 Word 開啟 22 種範本（公文、報告、提案、會議紀錄、企劃書）。']),
  ('Hanpan 工具', 'ul', [
   'HWP 分頁上方的 **Hanpan 工具** 可整理和檢查公文、依年齡層轉換語氣、標記三色審閱並產生結構化提示詞。',
   '修改文件的工具會立即在分頁中顯示結果。不儲存就關閉，檔案保持原樣。']),
@@ -113,7 +113,7 @@ T['ja'] = ('Hanpan をはじめる', 'Hanpan はマインドマップで整理�
   'マップで直した内容は文書へ、文書で直した内容はマップへ反映されます。両方で違うように直した箇所は、マップの方・文書の方・後で から選びます。',
   '文書で書いた本文はそのまま残ります。Word・PowerPoint 文書は今のところ送ることだけができます。']),
  ('Hanpan テンプレート', 'ul', [
-  'ホームの **Hanpan テンプレート** カードから、公文書・報告書・提案書・議事録・企画書の 19 種類のテンプレートを HWP か Word で開けます。']),
+  'ホームの **Hanpan テンプレート** カードから、公文書・報告書・提案書・議事録・企画書の 22 種類のテンプレートを HWP か Word で開けます。']),
  ('Hanpan ツール', 'ul', [
   'HWP タブ上部の **Hanpan ツール** には、公文書の整理とチェック、世代別の口調変更、3色レビュー、プロンプトビルダーがあります。',
   '文書を直すツールは結果をすぐタブに表示します。保存せずに閉じればファイルは元のままです。']),
@@ -138,7 +138,7 @@ T['fr'] = latin('fr', 'Bien démarrer avec Hanpan', "Hanpan envoie ce que vous a
   ["Appuyez sur **Envoyer vers un document › Synchroniser avec les documents liés** pour voir ce qui a changé dans la carte et dans le document HWP.",
    "Les modifications faites dans la carte vont au document, et celles du document reviennent à la carte. Quand les deux côtés ont modifié un sujet différemment, choisissez la carte, le document ou plus tard.",
    "Les phrases écrites dans le document sont conservées. Les documents Word et PowerPoint peuvent être envoyés mais pas encore resynchronisés."],
-  ["La carte **Modèles Hanpan** de l'accueil ouvre 19 modèles (lettres officielles, rapports, propositions, comptes rendus, plans) en HWP ou en Word."],
+  ["La carte **Modèles Hanpan** de l'accueil ouvre 22 modèles (lettres officielles, rapports, propositions, comptes rendus, plans) en HWP ou en Word."],
   ["Les **Outils Hanpan** au-dessus d'un onglet HWP mettent en forme et vérifient une lettre officielle, adaptent le ton à une génération, marquent une relecture en trois couleurs et construisent une invite structurée.",
    "Les outils qui modifient le document montrent le résultat tout de suite dans l'onglet. Fermer sans enregistrer laisse le fichier tel quel."],
   ["La carte **Design** de l'accueil crée affiches, cartes d'actualité, avis et miniatures.",
@@ -155,7 +155,7 @@ T['de'] = latin('de', 'Erste Schritte mit Hanpan', 'Hanpan schickt, was Sie in e
   ['Drücken Sie **An ein Dokument senden › Mit verknüpften Dokumenten abgleichen**, um zu sehen, was sich in Karte und HWP-Dokument geändert hat.',
    'Änderungen in der Karte gehen ins Dokument, Änderungen im Dokument kommen in die Karte. Wo beide Seiten ein Thema unterschiedlich geändert haben, wählen Sie Karte, Dokument oder später.',
    'Im Dokument geschriebene Sätze bleiben erhalten. Word- und PowerPoint-Dokumente lassen sich senden, aber noch nicht zurück abgleichen.'],
-  ['Die Karte **Hanpan-Vorlagen** auf der Startseite öffnet 19 Vorlagen (amtliche Schreiben, Berichte, Angebote, Protokolle, Pläne) als HWP oder Word.'],
+  ['Die Karte **Hanpan-Vorlagen** auf der Startseite öffnet 22 Vorlagen (amtliche Schreiben, Berichte, Angebote, Protokolle, Pläne) als HWP oder Word.'],
   ['Die **Hanpan-Werkzeuge** über einem HWP-Tab ordnen und prüfen ein amtliches Schreiben, passen den Ton an eine Generation an, markieren eine Dreifarben-Prüfung und bauen einen strukturierten Prompt.',
    'Werkzeuge, die das Dokument ändern, zeigen das Ergebnis sofort im Tab. Schließen ohne Speichern lässt die Datei unverändert.'],
   ['Die Karte **Design** auf der Startseite erstellt Plakate, Karten-News, Aushänge und Vorschaubilder.',
@@ -172,7 +172,7 @@ T['es'] = latin('es', 'Primeros pasos con Hanpan', 'Hanpan envía lo que ordenas
   ['Pulsa **Enviar a un documento › Sincronizar con documentos vinculados** para ver qué cambió en el mapa y en el documento HWP.',
    'Los cambios hechos en el mapa van al documento y los del documento vuelven al mapa. Si ambos lados cambiaron un tema de forma distinta, elige el del mapa, el del documento o más tarde.',
    'Las frases escritas en el documento se conservan. Los documentos de Word y PowerPoint se pueden enviar, pero aún no se sincronizan de vuelta.'],
-  ['La tarjeta **Plantillas de Hanpan** del inicio abre 19 plantillas (cartas oficiales, informes, propuestas, actas, planes) como HWP o Word.'],
+  ['La tarjeta **Plantillas de Hanpan** del inicio abre 22 plantillas (cartas oficiales, informes, propuestas, actas, planes) como HWP o Word.'],
   ['Las **Herramientas de Hanpan** sobre una pestaña HWP ordenan y revisan una carta oficial, adaptan el tono a una generación, marcan una revisión en tres colores y crean una instrucción estructurada.',
    'Las herramientas que cambian el documento muestran el resultado al momento en la pestaña. Cerrar sin guardar deja el archivo como estaba.'],
   ['La tarjeta **Diseño** del inicio crea carteles, tarjetas de noticias, avisos y miniaturas.',
@@ -189,7 +189,7 @@ T['it'] = latin('it', 'Per iniziare con Hanpan', 'Hanpan invia ciò che hai orga
   ['Premi **Invia a un documento › Sincronizza con i documenti collegati** per vedere cosa è cambiato nella mappa e nel documento HWP.',
    'Le modifiche fatte nella mappa vanno al documento e quelle del documento tornano alla mappa. Se le due parti hanno cambiato un argomento in modo diverso, scegli la mappa, il documento o più tardi.',
    'Le frasi scritte nel documento restano. I documenti Word e PowerPoint si possono inviare ma non ancora risincronizzare.'],
-  ['La scheda **Modelli Hanpan** nella Home apre 19 modelli (lettere ufficiali, rapporti, proposte, verbali, piani) come HWP o Word.'],
+  ['La scheda **Modelli Hanpan** nella Home apre 22 modelli (lettere ufficiali, rapporti, proposte, verbali, piani) come HWP o Word.'],
   ['Gli **Strumenti Hanpan** sopra una scheda HWP sistemano e controllano una lettera ufficiale, adattano il tono a una generazione, segnano una revisione a tre colori e costruiscono un prompt strutturato.',
    'Gli strumenti che cambiano il documento mostrano subito il risultato nella scheda. Chiudere senza salvare lascia il file com’era.'],
   ['La scheda **Design** nella Home crea poster, schede notizie, avvisi e miniature.',
@@ -206,7 +206,7 @@ T['pt'] = latin('pt', 'Primeiros passos com o Hanpan', 'O Hanpan envia o que voc
   ['Pressione **Enviar para um documento › Sincronizar com documentos vinculados** para ver o que mudou no mapa e no documento HWP.',
    'O que mudou no mapa vai para o documento, e o que mudou no documento volta ao mapa. Quando os dois lados mudaram um tópico de forma diferente, escolha o do mapa, o do documento ou depois.',
    'As frases escritas no documento são mantidas. Documentos Word e PowerPoint podem ser enviados, mas ainda não são sincronizados de volta.'],
-  ['O cartão **Modelos do Hanpan** no Início abre 19 modelos (ofícios, relatórios, propostas, atas, planos) como HWP ou Word.'],
+  ['O cartão **Modelos do Hanpan** no Início abre 22 modelos (ofícios, relatórios, propostas, atas, planos) como HWP ou Word.'],
   ['As **Ferramentas do Hanpan** acima de uma aba HWP arrumam e conferem um ofício, ajustam o tom para uma geração, marcam uma revisão em três cores e montam um prompt estruturado.',
    'As ferramentas que mudam o documento mostram o resultado na aba na hora. Fechar sem salvar deixa o arquivo como estava.'],
   ['O cartão **Design** no Início cria cartazes, cards de notícias, avisos e miniaturas.',
@@ -223,7 +223,7 @@ T['nl'] = latin('nl', 'Aan de slag met Hanpan', 'Hanpan stuurt wat u in een mind
   ['Druk op **Naar een document sturen › Gelijkzetten met gekoppelde documenten** om te zien wat er in de kaart en in het HWP-document is veranderd.',
    'Wijzigingen in de kaart gaan naar het document, wijzigingen in het document komen naar de kaart. Waar beide kanten een onderwerp anders hebben gewijzigd, kiest u die van de kaart, die van het document of later.',
    'Zinnen die in het document zijn geschreven, blijven staan. Word- en PowerPoint-documenten kunnen worden verstuurd, maar nog niet terug gelijkgezet.'],
-  ['De kaart **Hanpan-sjablonen** op Start opent 19 sjablonen (officiële brieven, rapporten, voorstellen, notulen, plannen) als HWP of Word.'],
+  ['De kaart **Hanpan-sjablonen** op Start opent 22 sjablonen (officiële brieven, rapporten, voorstellen, notulen, plannen) als HWP of Word.'],
   ['De **Hanpan-hulpmiddelen** boven een HWP-tabblad ordenen en controleren een officiële brief, passen de toon aan op een generatie, markeren een driekleurenbeoordeling en bouwen een gestructureerde prompt.',
    'Hulpmiddelen die het document wijzigen, tonen het resultaat meteen in het tabblad. Sluiten zonder opslaan laat het bestand ongewijzigd.'],
   ['De kaart **Ontwerp** op Start maakt posters, nieuwskaarten, mededelingen en miniaturen.',
@@ -240,7 +240,7 @@ T['pl'] = latin('pl', 'Pierwsze kroki z Hanpan', 'Hanpan wysyła to, co uporząd
   ['Naciśnij **Wyślij do dokumentu › Uzgodnij z połączonymi dokumentami**, aby zobaczyć, co zmieniło się na mapie i w dokumencie HWP.',
    'Zmiany z mapy trafiają do dokumentu, a zmiany z dokumentu wracają na mapę. Gdy obie strony zmieniły temat inaczej, wybierz wersję mapy, dokumentu albo później.',
    'Zdania napisane w dokumencie zostają. Dokumenty Word i PowerPoint można wysłać, ale jeszcze nie uzgodnić z powrotem.'],
-  ['Karta **Szablony Hanpan** na ekranie startowym otwiera 19 szablonów (pisma urzędowe, raporty, oferty, protokoły, plany) jako HWP lub Word.'],
+  ['Karta **Szablony Hanpan** na ekranie startowym otwiera 22 szablonów (pisma urzędowe, raporty, oferty, protokoły, plany) jako HWP lub Word.'],
   ['**Narzędzia Hanpan** nad kartą HWP porządkują i sprawdzają pismo urzędowe, dostosowują ton do pokolenia, zaznaczają przegląd w trzech kolorach i budują uporządkowany prompt.',
    'Narzędzia zmieniające dokument od razu pokazują wynik w karcie. Zamknięcie bez zapisu pozostawia plik bez zmian.'],
   ['Karta **Projekt** na ekranie startowym tworzy plakaty, karty informacyjne, ogłoszenia i miniatury.',
@@ -257,7 +257,7 @@ T['cs'] = latin('cs', 'Začínáme s Hanpan', 'Hanpan pošle to, co jste uspoř�
   ['Stiskněte **Odeslat do dokumentu › Sladit s propojenými dokumenty** a uvidíte, co se změnilo v mapě a v dokumentu HWP.',
    'Změny v mapě jdou do dokumentu, změny v dokumentu se vrací do mapy. Kde obě strany změnily téma jinak, vyberte verzi mapy, dokumentu nebo později.',
    'Věty napsané v dokumentu zůstanou. Dokumenty Word a PowerPoint lze odeslat, ale zatím ne sladit zpět.'],
-  ['Karta **Šablony Hanpan** na úvodní obrazovce otevře 19 šablon (úřední dopisy, zprávy, návrhy, zápisy, plány) jako HWP nebo Word.'],
+  ['Karta **Šablony Hanpan** na úvodní obrazovce otevře 22 šablon (úřední dopisy, zprávy, návrhy, zápisy, plány) jako HWP nebo Word.'],
   ['**Nástroje Hanpan** nad kartou HWP upraví a zkontrolují úřední dopis, přizpůsobí tón generaci, vyznačí tříbarevnou kontrolu a sestaví strukturovaný prompt.',
    'Nástroje, které mění dokument, ukážou výsledek hned na kartě. Zavření bez uložení nechá soubor beze změny.'],
   ['Karta **Návrh** na úvodní obrazovce vytváří plakáty, karty se zprávami, oznámení a náhledy.',
@@ -274,7 +274,7 @@ T['id'] = latin('id', 'Memulai Hanpan', 'Hanpan mengirim apa yang Anda susun di 
   ['Tekan **Kirim ke dokumen › Selaraskan dengan dokumen tertaut** untuk melihat apa yang berubah di peta dan di dokumen HWP.',
    'Perubahan di peta masuk ke dokumen, dan perubahan di dokumen kembali ke peta. Bila kedua sisi mengubah topik secara berbeda, pilih versi peta, versi dokumen, atau nanti.',
    'Kalimat yang ditulis di dokumen tetap ada. Dokumen Word dan PowerPoint bisa dikirim tetapi belum bisa diselaraskan kembali.'],
-  ['Kartu **Templat Hanpan** di Beranda membuka 19 templat (surat resmi, laporan, proposal, notulen, rencana) sebagai HWP atau Word.'],
+  ['Kartu **Templat Hanpan** di Beranda membuka 22 templat (surat resmi, laporan, proposal, notulen, rencana) sebagai HWP atau Word.'],
   ['**Alat Hanpan** di atas tab HWP merapikan dan memeriksa surat resmi, menyesuaikan nada untuk suatu generasi, menandai tinjauan tiga warna, dan menyusun prompt terstruktur.',
    'Alat yang mengubah dokumen langsung menampilkan hasilnya di tab. Menutup tanpa menyimpan membiarkan berkas seperti semula.'],
   ['Kartu **Desain** di Beranda membuat poster, kartu berita, pengumuman, dan gambar mini.',
@@ -291,7 +291,7 @@ T['ms'] = latin('ms', 'Bermula dengan Hanpan', 'Hanpan menghantar apa yang anda 
   ['Tekan **Hantar ke dokumen › Selaraskan dengan dokumen berpaut** untuk melihat apa yang berubah dalam peta dan dokumen HWP.',
    'Perubahan dalam peta pergi ke dokumen, dan perubahan dalam dokumen kembali ke peta. Jika kedua-dua pihak mengubah topik secara berbeza, pilih versi peta, versi dokumen atau kemudian.',
    'Ayat yang ditulis dalam dokumen dikekalkan. Dokumen Word dan PowerPoint boleh dihantar tetapi belum boleh diselaraskan semula.'],
-  ['Kad **Templat Hanpan** di Laman Utama membuka 19 templat (surat rasmi, laporan, cadangan, minit, rancangan) sebagai HWP atau Word.'],
+  ['Kad **Templat Hanpan** di Laman Utama membuka 22 templat (surat rasmi, laporan, cadangan, minit, rancangan) sebagai HWP atau Word.'],
   ['**Alat Hanpan** di atas tab HWP mengemas dan menyemak surat rasmi, menyesuaikan nada untuk sesuatu generasi, menandakan semakan tiga warna dan membina gesaan berstruktur.',
    'Alat yang mengubah dokumen terus menunjukkan hasil dalam tab. Menutup tanpa menyimpan membiarkan fail seperti asal.'],
   ['Kad **Reka bentuk** di Laman Utama membuat poster, kad berita, notis dan gambar kecil.',
@@ -308,7 +308,7 @@ T['vi'] = latin('vi', 'Bắt đầu với Hanpan', 'Hanpan gửi những gì b�
   ['Nhấn **Gửi sang tài liệu › Đồng bộ với tài liệu liên kết** để xem những gì đã thay đổi trong sơ đồ và tài liệu HWP.',
    'Thay đổi trong sơ đồ đi sang tài liệu, thay đổi trong tài liệu quay về sơ đồ. Khi hai bên sửa một chủ đề khác nhau, hãy chọn bản của sơ đồ, của tài liệu hoặc để sau.',
    'Các câu đã viết trong tài liệu được giữ nguyên. Tài liệu Word và PowerPoint gửi được nhưng chưa đồng bộ ngược lại.'],
-  ['Thẻ **Mẫu Hanpan** ở Trang chủ mở 19 mẫu (công văn, báo cáo, đề xuất, biên bản, kế hoạch) dạng HWP hoặc Word.'],
+  ['Thẻ **Mẫu Hanpan** ở Trang chủ mở 22 mẫu (công văn, báo cáo, đề xuất, biên bản, kế hoạch) dạng HWP hoặc Word.'],
   ['**Công cụ Hanpan** phía trên thẻ HWP chỉnh và kiểm tra công văn, đổi giọng văn theo thế hệ, đánh dấu rà soát ba màu và dựng lời nhắc có cấu trúc.',
    'Công cụ thay đổi tài liệu hiển thị kết quả ngay trong thẻ. Đóng mà không lưu thì tệp vẫn như cũ.'],
   ['Thẻ **Thiết kế** ở Trang chủ tạo áp phích, thẻ tin, thông báo và ảnh thu nhỏ.',
@@ -325,7 +325,7 @@ T['ru'] = latin('ru', 'Начало работы с Hanpan', 'Hanpan отпра�
   ['Нажмите **Отправить в документ › Синхронизировать со связанными документами**, чтобы увидеть изменения в карте и в документе HWP.',
    'Изменения в карте переходят в документ, изменения в документе возвращаются в карту. Если обе стороны изменили тему по-разному, выберите вариант карты, документа или «позже».',
    'Предложения, написанные в документе, сохраняются. Документы Word и PowerPoint можно отправить, но пока нельзя синхронизировать обратно.'],
-  ['Карточка **Шаблоны Hanpan** на главной открывает 19 шаблонов (служебные письма, отчёты, предложения, протоколы, планы) в HWP или Word.'],
+  ['Карточка **Шаблоны Hanpan** на главной открывает 22 шаблонов (служебные письма, отчёты, предложения, протоколы, планы) в HWP или Word.'],
   ['**Инструменты Hanpan** над вкладкой HWP приводят в порядок и проверяют служебное письмо, меняют тон для поколения, отмечают трёхцветную проверку и собирают структурированный запрос.',
    'Инструменты, меняющие документ, сразу показывают результат во вкладке. Если закрыть без сохранения, файл останется прежним.'],
   ['Карточка **Дизайн** на главной создаёт плакаты, карточки новостей, объявления и обложки.',
@@ -342,7 +342,7 @@ T['ar'] = latin('ar', 'البدء مع Hanpan', 'يرسل Hanpan ما رتّبت
   ['اضغط **إرسال إلى مستند › مزامنة مع المستندات المرتبطة** لترى ما تغيّر في الخريطة وفي مستند HWP.',
    'تنتقل تغييرات الخريطة إلى المستند وتعود تغييرات المستند إلى الخريطة. حيث غيّر الطرفان موضوعًا بشكل مختلف، اختر نسخة الخريطة أو المستند أو لاحقًا.',
    'تبقى الجمل المكتوبة في المستند. يمكن إرسال مستندات Word وPowerPoint لكن لا تُزامن عكسيًا بعد.'],
-  ['تفتح بطاقة **قوالب Hanpan** في الصفحة الرئيسية 19 قالبًا (خطابات رسمية، تقارير، عروض، محاضر، خطط) بصيغة HWP أو Word.'],
+  ['تفتح بطاقة **قوالب Hanpan** في الصفحة الرئيسية 22 قالبًا (خطابات رسمية، تقارير، عروض، محاضر، خطط) بصيغة HWP أو Word.'],
   ['تنظّم **أدوات Hanpan** فوق تبويب HWP الخطاب الرسمي وتفحصه، وتغيّر النبرة لجيل معيّن، وتعلّم مراجعة بثلاثة ألوان، وتبني موجّهًا منظّمًا.',
    'الأدوات التي تغيّر المستند تعرض النتيجة في التبويب فورًا. الإغلاق دون حفظ يترك الملف كما كان.'],
   ['تصنع بطاقة **التصميم** في الصفحة الرئيسية ملصقات وبطاقات أخبار وإعلانات وصورًا مصغّرة.',
@@ -359,7 +359,7 @@ T['he'] = latin('he', 'צעדים ראשונים עם Hanpan', 'Hanpan שולח 
   ['לחצו **שליחה למסמך › סנכרון עם מסמכים מקושרים** כדי לראות מה השתנה במפה ובמסמך ה-HWP.',
    'שינויים במפה עוברים למסמך, ושינויים במסמך חוזרים למפה. כששני הצדדים שינו נושא באופן שונה, בחרו את גרסת המפה, את גרסת המסמך או אחר כך.',
    'משפטים שנכתבו במסמך נשמרים. מסמכי Word ו-PowerPoint אפשר לשלוח, אך עדיין לא לסנכרן בחזרה.'],
-  ['הכרטיס **תבניות Hanpan** במסך הבית פותח 19 תבניות (מכתבים רשמיים, דוחות, הצעות, פרוטוקולים, תוכניות) כ-HWP או כ-Word.'],
+  ['הכרטיס **תבניות Hanpan** במסך הבית פותח 22 תבניות (מכתבים רשמיים, דוחות, הצעות, פרוטוקולים, תוכניות) כ-HWP או כ-Word.'],
   ['**כלי Hanpan** מעל כרטיסיית HWP מסדרים ובודקים מכתב רשמי, מתאימים את הטון לדור, מסמנים בדיקה בשלושה צבעים ובונים הנחיה מובנית.',
    'כלים שמשנים את המסמך מציגים את התוצאה בכרטיסייה מיד. סגירה בלי שמירה משאירה את הקובץ כפי שהיה.'],
   ['הכרטיס **עיצוב** במסך הבית יוצר פוסטרים, כרטיסי חדשות, הודעות ותמונות ממוזערות.',
@@ -376,7 +376,7 @@ T['hi'] = latin('hi', 'Hanpan से शुरुआत', 'Hanpan माइं�
   ['**दस्तावेज़ में भेजें › जुड़े दस्तावेज़ों से मिलान करें** दबाकर देखें कि मानचित्र और HWP दस्तावेज़ में क्या बदला।',
    'मानचित्र के बदलाव दस्तावेज़ में जाते हैं और दस्तावेज़ के बदलाव मानचित्र में लौटते हैं। जहाँ दोनों ओर किसी विषय को अलग-अलग बदला गया हो, मानचित्र वाला, दस्तावेज़ वाला या बाद में चुनें।',
    'दस्तावेज़ में लिखे वाक्य बने रहते हैं। Word और PowerPoint दस्तावेज़ भेजे जा सकते हैं, पर अभी वापस मिलाए नहीं जाते।'],
-  ['होम पर **Hanpan टेम्पलेट** कार्ड 19 टेम्पलेट (आधिकारिक पत्र, रिपोर्ट, प्रस्ताव, कार्यवृत्त, योजनाएँ) HWP या Word में खोलता है।'],
+  ['होम पर **Hanpan टेम्पलेट** कार्ड 22 टेम्पलेट (आधिकारिक पत्र, रिपोर्ट, प्रस्ताव, कार्यवृत्त, योजनाएँ) HWP या Word में खोलता है।'],
   ['HWP टैब के ऊपर **Hanpan टूल** आधिकारिक पत्र को सुधारते और जाँचते हैं, किसी पीढ़ी के लिए लहजा बदलते हैं, तीन-रंग समीक्षा चिह्नित करते हैं और संरचित प्रॉम्प्ट बनाते हैं।',
    'दस्तावेज़ बदलने वाले टूल परिणाम तुरंत टैब में दिखाते हैं। बिना सहेजे बंद करने पर फ़ाइल पहले जैसी रहती है।'],
   ['होम पर **डिज़ाइन** कार्ड पोस्टर, कार्ड न्यूज़, सूचनाएँ और थंबनेल बनाता है।',
@@ -393,7 +393,7 @@ T['th'] = latin('th', 'เริ่มต้นใช้ Hanpan', 'Hanpan ส่
   ['กด **ส่งไปยังเอกสาร › ซิงค์กับเอกสารที่เชื่อมไว้** เพื่อดูว่าอะไรเปลี่ยนในแผนที่และในเอกสาร HWP',
    'สิ่งที่แก้ในแผนที่จะไปที่เอกสาร และสิ่งที่แก้ในเอกสารจะกลับมาที่แผนที่ ส่วนที่แก้ต่างกันทั้งสองฝั่งให้เลือกตามแผนที่ ตามเอกสาร หรือภายหลัง',
    'ประโยคที่เขียนในเอกสารจะคงอยู่ เอกสาร Word และ PowerPoint ส่งได้แต่ยังซิงค์กลับไม่ได้'],
-  ['การ์ด **เทมเพลต Hanpan** ในหน้าแรกเปิดเทมเพลต 19 แบบ (หนังสือราชการ รายงาน ข้อเสนอ บันทึกการประชุม แผนงาน) เป็น HWP หรือ Word'],
+  ['การ์ด **เทมเพลต Hanpan** ในหน้าแรกเปิดเทมเพลต 22 แบบ (หนังสือราชการ รายงาน ข้อเสนอ บันทึกการประชุม แผนงาน) เป็น HWP หรือ Word'],
   ['**เครื่องมือ Hanpan** เหนือแท็บ HWP ช่วยจัดและตรวจหนังสือราชการ เปลี่ยนน้ำเสียงตามรุ่นวัย ทำเครื่องหมายการตรวจสามสี และสร้างพรอมต์แบบมีโครงสร้าง',
    'เครื่องมือที่แก้เอกสารจะแสดงผลในแท็บทันที หากปิดโดยไม่บันทึก ไฟล์จะคงเดิม'],
   ['การ์ด **ออกแบบ** ในหน้าแรกใช้สร้างโปสเตอร์ การ์ดข่าว ประกาศ และภาพปก',
@@ -430,6 +430,35 @@ CONVERTER = {
 assert set(CONVERTER) == set(T), set(T) ^ set(CONVERTER)
 for lang, (_title, _intro, sections) in T.items():
     sections[2][2].append(CONVERTER[lang])
+
+# the 교육 templates with Gongu (공유마당) pictures, opening a template as a map, and the
+# slide sound effects (decision 0087), one line under the templates
+GONGU_WORKS = {
+ 'ko': '**교육** 묶음에는 옛 그림 감상 수업 지도안, 옛 그림 전시 안내문, 「운수 좋은 날」 함께 읽기가 있습니다. 그림은 공유마당(gongu.copyright.or.kr)에서 가져온 저작권 만료·CC BY 작품이라 누구나 고쳐 쓸 수 있고, 문서에는 그림마다 출처 줄이 함께 들어갑니다. 지우지 말고 두세요. 양식 카드의 **마인드맵으로 열기**를 누르면 제목과 목록이 가지가 된 마인드맵으로 열립니다. 슬라이드 편집기의 **삽입 › 효과음**은 국악 효과음 6가지(주식회사 아이티앤, CC BY)를 슬라이드에 넣고, 출처는 넣은 소리의 이름에 적힙니다.',
+ 'en': 'The **교육** (education) group has a lesson plan for looking at old Korean paintings, an exhibition notice and a reading lesson on 「운수 좋은 날」. The pictures come from Gongu (gongu.copyright.or.kr) and are out of copyright or under CC BY, so anyone may adapt them; each one goes into the document with its credit line under it. Leave that line in. **Open as mind map** on a template card opens its headings and lists as branches of a mind map. In the slide editor, **Insert › Sound Effects** puts one of six Korean traditional-music sound effects (주식회사 아이티앤, CC BY) on the slide, with the credit in the sound’s name.',
+ 'zh': '**교육**（教育）组中有古画欣赏课教案、古画展览通知和「운수 좋은 날」阅读课。图片来自公有平台 Gongu（gongu.copyright.or.kr），版权已过期或采用 CC BY，任何人都可修改使用；每张图片下方都会附上出处行，请保留。在模板卡片上按 **以思维导图打开**，标题和列表会成为思维导图的分支。在幻灯片编辑器中，**插入 › 音效** 可把 6 种韩国传统音乐音效（주식회사 아이티앤，CC BY）放到幻灯片上，出处写在声音名称中。',
+ 'zh-TW': '**교육**（教育）群組中有古畫欣賞課教案、古畫展覽通知和「운수 좋은 날」閱讀課。圖片來自 Gongu（gongu.copyright.or.kr），著作權已過期或採用 CC BY，任何人都可修改使用；每張圖片下方都會附上出處行，請保留。在範本卡片上按 **以心智圖開啟**，標題和清單會成為心智圖的分支。在投影片編輯器中，**插入 › 音效** 可把 6 種韓國傳統音樂音效（주식회사 아이티앤，CC BY）放到投影片上，出處寫在聲音名稱中。',
+ 'ja': '**교육**（教育）グループには、昔の絵の鑑賞授業の指導案、昔の絵の展示案内、「운수 좋은 날」を読む授業があります。絵は Gongu（gongu.copyright.or.kr）の著作権切れまたは CC BY の作品なので誰でも手を加えて使え、文書には絵ごとに出典の行が入ります。この行は消さずに残してください。テンプレートのカードで **マインドマップで開く** を押すと、見出しと箇条書きが枝になったマインドマップで開きます。スライド編集の **挿入 › 効果音** は韓国伝統音楽の効果音 6 種類（주식회사 아이티앤、CC BY）をスライドに入れ、出典は音声の名前に記されます。',
+ 'fr': "Le groupe **교육** (éducation) contient une fiche de cours sur la peinture coréenne ancienne, une annonce d'exposition et une séance de lecture sur 「운수 좋은 날」. Les images viennent de Gongu (gongu.copyright.or.kr) ; elles sont dans le domaine public ou sous CC BY, donc chacun peut les adapter, et chacune entre dans le document avec sa ligne de crédit dessous. Laissez cette ligne. **Open as mind map** sur une carte de modèle ouvre ses titres et listes comme branches d'une carte mentale. Dans l'éditeur de diapositives, **Insertion › Effets sonores** place l'un des six effets de musique traditionnelle coréenne (주식회사 아이티앤, CC BY), avec le crédit dans le nom du son.",
+ 'de': 'Die Gruppe **교육** (Bildung) enthält einen Unterrichtsentwurf zu alten koreanischen Bildern, eine Ausstellungsankündigung und eine Lesestunde zu 「운수 좋은 날」. Die Bilder stammen von Gongu (gongu.copyright.or.kr) und sind gemeinfrei oder CC BY, dürfen also von allen bearbeitet werden; jedes kommt mit seiner Quellenzeile darunter ins Dokument. Lassen Sie diese Zeile stehen. **Open as mind map** auf einer Vorlagenkarte öffnet Überschriften und Listen als Zweige einer Mindmap. Im Folien-Editor setzt **Einfügen › Soundeffekte** einen von sechs Soundeffekten koreanischer traditioneller Musik (주식회사 아이티앤, CC BY) auf die Folie, die Quelle steht im Namen des Sounds.',
+ 'es': 'El grupo **교육** (educación) incluye una planificación de clase sobre pintura coreana antigua, un aviso de exposición y una clase de lectura de 「운수 좋은 날」. Las imágenes vienen de Gongu (gongu.copyright.or.kr) y son de dominio público o CC BY, así que cualquiera puede adaptarlas; cada una entra en el documento con su línea de crédito debajo. No la borres. **Open as mind map** en una tarjeta de plantilla abre sus títulos y listas como ramas de un mapa mental. En el editor de diapositivas, **Insertar › Efectos de sonido** coloca uno de seis efectos de música tradicional coreana (주식회사 아이티앤, CC BY), con el crédito en el nombre del sonido.',
+ 'it': "Il gruppo **교육** (istruzione) contiene un piano di lezione sui dipinti coreani antichi, un avviso di mostra e una lezione di lettura su 「운수 좋은 날」. Le immagini vengono da Gongu (gongu.copyright.or.kr) e sono di pubblico dominio o CC BY, quindi chiunque può adattarle; ognuna entra nel documento con la sua riga di attribuzione sotto. Lascia quella riga. **Open as mind map** su una scheda modello apre titoli ed elenchi come rami di una mappa mentale. Nell'editor di diapositive, **Inserisci › Effetti sonori** mette sulla diapositiva uno di sei effetti di musica tradizionale coreana (주식회사 아이티앤, CC BY), con l'attribuzione nel nome del suono.",
+ 'pt': 'O grupo **교육** (educação) traz um plano de aula sobre pintura coreana antiga, um aviso de exposição e uma aula de leitura de 「운수 좋은 날」. As imagens vêm do Gongu (gongu.copyright.or.kr) e estão em domínio público ou sob CC BY, então qualquer pessoa pode adaptá-las; cada uma entra no documento com a linha de crédito abaixo. Mantenha essa linha. **Open as mind map** num cartão de modelo abre os títulos e listas como ramos de um mapa mental. No editor de slides, **Inserir › Efeitos sonoros** coloca um de seis efeitos de música tradicional coreana (주식회사 아이티앤, CC BY), com o crédito no nome do som.',
+ 'nl': 'De groep **교육** (onderwijs) bevat een lesplan over oude Koreaanse schilderijen, een tentoonstellingsaankondiging en een leesles over 「운수 좋은 날」. De afbeeldingen komen van Gongu (gongu.copyright.or.kr) en zijn rechtenvrij of CC BY, dus iedereen mag ze bewerken; elke afbeelding komt met haar bronregel eronder in het document. Laat die regel staan. **Open as mind map** op een sjabloonkaart opent de koppen en lijsten als takken van een mindmap. In de dia-editor zet **Invoegen › Geluidseffecten** een van zes geluidseffecten van Koreaanse traditionele muziek (주식회사 아이티앤, CC BY) op de dia, met de bron in de naam van het geluid.',
+ 'pl': 'Grupa **교육** (edukacja) zawiera konspekt lekcji o dawnym malarstwie koreańskim, zapowiedź wystawy i lekcję czytania 「운수 좋은 날」. Obrazy pochodzą z Gongu (gongu.copyright.or.kr) i są w domenie publicznej lub na CC BY, więc każdy może je przerabiać; każdy trafia do dokumentu z linią źródła pod spodem. Nie usuwaj jej. **Open as mind map** na karcie szablonu otwiera nagłówki i listy jako gałęzie mapy myśli. W edytorze slajdów **Wstawianie › Efekty dźwiękowe** dodaje jeden z sześciu efektów koreańskiej muzyki tradycyjnej (주식회사 아이티앤, CC BY), a źródło jest w nazwie dźwięku.',
+ 'cs': 'Skupina **교육** (vzdělávání) obsahuje přípravu hodiny o staré korejské malbě, pozvánku na výstavu a hodinu čtení 「운수 좋은 날」. Obrázky pocházejí z Gongu (gongu.copyright.or.kr) a jsou volné nebo pod CC BY, takže je smí upravit kdokoli; každý přijde do dokumentu s řádkem zdroje pod sebou. Ten řádek ponechte. **Open as mind map** na kartě šablony otevře nadpisy a seznamy jako větve myšlenkové mapy. V editoru snímků **Vložení › Zvukové efekty** přidá jeden ze šesti zvukových efektů korejské tradiční hudby (주식회사 아이티앤, CC BY) se zdrojem v názvu zvuku.',
+ 'id': 'Grup **교육** (pendidikan) berisi rencana pelajaran tentang lukisan Korea lama, pengumuman pameran, dan pelajaran membaca 「운수 좋은 날」. Gambarnya berasal dari Gongu (gongu.copyright.or.kr) dan sudah bebas hak cipta atau ber-CC BY, jadi siapa pun boleh mengubahnya; setiap gambar masuk ke dokumen dengan baris sumber di bawahnya. Biarkan baris itu. **Open as mind map** pada kartu templat membuka judul dan daftarnya sebagai cabang peta pikiran. Di editor slide, **Sisipkan › Efek Suara** menaruh salah satu dari enam efek suara musik tradisional Korea (주식회사 아이티앤, CC BY), dengan sumber di nama suaranya.',
+ 'ms': 'Kumpulan **교육** (pendidikan) mengandungi rancangan pelajaran tentang lukisan lama Korea, notis pameran dan pelajaran membaca 「운수 좋은 날」. Gambar datang dari Gongu (gongu.copyright.or.kr) dan sudah tamat hak cipta atau di bawah CC BY, jadi sesiapa boleh mengubahnya; setiap gambar masuk ke dokumen dengan baris sumber di bawahnya. Biarkan baris itu. **Open as mind map** pada kad templat membuka tajuk dan senarainya sebagai cabang peta minda. Dalam penyunting slaid, **Sisip › Kesan Bunyi** meletakkan salah satu daripada enam kesan bunyi muzik tradisional Korea (주식회사 아이티앤, CC BY), dengan sumber dalam nama bunyi.',
+ 'vi': 'Nhóm **교육** (giáo dục) có giáo án thưởng thức tranh cổ Hàn Quốc, thông báo triển lãm và bài đọc 「운수 좋은 날」. Tranh lấy từ Gongu (gongu.copyright.or.kr), đã hết bản quyền hoặc theo CC BY nên ai cũng có thể chỉnh sửa; mỗi tranh vào tài liệu kèm dòng ghi nguồn bên dưới. Hãy giữ dòng đó. **Open as mind map** trên thẻ mẫu sẽ mở tiêu đề và danh sách thành các nhánh của sơ đồ tư duy. Trong trình chỉnh sửa trang chiếu, **Chèn › Hiệu ứng âm thanh** đặt một trong sáu hiệu ứng nhạc truyền thống Hàn Quốc (주식회사 아이티앤, CC BY) lên trang, với nguồn ghi trong tên âm thanh.',
+ 'ru': 'В группе **교육** (образование) есть план урока по старой корейской живописи, объявление о выставке и урок чтения 「운수 좋은 날」. Картинки взяты с Gongu (gongu.copyright.or.kr): они в общественном достоянии или под CC BY, их может переделывать любой; каждая попадает в документ со строкой об источнике под ней. Не удаляйте эту строку. **Открыть как интеллект-карту** на карточке шаблона открывает его заголовки и списки как ветви интеллект-карты. В редакторе слайдов **Вставка › Звуковые эффекты** ставит на слайд один из шести эффектов корейской традиционной музыки (주식회사 아이티앤, CC BY), источник указан в имени звука.',
+ 'ar': 'تضم مجموعة **교육** (التعليم) خطة درس لتأمل اللوحات الكورية القديمة وإعلان معرض ودرس قراءة لقصة 「운수 좋은 날」. الصور من Gongu \u200f(gongu.copyright.or.kr) وهي خارج حماية حقوق النشر أو بترخيص CC BY، فيحق لأي شخص تعديلها؛ وتدخل كل صورة المستند ومعها سطر المصدر تحتها. اترك هذا السطر. يفتح **فتح كخريطة ذهنية** في بطاقة القالب عناوينه وقوائمه فروعًا لخريطة ذهنية. وفي محرر الشرائح يضع **إدراج › مؤثرات صوتية** أحد ستة مؤثرات من الموسيقى الكورية التقليدية (주식회사 아이티앤، CC BY) على الشريحة، والمصدر مكتوب في اسم الصوت.',
+ 'he': 'בקבוצה **교육** (חינוך) יש מערך שיעור על ציורים קוריאניים עתיקים, מודעת תערוכה ושיעור קריאה של 「운수 좋은 날」. התמונות מגיעות מ-Gongu \u200f(gongu.copyright.or.kr) והן בנחלת הכלל או ברישיון CC BY, כך שכל אחד רשאי לעבד אותן; כל תמונה נכנסת למסמך עם שורת המקור שמתחתיה. השאירו את השורה. **פתיחה כמפת חשיבה** בכרטיס התבנית פותח את הכותרות והרשימות כענפים של מפת חשיבה. בעורך השקופיות, **הוספה › אפקטים קוליים** מוסיף אחד משישה אפקטים של מוזיקה קוריאנית מסורתית (주식회사 아이티앤, CC BY), והמקור כתוב בשם הצליל.',
+ 'hi': '**교육** (शिक्षा) समूह में पुराने कोरियाई चित्रों पर पाठ योजना, प्रदर्शनी की सूचना और 「운수 좋은 날」 पढ़ने का पाठ है। चित्र Gongu (gongu.copyright.or.kr) से हैं और कॉपीराइट से बाहर या CC BY के तहत हैं, इसलिए कोई भी इन्हें बदल सकता है; हर चित्र के नीचे स्रोत की पंक्ति दस्तावेज़ में साथ आती है। उसे न हटाएँ। टेम्पलेट कार्ड पर **माइंड मैप के रूप में खोलें** उसके शीर्षक और सूचियों को माइंड मैप की शाखाओं के रूप में खोलता है। स्लाइड संपादक में **सम्मिलित करें › ध्वनि प्रभाव** कोरियाई पारंपरिक संगीत के छह ध्वनि प्रभावों (주식회사 아이티앤, CC BY) में से एक स्लाइड पर डालता है, स्रोत ध्वनि के नाम में लिखा होता है।',
+ 'th': 'กลุ่ม **교육** (การศึกษา) มีแผนการสอนชมภาพวาดเกาหลีโบราณ ประกาศนิทรรศการ และบทเรียนการอ่าน 「운수 좋은 날」 ภาพมาจาก Gongu (gongu.copyright.or.kr) ซึ่งหมดลิขสิทธิ์แล้วหรือใช้ CC BY ทุกคนจึงดัดแปลงได้ และทุกภาพจะเข้าไปในเอกสารพร้อมบรรทัดแหล่งที่มาด้านล่าง โปรดอย่าลบบรรทัดนั้น ปุ่ม **เปิดเป็นแผนผังความคิด** บนการ์ดเทมเพลตจะเปิดหัวข้อและรายการเป็นกิ่งของแผนผังความคิด ในตัวแก้ไขสไลด์ **แทรก › เอฟเฟกต์เสียง** ใส่เอฟเฟกต์เสียงดนตรีพื้นเมืองเกาหลีหนึ่งในหกแบบ (주식회사 아이티앤, CC BY) ลงในสไลด์ โดยระบุแหล่งที่มาในชื่อเสียง',
+}
+assert set(GONGU_WORKS) == set(T), set(T) ^ set(GONGU_WORKS)
+for lang, (_title, _intro, sections) in T.items():
+    sections[2][2].append(GONGU_WORKS[lang])
 
 # AI in the design board, one line under the design section (the board itself
 # speaks Korean or English, so other languages name its buttons in English)

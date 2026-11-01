@@ -254,6 +254,17 @@ export const th = {
   ribbonVideoTip: 'แทรกวิดีโอในเครื่อง (ฝังใน pptx เล่นใน PowerPoint ได้)',
   ribbonAudio: 'เสียง',
   ribbonAudioTip: 'แทรกเสียงในเครื่อง (ฝังใน pptx เล่นใน PowerPoint ได้)',
+  ribbonSoundEffects: 'เอฟเฟกต์เสียง',
+  ribbonSoundEffectsTip:
+    'แทรกเอฟเฟกต์เสียงดนตรีพื้นเมืองเกาหลี (ฝังใน pptx และระบุแหล่งที่มาในชื่อเสียง)',
+  ribbonSoundEffectsCredit:
+    'เอฟเฟกต์เสียง: 주식회사 아이티앤, 공유마당, CC BY ระบุแหล่งที่มาไว้ในชื่อของเสียงที่แทรก',
+  ribbonSoundCelebrate: 'ฉลอง',
+  ribbonSoundFresh: 'สดใส',
+  ribbonSoundCurious: 'สงสัย',
+  ribbonSoundRising: 'ฮึกเหิม',
+  ribbonSoundRefreshed: 'โล่งสบาย',
+  ribbonSoundFinish: 'จบอย่างเรียบร้อย',
   ribbonScreenRec: 'บันทึกหน้าจอ',
   ribbonStopRec: 'หยุดบันทึก',
   ribbonScreenRecTip: 'บันทึกหน้าจอ เมื่อหยุดจะแทรกเป็นวิดีโอลงในสไลด์ปัจจุบัน',

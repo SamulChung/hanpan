@@ -262,6 +262,17 @@ export const de = {
   ribbonVideoTip: 'Lokales Video einfügen (in pptx eingebettet, in PowerPoint abspielbar)',
   ribbonAudio: 'Audio',
   ribbonAudioTip: 'Lokales Audio einfügen (in pptx eingebettet, in PowerPoint abspielbar)',
+  ribbonSoundEffects: 'Soundeffekte',
+  ribbonSoundEffectsTip:
+    'Koreanischen Soundeffekt traditioneller Musik einfügen (in pptx eingebettet, Quelle im Namen des Sounds)',
+  ribbonSoundEffectsCredit:
+    'Soundeffekte: 주식회사 아이티앤, 공유마당, CC BY. Die Quelle steht im Namen des eingefügten Sounds.',
+  ribbonSoundCelebrate: 'Feier',
+  ribbonSoundFresh: 'Frisch',
+  ribbonSoundCurious: 'Neugierig',
+  ribbonSoundRising: 'Anschwellend',
+  ribbonSoundRefreshed: 'Erfrischend',
+  ribbonSoundFinish: 'Klarer Schluss',
   ribbonScreenRec: 'Bildschirmaufzeichnung',
   ribbonStopRec: 'Aufzeichnung beenden',
   ribbonScreenRecTip:

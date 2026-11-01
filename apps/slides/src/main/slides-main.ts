@@ -166,6 +166,8 @@ import {
 import { unplayableAudioCodec } from './mp4-audio-sniff'
 import { audioFrame, videoFrame, videoSize, type Point, type Size } from './video-size'
 import { AUDIO_EXTS, VIDEO_EXTS } from '../shared/media-kinds'
+import { isSoundEffectId, soundEffectCredit } from '../shared/sound-effects'
+import { soundEffectBytes } from './sound-effects'
 import { baseName } from '../shared/base-name'
 import type {
   AddChartOp,
@@ -4251,6 +4253,27 @@ export function registerSlidesIpc(): void {
       fitWidthPx: op.fitWidthPx,
     })
   })
+
+  // Hanpan: a bundled sound effect, its credit as the audio's name
+  ipcMain.handle(
+    'slides:insert-sound-effect',
+    async (e, slideIndex: number, id: unknown, fitWidthPx: number) => {
+      const session = sessions.get(e.sender.id)
+      if (!session || !session.opened.deck.slides[slideIndex] || !isSoundEffectId(id)) return null
+      const result = await embedMedia(
+        session,
+        slideIndex,
+        'audio',
+        await soundEffectBytes(id),
+        'mp3',
+        soundEffectCredit(id),
+        {
+          fitWidthPx,
+        },
+      )
+      return result ? { slide: result.slide, sourceId: result.sourceId } : null
+    },
+  )
 
   // 3D model (simplified): glb embed + poster placeholder image
   ipcMain.handle('slides:insert-model3d', async (e, slideIndex: number, fitWidthPx: number) => {

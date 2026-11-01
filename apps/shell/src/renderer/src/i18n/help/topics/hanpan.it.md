@@ -24,8 +24,9 @@ Hanpan invia ciò che hai organizzato in una mappa mentale a un rapporto Hangul 
 
 ## Modelli Hanpan
 
-- La scheda **Modelli Hanpan** nella Home apre 19 modelli (lettere ufficiali, rapporti, proposte, verbali, piani) come HWP o Word.
+- La scheda **Modelli Hanpan** nella Home apre 22 modelli (lettere ufficiali, rapporti, proposte, verbali, piani) come HWP o Word.
 - Nella scheda **Markdown converter** della Home incolla del Markdown o apri un file .md e premi **Convert all**: ogni formato scelto (HWP, HWPX, Word, ODT, PDF, HTML) viene creato nella stessa cartella.
+- Il gruppo **교육** (istruzione) contiene un piano di lezione sui dipinti coreani antichi, un avviso di mostra e una lezione di lettura su 「운수 좋은 날」. Le immagini vengono da Gongu (gongu.copyright.or.kr) e sono di pubblico dominio o CC BY, quindi chiunque può adattarle; ognuna entra nel documento con la sua riga di attribuzione sotto. Lascia quella riga. **Open as mind map** su una scheda modello apre titoli ed elenchi come rami di una mappa mentale. Nell'editor di diapositive, **Inserisci › Effetti sonori** mette sulla diapositiva uno di sei effetti di musica tradizionale coreana (주식회사 아이티앤, CC BY), con l'attribuzione nel nome del suono.
 
 ## Strumenti Hanpan
 

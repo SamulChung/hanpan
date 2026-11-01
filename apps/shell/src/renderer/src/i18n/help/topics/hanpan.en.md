@@ -24,8 +24,9 @@ Hanpan sends what you sorted out in a mind map to a Hangul (HWP) report, a slide
 
 ## Hanpan templates
 
-- The **Hanpan templates** card on Home opens 19 templates (official letters, reports, proposals, minutes, plans) as HWP or Word.
+- The **Hanpan templates** card on Home opens 22 templates (official letters, reports, proposals, minutes, plans) as HWP or Word.
 - In the **Markdown converter** card on Home, paste Markdown or open a .md file and press **Convert all**: every format you ticked (HWP, HWPX, Word, ODT, PDF, HTML) is made side by side in one folder.
+- The **교육** (education) group has a lesson plan for looking at old Korean paintings, an exhibition notice and a reading lesson on 「운수 좋은 날」. The pictures come from Gongu (gongu.copyright.or.kr) and are out of copyright or under CC BY, so anyone may adapt them; each one goes into the document with its credit line under it. Leave that line in. **Open as mind map** on a template card opens its headings and lists as branches of a mind map. In the slide editor, **Insert › Sound Effects** puts one of six Korean traditional-music sound effects (주식회사 아이티앤, CC BY) on the slide, with the credit in the sound’s name.
 
 ## Hanpan tools
 

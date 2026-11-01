@@ -254,6 +254,17 @@ export const cs = {
   ribbonVideoTip: 'Vložit místní video (vloženo do pptx, přehratelné v PowerPointu)',
   ribbonAudio: 'Zvuk',
   ribbonAudioTip: 'Vložit místní zvuk (vložen do pptx, přehratelný v PowerPointu)',
+  ribbonSoundEffects: 'Zvukové efekty',
+  ribbonSoundEffectsTip:
+    'Vložit zvukový efekt korejské tradiční hudby (vložen do pptx, zdroj v názvu zvuku)',
+  ribbonSoundEffectsCredit:
+    'Zvukové efekty: 주식회사 아이티앤, 공유마당, CC BY. Zdroj je zapsán v názvu vloženého zvuku.',
+  ribbonSoundCelebrate: 'Oslava',
+  ribbonSoundFresh: 'Svěží',
+  ribbonSoundCurious: 'Zvědavost',
+  ribbonSoundRising: 'Vzestup',
+  ribbonSoundRefreshed: 'Osvěžení',
+  ribbonSoundFinish: 'Čistý závěr',
   ribbonScreenRec: 'Záznam obrazovky',
   ribbonStopRec: 'Zastavit záznam',
   ribbonScreenRecTip: 'Nahrát obrazovku; po zastavení se vloží do aktuálního snímku jako video',

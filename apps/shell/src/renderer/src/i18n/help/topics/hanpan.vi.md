@@ -24,8 +24,9 @@ Hanpan gửi những gì bạn sắp xếp trong sơ đồ tư duy thành báo c
 
 ## Mẫu Hanpan
 
-- Thẻ **Mẫu Hanpan** ở Trang chủ mở 19 mẫu (công văn, báo cáo, đề xuất, biên bản, kế hoạch) dạng HWP hoặc Word.
+- Thẻ **Mẫu Hanpan** ở Trang chủ mở 22 mẫu (công văn, báo cáo, đề xuất, biên bản, kế hoạch) dạng HWP hoặc Word.
 - Trong thẻ **Markdown converter** ở Trang chủ, dán Markdown hoặc mở tệp .md rồi nhấn **Convert all**: mọi định dạng đã chọn (HWP, HWPX, Word, ODT, PDF, HTML) được tạo cùng trong một thư mục.
+- Nhóm **교육** (giáo dục) có giáo án thưởng thức tranh cổ Hàn Quốc, thông báo triển lãm và bài đọc 「운수 좋은 날」. Tranh lấy từ Gongu (gongu.copyright.or.kr), đã hết bản quyền hoặc theo CC BY nên ai cũng có thể chỉnh sửa; mỗi tranh vào tài liệu kèm dòng ghi nguồn bên dưới. Hãy giữ dòng đó. **Open as mind map** trên thẻ mẫu sẽ mở tiêu đề và danh sách thành các nhánh của sơ đồ tư duy. Trong trình chỉnh sửa trang chiếu, **Chèn › Hiệu ứng âm thanh** đặt một trong sáu hiệu ứng nhạc truyền thống Hàn Quốc (주식회사 아이티앤, CC BY) lên trang, với nguồn ghi trong tên âm thanh.
 
 ## Công cụ Hanpan
 

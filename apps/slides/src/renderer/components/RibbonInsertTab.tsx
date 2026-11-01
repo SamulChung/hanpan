@@ -10,6 +10,7 @@ import {
   SMARTART_GALLERY,
 } from '../insert-presets'
 import type { StringKey } from '../i18n/locale'
+import { SOUND_EFFECTS, type SoundEffectId } from '../../shared/sound-effects'
 import { ChartKindThumb } from './ChartTypeDialog'
 import { TableInsertDialog } from './InsertDialogs'
 import { ShapePreview, SmartArtPreview } from './gallery-previews'
@@ -54,6 +55,16 @@ const ZOOM_LABEL = {
   slide: 'ribbonZoomSlide',
 } as const
 
+/** Hanpan: the menu label of each bundled sound effect, by what it sounds like */
+const SOUND_EFFECT_LABEL: Record<SoundEffectId, StringKey> = {
+  celebrate: 'ribbonSoundCelebrate',
+  fresh: 'ribbonSoundFresh',
+  curious: 'ribbonSoundCurious',
+  rising: 'ribbonSoundRising',
+  refreshed: 'ribbonSoundRefreshed',
+  finish: 'ribbonSoundFinish',
+}
+
 export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
   const {
     closePanels,
@@ -70,6 +81,7 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
     onInsertIcon,
     onInsertImage,
     onInsertMedia,
+    onInsertSoundEffect,
     onInsertModel3d,
     onInsertSmartArt,
     onInsertTable,
@@ -523,6 +535,28 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
           </span>
           <span>{t('ribbonAudio')}</span>
         </button>
+        {dropBig(
+          'sounds',
+          <IconAudio size={BIG} />,
+          t('ribbonSoundEffects'),
+          t('ribbonSoundEffectsTip'),
+          <div className="rb-sound-list">
+            {SOUND_EFFECTS.map((s) => (
+              <button
+                key={s.id}
+                className="rb-sound-item"
+                data-sound={s.id}
+                onClick={() => {
+                  setInsertDrop(null)
+                  onInsertSoundEffect(s.id)
+                }}
+              >
+                {t(SOUND_EFFECT_LABEL[s.id])}
+              </button>
+            ))}
+            <div className="rb-sound-credit">{t('ribbonSoundEffectsCredit')}</div>
+          </div>,
+        )}
         <button
           className={`rb-big ${recording ? 'active rb-recording' : ''}`}
           disabled={!hasDoc}

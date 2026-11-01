@@ -24,8 +24,9 @@ Hanpan envía lo que ordenaste en un mapa mental a un informe Hangul (HWP), una 
 
 ## Plantillas de Hanpan
 
-- La tarjeta **Plantillas de Hanpan** del inicio abre 19 plantillas (cartas oficiales, informes, propuestas, actas, planes) como HWP o Word.
+- La tarjeta **Plantillas de Hanpan** del inicio abre 22 plantillas (cartas oficiales, informes, propuestas, actas, planes) como HWP o Word.
 - En la tarjeta **Markdown converter** del inicio, pega Markdown o abre un archivo .md y pulsa **Convert all**: cada formato marcado (HWP, HWPX, Word, ODT, PDF, HTML) se crea en una misma carpeta.
+- El grupo **교육** (educación) incluye una planificación de clase sobre pintura coreana antigua, un aviso de exposición y una clase de lectura de 「운수 좋은 날」. Las imágenes vienen de Gongu (gongu.copyright.or.kr) y son de dominio público o CC BY, así que cualquiera puede adaptarlas; cada una entra en el documento con su línea de crédito debajo. No la borres. **Open as mind map** en una tarjeta de plantilla abre sus títulos y listas como ramas de un mapa mental. En el editor de diapositivas, **Insertar › Efectos de sonido** coloca uno de seis efectos de música tradicional coreana (주식회사 아이티앤, CC BY), con el crédito en el nombre del sonido.
 
 ## Herramientas de Hanpan
 

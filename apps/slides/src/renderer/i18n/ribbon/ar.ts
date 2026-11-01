@@ -253,6 +253,17 @@ export const ar = {
   ribbonVideoTip: 'إدراج فيديو محلي (مضمّن في pptx وقابل للتشغيل في PowerPoint)',
   ribbonAudio: 'صوت',
   ribbonAudioTip: 'إدراج صوت محلي (مضمّن في pptx وقابل للتشغيل في PowerPoint)',
+  ribbonSoundEffects: 'مؤثرات صوتية',
+  ribbonSoundEffectsTip:
+    'إدراج مؤثر صوتي من الموسيقى الكورية التقليدية (مضمّن في pptx، والمصدر مكتوب في اسم الصوت)',
+  ribbonSoundEffectsCredit:
+    'المؤثرات الصوتية: 주식회사 아이티앤، 공유마당، CC BY. يُكتب المصدر في اسم الصوت المُدرج.',
+  ribbonSoundCelebrate: 'احتفال',
+  ribbonSoundFresh: 'منعش',
+  ribbonSoundCurious: 'فضول',
+  ribbonSoundRising: 'تصاعد',
+  ribbonSoundRefreshed: 'انتعاش',
+  ribbonSoundFinish: 'ختام واضح',
   ribbonScreenRec: 'تسجيل الشاشة',
   ribbonStopRec: 'إيقاف التسجيل',
   ribbonScreenRecTip: 'تسجيل الشاشة؛ يُدرج كفيديو في الشريحة الحالية بعد الإيقاف',

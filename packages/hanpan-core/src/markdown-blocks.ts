@@ -4,10 +4,25 @@
  * made from a map. Headings become the title and chapters, `###`/`####` items,
  * lists items with the report symbols, tables real tables, `>` notes ※ lines.
  * Inline marks (**bold**, `code`, links) are reduced to their text: the look
- * comes from the theme.
+ * comes from the theme. A line that is only `![caption](picture:<id>)` is a
+ * picture the caller supplies; the picture's credit goes on a note line under it.
  */
 import type { DocBlock } from './blocks'
 import { reportMarker } from './numbering'
+import type { PanImage } from './outline'
+
+export interface MarkdownPicture {
+  image: PanImage
+  /** the line under the picture saying whose it is and on what terms */
+  credit: string
+}
+
+export interface MarkdownBlocksOptions {
+  /** the picture for a `picture:<id>` line; without it, or for an unknown id, the line is its caption */
+  picture?: ((id: string) => MarkdownPicture | undefined) | undefined
+}
+
+const PICTURE_LINE = /^!\[([^\]]*)\]\(picture:([a-z0-9-]+)\)$/
 
 export function plainInline(text: string): string {
   return text
@@ -32,7 +47,7 @@ function cells(line: string): string[] {
     .map((c) => plainInline(c))
 }
 
-export function markdownToBlocks(markdown: string): DocBlock[] {
+export function markdownToBlocks(markdown: string, options: MarkdownBlocksOptions = {}): DocBlock[] {
   const lines = markdown.replace(/\r\n?/g, '\n').split('\n')
   const blocks: DocBlock[] = []
   let sawTitle = false
@@ -85,6 +100,15 @@ export function markdownToBlocks(markdown: string): DocBlock[] {
       i += 2
       while (i < lines.length && lines[i]!.trim().startsWith('|')) rows.push(cells(lines[i++]!))
       blocks.push({ kind: 'table', rows, header: true })
+      continue
+    }
+    const picture = PICTURE_LINE.exec(line)
+    const supplied = picture ? options.picture?.(picture[2]!) : undefined
+    if (picture && supplied) {
+      blocks.push({ kind: 'image', depth, image: supplied.image })
+      const caption = plainInline(picture[1]!)
+      blocks.push({ kind: 'para', depth, text: caption ? `${caption} — ${supplied.credit}` : supplied.credit, role: 'note' })
+      i++
       continue
     }
     if (line.startsWith('>')) {

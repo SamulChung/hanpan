@@ -258,6 +258,17 @@ export const hi = {
   ribbonAudio: 'ऑडियो',
   ribbonAudioTip:
     'स्थानीय ऑडियो सम्मिलित करें (pptx में एम्बेडेड, PowerPoint में चलाया जा सकता है)',
+  ribbonSoundEffects: 'ध्वनि प्रभाव',
+  ribbonSoundEffectsTip:
+    'कोरियाई पारंपरिक संगीत का ध्वनि प्रभाव डालें (pptx में शामिल, स्रोत ध्वनि के नाम में)',
+  ribbonSoundEffectsCredit:
+    'ध्वनि प्रभाव: 주식회사 아이티앤, 공유마당, CC BY. स्रोत डाली गई ध्वनि के नाम में लिखा जाता है।',
+  ribbonSoundCelebrate: 'उत्सव',
+  ribbonSoundFresh: 'ताज़ा',
+  ribbonSoundCurious: 'जिज्ञासा',
+  ribbonSoundRising: 'उमंग',
+  ribbonSoundRefreshed: 'राहत',
+  ribbonSoundFinish: 'साफ़ समापन',
   ribbonScreenRec: 'स्क्रीन रिकॉर्डिंग',
   ribbonStopRec: 'रिकॉर्डिंग रोकें',
   ribbonScreenRecTip:

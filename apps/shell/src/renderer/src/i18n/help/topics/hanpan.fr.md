@@ -24,8 +24,9 @@ Hanpan envoie ce que vous avez organisé dans une carte mentale vers un rapport 
 
 ## Modèles Hanpan
 
-- La carte **Modèles Hanpan** de l'accueil ouvre 19 modèles (lettres officielles, rapports, propositions, comptes rendus, plans) en HWP ou en Word.
+- La carte **Modèles Hanpan** de l'accueil ouvre 22 modèles (lettres officielles, rapports, propositions, comptes rendus, plans) en HWP ou en Word.
 - Dans la carte **Markdown converter** de l'accueil, collez du Markdown ou ouvrez un fichier .md, puis appuyez sur **Convert all** : chaque format coché (HWP, HWPX, Word, ODT, PDF, HTML) est créé dans un même dossier.
+- Le groupe **교육** (éducation) contient une fiche de cours sur la peinture coréenne ancienne, une annonce d'exposition et une séance de lecture sur 「운수 좋은 날」. Les images viennent de Gongu (gongu.copyright.or.kr) ; elles sont dans le domaine public ou sous CC BY, donc chacun peut les adapter, et chacune entre dans le document avec sa ligne de crédit dessous. Laissez cette ligne. **Open as mind map** sur une carte de modèle ouvre ses titres et listes comme branches d'une carte mentale. Dans l'éditeur de diapositives, **Insertion › Effets sonores** place l'un des six effets de musique traditionnelle coréenne (주식회사 아이티앤, CC BY), avec le crédit dans le nom du son.
 
 ## Outils Hanpan
 

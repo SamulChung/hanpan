@@ -406,6 +406,17 @@ export async function insertMediaFile(ctx: ActionCtx, kind: 'video' | 'audio'): 
   }
 }
 
+/** Hanpan: one of the bundled sound effects, on the current slide like an inserted audio file. */
+export async function insertSoundEffect(ctx: ActionCtx, id: string): Promise<void> {
+  if (!ctx.slide) return
+  const r = await window.slidesApi.insertSoundEffect(ctx.current, id, FIT_WIDTH)
+  if (r) {
+    ctx.applySlide(ctx.current, r.slide)
+    ctx.setSelectedIds([r.sourceId])
+    ctx.setStatus(t('appStatusAudioInserted'))
+  }
+}
+
 /**
  * A video/audio file dropped on the canvas, embedded like the Insert dialog does but
  * centered on the drop point. Electron hands us the file's path, which lets main

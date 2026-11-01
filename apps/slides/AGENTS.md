@@ -49,6 +49,7 @@ PowerPoint 프레젠테이션(.pptx) 에디터다. 파일을 바이트 그대로
 - 문자열은 `src/renderer/i18n/`의 언어별 조각(`ai/`, `app/`, `panes/`, `ribbon/`)이고 `zh.ts`가 키 집합을 정한다. 21개 언어 모두에 넣는다. 구독 연결 문장은 `@genoffice/ui`의 것을 쓴다.
 - 렌더러에서 문서의 템플릿 선택과 덧붙인 요청은 `src/renderer/ai/template-selection-state.ts` 하나가 쥔다. 기억된 키가 더 이상 풀리지 않으면(지운 저장 스타일 등) 선택 없음으로 읽는다. 템플릿 자료는 `@genoffice/pipelines/slides/templates`에서 가져온다(렌더러에서 써도 되는 하위 경로).
 - 템플릿 글꼴: `src/main/template-fonts.ts`가 `templateFontsDir`로 공용 폴더를 찾고, `fonts.ts`가 그 폴더를 사용자 글꼴 저장소 다음의 두 번째 읽기 전용 개인 글꼴로 색인한다. 같은 패밀리가 PC에 설치되어 있으면 그것이 먼저다. 캔버스, PDF 내보내기, 인쇄가 이 글꼴로 그린다. 발표 화면의 청중 창은 따로 된 문서라서 그리기 전에 개인 글꼴을 따로 등록한다. 폴더 열기 채널 `slides:open-template-fonts-folder`는 shell이 부르는 `registerSlidesIpc`에 있고, 정확히 그 폴더만 연다.
+- 한판: **삽입 › 효과음**은 앱에 담은 국악 효과음 6개(CC BY, 결정 0087)를 `slides:insert-sound-effect`로 넣는다. 목록과 출처 줄은 `src/shared/sound-effects.ts`, 파일은 `src/main/sound-effects/`(곁의 `CREDITS.md`)다. 출처는 넣은 소리의 이름에 들어간다. 뒷단은 목록에 있는 id만 받고 경로를 받지 않는다. CC BY·만료가 아닌 소리는 넣지 않는다.
 - `vitest.config.ts`는 `@genoffice/pptx-*` 패키지를 이 저장소의 소스 경로로 고정한다. 하위 경로 별칭은 패키지 이름 별칭보다 앞에 둔다(문자열 별칭은 접두사 치환이다).
 
 ## 테스트

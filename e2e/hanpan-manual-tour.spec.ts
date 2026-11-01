@@ -133,7 +133,7 @@ test('the manual tour, in Korean', async () => {
     const home = (await listTabs(page)).find((t) => t.kind === 'home')!
     await activate(page, home.id)
     await page.locator('[data-hanpan="templates"]').click()
-    await expect(page.locator('.hp-tpl-card')).toHaveCount(19)
+    await expect(page.locator('.hp-tpl-card')).toHaveCount(22)
     await shot(page, '07-templates')
     await page.locator('.hp-tpl-close').click()
 

@@ -260,6 +260,17 @@ export const ru = {
   ribbonVideoTip: 'Вставить локальное видео (внедряется в pptx, воспроизводится в PowerPoint)',
   ribbonAudio: 'Звук',
   ribbonAudioTip: 'Вставить локальный звук (внедряется в pptx, воспроизводится в PowerPoint)',
+  ribbonSoundEffects: 'Звуковые эффекты',
+  ribbonSoundEffectsTip:
+    'Вставить звуковой эффект корейской традиционной музыки (встраивается в pptx, источник указан в имени звука)',
+  ribbonSoundEffectsCredit:
+    'Звуковые эффекты: 주식회사 아이티앤, 공유마당, CC BY. Источник указан в имени вставленного звука.',
+  ribbonSoundCelebrate: 'Праздник',
+  ribbonSoundFresh: 'Свежесть',
+  ribbonSoundCurious: 'Любопытство',
+  ribbonSoundRising: 'Подъём',
+  ribbonSoundRefreshed: 'Лёгкость',
+  ribbonSoundFinish: 'Чёткий финал',
   ribbonScreenRec: 'Запись экрана',
   ribbonStopRec: 'Остановить запись',
   ribbonScreenRecTip: 'Записать экран; после остановки видео вставляется на текущий слайд',

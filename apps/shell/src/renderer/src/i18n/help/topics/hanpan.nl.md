@@ -24,8 +24,9 @@ Hanpan stuurt wat u in een mindmap hebt geordend naar een Hangul-rapport (HWP), 
 
 ## Hanpan-sjablonen
 
-- De kaart **Hanpan-sjablonen** op Start opent 19 sjablonen (officiële brieven, rapporten, voorstellen, notulen, plannen) als HWP of Word.
+- De kaart **Hanpan-sjablonen** op Start opent 22 sjablonen (officiële brieven, rapporten, voorstellen, notulen, plannen) als HWP of Word.
 - Plak in de kaart **Markdown converter** op de startpagina Markdown of open een .md-bestand en druk op **Convert all**: elk aangevinkt formaat (HWP, HWPX, Word, ODT, PDF, HTML) komt naast elkaar in één map.
+- De groep **교육** (onderwijs) bevat een lesplan over oude Koreaanse schilderijen, een tentoonstellingsaankondiging en een leesles over 「운수 좋은 날」. De afbeeldingen komen van Gongu (gongu.copyright.or.kr) en zijn rechtenvrij of CC BY, dus iedereen mag ze bewerken; elke afbeelding komt met haar bronregel eronder in het document. Laat die regel staan. **Open as mind map** op een sjabloonkaart opent de koppen en lijsten als takken van een mindmap. In de dia-editor zet **Invoegen › Geluidseffecten** een van zes geluidseffecten van Koreaanse traditionele muziek (주식회사 아이티앤, CC BY) op de dia, met de bron in de naam van het geluid.
 
 ## Hanpan-hulpmiddelen
 

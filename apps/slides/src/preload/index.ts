@@ -354,6 +354,8 @@ const api: SlidesApi = {
     ipcRenderer.invoke('slides:replace-picture-bytes', op),
   insertMedia: (slideIndex: number, kind: 'video' | 'audio', fitWidthPx: number) =>
     ipcRenderer.invoke('slides:insert-media', slideIndex, kind, fitWidthPx),
+  insertSoundEffect: (slideIndex: number, id: string, fitWidthPx: number) =>
+    ipcRenderer.invoke('slides:insert-sound-effect', slideIndex, id, fitWidthPx),
   addMediaBytes: (op: AddMediaBytesOp) => ipcRenderer.invoke('slides:add-media-bytes', op),
   getMediaData: (slideIndex: number, sourceId: string) =>
     ipcRenderer.invoke('slides:media-data', slideIndex, sourceId),

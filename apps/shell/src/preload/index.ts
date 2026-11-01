@@ -815,7 +815,7 @@ contextBridge.exposeInMainWorld('aiOfficePdfToolsHome', pdfToolsHomeApi)
 // Hanpan: templates (and the design board) from the Home screen
 contextBridge.exposeInMainWorld('hanpanApi', {
   templates: () => ipcRenderer.invoke('hanpan:templates'),
-  openTemplate: (id: string, target: 'hwp' | 'docx') =>
+  openTemplate: (id: string, target: 'hwp' | 'docx' | 'xmind') =>
     ipcRenderer.invoke('hanpan:open-template', id, target),
   openDesign: () => ipcRenderer.invoke('hanpan:open-design'),
   newMap: (topic: string) => ipcRenderer.invoke('hanpan:new-map', topic),

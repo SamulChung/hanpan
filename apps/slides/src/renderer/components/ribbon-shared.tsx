@@ -27,7 +27,7 @@ import { useI18n } from '../i18n/locale'
 import { layoutLabel } from '../layout-names'
 
 export type InsertDropKey =
-  'shapes' | 'icons' | 'chart' | 'smartart' | 'wordart' | 'zoom' | 'addanim'
+  'shapes' | 'icons' | 'chart' | 'smartart' | 'wordart' | 'zoom' | 'addanim' | 'sounds'
 
 export const BIG = 28
 
@@ -506,6 +506,8 @@ export interface Props {
   onOpenEquation: () => void
   /** Open a dialog to insert video/audio */
   onInsertMedia: (kind: 'video' | 'audio') => void
+  /** Hanpan: insert one of the bundled sound effects */
+  onInsertSoundEffect: (id: string) => void
   /** Open a dialog to insert a 3D model (embedded glb + poster placeholder) */
   onInsertModel3d: () => void
   /** Screen recording state (true = recording, button shows stop) */
@@ -628,6 +630,7 @@ export interface RibbonTabCtx extends Pick<
   | 'onInsertIcon'
   | 'onInsertImage'
   | 'onInsertMedia'
+  | 'onInsertSoundEffect'
   | 'onInsertModel3d'
   | 'onInsertSmartArt'
   | 'onInsertTable'

@@ -259,6 +259,17 @@ export const nl = {
   ribbonVideoTip: 'Een lokale video invoegen (ingesloten in pptx, afspeelbaar in PowerPoint)',
   ribbonAudio: 'Audio',
   ribbonAudioTip: 'Lokale audio invoegen (ingesloten in pptx, afspeelbaar in PowerPoint)',
+  ribbonSoundEffects: 'Geluidseffecten',
+  ribbonSoundEffectsTip:
+    'Een geluidseffect van Koreaanse traditionele muziek invoegen (ingesloten in pptx, bron in de naam van het geluid)',
+  ribbonSoundEffectsCredit:
+    'Geluidseffecten: 주식회사 아이티앤, 공유마당, CC BY. De bron staat in de naam van het ingevoegde geluid.',
+  ribbonSoundCelebrate: 'Feest',
+  ribbonSoundFresh: 'Fris',
+  ribbonSoundCurious: 'Nieuwsgierig',
+  ribbonSoundRising: 'Aanzwellend',
+  ribbonSoundRefreshed: 'Verfrissend',
+  ribbonSoundFinish: 'Strak einde',
   ribbonScreenRec: 'Schermopname',
   ribbonStopRec: 'Opname stoppen',
   ribbonScreenRecTip:

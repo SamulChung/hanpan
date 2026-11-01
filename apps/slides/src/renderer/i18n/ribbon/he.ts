@@ -250,6 +250,17 @@ export const he = {
   ribbonVideoTip: 'הוספת וידאו מקומי (מוטבע ב-pptx, ניתן לניגון ב-PowerPoint)',
   ribbonAudio: 'שמע',
   ribbonAudioTip: 'הוספת שמע מקומי (מוטבע ב-pptx, ניתן לניגון ב-PowerPoint)',
+  ribbonSoundEffects: 'אפקטים קוליים',
+  ribbonSoundEffectsTip:
+    'הוספת אפקט קולי של מוזיקה קוריאנית מסורתית (מוטמע ב-pptx, המקור כתוב בשם הצליל)',
+  ribbonSoundEffectsCredit:
+    'אפקטים קוליים: 주식회사 아이티앤, 공유마당, CC BY. המקור נכתב בשם הצליל שהוכנס.',
+  ribbonSoundCelebrate: 'חגיגה',
+  ribbonSoundFresh: 'רענן',
+  ribbonSoundCurious: 'סקרנות',
+  ribbonSoundRising: 'התעצמות',
+  ribbonSoundRefreshed: 'הקלה',
+  ribbonSoundFinish: 'סיום נקי',
   ribbonScreenRec: 'הקלטת מסך',
   ribbonStopRec: 'עצירת הקלטה',
   ribbonScreenRecTip: 'מקליט את המסך; בעצירה מוכנס לשקופית הנוכחית כווידאו',

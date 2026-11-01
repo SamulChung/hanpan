@@ -770,6 +770,13 @@ and "PowerPoint" are trademarks of Microsoft Corporation. "한글" (Hangul),
 ${PRODUCT_NAME} opens.
 `
 
+// Hanpan: free works from Gongu (공유마당), each listed with its page in the CREDITS.md beside it
+out += hr('7. Template pictures and slide sound effects (Gongu)')
+for (const dir of ['apps/shell/src/main/hanpan/pictures', 'apps/slides/src/main/sound-effects']) {
+  out += sub(dir)
+  out += readFileSync(join(ROOT, dir, 'CREDITS.md'), 'utf8').trim() + '\n'
+}
+
 for (const term of ['@embedpdf/pdfium', 'Copyright 2014 PDFium Authors', 'Apache License']) {
   if (!out.includes(term)) {
     throw new Error(`generated third-party notice is missing PDFium term: ${term}`)

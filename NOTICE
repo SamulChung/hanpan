@@ -142,6 +142,20 @@ its *-KOGL.txt file beside it.
   이 글꼴은 '문화재청(현 국가유산청)'에서 공공누리 제1유형으로 개방한
   '문화재돌봄체'이며, 공유마당에서 무료로 내려받을 수 있습니다.
 
+Hanpan template pictures and slide sound effects
+
+Works taken on 2026-11-01 from Gongu (공유마당, https://gongu.copyright.or.kr).
+Each one's page on Gongu is listed in the CREDITS.md file beside it. When a
+picture or sound is put in a document, its credit goes with it.
+
+- apps/shell/src/main/hanpan/pictures: 정선 「인왕제색도」, 김응환 「금강전도」,
+  김홍도 「추성부도」, 허림 「서당」 — public domain (저작권 보호기간 만료);
+  김홍도 「풍속화첩_씨름」, 한국데이터베이스산업진흥원 — CC BY. Reduced to
+  1280 pixels on the long side.
+- apps/slides/src/main/sound-effects: 국악 효과음 #204, #209, #351, #352, #464
+  and #534, © 주식회사 아이티앤, provided through 공유마당 from the K-SOUND
+  LIBRARY — CC BY. Unmodified.
+
 Built-in skills
 
 apps/shell/resources/builtin-skills holds the five skills shipped with the

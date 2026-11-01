@@ -259,6 +259,17 @@ export const pl = {
   ribbonVideoTip: 'Wstaw lokalne wideo (osadzone w pptx, odtwarzane w programie PowerPoint)',
   ribbonAudio: 'Dźwięk',
   ribbonAudioTip: 'Wstaw lokalny dźwięk (osadzony w pptx, odtwarzany w programie PowerPoint)',
+  ribbonSoundEffects: 'Efekty dźwiękowe',
+  ribbonSoundEffectsTip:
+    'Wstaw efekt dźwiękowy koreańskiej muzyki tradycyjnej (osadzony w pptx, źródło w nazwie dźwięku)',
+  ribbonSoundEffectsCredit:
+    'Efekty dźwiękowe: 주식회사 아이티앤, 공유마당, CC BY. Źródło jest zapisane w nazwie wstawionego dźwięku.',
+  ribbonSoundCelebrate: 'Świętowanie',
+  ribbonSoundFresh: 'Świeżo',
+  ribbonSoundCurious: 'Ciekawość',
+  ribbonSoundRising: 'Narastanie',
+  ribbonSoundRefreshed: 'Orzeźwienie',
+  ribbonSoundFinish: 'Czyste zakończenie',
   ribbonScreenRec: 'Nagrywanie ekranu',
   ribbonStopRec: 'Zatrzymaj nagrywanie',
   ribbonScreenRecTip: 'Nagrywa ekran; po zatrzymaniu wstawiane do bieżącego slajdu jako wideo',

@@ -1566,6 +1566,12 @@ export interface SlidesApi {
     kind: 'video' | 'audio',
     fitWidthPx: number,
   ) => Promise<{ slide: RenderSlide; sourceId: string } | null>
+  /** Hanpan: embed one of the bundled sound effects (`shared/sound-effects.ts`) into the page */
+  insertSoundEffect: (
+    slideIndex: number,
+    id: string,
+    fitWidthPx: number,
+  ) => Promise<{ slide: RenderSlide; sourceId: string } | null>
   /** Insert renderer-recorded or dropped media; placed centered on the slide or the drop point */
   addMediaBytes: (op: AddMediaBytesOp) => Promise<AddMediaResult | null>
   /** Read an audio/video element's media data (double-click playback); embedded media converts to dataUrl, external links return as-is */

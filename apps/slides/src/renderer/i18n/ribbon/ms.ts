@@ -260,6 +260,17 @@ export const ms = {
   ribbonAudio: 'Audio',
   ribbonAudioTip:
     'Sisipkan audio setempat (dibenamkan dalam pptx, boleh dimainkan dalam PowerPoint)',
+  ribbonSoundEffects: 'Kesan Bunyi',
+  ribbonSoundEffectsTip:
+    'Sisipkan kesan bunyi muzik tradisional Korea (dibenamkan dalam pptx, sumber ditulis dalam nama bunyi)',
+  ribbonSoundEffectsCredit:
+    'Kesan bunyi: 주식회사 아이티앤, 공유마당, CC BY. Sumber ditulis dalam nama bunyi yang disisipkan.',
+  ribbonSoundCelebrate: 'Sambutan',
+  ribbonSoundFresh: 'Segar',
+  ribbonSoundCurious: 'Ingin tahu',
+  ribbonSoundRising: 'Membuak',
+  ribbonSoundRefreshed: 'Lega',
+  ribbonSoundFinish: 'Penutup kemas',
   ribbonScreenRec: 'Rakaman Skrin',
   ribbonStopRec: 'Hentikan Rakaman',
   ribbonScreenRecTip:

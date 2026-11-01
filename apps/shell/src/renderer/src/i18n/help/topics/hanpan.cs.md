@@ -24,8 +24,9 @@ Hanpan pošle to, co jste uspořádali v myšlenkové mapě, do zprávy Hangul (
 
 ## Šablony Hanpan
 
-- Karta **Šablony Hanpan** na úvodní obrazovce otevře 19 šablon (úřední dopisy, zprávy, návrhy, zápisy, plány) jako HWP nebo Word.
+- Karta **Šablony Hanpan** na úvodní obrazovce otevře 22 šablon (úřední dopisy, zprávy, návrhy, zápisy, plány) jako HWP nebo Word.
 - Na kartě **Markdown converter** na úvodní stránce vložte Markdown nebo otevřete soubor .md a stiskněte **Convert all**: každý zaškrtnutý formát (HWP, HWPX, Word, ODT, PDF, HTML) vznikne v jedné složce.
+- Skupina **교육** (vzdělávání) obsahuje přípravu hodiny o staré korejské malbě, pozvánku na výstavu a hodinu čtení 「운수 좋은 날」. Obrázky pocházejí z Gongu (gongu.copyright.or.kr) a jsou volné nebo pod CC BY, takže je smí upravit kdokoli; každý přijde do dokumentu s řádkem zdroje pod sebou. Ten řádek ponechte. **Open as mind map** na kartě šablony otevře nadpisy a seznamy jako větve myšlenkové mapy. V editoru snímků **Vložení › Zvukové efekty** přidá jeden ze šesti zvukových efektů korejské tradiční hudby (주식회사 아이티앤, CC BY) se zdrojem v názvu zvuku.
 
 ## Nástroje Hanpan
 

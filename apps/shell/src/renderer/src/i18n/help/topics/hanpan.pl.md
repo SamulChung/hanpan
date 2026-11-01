@@ -24,8 +24,9 @@ Hanpan wysyła to, co uporządkowałeś na mapie myśli, do raportu Hangul (HWP)
 
 ## Szablony Hanpan
 
-- Karta **Szablony Hanpan** na ekranie startowym otwiera 19 szablonów (pisma urzędowe, raporty, oferty, protokoły, plany) jako HWP lub Word.
+- Karta **Szablony Hanpan** na ekranie startowym otwiera 22 szablonów (pisma urzędowe, raporty, oferty, protokoły, plany) jako HWP lub Word.
 - Na karcie **Markdown converter** na stronie głównej wklej Markdown lub otwórz plik .md i naciśnij **Convert all**: każdy zaznaczony format (HWP, HWPX, Word, ODT, PDF, HTML) powstaje w jednym folderze.
+- Grupa **교육** (edukacja) zawiera konspekt lekcji o dawnym malarstwie koreańskim, zapowiedź wystawy i lekcję czytania 「운수 좋은 날」. Obrazy pochodzą z Gongu (gongu.copyright.or.kr) i są w domenie publicznej lub na CC BY, więc każdy może je przerabiać; każdy trafia do dokumentu z linią źródła pod spodem. Nie usuwaj jej. **Open as mind map** na karcie szablonu otwiera nagłówki i listy jako gałęzie mapy myśli. W edytorze slajdów **Wstawianie › Efekty dźwiękowe** dodaje jeden z sześciu efektów koreańskiej muzyki tradycyjnej (주식회사 아이티앤, CC BY), a źródło jest w nazwie dźwięku.
 
 ## Narzędzia Hanpan
 

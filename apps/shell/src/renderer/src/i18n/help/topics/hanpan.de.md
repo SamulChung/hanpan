@@ -24,8 +24,9 @@ Hanpan schickt, was Sie in einer Mindmap geordnet haben, als Hangul-Bericht (HWP
 
 ## Hanpan-Vorlagen
 
-- Die Karte **Hanpan-Vorlagen** auf der Startseite öffnet 19 Vorlagen (amtliche Schreiben, Berichte, Angebote, Protokolle, Pläne) als HWP oder Word.
+- Die Karte **Hanpan-Vorlagen** auf der Startseite öffnet 22 Vorlagen (amtliche Schreiben, Berichte, Angebote, Protokolle, Pläne) als HWP oder Word.
 - Fügen Sie in der Karte **Markdown converter** auf der Startseite Markdown ein oder öffnen Sie eine .md-Datei und drücken Sie **Convert all**: Jedes gewählte Format (HWP, HWPX, Word, ODT, PDF, HTML) entsteht nebeneinander in einem Ordner.
+- Die Gruppe **교육** (Bildung) enthält einen Unterrichtsentwurf zu alten koreanischen Bildern, eine Ausstellungsankündigung und eine Lesestunde zu 「운수 좋은 날」. Die Bilder stammen von Gongu (gongu.copyright.or.kr) und sind gemeinfrei oder CC BY, dürfen also von allen bearbeitet werden; jedes kommt mit seiner Quellenzeile darunter ins Dokument. Lassen Sie diese Zeile stehen. **Open as mind map** auf einer Vorlagenkarte öffnet Überschriften und Listen als Zweige einer Mindmap. Im Folien-Editor setzt **Einfügen › Soundeffekte** einen von sechs Soundeffekten koreanischer traditioneller Musik (주식회사 아이티앤, CC BY) auf die Folie, die Quelle steht im Namen des Sounds.
 
 ## Hanpan-Werkzeuge
 

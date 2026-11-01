@@ -24,8 +24,9 @@ Hanpan menghantar apa yang anda susun dalam peta minda ke laporan Hangul (HWP), 
 
 ## Templat Hanpan
 
-- Kad **Templat Hanpan** di Laman Utama membuka 19 templat (surat rasmi, laporan, cadangan, minit, rancangan) sebagai HWP atau Word.
+- Kad **Templat Hanpan** di Laman Utama membuka 22 templat (surat rasmi, laporan, cadangan, minit, rancangan) sebagai HWP atau Word.
 - Dalam kad **Markdown converter** di Laman Utama, tampal Markdown atau buka fail .md dan tekan **Convert all**: setiap format yang ditanda (HWP, HWPX, Word, ODT, PDF, HTML) dibuat bersebelahan dalam satu folder.
+- Kumpulan **교육** (pendidikan) mengandungi rancangan pelajaran tentang lukisan lama Korea, notis pameran dan pelajaran membaca 「운수 좋은 날」. Gambar datang dari Gongu (gongu.copyright.or.kr) dan sudah tamat hak cipta atau di bawah CC BY, jadi sesiapa boleh mengubahnya; setiap gambar masuk ke dokumen dengan baris sumber di bawahnya. Biarkan baris itu. **Open as mind map** pada kad templat membuka tajuk dan senarainya sebagai cabang peta minda. Dalam penyunting slaid, **Sisip › Kesan Bunyi** meletakkan salah satu daripada enam kesan bunyi muzik tradisional Korea (주식회사 아이티앤, CC BY), dengan sumber dalam nama bunyi.
 
 ## Alat Hanpan
 

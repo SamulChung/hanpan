@@ -1230,6 +1230,7 @@ export function Ribbon({
   onOpenHeaderFooter,
   onOpenEquation,
   onInsertMedia,
+  onInsertSoundEffect,
   onInsertModel3d,
   recording,
   onToggleScreenRecord,
@@ -1326,7 +1327,7 @@ export function Ribbon({
   const [slideShowFromStart, setSlideShowFromStart] = useState(false)
   // Insert tab dropdown galleries (at most one open at a time)
   const [insertDrop, setInsertDrop] = useState<
-    'shapes' | 'icons' | 'chart' | 'smartart' | 'wordart' | 'zoom' | 'addanim' | null
+    'shapes' | 'icons' | 'chart' | 'smartart' | 'wordart' | 'zoom' | 'addanim' | 'sounds' | null
   >(null)
   // Chart design: dropdown panels (add chart element / change colors, at most one open at a time)
   const [chartDrop, setChartDrop] = useState<'elements' | 'colors' | null>(null)
@@ -1670,6 +1671,7 @@ export function Ribbon({
     onInsertIcon,
     onInsertImage,
     onInsertMedia,
+    onInsertSoundEffect,
     onInsertModel3d,
     onInsertSmartArt,
     onInsertTable,
