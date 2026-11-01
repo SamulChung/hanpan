@@ -865,11 +865,23 @@ function topicInView(topic: ViewTopic, id: string): ViewTopic | null {
  * did not take (a changed topic id, a refused state) is reported failed rather
  * than counted as done.
  */
+/** A topic note with a picture's credit line added at its end, once. */
+export function noteWithCredit(note: string | null, line: string): string {
+  if (!note) return line
+  if (note.split(/\r?\n/).some((each) => each.trim() === line)) return note
+  return `${note.replace(/\s+$/, '')}\n${line}`
+}
+
+/**
+ * Puts a picture on one topic, one undo step. A `creditLine` (a Gongu picture's credit,
+ * docs/plans/gongu-images.md 4.4) is added to the topic's note in the same step.
+ */
 export async function setTopicImage(
   host: MapAiHost,
   input: { sheet?: unknown; topicId?: unknown },
   picture: PictureBytes,
   turn: MapTurn | null,
+  creditLine?: string,
 ): Promise<MapToolResult> {
   const topicId = textArg(input.topicId)
   if (topicId === null || topicId.trim() === '') return fail('topicId must name a topic of the map')
@@ -890,8 +902,10 @@ export async function setTopicImage(
   // reference; an edit that does not land takes the entry back out again
   const entryName = session.addPicture(picture.bytes, picture.ext)
   try {
+    const meta = metaOf(found.node)
     found.node.metadata = {
-      ...metaOf(found.node),
+      ...meta,
+      ...(creditLine ? { note: noteWithCredit(meta.note, creditLine) } : {}),
       image: {
         src: `xap:${entryName}`,
         entryName,
@@ -914,7 +928,7 @@ export async function setTopicImage(
     throw error
   }
   return {
-    output: `Put the picture on topic ${topicId} of sheet ${position}. It is saved inside the map file (${entryName}); the user can undo this step.`,
+    output: `Put the picture on topic ${topicId} of sheet ${position}${creditLine ? ", with its credit line added to the topic's note" : ''}. It is saved inside the map file (${entryName}); the user can undo this step.`,
     mutated: true,
     detail: { done: 1, total: 1 },
   }

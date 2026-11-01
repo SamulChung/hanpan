@@ -674,6 +674,39 @@ describe('adding a picture', () => {
     expect(editor.plugin.undo(1, before)).toMatchObject({ ok: true, undone: 1 })
   })
 
+  it('puts a caption in the paragraph under the picture, in the same step', () => {
+    const editor = openEditor()
+    const paragraphs = editor.lines()
+    const before = editor.plugin.foreignChanges()
+    const objects = controls(editor)
+    const caption = '「호작도」, 저작자 미상 / 출처: 공유마당(한국저작권위원회), 만료저작물'
+    const result = editor.plugin.insertPicture(
+      '첫째 문단',
+      null,
+      'after',
+      PNG.toString('base64'),
+      240,
+      1,
+      1,
+      'png',
+      undefined,
+      caption,
+    )
+    expect(result).toMatchObject({ ok: true, inTable: false, captionPlace: { sec: 0 } })
+    expect(editor.steps()).toBe(1)
+    expect(controls(editor)).toBe(objects + 1)
+    // the caption is the line right after the first paragraph (the picture's line has no text)
+    const lines = editor.lines()
+    const at = lines.indexOf(caption)
+    expect(at).toBeGreaterThan(lines.indexOf('첫째 문단입니다.'))
+    expect(lines.filter((line) => line !== caption && line !== '')).toEqual(
+      paragraphs.filter((line) => line !== ''),
+    )
+    expect(editor.reopened()).toContain(caption)
+    expect(editor.plugin.undo(1, before)).toMatchObject({ ok: true, undone: 1 })
+    expect(editor.lines()).toEqual(paragraphs)
+  })
+
   it('can put it inside a table cell, where the engine addresses the cell paragraph', () => {
     const editor = openEditor()
     const paragraphs = editor.lines()

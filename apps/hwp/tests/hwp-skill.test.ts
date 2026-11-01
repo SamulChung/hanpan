@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { AgentToolCall } from '@genoffice/agent-core'
+import { creditListTitle, formatCreditLine, gonguCreditOf } from '@genoffice/hanpan-core/renderer'
 import type { AgentMemo, AgentMemoRemovalRefusal } from '../studio-plugin/agent-plugin.mjs'
 import type { AgentBridge } from '../src/renderer/ai/agent-bridge'
 import {
@@ -2037,6 +2038,7 @@ describe('pictures', () => {
       600,
       'png',
       undefined,
+      undefined,
     )
     expect(changes.at(-1)).toMatchObject({ kind: 'image', count: 1 })
   })
@@ -2090,8 +2092,89 @@ describe('pictures', () => {
       600,
       'png',
       undefined,
+      undefined,
     )
     expect(changes.at(-1)).toMatchObject({ kind: 'image', to: 'probe.png', count: 1 })
+  })
+
+  describe('Gongu pictures', () => {
+    const WORK = {
+      workId: '7',
+      title: '호작도',
+      author: '작자 미상',
+      year: '1800',
+      imageUrl: 'https://gongu.copyright.or.kr/a.jpg',
+    }
+    const credit = gonguCreditOf(WORK)
+    const line = formatCreditLine(credit, 'ko')
+    const title = creditListTitle('ko')
+
+    it('searches Gongu on source "gongu" and lists the works with their addresses', async () => {
+      const hwpApi = api({ gonguImageSearch: vi.fn(async () => ({ ok: true, works: [WORK] })) })
+      const { call, skill } = setup()
+      const tool = skill.tools.find((each) => each.name === 'image_search')!
+      expect(JSON.stringify(tool.inputSchema)).toContain('gongu')
+      const result = await call('image_search', { query: '호랑이', source: 'gongu' })
+      expect(result.isError).toBeUndefined()
+      expect(hwpApi.gonguImageSearch).toHaveBeenCalledWith('호랑이', 8)
+      expect(hwpApi.imageSearch).not.toHaveBeenCalled()
+      expect(result.output).toContain('1. 호작도 — 작자 미상, 1800')
+      expect(result.output).toContain(WORK.imageUrl)
+    })
+
+    it('reports a missing key as an error, not an empty result', async () => {
+      api({ gonguImageSearch: vi.fn(async () => ({ ok: false, error: 'no-key' })) })
+      const result = await setup().call('image_search', { query: '호랑이', source: 'gongu' })
+      expect(result.isError).toBe(true)
+      expect(result.output).toContain('Gongu key')
+    })
+
+    it('writes the credit line under a found picture and starts the list at the end', async () => {
+      api({ gonguImageSearch: vi.fn(async () => ({ ok: true, works: [WORK] })) })
+      const { bridge, call, changes } = setup()
+      await call('image_search', { query: '호랑이', source: 'gongu' })
+      const result = await call('insert_image', { where: 'end', url: WORK.imageUrl })
+      expect(result.isError).toBeUndefined()
+      expect(bridge.insertPicture).toHaveBeenCalledWith(
+        '',
+        null,
+        'end',
+        PNG,
+        240,
+        800,
+        600,
+        'png',
+        undefined,
+        line,
+      )
+      expect(bridge.insertParagraphs).toHaveBeenCalledWith('', null, 'end', [title, line])
+      expect(changes.map((change) => change.kind)).toEqual(['image', 'insert'])
+      expect(result.output).toContain('credit')
+    })
+
+    it('adds to the list under its title, and only once', async () => {
+      api({ gonguImageSearch: vi.fn(async () => ({ ok: true, works: [WORK] })) })
+      const other = formatCreditLine({ ...credit, workId: '8', title: '까치' }, 'ko')
+      const { bridge, call } = setup({
+        readText: vi.fn(async () => `본문\n${title}\n${other}`),
+      })
+      await call('image_search', { query: '호랑이', source: 'gongu' })
+      await call('insert_image', { where: 'end', url: WORK.imageUrl })
+      expect(bridge.insertParagraphs).toHaveBeenCalledWith(title, 1, 'after', [line])
+
+      const listed = setup({ readText: vi.fn(async () => `${title}\n${line}`) })
+      await listed.call('image_search', { query: '호랑이', source: 'gongu' })
+      await listed.call('insert_image', { where: 'end', url: WORK.imageUrl })
+      expect(listed.bridge.insertPicture).toHaveBeenCalled()
+      expect(listed.bridge.insertParagraphs).not.toHaveBeenCalled()
+    })
+
+    it('writes no credit for a web picture', async () => {
+      api()
+      const { bridge, call } = setup()
+      await call('insert_image', { where: 'end', url: 'https://example.com/a.png' })
+      expect(bridge.insertParagraphs).not.toHaveBeenCalled()
+    })
   })
 
   it('refuses an attachment name the chat does not have, and names what was attached', async () => {

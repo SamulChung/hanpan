@@ -9,6 +9,7 @@
  * are listed separately below; this editor never registers those, it only
  * calls them.
  */
+import type { GonguAiAnswer } from '@genoffice/hanpan-core/renderer'
 import type { AiPanelPrefs } from '@genoffice/ui'
 import type { Lang } from '@genoffice/i18n'
 import type { AiSettings, AiStreamChunk, AiStreamRequest } from '@genoffice/ai-provider'
@@ -156,6 +157,8 @@ export const AI_CHANNELS = {
   webSearch: 'ai:web-search',
   readUrl: 'ai:read-url',
   imageSearch: 'ai:image-search',
+  /** Hanpan: image_search with source "gongu" (registered by the shell main) */
+  gonguImageSearch: 'hanpan:gongu-image-search',
   /** () → `AiToolCapabilities | null`, registered by the docs main (shell mode only) */
   toolCapabilities: 'ai:tool-capabilities',
 } as const
@@ -455,6 +458,8 @@ export interface MindmapAiApi {
   /** Read one web page as text (the shared ai:read-url handler), paged by character offset */
   readUrl(url: string, offset?: number): Promise<ReadUrlResult>
   imageSearch(query: string, maxResults?: number): Promise<ImageSearchResult>
+  /** Hanpan: Gongu pictures for the AI, on the key saved in Settings (docs/plans/gongu-images.md) */
+  gonguImageSearch(query: string, maxResults?: number): Promise<GonguAiAnswer>
   /** AI image generation (mindmap-owned channel; the main process picks the backend) */
   generateImage(op: { prompt: string; aspectRatio?: string }): Promise<{
     url?: string

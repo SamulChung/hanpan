@@ -55,7 +55,7 @@ import type {
   AiSubscriptionUsage,
 } from '@genoffice/ai-provider/browser'
 import { localModelCapabilities } from '@genoffice/ai-provider/browser'
-import { aiLangDirective, t as tGlobal, useI18n } from '../i18n/locale'
+import { aiLangDirective, t as tGlobal, uiLang, useI18n } from '../i18n/locale'
 import sendEnterOn from '../assets/send-enter-on.png'
 import sendEnterOff from '../assets/send-enter-off.png'
 import sendStop from '../assets/send-stop.png'
@@ -628,6 +628,7 @@ export function AiPanel({
           .current()
           .filter((attachment) => ATTACHMENT_IMAGE_EXTS.has(attachment.ext))
           .map((attachment) => attachment.name),
+      uiLang,
     })
 
   // The loop is built once; every mutable value goes through a ref getter

@@ -10,5 +10,11 @@ export * from './sync'
 export * from './sync-protocol'
 export * from './gongmun'
 export type { DocTemplate } from './templates-data'
-export { SLIDE_STYLES, isSlideStyleId, type SlideStyleId, type SlideStyleInfo } from './slide-styles'
+export {
+  SLIDE_STYLES,
+  isSlideStyleId,
+  type SlideStyleId,
+  type SlideStyleInfo,
+} from './slide-styles'
 export * from './gongu-credit'
+export * from './gongu-ai'

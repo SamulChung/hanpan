@@ -25,7 +25,18 @@ import {
   WRITE_SHEET_LIMIT,
   writeMap,
 } from './map-tools'
-import { attachPicture, generateImage, imageSearch, pictureFromBase64 } from './image-tools'
+import {
+  attachPicture,
+  generateImage,
+  gonguImageSearch,
+  imageSearch,
+  pictureFromBase64,
+} from './image-tools'
+import {
+  formatCreditLine,
+  GONGU_SOURCE_PROPERTY,
+  GonguCreditBook,
+} from '@genoffice/hanpan-core/renderer'
 import { countSheetTopics } from '@genoffice/xmind-engine'
 
 export const MAP_TOOL_NAMES = {
@@ -213,6 +224,7 @@ const TOOLS: AgentToolDef[] = [
       properties: {
         query: { type: 'string', description: 'image search keywords (English works better)' },
         maxResults: { type: 'integer', description: 'maximum number of results, default 8' },
+        source: GONGU_SOURCE_PROPERTY,
       },
       required: ['query'],
     },
@@ -269,6 +281,8 @@ export interface MindmapSkillDeps {
   attachmentPath?: (name: string) => string | null
   /** exact names of the image files in this chat, for the prompt */
   attachmentNames?: () => string[]
+  /** Hanpan: the UI language, for the credit lines the app writes for Gongu pictures */
+  uiLang?: () => string
 }
 
 function summaryOf(name: string, result: MapToolResult): string {
@@ -322,6 +336,8 @@ function mapContext(host: MapAiHost): string {
 
 export function createMindmapSkill(deps: MindmapSkillDeps): AgentSkill {
   const imageGenOn = (): boolean => deps.imageGenAvailable?.() !== false
+  /** the Gongu pictures found in this conversation: putting one on a topic writes its credit */
+  const credits = new GonguCreditBook()
   return {
     id: 'mindmap',
     // the prompt names the product: the upstream name is swapped for this product's,
@@ -364,7 +380,10 @@ export function createMindmapSkill(deps: MindmapSkillDeps): AgentSkill {
             result = { output: 'query must not be empty', isError: true }
             break
           }
-          result = await imageSearch(query, input.maxResults)
+          result =
+            input.source === 'gongu'
+              ? await gonguImageSearch(query, input.maxResults, credits)
+              : await imageSearch(query, input.maxResults)
           break
         }
         case MAP_TOOL_NAMES.insertImage: {
@@ -408,7 +427,15 @@ export function createMindmapSkill(deps: MindmapSkillDeps): AgentSkill {
             }
             break
           }
-          result = await attachPicture(host, input, url, deps.turn(), signal)
+          const credit = credits.creditFor(url)
+          result = await attachPicture(
+            host,
+            input,
+            url,
+            deps.turn(),
+            signal,
+            credit ? formatCreditLine(credit, deps.uiLang?.() ?? 'ko') : undefined,
+          )
           break
         }
         case MAP_TOOL_NAMES.generateImage:

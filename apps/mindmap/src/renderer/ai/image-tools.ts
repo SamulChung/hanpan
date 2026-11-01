@@ -14,6 +14,7 @@
  * URL, and the generator answers with a file of the app's own store. The
  * fetch gate there decides which of those may be read.
  */
+import { gonguSearchOutput, type GonguCreditBook } from '@genoffice/hanpan-core/renderer'
 import {
   setTopicImage,
   type MapAiHost,
@@ -55,6 +56,19 @@ export function pictureFromBase64(base64: string): PictureBytes | null {
   return { bytes, ext }
 }
 
+/** `image_search` with source "gongu": the Gongu works, whose credits the book keeps. */
+export async function gonguImageSearch(
+  query: string,
+  maxResults: unknown,
+  credits: GonguCreditBook,
+): Promise<MapToolResult> {
+  const answer = await window.mindmapApi.gonguImageSearch(query, Number(maxResults) || 8)
+  credits.remember(answer)
+  const found = gonguSearchOutput(answer)
+  if (found.isError) return fail(found.output)
+  return { output: found.output, mutated: false, detail: { query, count: found.count } }
+}
+
 /** `image_search`: the same main-process image search the other editors use. */
 export async function imageSearch(query: string, maxResults: unknown): Promise<MapToolResult> {
   const r = await window.mindmapApi.imageSearch(query, Number(maxResults) || 8)
@@ -82,6 +96,7 @@ export async function attachPicture(
   url: string,
   turn: MapTurn | null,
   signal?: AbortSignal,
+  creditLine?: string,
 ): Promise<MapToolResult> {
   // the map must be still while the download runs: the edit is worked out after it
   host.flush()
@@ -98,7 +113,7 @@ export async function attachPicture(
       'unsupported image format (only png/jpg/gif can be saved in the map) — pick another',
     )
   }
-  return setTopicImage(host, input, picture, turn)
+  return setTopicImage(host, input, picture, turn, creditLine)
 }
 
 /** `generate_image`: one AI illustration, put on the topic by the tool itself. */

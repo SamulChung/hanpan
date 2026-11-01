@@ -63,7 +63,7 @@ import type {
 import { localModelCapabilities } from '@genoffice/ai-provider/browser'
 import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
 import type { AttachmentAddResult, AttachmentMeta, MindmapAiApi } from '../../shared/ipc'
-import { t as tGlobal, useI18n } from '../i18n/locale'
+import { t as tGlobal, uiLang, useI18n } from '../i18n/locale'
 import { aiLangDirective } from './lang-directive'
 import { createMindmapSkill } from './mindmap-skill'
 import { createFilesSkill } from './files-skill'
@@ -695,6 +695,7 @@ export function AiPanel({
             availableAttachments()
               .filter((attachment) => ATTACHMENT_IMAGE_EXTS.has(attachment.ext))
               .map((attachment) => attachment.name),
+          uiLang,
         }),
         createSearchSkill(),
         createFilesSkill(availableAttachments),

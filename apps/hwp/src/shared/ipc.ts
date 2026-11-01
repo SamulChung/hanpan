@@ -1,3 +1,4 @@
+import type { GonguAiAnswer } from '@genoffice/hanpan-core/renderer'
 import type { AiSettings, AiStreamChunk, AiStreamRequest } from '@genoffice/ai-provider'
 import type { AiToolCapabilities } from '@genoffice/ai-search'
 import type { Lang } from '@genoffice/i18n'
@@ -84,6 +85,8 @@ export const AI_CHANNELS = {
   streamCancel: 'ai:stream-cancel',
   readUrl: 'ai:read-url',
   imageSearch: 'ai:image-search',
+  /** Hanpan: image_search with source "gongu" (registered by the shell main) */
+  gonguImageSearch: 'hanpan:gongu-image-search',
   /** () �� `AiToolCapabilities | null`, registered by the docs main (shell mode only) */
   toolCapabilities: 'ai:tool-capabilities',
 } as const
@@ -402,6 +405,8 @@ export interface HwpApi {
   readUrl(url: string, offset?: number): Promise<ReadUrlResult>
   /** Image search (the shared ai:image-search handler) */
   imageSearch(query: string, maxResults?: number): Promise<ImageSearchResult>
+  /** Hanpan: Gongu pictures for the AI, on the key saved in Settings (docs/plans/gongu-images.md) */
+  gonguImageSearch(query: string, maxResults?: number): Promise<GonguAiAnswer>
   /** AI image generation (hwp-owned channel; the main process picks the backend) */
   generateImage(op: { prompt: string; aspectRatio?: string }): Promise<{
     url?: string
@@ -423,5 +428,10 @@ export type HanpanToolRequest =
   | { tool: 'review' }
 
 export type HanpanToolResult =
-  | { ok: true; changed?: number; findings?: { level: string; code: string; line?: number; sample?: string }[]; counts?: Record<'red' | 'blue' | 'yellow', number> }
+  | {
+      ok: true
+      changed?: number
+      findings?: { level: string; code: string; line?: number; sample?: string }[]
+      counts?: Record<'red' | 'blue' | 'yellow', number>
+    }
   | { ok: false; error: string }

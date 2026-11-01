@@ -5,6 +5,15 @@ import {
   type AgentToolDef,
   type ToolExecution,
 } from '@genoffice/agent-core'
+import {
+  creditListStep,
+  creditListTitle,
+  formatCreditLine,
+  GONGU_SOURCE_PROPERTY,
+  GonguCreditBook,
+  gonguSearchOutput,
+  type ImageCredit,
+} from '@genoffice/hanpan-core/renderer'
 import { brandText, type Params } from '@genoffice/i18n'
 import type {
   AgentCellText,
@@ -93,6 +102,8 @@ export interface HwpSkillDeps {
   attachmentPath?: (name: string) => string | null
   /** exact names of the image files in this chat, for the prompt */
   attachmentNames?: () => string[]
+  /** Hanpan: the UI language, for the credit lines the app writes under Gongu pictures */
+  uiLang?: () => string
 }
 
 export interface HwpSkill {
@@ -441,6 +452,7 @@ const TOOLS: AgentToolDef[] = [
       properties: {
         query: { type: 'string', description: 'image search keywords (English works better)' },
         maxResults: { type: 'integer', description: 'maximum number of results, default 8' },
+        source: GONGU_SOURCE_PROPERTY,
       },
       required: ['query'],
     },
@@ -1296,6 +1308,8 @@ function hostLabel(rawUrl: string): string {
 export function createHwpSkill(deps: HwpSkillDeps): HwpSkill {
   const { bridge, label } = deps
   const imageGenOn = (): boolean => deps.imageGenAvailable?.() !== false
+  /** the Gongu pictures found in this conversation: inserting one writes its credit */
+  const credits = new GonguCreditBook()
   let context = ''
   /** the runs the user selected, as they stand now (a replacement moves them on) */
   let selection: AgentSegment[] | null = null
@@ -1387,6 +1401,24 @@ export function createHwpSkill(deps: HwpSkillDeps): HwpSkill {
    * new paragraph through the plugin. The plugin makes the change one undo step and refuses to
    * lose an object on the way; the bytes and the format were checked here as well.
    */
+  /**
+   * Adds a credit line to the "picture credits" list at the end of the document, starting the
+   * list when there is none and leaving it alone when the line is already in it. Its own undo
+   * step; false when the document refused it.
+   */
+  const addToCreditList = async (line: string, lang: string): Promise<boolean> => {
+    const title = creditListTitle(lang)
+    const step = creditListStep(await bridge.readText(), title, line)
+    if (step.kind === 'listed') return true
+    const result =
+      step.kind === 'new'
+        ? await bridge.insertParagraphs('', null, 'end', [title, line])
+        : await bridge.insertParagraphs(title, step.occurrence, 'after', [line])
+    if (!result.ok) return false
+    deps.onChange({ kind: 'insert', from: '', to: changeText(line), count: 1, place: result.place })
+    return true
+  }
+
   /** Adds one picture from bytes the app already holds (a download, an attachment, a generation). */
   const insertPictureBytes = async (
     call: AgentToolCall,
@@ -1394,6 +1426,7 @@ export function createHwpSkill(deps: HwpSkillDeps): HwpSkill {
     mime: string,
     what: string,
     _signal: AbortSignal | undefined,
+    credit: ImageCredit | null = null,
   ): Promise<ToolExecution> => {
     const place = placeArgs(call)
     if (!place) return bad(call, WHERE_HELP)
@@ -1408,6 +1441,8 @@ export function createHwpSkill(deps: HwpSkillDeps): HwpSkill {
     if (bytes > PICTURE_MAX_BYTES) return bad(call, 'the picture is too large for the document')
     const size = await pictureSize(base64, mime)
     const widthPt = pictureWidthPt(call.input.width_pt, size)
+    const lang = deps.uiLang?.() ?? 'ko'
+    const caption = credit ? formatCreditLine(credit, lang) : undefined
     const apply = (options?: AgentChangeOptions) =>
       bridge.insertPicture(
         place.anchor,
@@ -1419,6 +1454,7 @@ export function createHwpSkill(deps: HwpSkillDeps): HwpSkill {
         size?.height ?? 600,
         ext,
         options,
+        caption,
       )
     const outcome = await changeWithMemoApproval(
       () => apply(),
@@ -1429,6 +1465,18 @@ export function createHwpSkill(deps: HwpSkillDeps): HwpSkill {
     const result = outcome.result
     if (!result.ok) return bad(call, placeRefusal(result))
     deps.onChange({ kind: 'image', from: '', to: what, count: 1, place: result.place })
+    if (caption) {
+      const listed = await addToCreditList(caption, lang)
+      return {
+        output:
+          `Added the picture (“${what.slice(0, 60)}”) in a new paragraph with its credit line under it` +
+          (listed
+            ? ', and the credit in the picture credits list at the end of the document.'
+            : '; the picture credits list at the end could not be updated.'),
+        mutated: true,
+        summary: label('aiToolInsertImage', { what: quote(what) }),
+      }
+    }
     return {
       output: `Added the picture (“${what.slice(0, 60)}”) in a new paragraph; it is saved inside the document.`,
       mutated: true,
@@ -1451,7 +1499,15 @@ export function createHwpSkill(deps: HwpSkillDeps): HwpSkill {
         'the image could not be downloaded; the address may have expired — search again or try another one',
       )
     }
-    return insertPictureBytes(call, fetched.base64, fetched.mime, made ?? hostLabel(url), signal)
+    const credit = made === null ? credits.creditFor(url) : null
+    return insertPictureBytes(
+      call,
+      fetched.base64,
+      fetched.mime,
+      made ?? credit?.title ?? hostLabel(url),
+      signal,
+      credit,
+    )
   }
 
   const run = async (call: AgentToolCall, signal?: AbortSignal): Promise<ToolExecution> => {
@@ -1730,6 +1786,20 @@ export function createHwpSkill(deps: HwpSkillDeps): HwpSkill {
       case 'image_search': {
         const query = textArg(call, 'query')?.trim() ?? ''
         if (!query) return bad(call, 'query must be a non-empty string')
+        if (call.input.source === 'gongu') {
+          const answer = await window.hwpApi.gonguImageSearch(
+            query,
+            Number(call.input.maxResults) || 8,
+          )
+          credits.remember(answer)
+          const found = gonguSearchOutput(answer)
+          if (found.isError) return bad(call, found.output)
+          return {
+            output: found.output,
+            mutated: false,
+            summary: label('aiToolImageSearchDone', { query, count: found.count }),
+          }
+        }
         const r = await window.hwpApi.imageSearch(query, Number(call.input.maxResults) || 8)
         // a backend failure must not read as an empty gallery: the model would make up choices
         if (r.method === 'error') {

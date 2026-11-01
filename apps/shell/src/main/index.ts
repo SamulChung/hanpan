@@ -61,7 +61,7 @@ import menuEpubIcon1x from './assets/menu-epub.png?asset'
 import menuEpubIcon2x from './assets/menu-epub@2x.png?asset'
 import menuHomeIcon1x from './assets/menu-home.png?asset'
 import menuHomeIcon2x from './assets/menu-home@2x.png?asset'
-import { testGonguKey } from '@genoffice/ai-search'
+import { gonguImageSearch, testGonguKey } from '@genoffice/ai-search'
 import { createI18n, isLang, normalizeLang, setUiLang, type Lang } from '@genoffice/i18n'
 import { DEV_USER_DATA_DIR_NAME, PRODUCT_CONTACT_EMAIL, productName } from '@genoffice/i18n'
 import {
@@ -8554,6 +8554,33 @@ const hanpan = setupHanpan({
 ipcMain.handle('hanpan:gongu-test', async (_event, key: unknown) => {
   const result = await testGonguKey(typeof key === 'string' ? key.slice(0, 2048) : '')
   return result.ok ? { ok: true } : { ok: false, error: result.error }
+})
+// Hanpan: the AI's image_search with source "gongu" in the HWP and map editors
+// (docs/plans/gongu-images.md 4.4), on the saved key. Only works with a picture
+// address come back; "Let AI use internet tools" off stops it here as well.
+ipcMain.handle('hanpan:gongu-image-search', async (_event, query: unknown, max: unknown) => {
+  const settings = readStoredAiSettings()
+  if (settings.internetTools === false) return { ok: false, error: 'internet-tools-off' }
+  const result = await gonguImageSearch(
+    typeof query === 'string' ? query.slice(0, 100) : '',
+    settings.gongu?.apiKey ?? '',
+    { perPage: Math.min(20, Math.max(1, Math.floor(Number(max) || 8))) },
+  )
+  if (!result.ok) return { ok: false, error: result.error }
+  const works = result.value.works.flatMap((work) =>
+    work.imageUrl
+      ? [
+          {
+            workId: work.workId,
+            title: work.title,
+            imageUrl: work.imageUrl,
+            ...(work.author ? { author: work.author } : {}),
+            ...(work.year ? { year: work.year } : {}),
+          },
+        ]
+      : [],
+  )
+  return { ok: true, works }
 })
 // Hanpan: the 글집 templates on the Home screen (and, in stage 4, the design board)
 ipcMain.handle('hanpan:templates', () => hanpan.templates())

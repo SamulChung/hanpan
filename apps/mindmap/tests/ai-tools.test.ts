@@ -4,7 +4,8 @@
  * user's edit goes, through the controller, reconciling and the history.
  * No model is involved; the tools are called the way the agent loop calls them.
  */
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { formatCreditLine, gonguCreditOf } from '@genoffice/hanpan-core/renderer'
 import type { AgentToolCall } from '@genoffice/agent-core'
 import type { XmindSheet, XmindTopic } from '@genoffice/xmind-engine'
 import { DocumentSession } from '../src/renderer/document/session'
@@ -21,6 +22,7 @@ import {
   writeMap,
   revertTurn,
   blankNewMapSheet,
+  noteWithCredit,
   setTopicImage,
 } from '../src/renderer/ai/map-tools'
 import { createMindmapSkill, IMAGE_GEN_OFF_NOTE } from '../src/renderer/ai/mindmap-skill'
@@ -560,6 +562,74 @@ describe('pictures', () => {
     const entry = r.session.document.entryNames.find((name) => !before.has(name))
     expect(entry).toMatch(/^resources\/.*\.png$/)
     expect(findTopic(r.sheet(1).rootTopic, IDS.a1)!.image).toEqual({ src: `xap:${entry}` })
+  })
+
+  it('adds a credit line to the topic note in the same step, keeping the note', async () => {
+    const r = await rigOf(richSheet())
+    const line = '「호작도」 / 출처: 공유마당(한국저작권위원회), 만료저작물'
+    const imageBefore = findTopic(r.sheet(1).rootTopic, IDS.a)!.image
+    const out = await setTopicImage(
+      r.host,
+      { topicId: IDS.a },
+      { bytes: png, ext: 'png' },
+      new MapTurn(),
+      line,
+    )
+    expect(out.isError).toBeFalsy()
+    expect(out.output).toContain('credit line')
+    const noteOf = () =>
+      (
+        JSON.parse(readTopic(r.host, { id: IDS.a }).output.replace(/^[^{]*/, '')) as {
+          note?: string
+        }
+      ).note
+    expect(noteOf()).toBe(`note of alpha\n${line}`)
+    expect(r.controller().undo()).toBe(true)
+    expect(noteOf()).toBe('note of alpha')
+    expect(findTopic(r.sheet(1).rootTopic, IDS.a)!.image).toEqual(imageBefore)
+  })
+
+  it('writes a line into a note once', () => {
+    expect(noteWithCredit(null, 'L')).toBe('L')
+    expect(noteWithCredit('first\n', 'L')).toBe('first\nL')
+    expect(noteWithCredit('first\nL', 'L')).toBe('first\nL')
+  })
+
+  it('searches Gongu on source "gongu" and credits a found picture in the topic note', async () => {
+    const r = await rigOf(richSheet())
+    const work = {
+      workId: '7',
+      title: '호작도',
+      author: '작자 미상',
+      imageUrl: 'https://gongu.copyright.or.kr/a.jpg',
+    }
+    const bridge = {
+      gonguImageSearch: vi.fn(async () => ({ ok: true, works: [work] })),
+      imageSearch: vi.fn(),
+      fetchImage: async () => ({ base64: PNG_BASE64, mime: 'image/png' }),
+    }
+    ;(window as unknown as { mindmapApi: unknown }).mindmapApi = bridge
+    const skill = createMindmapSkill({ host: () => r.host, turn: () => null, uiLang: () => 'ko' })
+    const found = await skill.executeTool({
+      id: '1',
+      name: 'image_search',
+      input: { query: '호랑이', source: 'gongu' },
+    } satisfies AgentToolCall)
+    expect(found.isError).toBeFalsy()
+    expect(found.output).toContain(work.imageUrl)
+    expect(bridge.imageSearch).not.toHaveBeenCalled()
+    const out = await skill.executeTool({
+      id: '2',
+      name: 'insert_image',
+      input: { topicId: IDS.a1, url: work.imageUrl },
+    } satisfies AgentToolCall)
+    expect(out.isError).toBeFalsy()
+    const info = JSON.parse(readTopic(r.host, { id: IDS.a1 }).output.replace(/^[^{]*/, '')) as {
+      title: string
+      note?: string
+    }
+    expect(info.title).toBe('Alpha one')
+    expect(info.note).toBe(formatCreditLine(gonguCreditOf(work), 'ko'))
   })
 
   it('offers generate_image only while the main process reports an image route', () => {

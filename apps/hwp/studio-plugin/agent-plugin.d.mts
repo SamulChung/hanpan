@@ -75,7 +75,14 @@ export type AgentTableResult =
 
 /** A picture put into the document: where it now sits. */
 export type AgentPictureResult =
-  { ok: true; inTable: boolean; place: AgentPlace } | AgentPlaceRefusal
+  | {
+      ok: true
+      inTable: boolean
+      place: AgentPlace
+      /** where the caption went, when one was given */
+      captionPlace?: AgentPlace
+    }
+  | AgentPlaceRefusal
 
 /** Character formatting to change; what is left out stays as it is. */
 export interface AgentTextFormat {
@@ -780,6 +787,8 @@ export interface AgentPluginSurface {
     naturalHeightPx: number,
     extension: 'png' | 'jpg' | 'gif',
     options?: AgentChangeOptions,
+    /** one line put under the picture, small and centred (a picture's credit line) */
+    caption?: string,
   ): AgentPictureResult
   formatText(
     find: string,

@@ -17,6 +17,11 @@ export function t(key: StringKey, params?: Params): string {
   return translate(moduleLang, key, params)
 }
 
+/** The UI language now, for words written into the document (a picture's credit line). */
+export function uiLang(): Lang {
+  return moduleLang
+}
+
 /** A text in a given language, for code that is handed the language (the map's own texts). */
 export function translateIn(lang: Lang, key: StringKey, params?: Params): string {
   return translate(lang, key, params)

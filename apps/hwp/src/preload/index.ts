@@ -230,6 +230,11 @@ const api: HwpApi = {
   readUrl: (url, offset) => ipcRenderer.invoke(AI_CHANNELS.readUrl, url, offset),
   imageSearch: (query, maxResults) =>
     ipcRenderer.invoke(AI_CHANNELS.imageSearch, query, maxResults),
+  // an editor running on its own has no shell to answer: that reads as a service error
+  gonguImageSearch: (query, maxResults) =>
+    ipcRenderer
+      .invoke(AI_CHANNELS.gonguImageSearch, query, maxResults)
+      .catch(() => ({ ok: false, error: 'service' })),
   generateImage: (op) => ipcRenderer.invoke(HWP_CHANNELS.aiGenerateImage, op),
   fetchImage: (url) => ipcRenderer.invoke(HWP_CHANNELS.fetchImage, url),
   aiToolCapabilities: () => ipcRenderer.invoke(AI_CHANNELS.toolCapabilities),

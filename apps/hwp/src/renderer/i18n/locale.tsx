@@ -46,6 +46,11 @@ export function t(key: StringKey, params?: Params): string {
   return translate(moduleLang, key, params)
 }
 
+/** The UI language now, for words written into the document (a picture's credit line). */
+export function uiLang(): Lang {
+  return moduleLang
+}
+
 export function LocaleProvider({ initial, children }: { initial: Lang; children: ReactNode }) {
   const [lang, setLang] = useState<Lang>(initial)
   moduleLang = lang

@@ -16,6 +16,8 @@
 import { installDialogTheme } from './dialog-theme.mjs'
 
 export const AGENT_PLUGIN_ID = 'ieum-agent'
+/** The size of a picture's credit line put in under it, in points. */
+const CAPTION_PT = 9
 
 /** Matches listed back to the caller when a search is ambiguous. */
 const MAX_LISTED_MATCHES = 20
@@ -4061,6 +4063,8 @@ export const agentPlugin = {
        * way insertTable places a table. `widthPt` is the width the picture takes on the page;
        * the aspect comes from the natural pixel size. The picture is a new object of the
        * document, so the object-count check permits exactly that one addition and nothing lost.
+       * A `caption` (a picture's credit line) goes in the paragraph right after it, small and
+       * centred, in the same undo step.
        */
       insertPicture: guarded(
         (
@@ -4073,8 +4077,10 @@ export const agentPlugin = {
           naturalHeightPx,
           extension,
           options,
+          caption,
         ) => {
           checkWhere(where)
+          if (caption !== undefined && caption !== null) checkParagraphs([caption])
           const picture = pictureOf(base64, extension)
           const naturalW = Math.max(1, Math.round(Number(naturalWidthPx) || 1))
           const naturalH = Math.max(1, Math.round(Number(naturalHeightPx) || 1))
@@ -4123,10 +4129,26 @@ export const agentPlugin = {
                   ),
                   'insert the picture',
                 )
+                if (caption) {
+                  // the picture's paragraph holds an object: a split at its end opens the next one
+                  openAfter(box, at, false)
+                  box.insert(at + 1, caption)
+                  const { chars, paragraph } = resolveFormat(
+                    doc,
+                    formatOf({ align: 'center', size: CAPTION_PT }, true),
+                  )
+                  if (paragraph && box.formatParagraph) box.formatParagraph(at + 1, paragraph)
+                  if (chars) box.formatChars(at + 1, 0, caption.length, chars)
+                }
                 const after = objectsOf(doc)
                 // the new picture is an object of its own; nothing that was there may be gone
                 mustKeep(before, { ...after, controls: Math.min(after.controls, before.controls) })
-                return { ok: true, inTable: box.inTable, place: box.place(at, 0) }
+                return {
+                  ok: true,
+                  inTable: box.inTable,
+                  place: box.place(at, 0),
+                  ...(caption ? { captionPlace: box.place(at + 1, caption.length) } : {}),
+                }
               },
               options,
             ),

@@ -161,6 +161,11 @@ const ai: MindmapAiApi = {
   readUrl: (url, offset) => ipcRenderer.invoke(AI_CHANNELS.readUrl, url, offset),
   imageSearch: (query, maxResults) =>
     ipcRenderer.invoke(AI_CHANNELS.imageSearch, query, maxResults),
+  // an editor running on its own has no shell to answer: that reads as a service error
+  gonguImageSearch: (query, maxResults) =>
+    ipcRenderer
+      .invoke(AI_CHANNELS.gonguImageSearch, query, maxResults)
+      .catch(() => ({ ok: false, error: 'service' })),
   generateImage: (op) => ipcRenderer.invoke(MINDMAP_CHANNELS.aiGenerateImage, op),
   fetchImage: (url) => ipcRenderer.invoke(MINDMAP_CHANNELS.fetchImage, url),
   pickPicture: () => ipcRenderer.invoke(MINDMAP_CHANNELS.pickPicture),
