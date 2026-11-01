@@ -368,3 +368,18 @@ body {
   padding-inline-start: 16px;
   color: var(--text-secondary);
 }
+.hp-credit-result li + li {
+  margin-top: 4px;
+}
+.hp-credit-actions {
+  display: inline-flex;
+  gap: 4px;
+  margin-inline-start: 6px;
+}
+.hp-tools-pop .hp-credit-actions button {
+  padding: 1px 6px;
+}
+.hp-credit-scope {
+  list-style: none;
+  font-size: 11px;
+}

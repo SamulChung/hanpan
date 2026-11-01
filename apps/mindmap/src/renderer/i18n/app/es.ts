@@ -273,4 +273,11 @@ export const es = {
   tbClearStyle: 'Borrar formato',
   tbBoundary: 'Borde',
   boundaryName: 'Nombre del borde',
+  mmCredits: 'Revisar créditos de imágenes',
+  mmCreditsNone: 'Ningún tema tiene imagen.',
+  mmCreditsOk: 'Las {n} imágenes tienen su crédito en la nota del tema.',
+  mmCreditNoCredit:
+    '«{topic}»: la imagen no tiene crédito en la nota. Compruebe su origen y añádalo.',
+  mmCreditConditions: 'Imagen «{title}» en «{topic}»: tiene condiciones de uso ({license}).',
+  mmCreditGo: 'Ir',
 } satisfies Record<keyof typeof zh, string>

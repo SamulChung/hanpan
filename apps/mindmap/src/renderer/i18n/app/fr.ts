@@ -273,4 +273,12 @@ export const fr = {
   tbClearStyle: 'Effacer la mise en forme',
   tbBoundary: 'Cadre',
   boundaryName: 'Nom du cadre',
+  mmCredits: 'Vérifier les crédits des images',
+  mmCreditsNone: 'Aucun sujet n’a d’image.',
+  mmCreditsOk: 'Les {n} images ont un crédit dans la note de leur sujet.',
+  mmCreditNoCredit:
+    '« {topic} » : la note ne contient pas de crédit pour l’image. Vérifiez sa source et ajoutez-le.',
+  mmCreditConditions:
+    'Image « {title} » sur « {topic} » : soumise à des conditions d’utilisation ({license}).',
+  mmCreditGo: 'Aller',
 } satisfies Record<keyof typeof zh, string>

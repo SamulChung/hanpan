@@ -270,4 +270,12 @@ export const ru = {
   tbClearStyle: 'Очистить формат',
   tbBoundary: 'Рамка',
   boundaryName: 'Название рамки',
+  mmCredits: 'Проверить источники изображений',
+  mmCreditsNone: 'Ни у одной темы нет изображения.',
+  mmCreditsOk: 'У всех изображений ({n}) источник указан в заметке темы.',
+  mmCreditNoCredit:
+    '«{topic}»: в заметке нет источника изображения. Уточните источник и добавьте его.',
+  mmCreditConditions:
+    'Изображение «{title}» в теме «{topic}»: есть условия использования ({license}).',
+  mmCreditGo: 'Перейти',
 } satisfies Record<keyof typeof zh, string>

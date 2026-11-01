@@ -226,4 +226,16 @@ export const id = {
   hpFNumberingOrder: 'Item numbering out of order (1. 가. 1) 가))',
   hpFLoneItemNumbered: 'A lone item that carries a number',
   hpFMixedEndings: 'Formal and plain endings are mixed',
+  hpCredits: 'Periksa sumber gambar',
+  hpCreditsNone: 'Dokumen tidak berisi gambar.',
+  hpCreditsOk: 'Semua {n} gambar memiliki baris sumber.',
+  hpCreditNoCredit:
+    'Gambar {n}: tidak ada baris sumber di bawahnya. Periksa asalnya lalu tambahkan.',
+  hpCreditConditions: 'Gambar {n} “{title}”: memiliki syarat penggunaan ({license}).',
+  hpCreditNotListed: 'Gambar {n} “{title}”: tidak ada di daftar sumber gambar di akhir.',
+  hpCreditGo: 'Buka',
+  hpCreditAddToList: 'Tambahkan ke daftar',
+  hpCreditListFailed: 'Tidak dapat ditambahkan ke daftar sumber gambar.',
+  hpCreditsScope:
+    'Hanya gambar di badan dokumen yang diperiksa, bukan di dalam tabel atau kotak teks.',
 } satisfies Record<keyof typeof zh, string>

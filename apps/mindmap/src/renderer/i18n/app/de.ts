@@ -274,4 +274,11 @@ export const de = {
   tbClearStyle: 'Format löschen',
   tbBoundary: 'Umrandung',
   boundaryName: 'Name der Umrandung',
+  mmCredits: 'Bildnachweise prüfen',
+  mmCreditsNone: 'Kein Thema hat ein Bild.',
+  mmCreditsOk: 'Alle {n} Bilder haben einen Nachweis in der Notiz ihres Themas.',
+  mmCreditNoCredit:
+    '„{topic}“: Zum Bild steht kein Nachweis in der Notiz. Prüfen Sie die Herkunft und ergänzen Sie ihn.',
+  mmCreditConditions: 'Bild „{title}“ bei „{topic}“: hat Nutzungsbedingungen ({license}).',
+  mmCreditGo: 'Anzeigen',
 } satisfies Record<keyof typeof zh, string>

@@ -9,6 +9,8 @@ import { useEffect, useRef, useState } from 'react'
 import { composePrompt, type TaskType } from '@genoffice/hanpan-core/renderer'
 import type { HanpanToolRequest, HanpanToolResult } from '../../shared/ipc'
 import { useI18n, type StringKey } from '../i18n/locale'
+import type { AgentBridge } from '../ai/agent-bridge'
+import { CreditCheck } from './CreditCheck'
 
 const FINDING_KEY: Record<string, StringKey> = {
   'no-recipient': 'hpFNoRecipient',
@@ -29,13 +31,21 @@ const TASKS: [TaskType, string][] = [
   ['explain', '설명'],
 ]
 
-export function HanpanTools() {
+export function HanpanTools(p: { bridge?: AgentBridge }) {
   const { t } = useI18n()
   const [open, setOpen] = useState(false)
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState<string[] | null>(null)
   const [promptOpen, setPromptOpen] = useState(false)
-  const [axes, setAxes] = useState<{ role: string; field: string; purpose: string; conditions: string; length: string; task: TaskType | ''; body: string }>({
+  const [axes, setAxes] = useState<{
+    role: string
+    field: string
+    purpose: string
+    conditions: string
+    length: string
+    task: TaskType | ''
+    body: string
+  }>({
     role: '',
     field: '',
     purpose: '',
@@ -60,7 +70,9 @@ export function HanpanTools() {
   const run = async (request: HanpanToolRequest) => {
     setBusy(true)
     setResult(null)
-    const answer: HanpanToolResult = await window.hwpApi.hanpanTool!(request).catch((e: unknown) => ({ ok: false as const, error: String(e) }))
+    const answer: HanpanToolResult = await window.hwpApi.hanpanTool!(request).catch(
+      (e: unknown) => ({ ok: false as const, error: String(e) }),
+    )
     setBusy(false)
     if (!answer.ok) {
       setResult([t('hpFailed', { error: answer.error })])
@@ -69,7 +81,10 @@ export function HanpanTools() {
     if (answer.findings) {
       setResult(
         answer.findings.length
-          ? answer.findings.map((f) => `${t(FINDING_KEY[f.code] ?? 'hpFailed', { error: f.code })}${f.sample ? ` — ${f.sample}` : ''}`)
+          ? answer.findings.map(
+              (f) =>
+                `${t(FINDING_KEY[f.code] ?? 'hpFailed', { error: f.code })}${f.sample ? ` — ${f.sample}` : ''}`,
+            )
           : [t('hpCheckOk')],
       )
     } else if (answer.counts) {
@@ -83,28 +98,56 @@ export function HanpanTools() {
 
   return (
     <div className="hp-tools" ref={wrap}>
-      <button type="button" className={`hp-tools-btn${open ? ' on' : ''}`} aria-expanded={open} data-action="hanpan-tools" onClick={() => setOpen((o) => !o)}>
+      <button
+        type="button"
+        className={`hp-tools-btn${open ? ' on' : ''}`}
+        aria-expanded={open}
+        data-action="hanpan-tools"
+        onClick={() => setOpen((o) => !o)}
+      >
         {t('hpTools')}
       </button>
       {open && (
         <div className="hp-tools-pop" role="menu">
-          <button type="button" disabled={busy} data-tool="tidy" onClick={() => void run({ tool: 'tidy' })}>
+          <button
+            type="button"
+            disabled={busy}
+            data-tool="tidy"
+            onClick={() => void run({ tool: 'tidy' })}
+          >
             {t('hpTidy')}
           </button>
-          <button type="button" disabled={busy} data-tool="check" onClick={() => void run({ tool: 'check' })}>
+          <button
+            type="button"
+            disabled={busy}
+            data-tool="check"
+            onClick={() => void run({ tool: 'check' })}
+          >
             {t('hpCheck')}
           </button>
           <div className="hp-tools-row">
             <span>{t('hpTone')}</span>
             {(['60대', '40대', 'MZ'] as const).map((target) => (
-              <button key={target} type="button" disabled={busy} data-tool={`tone-${target}`} onClick={() => void run({ tool: 'tone', target })}>
+              <button
+                key={target}
+                type="button"
+                disabled={busy}
+                data-tool={`tone-${target}`}
+                onClick={() => void run({ tool: 'tone', target })}
+              >
                 {t(target === '60대' ? 'hpTone60' : target === '40대' ? 'hpTone40' : 'hpToneMZ')}
               </button>
             ))}
           </div>
-          <button type="button" disabled={busy} data-tool="review" onClick={() => void run({ tool: 'review' })}>
+          <button
+            type="button"
+            disabled={busy}
+            data-tool="review"
+            onClick={() => void run({ tool: 'review' })}
+          >
             {t('hpReview')}
           </button>
+          {p.bridge && <CreditCheck bridge={p.bridge} disabled={busy} />}
           <button type="button" data-tool="prompt" onClick={() => setPromptOpen((o) => !o)}>
             {t('hpPrompt')}
           </button>
@@ -112,7 +155,10 @@ export function HanpanTools() {
             <div className="hp-prompt">
               <label>
                 <span>{t('hpTask')}</span>
-                <select value={axes.task} onChange={(e) => setAxes({ ...axes, task: e.target.value as TaskType | '' })}>
+                <select
+                  value={axes.task}
+                  onChange={(e) => setAxes({ ...axes, task: e.target.value as TaskType | '' })}
+                >
                   <option value="">—</option>
                   {TASKS.map(([id, ko]) => (
                     <option key={id} value={id}>
@@ -123,19 +169,40 @@ export function HanpanTools() {
               </label>
               {(['role', 'field', 'purpose', 'conditions', 'length'] as const).map((key) => (
                 <label key={key}>
-                  <span>{t(({ role: 'hpRole', field: 'hpField', purpose: 'hpPurpose', conditions: 'hpConditions', length: 'hpLength' } as const)[key])}</span>
-                  <input value={axes[key]} onChange={(e) => setAxes({ ...axes, [key]: e.target.value })} />
+                  <span>
+                    {t(
+                      (
+                        {
+                          role: 'hpRole',
+                          field: 'hpField',
+                          purpose: 'hpPurpose',
+                          conditions: 'hpConditions',
+                          length: 'hpLength',
+                        } as const
+                      )[key],
+                    )}
+                  </span>
+                  <input
+                    value={axes[key]}
+                    onChange={(e) => setAxes({ ...axes, [key]: e.target.value })}
+                  />
                 </label>
               ))}
               <label>
                 <span>{t('hpRequest')}</span>
-                <textarea rows={3} value={axes.body} onChange={(e) => setAxes({ ...axes, body: e.target.value })} />
+                <textarea
+                  rows={3}
+                  value={axes.body}
+                  onChange={(e) => setAxes({ ...axes, body: e.target.value })}
+                />
               </label>
               <pre className="hp-prompt-preview">{prompt}</pre>
               <button
                 type="button"
                 disabled={!prompt}
-                onClick={() => void navigator.clipboard.writeText(prompt).then(() => setResult([t('hpCopied')]))}
+                onClick={() =>
+                  void navigator.clipboard.writeText(prompt).then(() => setResult([t('hpCopied')]))
+                }
               >
                 {t('hpCopy')}
               </button>

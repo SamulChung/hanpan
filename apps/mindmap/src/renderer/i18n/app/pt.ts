@@ -271,4 +271,11 @@ export const pt = {
   tbClearStyle: 'Limpar formatação',
   tbBoundary: 'Contorno',
   boundaryName: 'Nome do contorno',
+  mmCredits: 'Verificar créditos das imagens',
+  mmCreditsNone: 'Nenhum tópico tem imagem.',
+  mmCreditsOk: 'Todas as {n} imagens têm crédito na nota do tópico.',
+  mmCreditNoCredit:
+    '“{topic}”: a nota não tem o crédito da imagem. Verifique a origem e acrescente-o.',
+  mmCreditConditions: 'Imagem “{title}” em “{topic}”: tem condições de uso ({license}).',
+  mmCreditGo: 'Ir',
 } satisfies Record<keyof typeof zh, string>

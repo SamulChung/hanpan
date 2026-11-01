@@ -272,4 +272,11 @@ export const id = {
   tbClearStyle: 'Hapus format',
   tbBoundary: 'Batas',
   boundaryName: 'Nama batas',
+  mmCredits: 'Periksa sumber gambar',
+  mmCreditsNone: 'Tidak ada topik yang bergambar.',
+  mmCreditsOk: 'Semua {n} gambar memiliki baris sumber di catatan topiknya.',
+  mmCreditNoCredit:
+    '“{topic}”: tidak ada baris sumber gambar di catatan. Periksa asalnya lalu tambahkan.',
+  mmCreditConditions: 'Gambar “{title}” pada “{topic}”: memiliki syarat penggunaan ({license}).',
+  mmCreditGo: 'Buka',
 } satisfies Record<keyof typeof zh, string>

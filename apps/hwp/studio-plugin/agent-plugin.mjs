@@ -2590,6 +2590,19 @@ const TOC_CELL_SLACK_PT = 24
 const TOC_KEY_CHARS = 40
 const PAGE_NUMBER = /^\s*(\d+)\s*$/
 
+/** The most of the paragraph after a picture listPictures returns: a credit line is shorter. */
+const PICTURE_NEXT_CHARS = 400
+
+/** Whether a control of a body paragraph is a picture: the engine has picture properties only for one. */
+function isPicture(doc, sec, para, control) {
+  try {
+    const properties = parse(doc.getPictureProperties(sec, para, control))
+    return Boolean(properties) && properties.ok !== false
+  } catch {
+    return false
+  }
+}
+
 /** The text of a body paragraph. */
 const bodyText = (doc, sec, k) => {
   const length = doc.getParagraphLength(sec, k)
@@ -4111,6 +4124,18 @@ export const agentPlugin = {
                   openAfter(box, at, plain)
                   at += 1
                 }
+                if (caption) {
+                  // the caption's paragraph is opened before the picture goes in: the picture's
+                  // paragraph has no text, and a split at its end would carry the picture along
+                  box.split(at, 0)
+                  box.insert(at + 1, caption)
+                  const { chars, paragraph } = resolveFormat(
+                    doc,
+                    formatOf({ align: 'center', size: CAPTION_PT }, true),
+                  )
+                  if (paragraph && box.formatParagraph) box.formatParagraph(at + 1, paragraph)
+                  if (chars) box.formatChars(at + 1, 0, caption.length, chars)
+                }
                 const place = box.place(at, 0)
                 expectOk(
                   doc.insertPictureEx(
@@ -4129,17 +4154,6 @@ export const agentPlugin = {
                   ),
                   'insert the picture',
                 )
-                if (caption) {
-                  // the picture's paragraph holds an object: a split at its end opens the next one
-                  openAfter(box, at, false)
-                  box.insert(at + 1, caption)
-                  const { chars, paragraph } = resolveFormat(
-                    doc,
-                    formatOf({ align: 'center', size: CAPTION_PT }, true),
-                  )
-                  if (paragraph && box.formatParagraph) box.formatParagraph(at + 1, paragraph)
-                  if (chars) box.formatChars(at + 1, 0, caption.length, chars)
-                }
                 const after = objectsOf(doc)
                 // the new picture is an object of its own; nothing that was there may be gone
                 mustKeep(before, { ...after, controls: Math.min(after.controls, before.controls) })
@@ -4269,6 +4283,33 @@ export const agentPlugin = {
        * comes right after the table it sits in. The number is what readTable and fillCells
        * take.
        */
+      /**
+       * The pictures of the body in reading order, each with the text of the paragraph right
+       * after it: where the app puts a picture's credit line. Read-only. Pictures inside
+       * table cells, text boxes, headers and notes are not listed.
+       */
+      listPictures: guarded(() =>
+        host.read((doc) => {
+          const pictures = []
+          const sections = doc.getSectionCount()
+          for (let sec = 0; sec < sections; sec++) {
+            const count = doc.getParagraphCount(sec)
+            for (let para = 0; para < count; para++) {
+              const positions = parse(doc.getControlTextPositions(sec, para))
+              positions.forEach((offset, control) => {
+                if (!isPicture(doc, sec, para, control)) return
+                const next = para + 1 < count ? bodyText(doc, sec, para + 1).trim() : ''
+                pictures.push({
+                  place: { sec, para, offset, length: 0 },
+                  next: clip(next, PICTURE_NEXT_CHARS),
+                })
+              })
+            }
+          }
+          return { pictures }
+        }),
+      ),
+
       listTables: guarded(() =>
         host.read((doc) => {
           const { tables, partial } = tablesOf(doc)

@@ -272,4 +272,10 @@ export const vi = {
   tbClearStyle: 'Xóa định dạng',
   tbBoundary: 'Khung',
   boundaryName: 'Tên khung',
+  mmCredits: 'Kiểm tra nguồn ảnh',
+  mmCreditsNone: 'Không có chủ đề nào có ảnh.',
+  mmCreditsOk: 'Cả {n} ảnh đều có dòng ghi nguồn trong ghi chú của chủ đề.',
+  mmCreditNoCredit: '“{topic}”: ghi chú chưa có nguồn của ảnh. Hãy kiểm tra nguồn và thêm vào.',
+  mmCreditConditions: 'Ảnh “{title}” ở “{topic}”: có điều kiện sử dụng ({license}).',
+  mmCreditGo: 'Đi tới',
 } satisfies Record<keyof typeof zh, string>

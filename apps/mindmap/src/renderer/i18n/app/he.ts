@@ -265,4 +265,10 @@ export const he = {
   tbClearStyle: 'ניקוי עיצוב',
   tbBoundary: 'מסגרת',
   boundaryName: 'שם המסגרת',
+  mmCredits: 'בדיקת קרדיט לתמונות',
+  mmCreditsNone: 'אין נושא עם תמונה.',
+  mmCreditsOk: 'לכל {n} התמונות יש שורת קרדיט בהערת הנושא.',
+  mmCreditNoCredit: '„{topic}“: אין קרדיט לתמונה בהערה. בדקו את המקור והוסיפו אותו.',
+  mmCreditConditions: 'התמונה „{title}“ בנושא „{topic}“: יש לה תנאי שימוש ({license}).',
+  mmCreditGo: 'מעבר',
 } satisfies Record<keyof typeof zh, string>

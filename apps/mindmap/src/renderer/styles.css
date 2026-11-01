@@ -1381,6 +1381,27 @@ textarea.mm-field {
 .mm-modal[data-dialog='hanpan-sync'] {
   width: min(560px, calc(100vw - 48px));
 }
+.hp-credits {
+  display: grid;
+  gap: 10px;
+  max-height: min(60vh, 520px);
+  overflow: auto;
+  font-size: 13px;
+}
+.hp-credits-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-inline-start: 18px;
+}
+.hp-credits-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.hp-credits-list li > span {
+  flex: 1;
+}
 .hp-sync {
   display: grid;
   gap: 12px;

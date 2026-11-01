@@ -33,7 +33,13 @@ const ITEMS = [
   { target: 'docx', label: 'sendDocx' },
 ] as const
 
-export function SendMenu(p: { disabled: boolean; onPick(target: SendTarget): void; onSync?(): void; onDesign?(): void }) {
+export function SendMenu(p: {
+  disabled: boolean
+  onPick(target: SendTarget): void
+  onSync?(): void
+  onDesign?(): void
+  onCredits?(): void
+}) {
   const { t } = useI18n()
   const [open, setOpen] = useState(false)
   const wrap = useRef<HTMLSpanElement>(null)
@@ -110,6 +116,21 @@ export function SendMenu(p: { disabled: boolean; onPick(target: SendTarget): voi
               }}
             >
               {t('sendSync')}
+            </button>
+          )}
+          {p.onCredits && (
+            <button
+              type="button"
+              role="menuitem"
+              className="gs-dd-item"
+              data-send="credits"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => {
+                setOpen(false)
+                p.onCredits?.()
+              }}
+            >
+              {t('mmCredits')}
             </button>
           )}
         </div>

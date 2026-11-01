@@ -270,4 +270,10 @@ export const cs = {
   tbClearStyle: 'Vymazat formát',
   tbBoundary: 'Ohraničení',
   boundaryName: 'Název ohraničení',
+  mmCredits: 'Zkontrolovat zdroje obrázků',
+  mmCreditsNone: 'Žádné téma nemá obrázek.',
+  mmCreditsOk: 'Všech {n} obrázků má zdroj v poznámce tématu.',
+  mmCreditNoCredit: '„{topic}“: obrázek nemá v poznámce zdroj. Ověřte původ a doplňte ho.',
+  mmCreditConditions: 'Obrázek „{title}“ u „{topic}“: má podmínky užití ({license}).',
+  mmCreditGo: 'Přejít',
 } satisfies Record<keyof typeof zh, string>

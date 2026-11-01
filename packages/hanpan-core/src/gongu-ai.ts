@@ -4,7 +4,14 @@
  * credit book that lets the app, not the model, write the credit of a
  * picture the model then inserts by address.
  */
-import { gonguCreditOf, licenseName, parseCreditLine, type ImageCredit } from './gongu-credit'
+import {
+  gonguCreditOf,
+  licenseName,
+  licenseTerms,
+  parseCreditLine,
+  type GonguLicense,
+  type ImageCredit,
+} from './gongu-credit'
 
 /** One work as main's search hands it to an editor: the picture address and the credit fields. */
 export interface GonguAiWork {
@@ -123,4 +130,76 @@ function countOf(haystack: string, needle: string): number {
   for (let from = haystack.indexOf(needle); from >= 0; from = haystack.indexOf(needle, from + 1))
     count++
   return count
+}
+
+/** What the picture-credit check (docs/plans/gongu-images.md 4.8) says about one picture. */
+export type PictureCreditIssue =
+  /** no credit line goes with the picture */
+  | { kind: 'no-credit'; picture: number }
+  /** a credited work whose licence has conditions (non-commercial, no derivatives, share-alike) */
+  | { kind: 'conditions'; picture: number; title: string; license: GonguLicense }
+  /** the credit line is under the picture but not in the list at the end */
+  | { kind: 'not-listed'; picture: number; title: string; line: string }
+
+function conditionsOf(license: GonguLicense): boolean {
+  const terms = licenseTerms(license)
+  return terms.nonCommercial || !terms.mayModify || terms.shareAlike
+}
+
+/** The credit lines in the list under `title`: the last line that is exactly the title, and the credit lines after it. */
+export function creditListLines(text: string, title: string): string[] {
+  const lines = text.split(/\r?\n/).map((each) => each.trim())
+  const at = lines.lastIndexOf(title)
+  if (at < 0) return []
+  const listed: string[] = []
+  for (const line of lines.slice(at + 1)) {
+    if (!parseCreditLine(line)) break
+    listed.push(line)
+  }
+  return listed
+}
+
+/**
+ * The check for a flat-text document (HWP): `following` is the text of the paragraph after
+ * each picture, in document order (pictures numbered from 1); `text` is the whole document,
+ * one paragraph per line, for the list under `listTitle`. Nothing is read over the network.
+ */
+export function documentCreditIssues(
+  following: readonly string[],
+  text: string,
+  listTitle: string,
+): PictureCreditIssue[] {
+  const listed = new Set(creditListLines(text, listTitle))
+  const issues: PictureCreditIssue[] = []
+  following.forEach((next, index) => {
+    const picture = index + 1
+    const line = next.trim()
+    const parsed = parseCreditLine(line)
+    if (!parsed) {
+      issues.push({ kind: 'no-credit', picture })
+      return
+    }
+    if (conditionsOf(parsed.license))
+      issues.push({ kind: 'conditions', picture, title: parsed.title, license: parsed.license })
+    if (!listed.has(line)) issues.push({ kind: 'not-listed', picture, title: parsed.title, line })
+  })
+  return issues
+}
+
+/** The check for a mind map: a topic with a picture is credited when a line of its note is a credit line. */
+export function topicCreditIssues(
+  topics: readonly { note: string | null }[],
+): PictureCreditIssue[] {
+  const issues: PictureCreditIssue[] = []
+  topics.forEach((topic, index) => {
+    const picture = index + 1
+    const parsed = (topic.note ?? '')
+      .split(/\r?\n/)
+      .map((line) => parseCreditLine(line))
+      .find((each) => each !== null)
+    if (!parsed) issues.push({ kind: 'no-credit', picture })
+    else if (conditionsOf(parsed.license))
+      issues.push({ kind: 'conditions', picture, title: parsed.title, license: parsed.license })
+  })
+  return issues
 }

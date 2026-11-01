@@ -226,4 +226,15 @@ export const hi = {
   hpFNumberingOrder: 'Item numbering out of order (1. 가. 1) 가))',
   hpFLoneItemNumbered: 'A lone item that carries a number',
   hpFMixedEndings: 'Formal and plain endings are mixed',
+  hpCredits: 'चित्रों के स्रोत जाँचें',
+  hpCreditsNone: 'दस्तावेज़ में कोई चित्र नहीं है।',
+  hpCreditsOk: 'सभी {n} चित्रों के साथ स्रोत लिखा है।',
+  hpCreditNoCredit: 'चित्र {n}: इसके नीचे स्रोत की पंक्ति नहीं है। स्रोत जाँचकर जोड़ें।',
+  hpCreditConditions: 'चित्र {n} “{title}”: इसके उपयोग की शर्तें हैं ({license})।',
+  hpCreditNotListed: 'चित्र {n} “{title}”: अंत की चित्र-स्रोत सूची में नहीं है।',
+  hpCreditGo: 'जाएँ',
+  hpCreditAddToList: 'सूची में जोड़ें',
+  hpCreditListFailed: 'चित्र-स्रोत सूची में नहीं जोड़ा जा सका।',
+  hpCreditsScope:
+    'केवल मुख्य पाठ के चित्र जाँचे जाते हैं, तालिका या टेक्स्ट बॉक्स के भीतर के नहीं।',
 } satisfies Record<keyof typeof zh, string>

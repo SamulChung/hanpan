@@ -268,4 +268,10 @@ export const th = {
   tbClearStyle: 'ล้างรูปแบบ',
   tbBoundary: 'กรอบ',
   boundaryName: 'ชื่อกรอบ',
+  mmCredits: 'ตรวจแหล่งที่มาของภาพ',
+  mmCreditsNone: 'ไม่มีหัวข้อใดที่มีภาพ',
+  mmCreditsOk: 'ภาพทั้ง {n} ภาพมีแหล่งที่มาในบันทึกของหัวข้อแล้ว',
+  mmCreditNoCredit: '“{topic}”: บันทึกไม่มีแหล่งที่มาของภาพ ตรวจสอบที่มาแล้วเพิ่มให้',
+  mmCreditConditions: 'ภาพ “{title}” ในหัวข้อ “{topic}”: มีเงื่อนไขการใช้ ({license})',
+  mmCreditGo: 'ไปที่ภาพ',
 } satisfies Record<keyof typeof zh, string>

@@ -269,4 +269,11 @@ export const ja = {
   tbClearStyle: '書式のクリア',
   tbBoundary: '囲み',
   boundaryName: '囲みの名前',
+  mmCredits: '画像の出典チェック',
+  mmCreditsNone: '画像の付いたトピックがありません。',
+  mmCreditsOk: '{n} 枚の画像すべてのメモに出典があります。',
+  mmCreditNoCredit:
+    '「{topic}」：メモに画像の出典がありません。出典を確かめてメモに書いてください。',
+  mmCreditConditions: '「{topic}」の画像「{title}」：利用条件があります（{license}）。',
+  mmCreditGo: '移動',
 } satisfies Record<keyof typeof zh, string>

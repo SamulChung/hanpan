@@ -267,4 +267,10 @@ export const ar = {
   tbClearStyle: 'مسح التنسيق',
   tbBoundary: 'إطار',
   boundaryName: 'اسم الإطار',
+  mmCredits: 'فحص مصادر الصور',
+  mmCreditsNone: 'لا يوجد موضوع عليه صورة.',
+  mmCreditsOk: 'كل الصور ({n}) لها سطر مصدر في ملاحظة موضوعها.',
+  mmCreditNoCredit: '«{topic}»: لا يوجد سطر مصدر للصورة في الملاحظة. تحقّق من مصدرها وأضِفه.',
+  mmCreditConditions: 'الصورة «{title}» على «{topic}»: لها شروط استخدام ({license}).',
+  mmCreditGo: 'انتقال',
 } satisfies Record<keyof typeof zh, string>

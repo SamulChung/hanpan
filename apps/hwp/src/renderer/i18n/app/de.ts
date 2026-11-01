@@ -233,4 +233,15 @@ export const de = {
   hpFNumberingOrder: 'Item numbering out of order (1. 가. 1) 가))',
   hpFLoneItemNumbered: 'A lone item that carries a number',
   hpFMixedEndings: 'Formal and plain endings are mixed',
+  hpCredits: 'Bildnachweise prüfen',
+  hpCreditsNone: 'Das Dokument enthält keine Bilder.',
+  hpCreditsOk: 'Alle {n} Bilder haben einen Bildnachweis.',
+  hpCreditNoCredit:
+    'Bild {n}: Darunter steht kein Bildnachweis. Prüfen Sie die Herkunft und ergänzen Sie ihn.',
+  hpCreditConditions: 'Bild {n} „{title}“: hat Nutzungsbedingungen ({license}).',
+  hpCreditNotListed: 'Bild {n} „{title}“: fehlt in der Liste der Bildnachweise am Ende.',
+  hpCreditGo: 'Anzeigen',
+  hpCreditAddToList: 'Zur Liste hinzufügen',
+  hpCreditListFailed: 'Konnte nicht zur Liste der Bildnachweise hinzugefügt werden.',
+  hpCreditsScope: 'Geprüft werden nur Bilder im Fließtext, nicht in Tabellen oder Textfeldern.',
 } satisfies Record<keyof typeof zh, string>

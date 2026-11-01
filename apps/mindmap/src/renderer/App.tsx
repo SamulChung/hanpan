@@ -11,6 +11,7 @@
 import type { SendTarget } from '@genoffice/hanpan-core/renderer'
 import { SendDialog } from './hanpan/SendDialog'
 import { SyncDialog } from './hanpan/SyncDialog'
+import { CreditCheckDialog } from './hanpan/CreditCheckDialog'
 import { outlineAsIndentedText, sheetOutline } from './hanpan/map-outline'
 import { type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
@@ -119,6 +120,7 @@ export default function App() {
   const [sendTarget, setSendTarget] = useState<SendTarget | null>(null)
   const [sendNotice, setSendNotice] = useState<string | null>(null)
   const [syncOpen, setSyncOpen] = useState(false)
+  const [creditsOpen, setCreditsOpen] = useState(false)
   const [themeOpen, setThemeOpen] = useState(false)
   /** F5: the map alone, shell chrome covered by HTML fullscreen */
   const [presenting, setPresenting] = useState(false)
@@ -1129,6 +1131,10 @@ export default function App() {
         onMakeFromDocument={() => window.mindmapApi.makeFromDocument?.()}
         onSendTo={window.mindmapApi.sendToDocument ? (target) => setSendTarget(target) : undefined}
         onSync={window.mindmapApi.syncCheck ? () => setSyncOpen(true) : undefined}
+        onCredits={() => {
+          flushAll()
+          setCreditsOpen(true)
+        }}
         onDesign={
           window.mindmapApi.sendToDesign && session && activeKey
             ? () => {
@@ -1140,6 +1146,17 @@ export default function App() {
             : undefined
         }
       />
+
+      {creditsOpen && session && (
+        <CreditCheckDialog
+          sheets={findSheets()}
+          onGo={(sheetKey, topicId) => {
+            setCreditsOpen(false)
+            void controllerFor(ai.host, sheetKey).then((map) => map?.revealTopic(topicId))
+          }}
+          onClose={() => setCreditsOpen(false)}
+        />
+      )}
 
       {syncOpen && session && (
         <SyncDialog

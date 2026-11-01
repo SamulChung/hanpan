@@ -269,4 +269,10 @@ export const hi = {
   tbClearStyle: 'फ़ॉर्मेट हटाएँ',
   tbBoundary: 'सीमा',
   boundaryName: 'सीमा का नाम',
+  mmCredits: 'चित्रों के स्रोत जाँचें',
+  mmCreditsNone: 'किसी विषय पर चित्र नहीं है।',
+  mmCreditsOk: 'सभी {n} चित्रों के विषय-नोट में स्रोत लिखा है।',
+  mmCreditNoCredit: '“{topic}”: नोट में चित्र का स्रोत नहीं है। स्रोत जाँचकर जोड़ें।',
+  mmCreditConditions: '“{topic}” पर चित्र “{title}”: इसके उपयोग की शर्तें हैं ({license})।',
+  mmCreditGo: 'जाएँ',
 } satisfies Record<keyof typeof zh, string>

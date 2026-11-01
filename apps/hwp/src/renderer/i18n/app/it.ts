@@ -231,4 +231,16 @@ export const it = {
   hpFNumberingOrder: 'Item numbering out of order (1. 가. 1) 가))',
   hpFLoneItemNumbered: 'A lone item that carries a number',
   hpFMixedEndings: 'Formal and plain endings are mixed',
+  hpCredits: 'Controlla i crediti delle immagini',
+  hpCreditsNone: 'Il documento non contiene immagini.',
+  hpCreditsOk: 'Tutte le {n} immagini hanno il credito.',
+  hpCreditNoCredit:
+    'Immagine {n}: sotto non c’è la riga del credito. Verifica la provenienza e aggiungila.',
+  hpCreditConditions: 'Immagine {n} «{title}»: ha condizioni d’uso ({license}).',
+  hpCreditNotListed: 'Immagine {n} «{title}»: manca nell’elenco dei crediti alla fine.',
+  hpCreditGo: 'Vai',
+  hpCreditAddToList: 'Aggiungi all’elenco',
+  hpCreditListFailed: 'Impossibile aggiungerla all’elenco dei crediti.',
+  hpCreditsScope:
+    'Si controllano solo le immagini nel testo, non quelle in tabelle o caselle di testo.',
 } satisfies Record<keyof typeof zh, string>

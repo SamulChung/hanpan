@@ -272,4 +272,10 @@ export const pl = {
   tbClearStyle: 'Wyczyść formatowanie',
   tbBoundary: 'Ramka',
   boundaryName: 'Nazwa ramki',
+  mmCredits: 'Sprawdź źródła obrazów',
+  mmCreditsNone: 'Żaden temat nie ma obrazu.',
+  mmCreditsOk: 'Wszystkie obrazy ({n}) mają źródło w notatce tematu.',
+  mmCreditNoCredit: '„{topic}”: w notatce brak źródła obrazu. Sprawdź pochodzenie i dopisz je.',
+  mmCreditConditions: 'Obraz „{title}” w „{topic}”: ma warunki użycia ({license}).',
+  mmCreditGo: 'Przejdź',
 } satisfies Record<keyof typeof zh, string>

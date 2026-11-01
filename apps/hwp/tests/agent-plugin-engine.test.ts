@@ -702,9 +702,20 @@ describe('adding a picture', () => {
     expect(lines.filter((line) => line !== caption && line !== '')).toEqual(
       paragraphs.filter((line) => line !== ''),
     )
+    // the picture keeps a paragraph of its own; the caption's paragraph holds no object
+    const doc = editor.doc()
+    const pictureAt = result.ok ? result.place.para : -1
+    expect(JSON.parse(doc.getControlTextPositions(0, pictureAt))).toEqual([0])
+    expect(doc.getParagraphLength(0, pictureAt)).toBe(0)
+    expect(JSON.parse(doc.getControlTextPositions(0, pictureAt + 1))).toEqual([])
+    expect(doc.getTextRange(0, pictureAt + 1, 0, caption.length)).toBe(caption)
+    expect(editor.plugin.listPictures()).toEqual({
+      pictures: [{ place: { sec: 0, para: pictureAt, offset: 0, length: 0 }, next: caption }],
+    })
     expect(editor.reopened()).toContain(caption)
     expect(editor.plugin.undo(1, before)).toMatchObject({ ok: true, undone: 1 })
     expect(editor.lines()).toEqual(paragraphs)
+    expect(editor.plugin.listPictures()).toEqual({ pictures: [] })
   })
 
   it('can put it inside a table cell, where the engine addresses the cell paragraph', () => {

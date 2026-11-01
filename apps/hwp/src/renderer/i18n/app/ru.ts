@@ -226,4 +226,15 @@ export const ru = {
   hpFNumberingOrder: 'Item numbering out of order (1. 가. 1) 가))',
   hpFLoneItemNumbered: 'A lone item that carries a number',
   hpFMixedEndings: 'Formal and plain endings are mixed',
+  hpCredits: 'Проверить источники изображений',
+  hpCreditsNone: 'В документе нет изображений.',
+  hpCreditsOk: 'У всех изображений ({n}) указан источник.',
+  hpCreditNoCredit:
+    'Изображение {n}: под ним нет строки с источником. Уточните источник и добавьте её.',
+  hpCreditConditions: 'Изображение {n} «{title}»: есть условия использования ({license}).',
+  hpCreditNotListed: 'Изображение {n} «{title}»: нет в списке источников изображений в конце.',
+  hpCreditGo: 'Перейти',
+  hpCreditAddToList: 'Добавить в список',
+  hpCreditListFailed: 'Не удалось добавить в список источников изображений.',
+  hpCreditsScope: 'Проверяются только изображения в основном тексте, а не в таблицах и надписях.',
 } satisfies Record<keyof typeof zh, string>

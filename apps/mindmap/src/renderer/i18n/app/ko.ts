@@ -268,4 +268,10 @@ export const ko = {
   tbClearStyle: '서식 지우기',
   tbBoundary: '테두리',
   boundaryName: '테두리 이름',
+  mmCredits: '그림 출처 점검',
+  mmCreditsNone: '그림이 붙은 주제가 없습니다.',
+  mmCreditsOk: '그림 {n}개 모두 메모에 출처가 있습니다.',
+  mmCreditNoCredit: '「{topic}」: 그림의 출처가 메모에 없습니다. 출처를 확인해 메모에 적어 주세요.',
+  mmCreditConditions: '「{topic}」의 그림 「{title}」: 이용 조건이 있습니다({license}).',
+  mmCreditGo: '가기',
 } satisfies Record<keyof typeof zh, string>

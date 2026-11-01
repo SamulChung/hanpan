@@ -271,4 +271,11 @@ export const en = {
   tbClearStyle: 'Clear format',
   tbBoundary: 'Boundary',
   boundaryName: 'Boundary name',
+  mmCredits: 'Check picture credits',
+  mmCreditsNone: 'No topic has a picture.',
+  mmCreditsOk: 'All {n} pictures have a credit line in their topic note.',
+  mmCreditNoCredit:
+    '“{topic}”: the picture has no credit line in the note. Check where it is from and add one.',
+  mmCreditConditions: 'Picture “{title}” on “{topic}”: comes with conditions of use ({license}).',
+  mmCreditGo: 'Go',
 } satisfies Record<keyof typeof zh, string>

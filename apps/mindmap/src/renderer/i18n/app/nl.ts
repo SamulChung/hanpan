@@ -273,4 +273,11 @@ export const nl = {
   tbClearStyle: 'Opmaak wissen',
   tbBoundary: 'Kader',
   boundaryName: 'Naam van het kader',
+  mmCredits: 'Afbeeldingsbronnen controleren',
+  mmCreditsNone: 'Geen enkel onderwerp heeft een afbeelding.',
+  mmCreditsOk: 'Alle {n} afbeeldingen hebben een bronregel in de notitie van hun onderwerp.',
+  mmCreditNoCredit:
+    '‘{topic}’: de notitie bevat geen bron voor de afbeelding. Controleer de herkomst en voeg die toe.',
+  mmCreditConditions: 'Afbeelding ‘{title}’ bij ‘{topic}’: heeft gebruiksvoorwaarden ({license}).',
+  mmCreditGo: 'Ga naar',
 } satisfies Record<keyof typeof zh, string>

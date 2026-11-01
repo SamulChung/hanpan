@@ -265,4 +265,10 @@ export const zhTW = {
   tbClearStyle: '清除格式',
   tbBoundary: '外框',
   boundaryName: '外框名稱',
+  mmCredits: '檢查圖片出處',
+  mmCreditsNone: '沒有附圖片的主題。',
+  mmCreditsOk: '全部 {n} 張圖片的備註中都有出處。',
+  mmCreditNoCredit: '「{topic}」：備註中沒有圖片出處。請確認出處後寫入備註。',
+  mmCreditConditions: '「{topic}」的圖片「{title}」：有使用條件（{license}）。',
+  mmCreditGo: '前往',
 } satisfies Record<keyof typeof zh, string>

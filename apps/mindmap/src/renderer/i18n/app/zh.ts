@@ -262,4 +262,10 @@ export const zh = {
   tbClearStyle: '清除格式',
   tbBoundary: '边框',
   boundaryName: '边框名称',
+  mmCredits: '检查图片出处',
+  mmCreditsNone: '没有带图片的主题。',
+  mmCreditsOk: '全部 {n} 张图片的备注中都有出处。',
+  mmCreditNoCredit: '「{topic}」：备注中没有图片出处。请核实出处后写入备注。',
+  mmCreditConditions: '「{topic}」的图片「{title}」：有使用条件（{license}）。',
+  mmCreditGo: '前往',
 }

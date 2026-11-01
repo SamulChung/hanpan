@@ -796,7 +796,7 @@ export default function App() {
       {phase === 'ready' && (
         <div className="hwp-topbar">
           <MemoToggle open={memoOpen} onToggle={() => setMemoOpen((open) => !open)} />
-          <HanpanTools />
+          <HanpanTools bridge={agentBridge} />
           <label className={`autosave-toggle${autoSave ? ' on' : ''}`} data-tip={t('autoSaveTip')}>
             <span className="autosave-knob" />
             <span className="autosave-text">{t('autoSave')}</span>

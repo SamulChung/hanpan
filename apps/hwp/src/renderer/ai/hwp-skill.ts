@@ -6,8 +6,6 @@ import {
   type ToolExecution,
 } from '@genoffice/agent-core'
 import {
-  creditListStep,
-  creditListTitle,
   formatCreditLine,
   GONGU_SOURCE_PROPERTY,
   GonguCreditBook,
@@ -34,6 +32,7 @@ import type {
   AgentWhere,
 } from '../../../studio-plugin/agent-plugin.mjs'
 import type { AgentBridge } from './agent-bridge'
+import { addToCreditList } from '../hanpan/credit-list'
 import type { StringKey } from '../i18n/locale'
 
 /** Document text attached to every user message; longer documents are read on demand. */
@@ -1401,22 +1400,18 @@ export function createHwpSkill(deps: HwpSkillDeps): HwpSkill {
    * new paragraph through the plugin. The plugin makes the change one undo step and refuses to
    * lose an object on the way; the bytes and the format were checked here as well.
    */
-  /**
-   * Adds a credit line to the "picture credits" list at the end of the document, starting the
-   * list when there is none and leaving it alone when the line is already in it. Its own undo
-   * step; false when the document refused it.
-   */
-  const addToCreditList = async (line: string, lang: string): Promise<boolean> => {
-    const title = creditListTitle(lang)
-    const step = creditListStep(await bridge.readText(), title, line)
-    if (step.kind === 'listed') return true
-    const result =
-      step.kind === 'new'
-        ? await bridge.insertParagraphs('', null, 'end', [title, line])
-        : await bridge.insertParagraphs(title, step.occurrence, 'after', [line])
-    if (!result.ok) return false
-    deps.onChange({ kind: 'insert', from: '', to: changeText(line), count: 1, place: result.place })
-    return true
+  /** Adds a picture's credit line to the list at the end of the document: its own undo step. */
+  const listCredit = async (line: string, lang: string): Promise<boolean> => {
+    const added = await addToCreditList(bridge, line, lang)
+    if (added.changed)
+      deps.onChange({
+        kind: 'insert',
+        from: '',
+        to: changeText(line),
+        count: 1,
+        place: added.place,
+      })
+    return added.ok
   }
 
   /** Adds one picture from bytes the app already holds (a download, an attachment, a generation). */
@@ -1466,7 +1461,7 @@ export function createHwpSkill(deps: HwpSkillDeps): HwpSkill {
     if (!result.ok) return bad(call, placeRefusal(result))
     deps.onChange({ kind: 'image', from: '', to: what, count: 1, place: result.place })
     if (caption) {
-      const listed = await addToCreditList(caption, lang)
+      const listed = await listCredit(caption, lang)
       return {
         output:
           `Added the picture (“${what.slice(0, 60)}”) in a new paragraph with its credit line under it` +

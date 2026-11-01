@@ -148,6 +148,8 @@ export interface ToolbarProps {
   onSendTo?(target: SendTarget): void
   /** Hanpan: sync with the documents made from this map */
   onSync?(): void
+  /** Hanpan: the picture-credit check */
+  onCredits?(): void
   /** Hanpan: card news on the design board */
   onDesign?(): void
 }
@@ -523,6 +525,7 @@ export function Toolbar(p: ToolbarProps) {
                   disabled={p.disabled}
                   onPick={p.onSendTo}
                   onSync={p.onSync}
+                  onCredits={p.onCredits}
                   onDesign={p.onDesign}
                 />
               )}

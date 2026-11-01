@@ -261,6 +261,13 @@ export interface AgentTableSummary {
   preview: string[]
 }
 
+/** One picture of the body, as listPictures lists it. */
+export interface AgentPictureEntry {
+  place: AgentPlace
+  /** the text of the paragraph right after the picture, trimmed and clipped */
+  next: string
+}
+
 export interface AgentTableList {
   /** all tables found; `tables` holds the first ones only */
   count: number
@@ -803,6 +810,7 @@ export interface AgentPluginSurface {
     format: AgentParagraphFormat,
     options?: AgentChangeOptions,
   ): AgentFormatParagraphResult
+  listPictures(): { pictures: AgentPictureEntry[] }
   listTables(): AgentTableList
   readTable(table: number, fromRow?: number | null): AgentReadTableResult
   fillCells(

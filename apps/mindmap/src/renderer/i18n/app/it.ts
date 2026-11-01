@@ -273,4 +273,11 @@ export const it = {
   tbClearStyle: 'Cancella formato',
   tbBoundary: 'Riquadro',
   boundaryName: 'Nome del riquadro',
+  mmCredits: 'Controlla i crediti delle immagini',
+  mmCreditsNone: 'Nessun argomento ha un’immagine.',
+  mmCreditsOk: 'Tutte le {n} immagini hanno il credito nella nota dell’argomento.',
+  mmCreditNoCredit:
+    '«{topic}»: nella nota manca il credito dell’immagine. Verifica la provenienza e aggiungilo.',
+  mmCreditConditions: 'Immagine «{title}» su «{topic}»: ha condizioni d’uso ({license}).',
+  mmCreditGo: 'Vai',
 } satisfies Record<keyof typeof zh, string>

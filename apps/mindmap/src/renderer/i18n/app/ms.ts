@@ -271,4 +271,10 @@ export const ms = {
   tbClearStyle: 'Kosongkan format',
   tbBoundary: 'Sempadan',
   boundaryName: 'Nama sempadan',
+  mmCredits: 'Semak sumber gambar',
+  mmCreditsNone: 'Tiada topik yang bergambar.',
+  mmCreditsOk: 'Semua {n} gambar mempunyai baris sumber dalam nota topiknya.',
+  mmCreditNoCredit: '“{topic}”: tiada baris sumber gambar dalam nota. Semak asalnya dan tambahkan.',
+  mmCreditConditions: 'Gambar “{title}” pada “{topic}”: mempunyai syarat penggunaan ({license}).',
+  mmCreditGo: 'Pergi',
 } satisfies Record<keyof typeof zh, string>

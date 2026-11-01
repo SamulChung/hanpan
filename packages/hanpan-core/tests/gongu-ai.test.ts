@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import {
+  creditListLines,
   creditListStep,
+  documentCreditIssues,
+  topicCreditIssues,
   creditListTitle,
   formatCreditLine,
   gonguCreditOf,
@@ -81,5 +84,37 @@ describe('creditListStep', () => {
     expect(creditListStep(`${title}\n${other}\n맺음말\n${line}`, title, line)).toMatchObject({
       kind: 'add',
     })
+  })
+})
+
+describe('the picture-credit check', () => {
+  const title = creditListTitle('ko')
+  const free = formatCreditLine(gonguCreditOf(WORK), 'ko')
+  const ndLicense = { kind: 'ccl', nc: false, nd: true, sa: false } as const
+  const nd = formatCreditLine(
+    gonguCreditOf({ ...WORK, workId: '9', title: '까치' }, ndLicense),
+    'en',
+  )
+
+  it('reads the list under the last title line', () => {
+    expect(creditListLines(`${title}\n${free}\n맺음말\n${nd}`, title)).toEqual([free])
+    expect(creditListLines('본문', title)).toEqual([])
+  })
+
+  it('finds pictures with no credit line, with conditions, and missing from the list', () => {
+    const text = `본문\n${free}\n표\n${nd}\n${title}\n${free}`
+    expect(documentCreditIssues([free, '표 1. 사진', nd], text, title)).toEqual([
+      { kind: 'no-credit', picture: 2 },
+      { kind: 'conditions', picture: 3, title: '까치', license: ndLicense },
+      { kind: 'not-listed', picture: 3, title: '까치', line: nd },
+    ])
+    expect(documentCreditIssues([free], `${free}\n${title}\n${free}`, title)).toEqual([])
+  })
+
+  it('reads a topic note for the credit, in any line', () => {
+    expect(topicCreditIssues([{ note: `메모\n${free}` }, { note: null }, { note: nd }])).toEqual([
+      { kind: 'no-credit', picture: 2 },
+      { kind: 'conditions', picture: 3, title: '까치', license: ndLicense },
+    ])
   })
 })

@@ -231,4 +231,17 @@ export const nl = {
   hpFNumberingOrder: 'Item numbering out of order (1. 가. 1) 가))',
   hpFLoneItemNumbered: 'A lone item that carries a number',
   hpFMixedEndings: 'Formal and plain endings are mixed',
+  hpCredits: 'Afbeeldingsbronnen controleren',
+  hpCreditsNone: 'Het document bevat geen afbeeldingen.',
+  hpCreditsOk: 'Alle {n} afbeeldingen hebben een bronvermelding.',
+  hpCreditNoCredit:
+    'Afbeelding {n}: er staat geen bronregel onder. Controleer de herkomst en voeg die toe.',
+  hpCreditConditions: 'Afbeelding {n} ‘{title}’: heeft gebruiksvoorwaarden ({license}).',
+  hpCreditNotListed:
+    'Afbeelding {n} ‘{title}’: ontbreekt in de lijst met afbeeldingsbronnen aan het eind.',
+  hpCreditGo: 'Ga naar',
+  hpCreditAddToList: 'Aan lijst toevoegen',
+  hpCreditListFailed: 'Kon niet aan de lijst met afbeeldingsbronnen worden toegevoegd.',
+  hpCreditsScope:
+    'Alleen afbeeldingen in de hoofdtekst worden gecontroleerd, niet die in tabellen of tekstvakken.',
 } satisfies Record<keyof typeof zh, string>
