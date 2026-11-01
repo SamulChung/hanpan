@@ -383,6 +383,7 @@ describe('the colours of a map are document content', () => {
       'hidden-parts.ts',
       'images.ts',
       'look.ts',
+      'marker-families.ts',
       'markers.ts',
       'sort.ts',
       'style-values.ts',

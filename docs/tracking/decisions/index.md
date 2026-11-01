@@ -84,4 +84,5 @@
 | [0081](0081-chatgpt-direct-connection.md)                     | ChatGPT는 앱이 직접 로그인해 요금제로 연결하고, Codex 프로그램은 그 안의 다른 길로 남긴다       | 2026-10-28 |
 | [0082](0082-claude-structured-output-tool.md)                 | Claude의 문서 편집 차례는 응답 형식을 프로그램에 맡기고, 그 도구 하나만 허용한다                | 2026-10-28 |
 | [0083](0083-command-line-archive.md)                          | 데스크톱 앱 없이 도는 명령줄 묶음을 따로 내고, Node는 설치 스크립트가 받는다                    | 2026-10-27 |
-| [0084](0084-hanpan-local-ai-first.md)                        | 한판은 첫 시작 때 내 PC의 AI 서버를 찾아, 선택이 기본값이면 그것을 기본 AI로 쓴다               | 2026-10-30 |
+| [0084](0084-hanpan-local-ai-first.md)                         | 한판은 첫 시작 때 내 PC의 AI 서버를 찾아, 선택이 기본값이면 그것을 기본 AI로 쓴다               | 2026-10-30 |
+| [0085](0085-mindmap-engine-writes-markers.md)                 | 마인드맵 엔진이 토픽의 아이콘을 쓰되, 새로 붙인 것만 검사하고 파일의 기록은 그대로 둔다         | 2026-11-01 |

@@ -380,4 +380,17 @@ describe('nodes from the clipboard', () => {
       ],
     })
   })
+
+  it('keeps markers of the shape a topic may gain, at most fifty', () => {
+    const many = Array.from({ length: 60 }, (_, at) => `m-${at}`)
+    const pasted = {
+      id: 'x',
+      topic: 'x',
+      metadata: { markers: ['flag-red', 'Flag-Red', '<b>', 7, 'task-half', ...many] },
+    }
+    cleanPastedNode(pasted)
+    const markers = (pasted.metadata as { markers: string[] }).markers
+    expect(markers.slice(0, 2)).toEqual(['flag-red', 'task-half'])
+    expect(markers).toHaveLength(50)
+  })
 })

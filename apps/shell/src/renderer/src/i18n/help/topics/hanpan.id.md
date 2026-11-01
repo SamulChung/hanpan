@@ -13,6 +13,7 @@ Hanpan mengirim apa yang Anda susun di peta pikiran ke laporan Hangul (HWP), pre
 - Pita di atas peta berisi tab **Beranda**, **Sisipkan**, **Format**, dan **Tampilan**. Ctrl+F mencari judul topik di semua lembar, dan juga catatan jika dicentang; Ctrl+H mengganti. Membuka topik di dalam cabang yang terlipat akan membentangkan cabang itu.
 - **Sisipkan › Gambar** memasang gambar PNG, JPG, atau GIF (paling besar 10 MB) pada topik terpilih, atau melepas gambar yang sudah ada. **Format › Urutkan** mengurutkan cabang topik terpilih menurut abjad; tekan lagi untuk urutan terbalik.
 - **Tampilan › Tingkat** membentangkan peta sampai tingkat 1, 2, atau 3, dan **Tampilan › Tampilkan** menyembunyikan catatan, label, tautan, ikon, atau gambar hanya di layar. Berkasnya tetap menyimpan semuanya.
+- **Sisipkan › Ikon** membuka panel ikon: prioritas, kemajuan, bendera, bintang, wajah, dan panah. Satu topik membawa satu ikon dari tiap jenis; tekan ikon yang sudah ada untuk melepasnya. Klik ikon di peta untuk menggantinya dengan ikon lain sejenis atau melepasnya.
 
 ## Menyelaraskan peta dan dokumen
 

@@ -43,6 +43,26 @@ const STRINGS: MapStrings = {
     progress: [0, 13, 25, 38, 50, 63, 75, 88, 100].map((percent) => `진행 ${percent}%`),
     flag: '깃발',
     star: '별',
+    flagColored: { red: '빨강 깃발' },
+    starColored: { blue: '파랑 별' },
+    smiley: {
+      laugh: '크게 웃음',
+      smile: '웃음',
+      cry: '울음',
+      surprise: '놀람',
+      boring: '지루함',
+      angry: '화남',
+      embarrass: '부끄러움',
+    },
+    arrow: {
+      left: '왼쪽',
+      right: '오른쪽',
+      up: '위',
+      down: '아래',
+      'left-right': '왼쪽·오른쪽',
+      'up-down': '위·아래',
+      refresh: '되풀이',
+    },
     otherMarker: '표식',
     pictureNotShown: '불러오지 않은 그림',
   },
@@ -676,6 +696,58 @@ describe('pictures, folding to a level and sorting', () => {
   })
 })
 
+describe('markers', () => {
+  it('toggleMarker replaces the marker of the same family where it stood, as one step', async () => {
+    const { controller, attached, el } = await mount()
+    expect(controller.markersOf(IDS.a)).toEqual(['priority-1'])
+    expect(controller.toggleMarker([IDS.a], 'flag-red')).toBe(true)
+    expect(controller.toggleMarker([IDS.a], 'priority-3')).toBe(true)
+    expect(controller.markersOf(IDS.a)).toEqual(['priority-3', 'flag-red'])
+    expect(attached()[0]!.markers).toEqual([{ markerId: 'priority-3' }, { markerId: 'flag-red' }])
+    // the glyphs carry where they stand and a name, never the id
+    const glyphs = [...topicEl(el, IDS.a).querySelectorAll<SVGElement>('.mm-marker')]
+    expect(glyphs.map((glyph) => glyph.dataset.markerIndex)).toEqual(['0', '1'])
+    expect(glyphs[1]!.getAttribute('aria-label')).toBe('빨강 깃발')
+    expect(topicEl(el, IDS.a).outerHTML).not.toContain('flag-red')
+    controller.undo()
+    expect(controller.markersOf(IDS.a)).toEqual(['priority-1', 'flag-red'])
+  })
+
+  it('pressing a marker every selected topic has takes it off them all', async () => {
+    const { controller, attached } = await mount()
+    controller.toggleMarker([IDS.a, IDS.c], 'star-blue')
+    expect(controller.markersOf(IDS.c)).toEqual(['star-blue'])
+    controller.toggleMarker([IDS.a, IDS.c], 'star-blue')
+    expect(controller.markersOf(IDS.a)).toEqual(['priority-1'])
+    expect(attached()[2]!).not.toHaveProperty('markers')
+  })
+
+  it('on several topics, one press is one step and one undo', async () => {
+    const { controller } = await mount()
+    controller.toggleMarker([IDS.a, IDS.b, IDS.c], 'smiley-smile')
+    expect([IDS.a, IDS.b, IDS.c].map((id) => controller.markersOf(id))).toEqual([
+      ['priority-1', 'smiley-smile'],
+      ['smiley-smile'],
+      ['smiley-smile'],
+    ])
+    controller.undo()
+    expect([IDS.a, IDS.b, IDS.c].map((id) => controller.markersOf(id))).toEqual([
+      ['priority-1'],
+      [],
+      [],
+    ])
+    expect(controller.canUndo).toBe(false)
+  })
+
+  it('setMarkers writes the list, and a topic that is gone says so', async () => {
+    const { controller, attached } = await mount()
+    expect(controller.setMarkers(IDS.a, [])).toBe(true)
+    expect(attached()[0]!).not.toHaveProperty('markers')
+    expect(controller.setMarkers('no-such-topic', ['flag-red'])).toBe(false)
+    expect(controller.toggleMarker(['no-such-topic'], 'flag-red')).toBe(false)
+  })
+})
+
 describe('text from the file is never markup', () => {
   const HOSTILE = '<img src=x onerror="window.pwned=1"><script>window.pwned=1</script><b>bold</b>'
 
@@ -957,7 +1029,9 @@ describe('cut and paste', () => {
     expect(second.id).toMatch(UUID)
     expect(second.labels).toEqual(['urgent', 'draft'])
     expect(second).not.toHaveProperty('unknownTopicKey')
-    expect(second).not.toHaveProperty('markers')
+    // its markers come along as fresh records, without what the file kept beside them
+    expect(second.markers).toEqual([{ markerId: 'priority-1' }])
+    expect(second).not.toHaveProperty('image')
     // the one that was moved is untouched
     expect(attached()[1]!.children!.attached![0]!.id).toBe(IDS.a)
   })

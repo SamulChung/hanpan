@@ -577,3 +577,76 @@ describe('pictures', () => {
     expect(on.systemPrompt).not.toContain(IMAGE_GEN_OFF_NOTE)
   })
 })
+
+describe('markers', () => {
+  it('read_map shows the markers of a topic in front of its id, and read_topic lists them', async () => {
+    const r = await rigOf(richSheet())
+    expect(readMap(r.host, {}).output).toContain(
+      `- Alpha [urgent, draft] <https://example.com/alpha> [!priority-1] {#${IDS.a}}`,
+    )
+    const info = JSON.parse(
+      readTopic(r.host, { id: IDS.a }).output.replace(/^[^{]*/, ''),
+    ) as Record<string, unknown>
+    expect(info.markers).toEqual(['priority-1'])
+  })
+
+  it('set_marker replaces the marker of the same kind; clear_marker takes a kind or all off', async () => {
+    const r = await rigOf(richSheet())
+    const out = await editMap(
+      r.host,
+      {
+        edits: [
+          { op: 'set_marker', id: IDS.a, kind: 'priority', level: 3 },
+          { op: 'set_marker', id: IDS.a, kind: 'progress', level: 50 },
+          { op: 'set_marker', id: IDS.c, kind: 'flag', level: 'dark-blue' },
+          { op: 'set_marker', id: IDS.c, kind: 'smiley', level: 'smile' },
+          { op: 'clear_marker', id: IDS.c, kind: 'flag' },
+          { op: 'set_marker', id: IDS.b, kind: 'arrow', level: 'up-down' },
+          { op: 'clear_marker', id: IDS.b, kind: 'all' },
+        ],
+      },
+      null,
+    )
+    expect(out.output).toContain('7 of 7 edit(s) applied')
+    const [alpha, beta, gamma] = attached(r.sheet(1).rootTopic)
+    expect(alpha!.markers).toEqual([{ markerId: 'priority-3' }, { markerId: 'task-half' }])
+    expect(gamma!.markers).toEqual([{ markerId: 'smiley-smile' }])
+    expect(beta).not.toHaveProperty('markers')
+  })
+
+  it('an unknown kind or level fails that edit alone, with the choices', async () => {
+    const r = await rigOf(richSheet())
+    const out = await editMap(
+      r.host,
+      {
+        edits: [
+          { op: 'set_marker', id: IDS.c, kind: 'priority', level: 10 },
+          { op: 'set_marker', id: IDS.c, kind: 'progress', level: 33 },
+          { op: 'set_marker', id: IDS.c, kind: 'flag', level: 'pink' },
+          { op: 'set_marker', id: IDS.c, kind: 'emoji', level: 'x' },
+          { op: 'clear_marker', id: IDS.c, kind: 'emoji' },
+          { op: 'set_marker', id: IDS.c, kind: 'star', level: 'red' },
+        ],
+      },
+      null,
+    )
+    expect(out.output).toContain('1 of 6 edit(s) applied')
+    expect(out.output).toMatch(/#0 set_marker FAILED.*1, 2, 3/)
+    expect(out.output).toMatch(/#1 set_marker FAILED.*0, 25, 50, 75, 100/)
+    expect(out.output).toMatch(/#2 set_marker FAILED.*dark-blue/)
+    expect(out.output).toMatch(/#3 set_marker FAILED.*kind must be one of/)
+    expect(attached(r.sheet(1).rootTopic)[2]!.markers).toEqual([{ markerId: 'star-red' }])
+  })
+
+  it('write_map drops the marker marks read_map wrote, with the id tags', async () => {
+    const r = await rigOf(plainSheet())
+    const outline =
+      '# Copy\n\n- Center [!priority-1] {#abc}\n  - Branch [!flag-red task-done] {#def}\n'
+    const out = await writeMap(r.host, { outline }, null)
+    expect(out.isError).toBeFalsy()
+    const written = r.sheet(2)
+    expect(written.rootTopic.title).toBe('Center')
+    expect(titles(written.rootTopic)).toEqual(['Branch'])
+    expect(attached(written.rootTopic)[0]!).not.toHaveProperty('labels')
+  })
+})

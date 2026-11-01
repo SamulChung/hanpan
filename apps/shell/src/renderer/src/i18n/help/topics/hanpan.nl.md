@@ -13,6 +13,7 @@ Hanpan stuurt wat u in een mindmap hebt geordend naar een Hangul-rapport (HWP), 
 - Het lint boven de kaart heeft de tabbladen **Start**, **Invoegen**, **Opmaak** en **Beeld**. Ctrl+F zoekt onderwerptitels op alle bladen, en ook notities als u dat aanvinkt; Ctrl+H vervangt. Naar een onderwerp in een samengevouwen tak gaan, vouwt de tak open.
 - **Invoegen › Afbeelding** zet een PNG-, JPG- of GIF-afbeelding (hooguit 10 MB) op het gekozen onderwerp, of haalt de bestaande weg. **Opmaak › Sorteren** zet de takken van het gekozen onderwerp op alfabetische volgorde; druk nogmaals voor de omgekeerde volgorde.
 - **Beeld › Niveaus** vouwt de kaart open tot niveau 1, 2 of 3, en **Beeld › Weergeven** verbergt notities, labels, koppelingen, pictogrammen of afbeeldingen alleen op het scherm. Het bestand houdt ze allemaal.
+- **Invoegen › Pictogrammen** opent het paneel met pictogrammen: prioriteit, voortgang, vlaggen, sterren, smileys en pijlen. Een onderwerp krijgt er één van elke soort; druk op een die het al heeft om het weg te halen. Klik op een pictogram in de kaart om het te wisselen voor een ander van dezelfde soort of weg te halen.
 
 ## Kaart en document gelijkzetten
 

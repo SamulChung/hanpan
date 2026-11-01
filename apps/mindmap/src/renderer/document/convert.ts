@@ -345,9 +345,10 @@ function isObject(value: unknown): value is Record<string, unknown> {
  * picture address as it is.
  *
  * What stays: the id (the library replaces it anyway), the title as text,
- * folding, the side, the labels, note and web link, and the children. What a
- * state cannot write (picture, markers, style) is cleared, so the screen never
- * shows something the file will not hold.
+ * folding, the side, the labels, note and web link, markers of the shape a
+ * file may gain, and the children. What a state cannot write from a paste
+ * (picture, style) is cleared, so the screen never shows something the file
+ * will not hold.
  */
 export function cleanPastedNode(node: unknown, depth = 0): void {
   if (!isObject(node)) return
@@ -357,6 +358,7 @@ export function cleanPastedNode(node: unknown, depth = 0): void {
     labels: pasted.labels,
     note: pasted.note,
     link: pasted.link,
+    markers: pasted.markers.filter((id) => PASTED_MARKER_ID.test(id)).slice(0, 50),
   }
   const kept: Record<string, unknown> = {
     id: typeof node.id === 'string' ? node.id : '',
@@ -377,6 +379,8 @@ export function cleanPastedNode(node: unknown, depth = 0): void {
 }
 
 const MAX_PASTE_DEPTH = 200
+/** The engine's shape of a marker id a topic may gain (`reconcile-tree.ts`). */
+const PASTED_MARKER_ID = /^(?=.{1,64}$)[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 /** The shape of an id the file format uses, and so the only shape a new topic's id is kept in. */
 export const XMIND_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/

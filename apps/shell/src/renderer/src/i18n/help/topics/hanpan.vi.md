@@ -13,6 +13,7 @@ Hanpan gửi những gì bạn sắp xếp trong sơ đồ tư duy thành báo c
 - Dải phía trên sơ đồ có các thẻ **Trang chủ**, **Chèn**, **Định dạng** và **Xem**. Ctrl+F tìm tiêu đề chủ đề trên mọi trang tính, và cả ghi chú nếu bạn đánh dấu; Ctrl+H thay thế. Đi tới một chủ đề trong nhánh đang thu gọn sẽ mở nhánh đó ra.
 - **Chèn › Hình ảnh** gắn hình PNG, JPG hoặc GIF (tối đa 10 MB) vào chủ đề đang chọn, hoặc gỡ hình đang có. **Định dạng › Sắp xếp** xếp các nhánh của chủ đề đang chọn theo thứ tự chữ cái; nhấn lần nữa để xếp ngược lại.
 - **Xem › Cấp độ** mở sơ đồ đến cấp 1, 2 hoặc 3, và **Xem › Hiển thị** ẩn ghi chú, nhãn, liên kết, biểu tượng hoặc hình chỉ trên màn hình. Tệp vẫn giữ nguyên tất cả.
+- **Chèn › Biểu tượng** mở bảng biểu tượng: ưu tiên, tiến độ, cờ, sao, mặt cười và mũi tên. Mỗi chủ đề có một biểu tượng cho mỗi loại; nhấn lại biểu tượng đang có để gỡ. Nhấp vào biểu tượng trên sơ đồ để đổi sang biểu tượng khác cùng loại hoặc gỡ nó.
 
 ## Đồng bộ sơ đồ và tài liệu
 

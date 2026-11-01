@@ -12,7 +12,7 @@ import type { SendTarget } from '@genoffice/hanpan-core/renderer'
 import { SendDialog } from './hanpan/SendDialog'
 import { SyncDialog } from './hanpan/SyncDialog'
 import { outlineAsIndentedText, sheetOutline } from './hanpan/map-outline'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   templateDocumentOf,
   presentationKeyOf,
@@ -41,6 +41,9 @@ import { pictureFromBase64 } from './ai/image-tools'
 import { Toolbar } from './components/Toolbar'
 import { SheetTabs } from './components/SheetTabs'
 import { ThemePanel } from './components/ThemePanel'
+import { IconPanel } from './components/IconPanel'
+import { MarkerMenu, type MarkerMenuRequest } from './components/MarkerMenu'
+import { markerFamily, type MarkerFamily, withMarker } from './map/marker-families'
 import { NotePanel, type NotePanelHandle } from './components/NotePanel'
 import { MindmapAiDock, useMindmapAi } from './ai/AiDock'
 import { useMapHandoff } from './ai/use-handoff'
@@ -126,6 +129,11 @@ export default function App() {
   const [noteOpen, setNoteOpen] = useState(
     () => localStorage.getItem('mindmapapp.showNotes') === '1',
   )
+  // the note panel wins when an older run left both remembered open
+  const [iconsOpen, setIconsOpen] = useState(
+    () => !noteOpen && localStorage.getItem('mindmapapp.showIcons') === '1',
+  )
+  const [markerMenu, setMarkerMenu] = useState<MarkerMenuRequest | null>(null)
   /** bumped when a controller reports a change of selection, history, zoom or layout */
   const [, setMapTick] = useState(0)
   const [autoSave, setAutoSave] = useAutoSavePref('mindmapapp.autoSave', window.mindmapApi)
@@ -398,6 +406,10 @@ export default function App() {
     localStorage.setItem('mindmapapp.showNotes', noteOpen ? '1' : '0')
   }, [noteOpen])
 
+  useEffect(() => {
+    localStorage.setItem('mindmapapp.showIcons', iconsOpen ? '1' : '0')
+  }, [iconsOpen])
+
   // a request the shell handed over to this new map: taken once, run through the panel (T16)
   const handoff = useMapHandoff({
     ready: status === 'ready',
@@ -405,6 +417,7 @@ export default function App() {
     openPanel: () => {
       closeNote()
       setThemeOpen(false)
+      setIconsOpen(false)
       ai.setOpen(true)
     },
   })
@@ -913,6 +926,7 @@ export default function App() {
   const openTopicField = (field: TopicRequest, topicId: string): void => {
     if (field === 'note') {
       setThemeOpen(false)
+      setIconsOpen(false)
       ai.setOpen(false)
       if (noteOpen) noteRef.current?.focus()
       else setNoteOpen(true)
@@ -966,6 +980,31 @@ export default function App() {
   const selectedId = controller?.selectedTopicIds().at(-1)
   const selectedTopic = selectedId ? (controller?.topic(selectedId) ?? null) : null
   const picking = controller?.pickingRelationship ?? false
+  const selectedIds = controller?.selectedTopicIds() ?? []
+  const selectedMarkers = selectedIds.map((id) => controller?.markersOf(id) ?? [])
+  const commonMarkers = (selectedMarkers[0] ?? []).filter((id) =>
+    selectedMarkers.every((markers) => markers.includes(id)),
+  )
+  const presentFamilies = new Set(
+    selectedMarkers
+      .flat()
+      .map(markerFamily)
+      .filter((family): family is MarkerFamily => family !== null),
+  )
+
+  /** A marker on the map was pressed: its menu opens under it. */
+  const onMapClick = (event: MouseEvent<HTMLDivElement>): void => {
+    if (!(event.target instanceof Element)) return
+    const glyph = event.target.closest<SVGElement>('.mm-marker[data-marker-index]')
+    const topicId = glyph?.closest<HTMLElement>('me-tpc')?.dataset.nodeid?.replace(/^me/, '')
+    if (!glyph || !topicId || !controller) return
+    const index = Number(glyph.dataset.markerIndex)
+    const id = controller.markersOf(topicId)[index]
+    if (id === undefined) return
+    event.stopPropagation()
+    const box = glyph.getBoundingClientRect()
+    setMarkerMenu({ topicId, index, id, left: box.left, top: box.bottom + 4 })
+  }
 
   return (
     <div className={`app${presenting ? ' mm-presenting' : ''}`}>
@@ -986,6 +1025,7 @@ export default function App() {
         themeOpen={themeOpen}
         aiOpen={ai.open}
         noteOpen={noteOpen}
+        iconsOpen={iconsOpen}
         onSave={() => void doSave('save')}
         onSaveAs={() => void doSave('saveAs')}
         onUndo={() => runCommand('undo')}
@@ -1007,6 +1047,12 @@ export default function App() {
           else void controller?.removeTopics(ids)
         }}
         onPicture={() => void pickPicture()}
+        onIcons={() => {
+          closeNote()
+          setThemeOpen(false)
+          ai.setOpen(false)
+          setIconsOpen((open) => !open)
+        }}
         onSort={() => void sortSelected()}
         onPresent={enterPresent}
         onFoldLevel={(level) => controller?.foldToLevel(level)}
@@ -1023,6 +1069,7 @@ export default function App() {
         onToggleTheme={() => {
           closeNote()
           ai.setOpen(false)
+          setIconsOpen(false)
           setThemeOpen((open) => !open)
         }}
         onFoldAll={() => runCommand('fold-all')}
@@ -1033,6 +1080,7 @@ export default function App() {
         onToggleAi={() => {
           closeNote()
           setThemeOpen(false)
+          setIconsOpen(false)
           ai.setOpen(!ai.open)
         }}
         onExport={exporter.exportAs}
@@ -1107,7 +1155,7 @@ export default function App() {
 
       <main className="mm-stage">
         {/* the theme panel and the AI panel dock at this element's end side, one open at a time */}
-        <div className="mm-card" aria-label={t('appName')}>
+        <div className="mm-card" aria-label={t('appName')} onClickCapture={onMapClick}>
           {find && !presenting && (
             <FindBar
               withReplace={find.withReplace}
@@ -1144,6 +1192,43 @@ export default function App() {
             onClose={() => setThemeOpen(false)}
           />
         )}
+        {iconsOpen && controller && (
+          <IconPanel
+            common={commonMarkers}
+            hasTopic={hasTopic}
+            present={presentFamilies}
+            anyMarker={selectedMarkers.some((markers) => markers.length > 0)}
+            onToggle={(id) => {
+              if (!controller.toggleMarker(controller.selectedTopicIds(), id)) {
+                say('selectTopicFirst')
+              }
+            }}
+            onRemove={(family) => controller.takeOffMarkers(controller.selectedTopicIds(), family)}
+            onClose={() => setIconsOpen(false)}
+          />
+        )}
+        {markerMenu && controller && !presenting && (
+          <MarkerMenu
+            request={markerMenu}
+            onPick={(id) => {
+              const markers = controller.markersOf(markerMenu.topicId)
+              if (markers[markerMenu.index] !== markerMenu.id) return setMarkerMenu(null)
+              controller.setMarkers(markerMenu.topicId, withMarker(markers, id))
+              setMarkerMenu(null)
+            }}
+            onRemove={() => {
+              const markers = controller.markersOf(markerMenu.topicId)
+              if (markers[markerMenu.index] === markerMenu.id) {
+                controller.setMarkers(
+                  markerMenu.topicId,
+                  markers.filter((_, at) => at !== markerMenu.index),
+                )
+              }
+              setMarkerMenu(null)
+            }}
+            onClose={() => setMarkerMenu(null)}
+          />
+        )}
         {noteOpen && (
           <NotePanel
             ref={noteRef}
@@ -1162,6 +1247,7 @@ export default function App() {
           onSkillHandoff={() => {
             closeNote()
             setThemeOpen(false)
+            setIconsOpen(false)
             ai.setOpen(true)
           }}
         />

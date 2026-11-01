@@ -44,6 +44,7 @@ import {
   lineHeightFor,
   readableOn,
 } from './look'
+import type { Arrow, Smiley } from './marker-families'
 import { markerElement, markerGlyph } from './markers'
 import { isPlainStyle, NO_FILL, ownTopicStyle, splitAlpha } from './style-values'
 
@@ -55,6 +56,11 @@ export interface DecorationStrings {
   progress: readonly string[]
   flag: string
   star: string
+  /** a flag and a star by the colour in its id (`red`, `dark-blue`), for the colours the panel offers */
+  flagColored: Readonly<Partial<Record<string, string>>>
+  starColored: Readonly<Partial<Record<string, string>>>
+  smiley: Readonly<Record<Smiley, string>>
+  arrow: Readonly<Record<Arrow, string>>
   otherMarker: string
   /** a picture that is not loaded because it does not live in the file */
   pictureNotShown: string
@@ -92,6 +98,27 @@ function depthOf(topic: Topic): number {
   let depth = 1
   for (let node = topic.nodeObj?.parent; node; node = node.parent) depth++
   return depth
+}
+
+/** What a marker is called, for assistive technology and the icon panel. */
+export function markerName(strings: DecorationStrings, id: string): string {
+  const glyph = markerGlyph(id)
+  switch (glyph.family) {
+    case 'priority':
+      return strings.priority[glyph.level - 1] ?? strings.otherMarker
+    case 'progress':
+      return strings.progress[glyph.eighths] ?? strings.otherMarker
+    case 'flag':
+      return strings.flagColored[id.slice('flag-'.length)] ?? strings.flag
+    case 'star':
+      return strings.starColored[id.slice('star-'.length)] ?? strings.star
+    case 'smiley':
+      return strings.smiley[glyph.face] ?? strings.otherMarker
+    case 'arrow':
+      return strings.arrow[glyph.arrow] ?? strings.otherMarker
+    case 'other':
+      return strings.otherMarker
+  }
 }
 
 export class TopicDecorator {
@@ -346,27 +373,12 @@ export class TopicDecorator {
     const doc = topic.ownerDocument
     const strip = doc.createElement('span')
     strip.className = MARKERS_CLASS
-    for (const id of ids) strip.appendChild(markerElement(doc, id, this.#markerName(id)))
+    ids.forEach((id, index) =>
+      strip.appendChild(markerElement(doc, id, markerName(this.#strings, id), index)),
+    )
     // in front of the title, on its line
     topic.insertBefore(strip, topic.text?.parentNode === topic ? topic.text : topic.firstChild)
     topic.mmMarkers = strip
-  }
-
-  #markerName(id: string): string {
-    const glyph = markerGlyph(id)
-    const strings = this.#strings
-    switch (glyph.family) {
-      case 'priority':
-        return strings.priority[glyph.level - 1] ?? strings.otherMarker
-      case 'progress':
-        return strings.progress[glyph.eighths] ?? strings.otherMarker
-      case 'flag':
-        return strings.flag
-      case 'star':
-        return strings.star
-      case 'other':
-        return strings.otherMarker
-    }
   }
 
   // ---- the picture ----

@@ -63,6 +63,7 @@ import { libraryTheme, lookOfSheet } from './look'
 import { escapeMapText } from './text-guard'
 import { replaceText } from './find'
 import { HIDDEN_PARTS, type HiddenPart } from './hidden-parts'
+import { type MarkerFamily, withMarker, withoutFamily, withoutMarker } from './marker-families'
 import { followRange, rangeNarrows, sortedOrder } from './sort'
 import { isArrowKey, timelineArrowTarget } from './timeline-keys'
 
@@ -417,6 +418,65 @@ export class MapController {
   }
 
   /** Whether the topic shows a picture (from the file or put on it here). */
+  /** The marker ids of a topic, in order; none for a topic that is not on the sheet. */
+  markersOf(topicId: string): string[] {
+    const node = this.#node(topicId)
+    return node ? [...this.#meta(node).markers] : []
+  }
+
+  /** Sets the markers of a topic as one step. */
+  setMarkers(topicId: string, markers: readonly string[]): boolean {
+    if (!this.#node(topicId)) return false
+    this.commitEdit()
+    this.#editMeta(topicId, { markers: [...markers] })
+    return true
+  }
+
+  /**
+   * Puts a marker on every topic in `topicIds`, in the place of one of the same
+   * family, or takes it off them all when they all carry it already. One step.
+   */
+  toggleMarker(topicIds: readonly string[], id: string): boolean {
+    const ids = topicIds.filter((each) => this.#node(each))
+    if (ids.length === 0) return false
+    this.commitEdit()
+    const off = ids.every((each) => this.markersOf(each).includes(id))
+    this.edit((root) => {
+      for (const each of ids) {
+        const target = this.mind.getObjById(each, root as NodeObj)
+        if (!target) continue
+        const meta = this.#meta(target)
+        const markers = off ? withoutMarker(meta.markers, id) : withMarker(meta.markers, id)
+        Object.assign(target, nodePatch({ ...meta, markers }))
+      }
+    })
+    return true
+  }
+
+  /**
+   * Takes the markers of `family` off every topic in `topicIds`, or all their
+   * markers when `family` is null. One step; false when none had any.
+   */
+  takeOffMarkers(topicIds: readonly string[], family: MarkerFamily | null): boolean {
+    const strip = (markers: readonly string[]): string[] =>
+      family === null ? [] : withoutFamily(markers, family)
+    const ids = topicIds.filter((each) => {
+      const markers = this.markersOf(each)
+      return strip(markers).length !== markers.length
+    })
+    if (ids.length === 0) return false
+    this.commitEdit()
+    this.edit((root) => {
+      for (const each of ids) {
+        const target = this.mind.getObjById(each, root as NodeObj)
+        if (!target) continue
+        const meta = this.#meta(target)
+        Object.assign(target, nodePatch({ ...meta, markers: strip(meta.markers) }))
+      }
+    })
+    return true
+  }
+
   hasPicture(topicId: string): boolean {
     const node = this.#node(topicId)
     return node ? this.#meta(node).image !== null : false

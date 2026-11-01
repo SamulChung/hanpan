@@ -13,6 +13,7 @@ Hanpan envía lo que ordenaste en un mapa mental a un informe Hangul (HWP), una 
 - La cinta sobre el mapa tiene las pestañas **Inicio**, **Insertar**, **Formato** y **Vista**. Ctrl+F busca títulos de temas en todas las hojas, y también notas si lo marcas; Ctrl+H reemplaza. Ir a un tema dentro de una rama plegada despliega la rama.
 - **Insertar › Imagen** pone una imagen PNG, JPG o GIF (10 MB como máximo) en el tema seleccionado, o quita la que tiene. **Formato › Ordenar** ordena alfabéticamente las ramas del tema seleccionado; púlsalo otra vez para el orden inverso.
 - **Vista › Niveles** despliega el mapa hasta el nivel 1, 2 o 3, y **Vista › Mostrar** oculta notas, etiquetas, enlaces, iconos o imágenes solo en pantalla. El archivo los conserva todos.
+- **Insertar › Iconos** abre el panel de iconos: prioridad, progreso, banderas, estrellas, caras y flechas. Un tema lleva un icono de cada tipo; pulsa uno que ya tenga para quitarlo. Haz clic en un icono del mapa para cambiarlo por otro de su tipo o quitarlo.
 
 ## Sincronizar el mapa y el documento
 

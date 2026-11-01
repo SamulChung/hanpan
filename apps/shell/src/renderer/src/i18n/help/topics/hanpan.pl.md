@@ -13,6 +13,7 @@ Hanpan wysyła to, co uporządkowałeś na mapie myśli, do raportu Hangul (HWP)
 - Wstążka nad mapą ma karty **Narzędzia główne**, **Wstawianie**, **Format** i **Widok**. Ctrl+F szuka tytułów tematów na wszystkich arkuszach, a po zaznaczeniu także w notatkach; Ctrl+H zamienia. Przejście do tematu w zwiniętej gałęzi rozwija tę gałąź.
 - **Wstawianie › Obraz** dodaje do zaznaczonego tematu obraz PNG, JPG lub GIF (najwyżej 10 MB) albo usuwa ten, który ma. **Format › Sortuj** układa gałęzie zaznaczonego tematu alfabetycznie; naciśnij ponownie, aby odwrócić kolejność.
 - **Widok › Poziomy** rozwija mapę do poziomu 1, 2 lub 3, a **Widok › Pokaż** ukrywa notatki, etykiety, linki, ikony lub obrazy tylko na ekranie. Plik zachowuje je wszystkie.
+- **Wstawianie › Ikony** otwiera panel ikon: priorytet, postęp, flagi, gwiazdki, buźki i strzałki. Temat ma jedną ikonę każdego rodzaju; naciśnij tę, którą już ma, aby ją usunąć. Kliknij ikonę na mapie, aby zamienić ją na inną tego samego rodzaju albo usunąć.
 
 ## Uzgadnianie mapy i dokumentu
 

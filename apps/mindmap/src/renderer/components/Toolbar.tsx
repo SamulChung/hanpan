@@ -35,6 +35,7 @@ import {
   IconLink,
   IconMakeFrom,
   IconNote,
+  IconMarkers,
   IconPicture,
   IconPictureRemove,
   IconPresent,
@@ -96,6 +97,8 @@ export interface ToolbarProps {
   themeOpen: boolean
   /** the note panel is open */
   noteOpen: boolean
+  /** the icon panel is open */
+  iconsOpen: boolean
   /** the AI panel is open */
   aiOpen: boolean
   /** the find bar is open */
@@ -114,6 +117,7 @@ export interface ToolbarProps {
   onFind(): void
   onDelete(): void
   onPicture(): void
+  onIcons(): void
   onNote(): void
   onLabel(): void
   onLink(): void
@@ -326,6 +330,15 @@ export function Toolbar(p: ToolbarProps) {
               onClick={p.onPicture}
             >
               {p.hasPicture ? <IconPictureRemove /> : <IconPicture />}
+            </Big>
+            <Big
+              action="icons"
+              label={t('tbIcons')}
+              active={p.iconsOpen}
+              disabled={p.disabled}
+              onClick={p.onIcons}
+            >
+              <IconMarkers />
             </Big>
             <Big action="link" label={t('tbLink')} disabled={topicOff} onClick={p.onLink}>
               <IconLink />

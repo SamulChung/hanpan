@@ -231,6 +231,14 @@ export const IconPictureRemove = () => (
   </Icon>
 )
 
+/** Icons: a round badge and a small flag beside it. */
+export const IconMarkers = () => (
+  <Icon>
+    <circle cx="7" cy="10" r="3.75" />
+    <path d="M12.75 15.25V4.75h3.5l-1 1.75 1 1.75h-3.5" />
+  </Icon>
+)
+
 /** Sort: three bars of growing length beside a downward arrow. */
 export const IconSort = () => (
   <Icon>

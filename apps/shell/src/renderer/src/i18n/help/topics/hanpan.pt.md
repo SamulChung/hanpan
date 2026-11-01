@@ -13,6 +13,7 @@ O Hanpan envia o que você organizou num mapa mental para um relatório Hangul (
 - A faixa acima do mapa tem as abas **Página inicial**, **Inserir**, **Formatar** e **Exibir**. Ctrl+F procura títulos de tópicos em todas as folhas, e também notas se você marcar; Ctrl+H substitui. Ir a um tópico dentro de um ramo recolhido expande o ramo.
 - **Inserir › Imagem** coloca uma imagem PNG, JPG ou GIF (no máximo 10 MB) no tópico selecionado, ou tira a que ele tem. **Formatar › Classificar** põe os ramos do tópico selecionado em ordem alfabética; toque de novo para a ordem inversa.
 - **Exibir › Níveis** expande o mapa até o nível 1, 2 ou 3, e **Exibir › Mostrar** oculta notas, rótulos, links, ícones ou imagens só na tela. O arquivo mantém tudo.
+- **Inserir › Ícones** abre o painel de ícones: prioridade, progresso, bandeiras, estrelas, carinhas e setas. Um tópico leva um ícone de cada tipo; toque num que ele já tem para tirá-lo. Clique num ícone do mapa para trocá-lo por outro do mesmo tipo ou tirá-lo.
 
 ## Sincronizar o mapa e o documento
 

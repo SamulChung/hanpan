@@ -4,8 +4,8 @@
  * The state comes from a renderer window and is not trusted: it is typed as
  * view data, but nothing has checked that. Everything reconciling reads is
  * checked and copied here first, so the rest works on values of a known shape
- * and never on the caller's objects. What reconciling never writes (markers,
- * styles, the sheet's own title) is not looked at.
+ * and never on the caller's objects. What reconciling never writes (styles,
+ * the sheet's own title) is not looked at.
  */
 
 import { VIEW_LAYOUTS, type ViewLayout } from './layout'
@@ -41,6 +41,12 @@ export interface StateTopic {
    * the picture the view showed.
    */
   image: ViewImage | null
+  /**
+   * The marker ids the state shows, in order, or null for a state that has no
+   * `markers` key: that one leaves the topic's markers as they are. Only ids
+   * the view did not show are checked (see `reconcile-tree.ts`).
+   */
+  markers: string[] | null
   summaries: StateSummary[]
   children: StateTopic[]
 }
@@ -91,7 +97,7 @@ export function readState(state: unknown): StateSheet {
  */
 function readTopic(topic: unknown, depth: number, seen: Set<string>): StateTopic {
   if (!isRecord(topic)) refuse('a topic of the state is not an object')
-  const { id, title, folded, labels, note, link, image, summaries, children } = topic
+  const { id, title, folded, labels, note, link, image, markers, summaries, children } = topic
   if (typeof id !== 'string' || id === '') refuse('a topic of the state has no id')
   if (seen.has(id)) refuse(`topic id ${id} is used more than once in the state`)
   seen.add(id)
@@ -106,6 +112,9 @@ function readTopic(topic: unknown, depth: number, seen: Set<string>): StateTopic
   }
   // a state written before pictures were carried has no key: that is "no picture to set"
   if (image != null && !isViewImage(image)) refuse(`the picture of topic ${id} is not a reference`)
+  if (markers !== undefined && !isTexts(markers)) {
+    refuse(`the markers of topic ${id} are not a list of ids`)
+  }
   if (!Array.isArray(summaries)) refuse(`the summaries of topic ${id} are not a list`)
   if (!Array.isArray(children)) refuse(`the children of topic ${id} are not a list`)
   return {
@@ -116,6 +125,7 @@ function readTopic(topic: unknown, depth: number, seen: Set<string>): StateTopic
     note,
     link,
     image: image == null ? null : copyImage(image),
+    markers: markers === undefined ? null : [...markers],
     summaries: summaries.map((summary) => readSummary(summary, id)),
     children: children.map((child) => readTopic(child, depth + 1, seen)),
   }

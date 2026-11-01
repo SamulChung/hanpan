@@ -93,12 +93,33 @@ describe('the editor dictionaries', () => {
         ...decoration.progress,
         decoration.flag,
         decoration.star,
+        ...Object.values(decoration.flagColored),
+        ...Object.values(decoration.starColored),
+        ...Object.values(decoration.smiley),
+        ...Object.values(decoration.arrow),
         decoration.otherMarker,
         decoration.pictureNotShown,
       ]) {
         expect(text.trim(), lang).not.toBe('')
         expect(text, lang).not.toMatch(/\{\w+\}/)
       }
+    }
+  })
+
+  it('give every flag colour, smiley and arrow its own name', () => {
+    for (const lang of LANGS) {
+      const { decoration } = mapStrings(lang)
+      for (const names of [
+        decoration.flagColored,
+        decoration.starColored,
+        decoration.smiley,
+        decoration.arrow,
+      ]) {
+        const values = Object.values(names)
+        expect(values, lang).toHaveLength(7)
+        expect(new Set(values).size, lang).toBe(7)
+      }
+      expect(decoration.flagColored.red, lang).not.toBe(decoration.starColored.red)
     }
   })
 

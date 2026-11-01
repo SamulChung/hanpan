@@ -130,9 +130,7 @@ function topicToView(topic: XmindTopic, shown: Set<string>): ViewTopic {
     note: noteText(topic.notes),
     link: isShownLink(topic.href) ? topic.href : null,
     image: imageToView(topic.image),
-    markers: records(topic.markers)
-      .map((marker) => marker.markerId)
-      .filter((id): id is string => typeof id === 'string'),
+    markers: markerIdsOf(topic.markers),
     style: styleToView(topic.style),
     summaries,
     children: attached.map((child) => topicToView(child, shown)),
@@ -168,6 +166,13 @@ export function isShownLink(href: unknown): href is string {
 const ATTACHMENT_SCHEME = 'xap:'
 
 /** The picture a topic's `image` value shows, or null when the view shows none for it. */
+/** The marker ids a topic's `markers` value shows, in order; an item without a text id shows nothing. */
+export function markerIdsOf(markers: unknown): string[] {
+  return records(markers)
+    .map((marker) => marker.markerId)
+    .filter((id): id is string => typeof id === 'string')
+}
+
 export function imageToView(image: unknown): ViewImage | null {
   if (!isRecord(image) || typeof image.src !== 'string' || image.src === '') return null
   const { src } = image

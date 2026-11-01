@@ -46,7 +46,7 @@ import {
   shownParts,
 } from './tree-walk'
 import { isRecord, type XmindSheet, type XmindTopic } from './types'
-import { formatRange, imageToView, isShownLink } from './view'
+import { formatRange, imageToView, isShownLink, markerIdsOf } from './view'
 
 /**
  * The ids reconciling wrote in place of ids the state gave, by the id given.
@@ -201,6 +201,52 @@ function writeValues(topic: XmindTopic, want: StateTopic, run: Run): void {
     else topic.href = want.link
   }
   writeImage(topic, want, run)
+  writeMarkers(topic, want)
+}
+
+/** The shape of a marker id this file may gain: lower-case words joined by hyphens. */
+const MARKER_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+const MARKER_ID_MAX = 64
+/** The most markers a topic may reach by gaining one. */
+export const MAX_TOPIC_MARKERS = 50
+
+/**
+ * Markers, written only when the state's list differs from the one the view
+ * shows. Only the ids the view did not show are checked, so a file whose own
+ * markers do not fit the checks still takes edits elsewhere. A record the
+ * file had is kept whole (with keys this package does not know) for every id
+ * the state keeps; a new id gets `{ markerId }`. Items the view could not
+ * show stay after the rest. A topic left with nothing loses the key.
+ */
+function writeMarkers(topic: XmindTopic, want: StateTopic): void {
+  if (want.markers === null) return
+  const shown = markerIdsOf(topic.markers)
+  if (sameTexts(shown, want.markers)) return
+  const had = new Set(shown)
+  const added = want.markers.filter((id) => !had.has(id))
+  for (const id of added) {
+    if (id.length > MARKER_ID_MAX || !MARKER_ID.test(id)) refuse(`marker ${id} is not a marker id`)
+  }
+  if (added.length > 0 && want.markers.length > MAX_TOPIC_MARKERS) {
+    refuse(`a topic takes at most ${MAX_TOPIC_MARKERS} markers`)
+  }
+  const items: unknown[] = Array.isArray(topic.markers) ? topic.markers : []
+  const recordsById = new Map<string, JsonRecord[]>()
+  const unshown: unknown[] = []
+  for (const item of items) {
+    const id = isRecord(item) ? item.markerId : undefined
+    if (typeof id !== 'string') {
+      unshown.push(item)
+      continue
+    }
+    const list = recordsById.get(id) ?? []
+    list.push(item as JsonRecord)
+    recordsById.set(id, list)
+  }
+  const next: unknown[] = want.markers.map((id) => recordsById.get(id)?.shift() ?? { markerId: id })
+  next.push(...unshown)
+  if (next.length > 0) topic.markers = next
+  else delete topic.markers
 }
 
 /**

@@ -104,9 +104,9 @@ describe('reconcileSheet: a state that changes nothing', () => {
 
   it('does not count the parts of the state it never writes', async () => {
     const { document, result } = await edit((view) => {
-      // (an empty picture is written: it takes the picture off, see resource-image.test.ts)
+      // (an empty picture takes the picture off and markers are written: see
+      // resource-image.test.ts and markers.test.ts)
       const beta = inView(view, 'b')
-      beta.markers = ['flag-red']
       beta.style = { color: '#000000' }
       view.title = 'not applied here'
       view.id = 'other'
@@ -371,7 +371,7 @@ describe('reconcileSheet: topics only the state has', () => {
     expect(inView(applied.view, written).children[0]!.id).toBe(SOME_UUID)
   })
 
-  it('never writes the picture, markers or style of the state onto a new topic', async () => {
+  it('never writes a web picture or the style of the state onto a new topic; its markers it does', async () => {
     const { sheet } = await edit((view) => {
       view.root.children.push(
         freshTopic(SOME_UUID, 'Plain', {
@@ -381,7 +381,11 @@ describe('reconcileSheet: topics only the state has', () => {
         }),
       )
     })
-    expect(inSource(sheet, SOME_UUID)).toEqual({ id: SOME_UUID, title: 'Plain' })
+    expect(inSource(sheet, SOME_UUID)).toEqual({
+      id: SOME_UUID,
+      title: 'Plain',
+      markers: [{ markerId: 'priority-1' }],
+    })
   })
 
   it('gives a new id when the one handed in is taken anywhere in the file', async () => {

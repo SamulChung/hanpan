@@ -13,6 +13,7 @@ Hanpan invia ciò che hai organizzato in una mappa mentale a un rapporto Hangul 
 - La barra multifunzione sopra la mappa ha le schede **Home**, **Inserisci**, **Formato** e **Visualizza**. Ctrl+F cerca i titoli degli argomenti in tutti i fogli, e anche le note se lo spunti; Ctrl+H sostituisce. Andare a un argomento in un ramo chiuso apre il ramo.
 - **Inserisci › Immagine** mette un'immagine PNG, JPG o GIF (al massimo 10 MB) sull'argomento selezionato, o toglie quella che ha. **Formato › Ordina** ordina alfabeticamente i rami dell'argomento selezionato; premilo di nuovo per l'ordine inverso.
 - **Visualizza › Livelli** apre la mappa fino al livello 1, 2 o 3, e **Visualizza › Mostra** nasconde note, etichette, collegamenti, icone o immagini solo sullo schermo. Il file li conserva tutti.
+- **Inserisci › Icone** apre il pannello delle icone: priorità, avanzamento, bandiere, stelle, faccine e frecce. Un argomento ha un'icona per tipo; premi quella che ha già per toglierla. Fai clic su un'icona nella mappa per cambiarla con un'altra del suo tipo o toglierla.
 
 ## Allineare mappa e documento
 

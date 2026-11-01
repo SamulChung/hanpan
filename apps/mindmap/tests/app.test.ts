@@ -951,3 +951,91 @@ describe('the picture of a topic', () => {
     expect(fake.dirty).not.toContain(true)
   })
 })
+
+describe('the icon panel', () => {
+  const ONE = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc1'
+  const TWO = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc2'
+
+  const sheetWithMarkers = (): XmindSheet => {
+    const sheet = plainSheet()
+    const one = sheet.rootTopic.children!.attached![0]!
+    one.markers = [{ markerId: 'priority-2', kept: 'by the file' }, { markerId: 'Custom' }]
+    return sheet
+  }
+
+  it('Insert opens it beside the map, alone, and it is remembered', async () => {
+    await openWith(plainSheet())
+    await click('[data-ribbon-tab="insert"]')
+    await click('[data-action="icons"]')
+    expect(container.querySelector('.mm-icon-panel')).not.toBeNull()
+    expect(localStorage.getItem('mindmapapp.showIcons')).toBe('1')
+    // without a selection there is nothing to press
+    expect(
+      container.querySelector<HTMLButtonElement>('[data-icon-pick="flag-red"]')!.disabled,
+    ).toBe(true)
+    await click('[data-ribbon-tab="format"]')
+    await click('[data-action="theme"]')
+    expect(container.querySelector('.mm-icon-panel')).toBeNull()
+    expect(localStorage.getItem('mindmapapp.showIcons')).toBe('0')
+  })
+
+  it('pressing an icon puts it on the topic, and the save keeps what the file wrote beside it', async () => {
+    const { fake } = await openWith(sheetWithMarkers())
+    await click('[data-ribbon-tab="insert"]')
+    await click('[data-action="icons"]')
+    await selectOnMap(ONE)
+    await click('[data-icon-pick="priority-5"]')
+    await click('[data-icon-pick="flag-green"]')
+    expect(fake.dirty.at(-1)).toBe(true)
+    expect(
+      container.querySelector('[data-icon-pick="flag-green"]')!.getAttribute('aria-pressed'),
+    ).toBe('true')
+    expect(topicEl(ONE).querySelectorAll('.mm-marker')).toHaveLength(3)
+
+    await click('[data-action="save"]')
+    await savesReach(fake)
+    const saved = await openXmind(fake.saves[0]!.bytes)
+    if (saved.status !== 'ok') throw new Error('did not open')
+    expect(saved.document.sheets[0]!.rootTopic.children!.attached![0]!.markers).toEqual([
+      { markerId: 'priority-5' },
+      { markerId: 'Custom' },
+      { markerId: 'flag-green' },
+    ])
+  })
+
+  it('removing a family takes it off every selected topic', async () => {
+    await openWith(sheetWithMarkers())
+    await click('[data-ribbon-tab="insert"]')
+    await click('[data-action="icons"]')
+    await selectOnMap(TWO)
+    await click('[data-icon-pick="star-blue"]')
+    expect(topicEl(TWO).querySelectorAll('.mm-marker')).toHaveLength(1)
+    await click('[data-icon-remove="star"]')
+    expect(topicEl(TWO).querySelector('.mm-marker')).toBeNull()
+    expect(container.querySelector<HTMLButtonElement>('[data-icon-remove="all"]')!.disabled).toBe(
+      true,
+    )
+  })
+
+  it('a marker on the map opens a menu of its family, which swaps or removes it', async () => {
+    await openWith(sheetWithMarkers())
+    const glyph = () => topicEl(ONE).querySelector<SVGElement>('.mm-marker[data-marker-index="0"]')!
+    await act(async () => {
+      glyph().dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+    })
+    await settle()
+    expect(container.ownerDocument.querySelectorAll('[data-marker-pick]')).toHaveLength(9)
+    await click('[data-marker-pick="priority-7"]')
+    expect(container.ownerDocument.querySelector('.mm-marker-menu')).toBeNull()
+    expect(glyph().getAttribute('aria-label')).toContain('7')
+
+    await act(async () => {
+      glyph().dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+    })
+    await settle()
+    await click('[data-marker-remove]')
+    // only the marker of no family the app offers is left
+    expect(topicEl(ONE).querySelectorAll('.mm-marker')).toHaveLength(1)
+    expect(glyph().dataset.markerFamily).toBe('other')
+  })
+})

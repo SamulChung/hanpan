@@ -294,6 +294,12 @@
   letter-spacing: 0;
 }
 
+/* like the chips, a marker takes its own click: it opens the menu of its kind (MarkerMenu.tsx) */
+.mm-card .map-container .mm-marker[data-marker-index] {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
 /* the outline under a glyph is the colour of the ground: unseen there, a rim on a filled topic */
 .mm-card .map-container .mm-marker-halo {
   fill: var(--mm-ground);

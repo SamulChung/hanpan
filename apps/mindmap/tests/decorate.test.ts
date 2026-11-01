@@ -493,9 +493,11 @@ describe('markers', () => {
   it('an id the app does not know gets the one common glyph, and nothing of the id reaches the page', async () => {
     const { el } = await mount(marked())
     expect(families(el, ID.three)).toEqual(['other', 'other'])
-    expect(topicEl(el, ID.three).querySelectorAll('.mm-marker')[0]!.outerHTML).toBe(
-      topicEl(el, ID.three).querySelectorAll('.mm-marker')[1]!.outerHTML,
-    )
+    const [first, second] = topicEl(el, ID.three).querySelectorAll<SVGElement>('.mm-marker')
+    // the same drawing; only where each stands differs
+    expect(first!.dataset.markerIndex).toBe('0')
+    expect(second!.dataset.markerIndex).toBe('1')
+    expect(first!.innerHTML).toBe(second!.innerHTML)
     expect(el.querySelector('img')).toBeNull()
     expect(el.innerHTML).not.toContain('symbol-made-up')
     expect(topicEl(el, ID.four).querySelector('.mm-markers')).toBeNull()
@@ -704,7 +706,7 @@ describe('pictures', () => {
     expect(revoked.mock.calls.map(([url]) => url).sort()).toEqual([...urls].sort())
   })
 
-  it('a topic pasted from the clipboard cannot bring a picture, a marker or a style', async () => {
+  it('a topic pasted from the clipboard cannot bring a picture or a style; markers of the right shape it can', async () => {
     const { mind, el } = await mountPictures()
     const pasted = {
       id: 'pasted',
@@ -713,7 +715,7 @@ describe('pictures', () => {
       style: { background: 'url(https://outside.example/pasted-style.png)' },
       metadata: {
         image: { src: 'https://outside.example/meta.png', entryName: 'resources/inside.png' },
-        markers: ['priority-1'],
+        markers: ['priority-1', 'flag-red"><img src=x>'],
         style: { fill: '#ff0000' },
       },
     }
@@ -723,7 +725,9 @@ describe('pictures', () => {
     const added = [...el.querySelectorAll<HTMLElement>('me-tpc')].find(
       (each) => each.querySelector('.text')?.textContent === 'Pasted',
     )!
-    expect(added.querySelector('img, .mm-picture, .mm-markers')).toBeNull()
+    expect(added.querySelector('img, .mm-picture')).toBeNull()
+    const glyphs = added.querySelectorAll<SVGElement>('.mm-marker')
+    expect([...glyphs].map((glyph) => glyph.dataset.markerFamily)).toEqual(['priority'])
     expect(added.style.backgroundColor).toBe('')
     expect(el.innerHTML).not.toContain('pasted.png')
     expect(el.innerHTML).not.toContain('pasted-style')

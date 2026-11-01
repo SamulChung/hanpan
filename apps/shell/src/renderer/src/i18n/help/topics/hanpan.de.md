@@ -13,6 +13,7 @@ Hanpan schickt, was Sie in einer Mindmap geordnet haben, als Hangul-Bericht (HWP
 - Das Menüband über der Karte hat die Registerkarten **Start**, **Einfügen**, **Format** und **Ansicht**. Strg+F sucht Thementitel auf allen Blättern, auf Wunsch auch in Notizen; Strg+H ersetzt. Wer zu einem Thema in einem eingeklappten Zweig springt, klappt den Zweig auf.
 - **Einfügen › Bild** setzt ein PNG-, JPG- oder GIF-Bild (höchstens 10 MB) auf das gewählte Thema oder nimmt das vorhandene ab. **Format › Sortieren** ordnet die Zweige des gewählten Themas alphabetisch; erneut drücken ordnet umgekehrt.
 - **Ansicht › Ebenen** klappt die Karte bis Ebene 1, 2 oder 3 auf, und **Ansicht › Anzeigen** blendet Notizen, Etiketten, Links, Symbole oder Bilder nur am Bildschirm aus. Die Datei behält alles.
+- **Einfügen › Symbole** öffnet den Symbolbereich: Priorität, Fortschritt, Flaggen, Sterne, Smileys und Pfeile. Ein Thema trägt ein Symbol je Art; ein vorhandenes erneut drücken nimmt es ab. Ein Klick auf ein Symbol in der Karte tauscht es gegen ein anderes seiner Art oder entfernt es.
 
 ## Karte und Dokument abgleichen
 
