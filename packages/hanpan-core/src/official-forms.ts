@@ -16,8 +16,8 @@ export interface OfficialForm {
   law: string
   /** the form's place in that statute, e.g. `별지 제3호서식` */
   form: string
-  /** when the bundled version was last amended, as the form itself says */
-  amended: string
+  /** when the bundled version was last amended, as the form itself says; absent when it says none */
+  amended?: string
   /** the statute's page on law.go.kr, where the current form can be checked */
   source: string
 }
@@ -57,9 +57,19 @@ export const OFFICIAL_FORMS: readonly OfficialForm[] = [
     amended: '2023. 3. 30.',
     source: `${LAW}민원처리에관한법률시행규칙`,
   },
+  {
+    id: 'form-refusal-objection',
+    title: '거부처분 이의신청서',
+    description:
+      '민원이 거부되었을 때 그 행정기관에 이의를 신청하는 법정 서식. 거부처분을 받은 날부터 90일 안에 낸다',
+    icon: '🙋',
+    law: '민원 처리에 관한 법률 시행규칙',
+    form: '별지 제11호서식',
+    source: `${LAW}민원처리에관한법률시행규칙`,
+  },
 ]
 
 /** Where a form comes from, as one line: 「법령」 별지 제N호서식 (YYYY. M. D. 개정). */
 export function officialFormSource(f: OfficialForm): string {
-  return `「${f.law}」 ${f.form} (${f.amended} 개정)`
+  return `「${f.law}」 ${f.form}${f.amended ? ` (${f.amended} 개정)` : ''}`
 }

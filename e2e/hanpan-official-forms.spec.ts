@@ -32,7 +32,7 @@ test('an official form opens unchanged as HWP', async () => {
     const picker = page.locator('.hp-tpl')
     await expect(picker).toBeVisible()
     const forms = picker.locator('section', { has: page.locator('h3', { hasText: /^서식$/ }) })
-    await expect(forms.locator('.hp-tpl-card')).toHaveCount(3)
+    await expect(forms.locator('.hp-tpl-card')).toHaveCount(4)
     await expect(forms.locator('.hp-tpl-note')).toContainText('law.go.kr')
     await expect(
       forms.locator('[data-template="form-power-of-attorney"] .hp-tpl-source'),

@@ -56,6 +56,7 @@ import ssireumJpg from './pictures/ssireum.jpg?asset'
 import adminAppealHwp from './forms/admin-appeal.hwp?asset'
 import infoDisclosureHwp from './forms/info-disclosure.hwp?asset'
 import powerOfAttorneyHwp from './forms/power-of-attorney.hwp?asset'
+import refusalObjectionHwp from './forms/refusal-objection.hwp?asset'
 
 /** The 글집 templates, then Hanpan's own with pictures. */
 const ALL_TEMPLATES = [...DOC_TEMPLATES, ...PICTURE_TEMPLATES]
@@ -74,6 +75,7 @@ const FORM_FILES: Record<string, string> = {
   'form-admin-appeal': adminAppealHwp,
   'form-info-disclosure': infoDisclosureHwp,
   'form-power-of-attorney': powerOfAttorneyHwp,
+  'form-refusal-objection': refusalObjectionHwp,
 }
 
 /** A template picture with its credit, or undefined (the line stays its caption) when it cannot be read. */

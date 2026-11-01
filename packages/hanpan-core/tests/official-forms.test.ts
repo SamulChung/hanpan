@@ -39,6 +39,8 @@ describe('official forms', () => {
     expect(officialFormSource(attorney)).toBe(
       '「민원 처리에 관한 법률 시행규칙」 별지 제3호서식 (2023. 3. 30. 개정)',
     )
+    const objection = OFFICIAL_FORMS.find((f) => f.id === 'form-refusal-objection')!
+    expect(officialFormSource(objection)).toBe('「민원 처리에 관한 법률 시행규칙」 별지 제11호서식')
     for (const f of OFFICIAL_FORMS) expect(f.source).toMatch(/^https:\/\/www\.law\.go\.kr\//)
   })
 
@@ -60,7 +62,7 @@ describe('official forms', () => {
         // the form's own header: statute, form number, amendment date, then its title
         expect(first).toContain(f.law.replace(/\s+/g, ''))
         expect(first).toContain(`[${f.form.replace(/\s+/g, '')}]`)
-        expect(first).toContain(`개정${f.amended.replace(/\s+/g, '')}`)
+        if (f.amended) expect(first).toContain(`개정${f.amended.replace(/\s+/g, '')}`)
         expect(first).toContain(f.title.replace(/\s*\(.*\)$/, '').replace(/\s+/g, ''))
       } finally {
         doc.free()
