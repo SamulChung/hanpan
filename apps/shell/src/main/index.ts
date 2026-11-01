@@ -61,6 +61,7 @@ import menuEpubIcon1x from './assets/menu-epub.png?asset'
 import menuEpubIcon2x from './assets/menu-epub@2x.png?asset'
 import menuHomeIcon1x from './assets/menu-home.png?asset'
 import menuHomeIcon2x from './assets/menu-home@2x.png?asset'
+import { testGonguKey } from '@genoffice/ai-search'
 import { createI18n, isLang, normalizeLang, setUiLang, type Lang } from '@genoffice/i18n'
 import { DEV_USER_DATA_DIR_NAME, PRODUCT_CONTACT_EMAIL, productName } from '@genoffice/i18n'
 import {
@@ -8547,6 +8548,12 @@ const hanpan = setupHanpan({
       manager.list().find((t) => manager.webContentsForTab(t.id)?.id === contentsId)?.title ?? null
     )
   },
+})
+// Hanpan: Settings → Integrations checks a Gongu key with one short search
+// (docs/plans/gongu-images.md). The key comes from the card, saved or not.
+ipcMain.handle('hanpan:gongu-test', async (_event, key: unknown) => {
+  const result = await testGonguKey(typeof key === 'string' ? key.slice(0, 2048) : '')
+  return result.ok ? { ok: true } : { ok: false, error: result.error }
 })
 // Hanpan: the 글집 templates on the Home screen (and, in stage 4, the design board)
 ipcMain.handle('hanpan:templates', () => hanpan.templates())

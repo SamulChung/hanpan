@@ -19,6 +19,7 @@ import {
   headlessConsentVersionOf,
   headlessSubscriptionOn,
   readUrlSettingsOf,
+  gonguSettingsOf,
   resolveAiSettings,
   sanitizeMeteredAccepted,
 } from './providers'
@@ -125,9 +126,11 @@ export function normalizeAiSettings(
       : DEFAULT_AI_PROVIDER_SELECTION
   const fallback = defaultAiSettings()
   const readUrl = readUrlSettingsOf(resolved.readUrl)
+  const gongu = gonguSettingsOf(resolved.gongu)
   return {
     ...resolved,
     ...(readUrl ? { readUrl } : {}),
+    ...(gongu ? { gongu } : {}),
     provider: selection,
     providers: {
       ...fallback.providers,

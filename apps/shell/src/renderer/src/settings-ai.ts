@@ -116,7 +116,7 @@ export function changeAiSettings(
 /**
  * The fields the always-visible part of the AI screen writes at once (which AI
  * to use, the accepted metered logins, the automatic-requests switch, the
- * notice flag, the web-reading token). A key pane saves a draft it loaded
+ * notice flag, the web-reading token, the Gongu key). A key pane saves a draft it loaded
  * earlier; taking these from the file as it is now keeps that save from
  * undoing them.
  */
@@ -130,6 +130,7 @@ export function withLiveSelectionFields(draft: AiSettings, latest: AiSettings | 
     headlessSubscriptionConsentVersion: latest.headlessSubscriptionConsentVersion,
     subscriptionNoticeSeen: latest.subscriptionNoticeSeen,
     readUrl: latest.readUrl,
+    gongu: latest.gongu,
   }
 }
 
@@ -164,6 +165,21 @@ export function withReadUrlGithubToken(settings: AiSettings, token: string): AiS
   const githubToken = token.trim()
   if (githubToken) return { ...settings, readUrl: { githubToken } }
   const { readUrl: _removed, ...rest } = settings
+  return rest
+}
+
+// ── Gongu picture search ──────────────────────────────────
+
+/** The stored Gongu key; '' means Gongu search is off. */
+export function gonguApiKey(settings: Pick<AiSettings, 'gongu'>): string {
+  return settings.gongu?.apiKey ?? ''
+}
+
+/** Settings with the Gongu key set, or with the field removed when it is blank. */
+export function withGonguApiKey(settings: AiSettings, key: string): AiSettings {
+  const apiKey = key.trim()
+  if (apiKey) return { ...settings, gongu: { apiKey } }
+  const { gongu: _removed, ...rest } = settings
   return rest
 }
 

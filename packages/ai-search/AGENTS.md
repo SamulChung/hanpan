@@ -5,6 +5,7 @@ AI가 쓰는 부가 도구(웹 검색, 이미지 검색, 이미지 생성, 미�
 ## 맡은 범위
 
 - 검색: `webSearch`·`imageSearch`와 백엔드별 구현(`src/index.ts`), 설정 파일을 읽어 옵션으로 바꾸는 `webSearchTool`·`imageSearchTool`·`searchOptionsFromSettings`(`src/search-tools.ts`), 키 없는 Parallel 검색(`src/parallel-mcp.ts`).
+- 공유마당 그림 찾기(`src/gongu.ts`, 한판): 공공데이터포털의 한국저작권위원회 공유(만료)저작물 서비스를 부르는 `gonguImageSearch`·`gonguImageDetail`·`testGonguKey`. 키는 호출자가 넘기는 사용자 자신의 키이고(설정의 `gongu.apiKey`), 이 모듈은 설정을 읽지 않는다. 응답은 XML이라 평평한 태그만 읽는 작은 읽개를 쓴다. 테스트는 `fetch`를 가짜로 바꾸며 실제 포털에 닿지 않는다. 계획은 `docs/plans/gongu-images.md`.
 - 웹 페이지 읽기: `readUrlTool`·`readUrlModelText`(`src/read-url.ts`)과 HTML→글 변환 `htmlToText`(`src/html-text.ts`). 주소는 `fetchWithSsrfGuard`로 받고 10MB·30초·50,000자 상한과 나눠 읽기(offset)를 두며, 설정의 `readUrl.githubToken`은 비공개 GitHub 파일을 읽을 때만 읽는다.
 - 이미지 생성과 미디어 분석: `generateImageTool`·`analyzeMediaTool`(`src/media-tools.ts`), 채팅 제공자에게 이미지를 보여 주는 분석(`src/chat-analysis.ts`).
 - 이미지 생성·미디어 분석 호출의 취소: 진행 중인 호출을 창(webContents id)별로 기억해 두고, 창이 사라지거나 그 창의 AI 실행이 중단되면 끊는 `withMediaCallSignal`·`abortMediaCalls`(`src/media-call-abort.ts`).

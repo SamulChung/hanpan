@@ -26,6 +26,7 @@ const stored = {
   media: { imageProvider: 'openai', providers: { openai: { apiKey: 'sk-img' } } },
   search: { provider: 'serper', providers: { serper: { apiKey: 'sk-search' } } },
   readUrl: { githubToken: 'ghp-token' },
+  gongu: { apiKey: 'gongu-key' },
 }
 
 afterEach(() => setAiSecretCodec(null))
@@ -37,7 +38,15 @@ describe('mapAiSecrets', () => {
       seen.push(v)
       return v
     })
-    expect(seen.sort()).toEqual(['', 'ghp-token', 'sk-chat', 'sk-img', 'sk-own', 'sk-search'])
+    expect(seen.sort()).toEqual([
+      '',
+      'ghp-token',
+      'gongu-key',
+      'sk-chat',
+      'sk-img',
+      'sk-own',
+      'sk-search',
+    ])
   })
 
   it('leaves what is not settings alone', () => {
@@ -50,9 +59,9 @@ describe('sealing and opening', () => {
   it('seals plain, non-empty values on the way to disk and opens them on the way back', () => {
     setAiSecretCodec(reversing)
     const disk = sealAiSecrets(stored)
-    expect(JSON.stringify(disk)).not.toMatch(/sk-chat|sk-own|sk-img|sk-search|ghp-token/)
+    expect(JSON.stringify(disk)).not.toMatch(/sk-chat|sk-own|sk-img|sk-search|ghp-token|gongu-key/)
     expect(disk.providers.anthropic.apiKey).toBe('')
-    expect(sealedAiSecretsIn(disk)).toHaveLength(5)
+    expect(sealedAiSecretsIn(disk)).toHaveLength(6)
     expect(openAiSecrets(disk)).toEqual(stored)
   })
 
@@ -84,6 +93,7 @@ describe('sealing and opening', () => {
     expect(settings.providers.openai.apiKey).toBe('sk-chat')
     expect(settings.search?.providers.serper.apiKey).toBe('sk-search')
     expect(settings.readUrl?.githubToken).toBe('ghp-token')
+    expect(settings.gongu?.apiKey).toBe('gongu-key')
   })
 
   it('still reads a key written by hand in plain text', () => {

@@ -19,6 +19,8 @@ import {
   readUrlGithubToken,
   withAiSelection,
   withHeadlessSubscription,
+  gonguApiKey,
+  withGonguApiKey,
   withLiveSelectionFields,
   withReadUrlGithubToken,
   writeAiSettings,
@@ -214,6 +216,7 @@ describe('a key pane save', () => {
       subscriptionNoticeSeen: true,
       meteredAccepted: { codex: true },
       readUrl: { githubToken: 'ghp_live' },
+      gongu: { apiKey: 'gongu_live' },
     })
     const merged = withLiveSelectionFields({ ...draft, maxOutputTokens: 9216 }, latest)
     expect(merged).toMatchObject({
@@ -225,6 +228,7 @@ describe('a key pane save', () => {
       meteredAccepted: { codex: true },
       // a key pane draft must not drop a token saved while it was open
       readUrl: { githubToken: 'ghp_live' },
+      gongu: { apiKey: 'gongu_live' },
       maxOutputTokens: 9216,
     })
     // nothing readable: the draft goes out as it is
@@ -256,6 +260,19 @@ describe('the automatic-requests switch', () => {
     } finally {
       vi.unstubAllGlobals()
     }
+  })
+})
+
+describe('the Gongu key', () => {
+  it('sets the field, trims it, and removes it when cleared', () => {
+    const empty = settingsWith()
+    expect(gonguApiKey(empty)).toBe('')
+    const saved = withGonguApiKey(empty, '  gongu_test  ')
+    expect(saved.gongu).toEqual({ apiKey: 'gongu_test' })
+    expect(gonguApiKey(saved)).toBe('gongu_test')
+    const cleared = withGonguApiKey(saved, '   ')
+    expect('gongu' in cleared).toBe(false)
+    expect(cleared.provider).toBe(saved.provider)
   })
 })
 

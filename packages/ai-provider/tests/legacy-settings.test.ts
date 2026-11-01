@@ -266,6 +266,37 @@ describe('normalizeAiSettings', () => {
     }
   })
 
+  it('keeps a Gongu key through a save and a read', () => {
+    const saved = sanitizeAiSettings({
+      provider: 'auto',
+      providers: {},
+      gongu: { apiKey: '  gongu-key  ' },
+    })
+    expect(saved?.gongu).toEqual({ apiKey: 'gongu-key' })
+    const reread = normalizeAiSettings(JSON.parse(JSON.stringify(saved)))
+    expect(reread.gongu).toEqual({ apiKey: 'gongu-key' })
+    expect(normalizeAiSettings({ apiKey: 'sk-old', gongu: { apiKey: 'k' } }).gongu).toEqual({
+      apiKey: 'k',
+    })
+  })
+
+  it('reads a missing, blank or non-string Gongu key as no key', () => {
+    const slots: unknown[] = [
+      undefined,
+      null,
+      'k',
+      [],
+      {},
+      { apiKey: '' },
+      { apiKey: ' ' },
+      { apiKey: 7 },
+    ]
+    for (const gongu of slots) {
+      const file = { providers: {}, ...(gongu === undefined ? {} : { gongu }) }
+      expect(sanitizeAiSettings({ provider: 'auto', ...file })?.gongu).toBeUndefined()
+    }
+  })
+
   it('keeps the read_url token when there are no provider slots to merge', () => {
     const settings = normalizeAiSettings({
       apiKey: 'sk-old',

@@ -294,6 +294,17 @@ export interface AiReadUrlSettings {
   githubToken?: string | undefined
 }
 
+/**
+ * Hanpan's Gongu picture search (Korea Copyright Commission, through the
+ * Public Data Portal). The key is the user's own: the portal issues it per
+ * account with a daily quota, so the app never ships one. Sealed on disk like
+ * the provider keys (decision 0063).
+ */
+export interface AiGonguSettings {
+  /** Public Data Portal service key; absent or blank = Gongu search is off */
+  apiKey?: string | undefined
+}
+
 export interface AiSettings {
   /** `auto` or one provider id; resolve it with selectAiProvider before indexing `providers` */
   provider: AiProviderSelection
@@ -312,6 +323,8 @@ export interface AiSettings {
   search?: AiSearchSettings | undefined
   /** read_url's GitHub token; absent = public pages only */
   readUrl?: AiReadUrlSettings | undefined
+  /** Gongu picture search key; absent = no key */
+  gongu?: AiGonguSettings | undefined
   /**
    * Output-token cap for ONE model turn of agent runs (default
    * DEFAULT_MAX_OUTPUT_TOKENS). Reasoning models bill their thinking against

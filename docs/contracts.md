@@ -307,12 +307,14 @@ metadata:
 | `maxOutputTokens`                    | 모델 한 차례의 출력 상한                         | 코드의 기본값                                              |
 | `media`, `search`                    | 이미지·분석·검색 제공자 선택과 그 키             | 이미지 분석은 `chat`, 영상 분석은 `none`, 검색은 무료 경로 |
 | `readUrl`                            | `{ githubToken }`                                | 없음                                                       |
+| `gongu`                              | `{ apiKey }`. 공유마당 그림 찾기 키              | 없음                                                       |
 | `internetTools`                      | `false`면 편집기 AI 창의 인터넷 도구를 끈다      | 켬(값 없음)                                                |
 
 - 로컬 서버 항목(`kind: 'local'`)은 `modelProfiles`와 `timeoutMs`를 더 든다. `modelProfiles`는 모델 id별 `{ contextLength, maxContextLength, tools, vision, contextSource, toolsSource, visionSource, checkedAt, notes }`이고, source는 `server`·`user`·`test`뿐이다. `timeoutMs`는 60,000~600,000의 정수이고, 없으면 300,000으로 읽는다.
 - `customEndpoint: ''`는 "쓸 사용자 서버 없음"이다. 이때 `providers.custom`은 `{ apiKey: '', model: '', baseUrl: '' }`로 비고, `customEndpoint` 값이 아예 없는 예전 파일만 첫 서버를 고른다.
-- 키와 토큰(`providers.*.apiKey`, `customEndpoints[].apiKey`, `media.providers.*.apiKey`, `search.providers.*.apiKey`, `readUrl.githubToken`)은 Windows와 Linux(GNOME 키링·KWallet이 있을 때)에서 앱이 저장할 때 `sealed:v1:<base64>`로 봉인된다(결정 0063). 사람이 평문으로 적어 넣어도 읽히고, 앱이 다음에 저장하거나 시작할 때 봉인된다. 명령어와 MCP는 봉인된 값을 앱에게 풀어 받아 쓰고(처음 한 번 1~2초), 풀지 못한 값은 빈 키로 읽는다. 명령어는 봉인하지 않는다. macOS는 봉인하지 않는다.
+- 키와 토큰(`providers.*.apiKey`, `customEndpoints[].apiKey`, `media.providers.*.apiKey`, `search.providers.*.apiKey`, `readUrl.githubToken`, `gongu.apiKey`)은 Windows와 Linux(GNOME 키링·KWallet이 있을 때)에서 앱이 저장할 때 `sealed:v1:<base64>`로 봉인된다(결정 0063). 사람이 평문으로 적어 넣어도 읽히고, 앱이 다음에 저장하거나 시작할 때 봉인된다. 명령어와 MCP는 봉인된 값을 앱에게 풀어 받아 쓰고(처음 한 번 1~2초), 풀지 못한 값은 빈 키로 읽는다. 명령어는 봉인하지 않는다. macOS는 봉인하지 않는다.
 - `readUrl.githubToken`은 비공개 GitHub 파일을 읽는 읽기 토큰이다. 키와 같은 방식으로 저장되고, `api.github.com` 요청에만 실린다. 다른 사이트나 리다이렉트 홉에는 보내지 않는다.
+- `gongu.apiKey`는 한판의 공유마당 그림 찾기에 쓰는, 사용자 자신의 공공데이터포털 인증키다. 앱은 키를 싣고 배포하지 않는다. 키와 같은 방식으로 저장되고, `apis.data.go.kr`의 공유(만료)저작물 서비스 요청에만 실린다(`docs/plans/gongu-images.md`).
 - `headlessSubscriptionEnabled`가 참이어도 `headlessSubscriptionConsentVersion`이 지금 경고의 판(2)보다 작거나 없으면 꺼진 것으로 읽는다. 판 1은 시간당 한도가 있던 예전 경고이고, 그때는 판을 저장하지 않았다.
 - 이미지 생성 제공자의 저장값 기본은 `codex`다. Codex 구독 이미지 생성이 들어 있지 않은 지금은 `none`(선택 없음)과 똑같이 동작한다.
 - 구독 제공자의 식별자는 `claude-code`, `chatgpt`, `codex`다. 인증 방식은 `claude-subscription`, `chatgpt-plan`, `codex-chatgpt`, `api-key` 넷이다. `provider`에 `chatgpt`를 저장할 수 있고, `providers.chatgpt.model`이 그 모델이다(빈 값은 요금제 목록의 첫 모델). `meteredAccepted`에는 `chatgpt` 항목이 없다(요금제 범위 연결이라 종량 로그인이 없다).

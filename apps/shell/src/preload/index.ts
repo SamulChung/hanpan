@@ -604,6 +604,24 @@ const homeApi: HomeApi = {
       ? { ok: true }
       : { ok: false, error: typeof raw.error === 'string' ? raw.error : 'Connection failed' }
   },
+  async testGonguKey(key) {
+    const raw = ((await ipcRenderer.invoke('hanpan:gongu-test', key)) ?? {}) as {
+      ok?: unknown
+      error?: unknown
+    }
+    if (raw.ok === true) return { ok: true }
+    const kinds = [
+      'no-key',
+      'bad-key',
+      'expired-key',
+      'quota',
+      'rate',
+      'blocked',
+      'network',
+    ] as const
+    const error = kinds.find((kind) => kind === raw.error) ?? 'service'
+    return { ok: false, error }
+  },
   async testAiMediaSettings(input) {
     const raw = ((await ipcRenderer.invoke('ai:media-test', input)) ?? {}) as {
       ok?: unknown

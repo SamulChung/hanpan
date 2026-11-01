@@ -27,6 +27,7 @@ export type {
   AiMediaKeyProviderId,
   AiProviderSelection,
   AiReadUrlSettings,
+  AiGonguSettings,
   AiRunErrorKind,
   AiSubscriptionLoginMethod,
   AiSubscriptionSigningIn,

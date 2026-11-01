@@ -59,6 +59,15 @@ export type DocTheme = 'follow' | 'light' | 'dark'
 /** mirrors AUTHOR_NAME_MAX in @genoffice/electron-utils (the renderer cannot import it) */
 export const AUTHOR_NAME_MAX = 120
 
+/** The Gongu key check's answer; the error kinds are @genoffice/ai-search's GonguErrorKind. */
+export type GonguKeyCheck =
+  | { ok: true }
+  | {
+      ok: false
+      error:
+        'no-key' | 'bad-key' | 'expired-key' | 'quota' | 'rate' | 'blocked' | 'network' | 'service'
+    }
+
 export interface AuthorNameSetting {
   /** stored override; '' means "use fallback" */
   value: string
@@ -440,6 +449,11 @@ export interface HomeApi {
     provider: AiSearchProviderId
     apiKey: string
   }): Promise<{ ok: boolean; error?: string }>
+  /**
+   * Hanpan: one short Gongu search with the given key (saved or not), to tell
+   * the user whether the Public Data Portal accepts it.
+   */
+  testGonguKey?(key: string): Promise<GonguKeyCheck>
   /**
    * Make a free connection: OpenRouter through its browser sign-in (resolves
    * once the browser came back, failed or was cancelled), Gemini by checking a

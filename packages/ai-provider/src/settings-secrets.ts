@@ -55,7 +55,7 @@ function mapTable(table: unknown, fn: (v: string) => string): unknown {
 /**
  * A copy of a stored or working settings object with `fn` applied to every
  * secret it can hold: the chat providers' keys, the custom endpoints' keys,
- * the media and search providers' keys, and read_url's GitHub token.
+ * the media and search providers' keys, read_url's GitHub token and the Gongu key.
  * Anything not shaped like settings passes through untouched.
  */
 export function mapAiSecrets<T>(settings: T, fn: (value: string) => string): T {
@@ -70,6 +70,7 @@ export function mapAiSecrets<T>(settings: T, fn: (value: string) => string): T {
   if (isRecord(s.media)) s.media = { ...s.media, providers: mapTable(s.media.providers, fn) }
   if (isRecord(s.search)) s.search = { ...s.search, providers: mapTable(s.search.providers, fn) }
   if (isRecord(s.readUrl)) s.readUrl = mapField(s.readUrl, 'githubToken', fn)
+  if (isRecord(s.gongu)) s.gongu = mapField(s.gongu, 'apiKey', fn)
   return s as T
 }
 

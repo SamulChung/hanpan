@@ -6,6 +6,7 @@ import type {
   AiProviderId,
   AiProviderMeta,
   AiReadUrlSettings,
+  AiGonguSettings,
   AiSettings,
   AiSubscriptionCliId,
   AiSubscriptionProviderId,
@@ -511,6 +512,16 @@ export function readUrlSettingsOf(value: unknown): AiReadUrlSettings | undefined
 }
 
 /**
+ * The Gongu slot when it carries a usable key; anything else (absent, not an
+ * object, a non-string or blank key) means no Gongu search.
+ */
+export function gonguSettingsOf(value: unknown): AiGonguSettings | undefined {
+  if (!isRecord(value)) return undefined
+  const apiKey = str(value.apiKey)
+  return apiKey ? { apiKey } : undefined
+}
+
+/**
  * Model ids a vendor has stopped serving, mapped to their replacement. A
  * stored selection outlives the provider list, so without this remap an old
  * settings file keeps sending an id the API now rejects.
@@ -613,6 +624,7 @@ export function resolveAiSettings(stored: unknown, defaults: AiSettings): AiSett
   const settings = (isRecord(stored) ? openAiSecrets(stored) : {}) as Partial<AiSettings> &
     LegacyAiSettings
   const readUrl = readUrlSettingsOf(settings.readUrl ?? defaults.readUrl)
+  const gongu = gonguSettingsOf(settings.gongu ?? defaults.gongu)
   const storedProviders = isRecord(settings.providers) ? settings.providers : undefined
   if (!storedProviders) {
     if (settings.apiKey) {
@@ -622,13 +634,18 @@ export function resolveAiSettings(stored: unknown, defaults: AiSettings): AiSett
         baseUrl: str(settings.baseUrl) || 'https://api.openai.com/v1',
       }
     }
-    return resolveCustomEndpoints(readUrl ? { ...defaults, readUrl } : defaults)
+    return resolveCustomEndpoints({
+      ...defaults,
+      ...(readUrl ? { readUrl } : {}),
+      ...(gongu ? { gongu } : {}),
+    })
   }
   return resolveCustomEndpoints({
     provider: settings.provider ?? defaults.provider,
     customEndpoints: settings.customEndpoints,
     customEndpoint: settings.customEndpoint,
     ...(readUrl ? { readUrl } : {}),
+    ...(gongu ? { gongu } : {}),
     // Trim before migrating: a pasted " deepseek-reasoner " must still hit
     // the retired-id remap instead of being sent to the API verbatim.
     providers: migrateRetiredModels(

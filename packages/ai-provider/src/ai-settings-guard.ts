@@ -16,7 +16,7 @@ import { homedir } from 'node:os'
 import { join } from 'node:path'
 
 import { localEndpointFieldsOf } from './local-profile'
-import { AI_SUBSCRIPTION_PROVIDERS, readUrlSettingsOf } from './providers'
+import { AI_SUBSCRIPTION_PROVIDERS, gonguSettingsOf, readUrlSettingsOf } from './providers'
 import { AI_PROVIDER_ADAPTERS, normalizeBaseUrl } from './registry'
 import type {
   AiCustomEndpoint,
@@ -223,6 +223,9 @@ export function sanitizeAiSettings(input: unknown): AiSettings | null {
   if (readUrl?.githubToken) {
     settings.readUrl = { githubToken: readUrl.githubToken.slice(0, MAX_API_KEY_LENGTH) }
   }
+  // the Gongu key is kept the same way; a blank one is left out (search off)
+  const gongu = gonguSettingsOf(raw.gongu)
+  if (gongu?.apiKey) settings.gongu = { apiKey: gongu.apiKey.slice(0, MAX_API_KEY_LENGTH) }
   const customEndpoints = sanitizeCustomEndpoints(raw.customEndpoints)
   if (customEndpoints.length > 0) {
     settings.customEndpoints = customEndpoints
