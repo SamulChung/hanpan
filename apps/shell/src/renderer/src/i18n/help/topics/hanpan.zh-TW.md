@@ -45,6 +45,14 @@ Hanpan 可以把心智圖整理的內容傳送為 Hangul (HWP) 報告、簡報�
 - **Templates** 分頁中有 20 個範本，包括公告卡片、家長通知、活動海報、招募公告、菜單、獎狀與簡報封面等。範本使用Hanpan 內附的字型（Pretendard、Noto Serif KR、Gowun Batang、Black Han Sans、Do Hyeon 等），在任何電腦上開啟都一樣。在 **Elements** 分頁的 **Icons** 中搜尋 "calendar"、"place" 等字詞即可加入線條圖示，並在右側變更顏色與線條粗細。
 - **Font** 清單中的 **Free fonts from Gongu** 群組包含 Noto Sans KR、Seoul Namsan、Munhwajae Dolbom、Gyeonggi Title，以及 Hakgyoansim Poster、Chilpanjiugae 與 Siganpyo 字型。它們隨 Hanpan 一起提供，因此匯出的 PNG 與 PDF 會保留這些字型，Word、Excel 與 PowerPoint 的字型清單中也會出現。這些字型由 the Seoul Metropolitan Government, Gyeonggi Province and the Korea Heritage Service 以韓國公共授權（KOGL）第 1 類開放，由 KERIS 以及 Google 與 Adobe 以 SIL OFL 開放，可從 Gongu（gongu.copyright.or.kr）免費下載。
 
+## 從 Gongu 尋找圖片
+
+- 在韓國著作權委員會的 Gongu 資料庫中尋找著作權已過期的古畫和照片並插入。在公共資料入口網站（data.go.kr）申請該委員會的過期作品服務即可免費取得金鑰，將它填入 **設定 › 整合** 中的 **Gongu 圖片** 卡片，再按 **檢查**。每天最多可尋找 1,000 次。
+- 在設計視窗 **Elements** 分頁的 **在 Gongu 中尋找** 輸入作品名稱或作者姓名，選一張縮圖後按 **插入**，圖片下方會一併加上出處行。匯出時保持 **加入圖片出處清單** 開啟，結尾會列出所有出處；用 **檢查出處** 可以找出沒有出處的圖片。
+- 在 HWP 和心智圖編輯器中，可以對 AI 說「在 Gongu 裡找一幅老虎畫插進來」。出處由 Hanpan 而不是 AI 撰寫：HWP 文件寫在圖片下方和文末的「圖片出處」清單中，心智圖寫在該主題的備註裡。
+- HWP 分頁的 **Hanpan tools › 檢查圖片出處** 和心智圖的 **傳送到文件（HWP、PPT、Word） › 檢查圖片出處** 會列出沒有出處或附有使用條件的圖片。
+- 尋找時只會把搜尋字詞和你的金鑰傳送到公共資料入口網站，不會傳送文件內容。在設定中關閉 **允許 AI 使用網際網路工具** 後，AI 的 Gongu 尋找也會關閉。請保留出處行，不要刪除。
+
 ## 本機 AI
 
 - 第一次啟動時，Hanpan 會尋找本機執行的 AI（Ollama、LM Studio、vLLM），如果你還沒有選擇 AI，就使用它。

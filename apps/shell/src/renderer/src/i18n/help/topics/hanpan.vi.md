@@ -45,6 +45,14 @@ Hanpan gửi những gì bạn sắp xếp trong sơ đồ tư duy thành báo c
 - Thẻ **Templates** có 20 mẫu, trong đó có thẻ thông báo, thư gửi phụ huynh, áp phích sự kiện, thông báo tuyển, bảng thực đơn, giấy khen và trang bìa thuyết trình. Các mẫu dùng phông đi kèm Hanpan (Pretendard, Noto Serif KR, Gowun Batang, Black Han Sans, Do Hyeon và một số phông khác) nên mở trên máy nào cũng giống nhau. Trong mục **Icons** của thẻ **Elements**, tìm một từ như "calendar" hoặc "place" để thêm biểu tượng nét, rồi đổi màu và độ dày nét ở bên phải.
 - Nhóm **Free fonts from Gongu** trong danh sách **Font** có Noto Sans KR, Seoul Namsan, Munhwajae Dolbom, Gyeonggi Title và các phông Hakgyoansim Poster, Chilpanjiugae, Siganpyo. Các phông này đi kèm Hanpan nên tệp PNG và PDF xuất ra vẫn giữ nguyên, và chúng cũng có trong danh sách phông của Word, Excel và PowerPoint. Chúng do the Seoul Metropolitan Government, Gyeonggi Province and the Korea Heritage Service phát hành theo giấy phép KOGL loại 1 của Hàn Quốc, và do KERIS cùng Google và Adobe phát hành theo giấy phép SIL OFL; có thể tải miễn phí từ Gongu (gongu.copyright.or.kr).
 
+## Tìm ảnh trên Gongu
+
+- Tìm tranh cổ và ảnh đã hết hạn bản quyền trong Gongu, thư viện của Ủy ban Bản quyền Hàn Quốc, rồi chèn vào. Bạn nhận khóa miễn phí ở Cổng dữ liệu công (data.go.kr) bằng cách đăng ký dịch vụ tác phẩm hết hạn của Ủy ban, nhập khóa vào thẻ **Hình ảnh Gongu** trong **Cài đặt › Tích hợp** rồi bấm **Kiểm tra**. Mỗi ngày tìm được tới 1.000 lần.
+- Trong cửa sổ thiết kế, gõ tên tác phẩm hoặc tên tác giả vào **Tìm trong Gongu** ở thẻ **Elements**, chọn một ảnh thu nhỏ rồi bấm **Chèn**: một dòng ghi nguồn sẽ nằm dưới ảnh. Khi xuất, để bật **Thêm danh sách nguồn hình ảnh** để có danh sách nguồn ở cuối, và dùng **Kiểm tra nguồn** để tìm ảnh chưa có nguồn.
+- Trong trình soạn HWP và sơ đồ tư duy, hãy nhờ AI kiểu như "tìm một bức tranh con hổ trên Gongu và chèn vào". Người ghi nguồn là Hanpan, không phải AI: với tài liệu HWP là dưới ảnh và trong danh sách "nguồn ảnh" ở cuối, với sơ đồ tư duy là trong ghi chú của chủ đề.
+- **Hanpan tools › Kiểm tra nguồn ảnh** ở thẻ HWP và **Send to a document (HWP, PPT, Word) › Kiểm tra nguồn ảnh** trong sơ đồ tư duy liệt kê các ảnh chưa có nguồn hoặc có điều kiện sử dụng.
+- Khi tìm, chỉ từ khóa và khóa của bạn được gửi tới cổng dữ liệu, tài liệu thì không. Tắt **Cho phép AI dùng công cụ internet** trong Cài đặt thì việc tìm trên Gongu của AI cũng tắt. Đừng xóa các dòng ghi nguồn.
+
 ## AI trên máy tính này
 
 - Lần khởi động đầu, Hanpan tìm AI trên máy tính này (Ollama, LM Studio, vLLM) và dùng nó nếu bạn chưa chọn AI.

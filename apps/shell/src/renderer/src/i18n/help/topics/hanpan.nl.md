@@ -45,6 +45,14 @@ Hanpan stuurt wat u in een mindmap hebt geordend naar een Hangul-rapport (HWP), 
 - Het tabblad **Templates** bevat 20 voorbeelden, waaronder een mededelingskaart, een ouderbrief, een evenementposter, een wervingsoproep, een menukaart, een oorkonde en een presentatievoorblad. Ze gebruiken de lettertypen die bij Hanpan horen (Pretendard, Noto Serif KR, Gowun Batang, Black Han Sans, Do Hyeon en meer) en zien er dus op elke pc hetzelfde uit. Zoek onder **Icons** op het tabblad **Elements** naar een woord als "calendar" of "place" om een lijnpictogram toe te voegen, en wijzig rechts de kleur en lijndikte.
 - De groep **Free fonts from Gongu** in de lijst **Font** bevat Noto Sans KR, Seoul Namsan, Munhwajae Dolbom, Gyeonggi Title en de lettertypen Hakgyoansim Poster, Chilpanjiugae en Siganpyo. Ze horen bij Hanpan, dus geëxporteerde PNG- en PDF-bestanden behouden ze, en ze staan ook in de lettertypelijsten van Word, Excel en PowerPoint. Ze zijn uitgebracht door the Seoul Metropolitan Government, Gyeonggi Province and the Korea Heritage Service onder de Koreaanse licentie KOGL type 1, en door KERIS en Google met Adobe onder de SIL OFL; je kunt ze gratis downloaden van Gongu (gongu.copyright.or.kr).
 
+## Afbeeldingen uit Gongu
+
+- Zoek in Gongu, de bibliotheek van de Koreaanse auteursrechtcommissie, oude schilderijen en foto's waarvan de bescherming is verlopen, en voeg ze in. Een gratis sleutel krijgt u bij het portaal voor openbare gegevens (data.go.kr) door de dienst van de commissie voor vrijgekomen werken aan te vragen. Vul hem in op de kaart **Gongu-afbeeldingen** onder **Instellingen › Integraties** en druk op **Controleren**. U kunt tot 1.000 keer per dag zoeken.
+- Typ in het ontwerpvenster op het tabblad **Elements** een titel of de naam van een maker in **Zoeken in Gongu**, kies een miniatuur en druk op **Invoegen**: onder de afbeelding komt een bronregel. Laat bij het exporteren **Lijst met bronvermeldingen toevoegen** aan voor een lijst aan het eind, en vind met **Bronnen controleren** afbeeldingen zonder bron.
+- Vraag de AI in de HWP- en mindmapeditor bijvoorbeeld: "zoek in Gongu een schilderij van een tijger en voeg het in". De bron schrijft Hanpan, niet de AI: in een HWP-document onder de afbeelding en in een lijst "afbeeldingsbronnen" aan het eind, in een mindmap in de notitie van het onderwerp.
+- **Hanpan tools › Afbeeldingsbronnen controleren** op het HWP-tabblad en **Send to a document (HWP, PPT, Word) › Afbeeldingsbronnen controleren** in een mindmap tonen afbeeldingen zonder bron of met gebruiksvoorwaarden.
+- Een zoekopdracht stuurt alleen de zoekwoorden en uw sleutel naar het portaal, nooit uw document. Als u in Instellingen **AI internettools laten gebruiken** uitzet, gaat ook het zoeken van de AI in Gongu uit. Laat de bronregels staan.
+
 ## De AI op deze pc
 
 - Bij de eerste start zoekt Hanpan een AI op deze pc (Ollama, LM Studio, vLLM) en gebruikt die als u nog geen AI hebt gekozen.

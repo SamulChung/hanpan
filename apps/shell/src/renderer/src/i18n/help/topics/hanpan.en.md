@@ -45,6 +45,14 @@ Hanpan sends what you sorted out in a mind map to a Hangul (HWP) report, a slide
 - The **Templates** tab has 20 samples, among them a notice card, a school letter, an event poster, a recruiting notice, a menu board, a certificate and a slide cover. They use the fonts that come with Hanpan (Pretendard, Noto Serif KR, Gowun Batang, Black Han Sans, Do Hyeon and more), so they look the same on any PC. Under **Icons** on the **Elements** tab, search for a word such as "calendar" or "place" to add a line icon, then change its colour and line width on the right.
 - The **Free fonts from Gongu** group in the **Font** list has Noto Sans KR, Seoul Namsan, Munhwajae Dolbom, Gyeonggi Title and the Hakgyoansim Poster, Chilpanjiugae and Siganpyo fonts. They come with Hanpan, so exported PNG and PDF files keep them, and they also appear in the Word, Excel and PowerPoint font lists. They were released by the Seoul Metropolitan Government, Gyeonggi Province and the Korea Heritage Service under the Korea Open Government License type 1, and by KERIS and Google with Adobe under the SIL OFL, and can be downloaded free of charge from Gongu (gongu.copyright.or.kr).
 
+## Pictures from Gongu
+
+- Find out-of-copyright old paintings and photos in Gongu, the Korea Copyright Commission's library, and insert them. Get a free key from the Public Data Portal (data.go.kr) by applying for the Commission's expired-works service, enter it on the **Gongu pictures** card in **Settings › Integrations** and press **Check**. You can search up to 1,000 times a day.
+- In the design window, type a title or an artist's name in **Find in Gongu** on the **Elements** tab, pick a thumbnail and press **Insert**: a credit line goes in under the picture. Keep **Add a picture credit list** on when you export to list the credits at the end, and use **Check credits** to find pictures that have none.
+- In the HWP and mind map editors, ask the AI something like "find a tiger painting in Gongu and insert it". Hanpan, not the AI, writes the credit: under the picture and in a "picture credits" list at the end of an HWP document, and in the topic's note in a mind map.
+- **Hanpan tools › Check picture credits** in the HWP tab and **Send to a document (HWP, PPT, Word) › Check picture credits** in a mind map list the pictures with no credit or with conditions of use.
+- A search sends only the search words and your key to the Public Data Portal, never your document. Turning off **Let AI use internet tools** in Settings turns off the AI's Gongu search too. Leave the credit lines in place.
+
 ## The AI on this PC
 
 - At first start Hanpan looks for an AI running on this PC (Ollama, LM Studio, vLLM) and, if you have not chosen an AI, uses it.

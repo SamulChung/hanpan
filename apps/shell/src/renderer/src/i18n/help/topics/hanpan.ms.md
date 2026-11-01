@@ -45,6 +45,14 @@ Hanpan menghantar apa yang anda susun dalam peta minda ke laporan Hangul (HWP), 
 - Tab **Templates** mengandungi 20 contoh, antaranya kad notis, surat kepada ibu bapa, poster acara, notis pengambilan, papan menu, sijil dan kulit pembentangan. Contoh ini menggunakan fon yang disertakan bersama Hanpan (Pretendard, Noto Serif KR, Gowun Batang, Black Han Sans, Do Hyeon dan lain-lain), jadi rupanya sama pada mana-mana PC. Di **Icons** dalam tab **Elements**, cari perkataan seperti "calendar" atau "place" untuk menambah ikon garisan, kemudian tukar warna dan ketebalan garisannya di sebelah kanan.
 - Kumpulan **Free fonts from Gongu** dalam senarai **Font** mengandungi Noto Sans KR, Seoul Namsan, Munhwajae Dolbom, Gyeonggi Title serta fon Hakgyoansim Poster, Chilpanjiugae dan Siganpyo. Fon ini disertakan bersama Hanpan, jadi PNG dan PDF yang dieksport mengekalkannya, dan fon ini turut muncul dalam senarai fon Word, Excel dan PowerPoint. Fon ini dikeluarkan oleh the Seoul Metropolitan Government, Gyeonggi Province and the Korea Heritage Service di bawah lesen Korea KOGL jenis 1, dan oleh KERIS serta Google bersama Adobe di bawah lesen SIL OFL, dan boleh dimuat turun secara percuma daripada Gongu (gongu.copyright.or.kr).
 
+## Gambar dari Gongu
+
+- Cari lukisan lama dan foto yang hak ciptanya telah tamat dalam Gongu, perpustakaan Suruhanjaya Hak Cipta Korea, kemudian sisipkannya. Dapatkan kunci percuma di Portal Data Awam (data.go.kr) dengan memohon perkhidmatan karya tamat tempoh Suruhanjaya itu. Masukkan kunci pada kad **Gambar Gongu** dalam **Tetapan › Integrasi** dan tekan **Semak**. Anda boleh mencari sehingga 1,000 kali sehari.
+- Dalam tetingkap reka bentuk, taip tajuk atau nama artis dalam **Cari dalam Gongu** pada tab **Elements**, pilih gambar kecil dan tekan **Sisipkan**: baris sumber turut dimasukkan di bawah gambar. Biarkan **Tambah senarai kredit gambar** dihidupkan semasa mengeksport supaya senarai sumber ada di hujung, dan gunakan **Semak kredit** untuk mencari gambar tanpa sumber.
+- Dalam editor HWP dan peta minda, minta AI contohnya "carikan lukisan harimau dalam Gongu dan sisipkannya". Sumber ditulis oleh Hanpan, bukan AI: dalam dokumen HWP di bawah gambar dan dalam senarai "sumber gambar" di hujung, dalam peta minda pada nota topik itu.
+- **Hanpan tools › Semak sumber gambar** dalam tab HWP dan **Send to a document (HWP, PPT, Word) › Semak sumber gambar** dalam peta minda menyenaraikan gambar tanpa sumber atau yang ada syarat penggunaan.
+- Carian hanya menghantar kata carian dan kunci anda ke portal, bukan dokumen anda. Mematikan **Benarkan AI menggunakan alat internet** dalam Tetapan turut mematikan carian Gongu oleh AI. Jangan padam baris sumber.
+
 ## AI pada PC ini
 
 - Pada permulaan pertama, Hanpan mencari AI pada PC ini (Ollama, LM Studio, vLLM) dan menggunakannya jika anda belum memilih AI.

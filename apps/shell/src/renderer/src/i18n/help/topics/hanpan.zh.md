@@ -45,6 +45,14 @@ Hanpan 可以把思维导图整理的内容发送为 Hangul (HWP) 报告、演�
 - **Templates** 标签中有 20 个样板，包括公告卡片、家长通知、活动海报、招募公告、菜单、奖状和演示封面等。样板使用Hanpan 自带的字体（Pretendard、Noto Serif KR、Gowun Batang、Black Han Sans、Do Hyeon 等），在任何电脑上打开都一样。在 **Elements** 标签的 **Icons** 中搜索 "calendar"、"place" 等词即可加入线条图标，并在右侧更改颜色和线条粗细。
 - **Font** 列表中的 **Free fonts from Gongu** 组包含 Noto Sans KR、Seoul Namsan、Munhwajae Dolbom、Gyeonggi Title，以及 Hakgyoansim Poster、Chilpanjiugae 和 Siganpyo 字体。它们随 Hanpan 一起提供，因此导出的 PNG 和 PDF 会保留这些字体，Word、Excel 和 PowerPoint 的字体列表中也能看到它们。这些字体由 the Seoul Metropolitan Government, Gyeonggi Province and the Korea Heritage Service 以韩国公共许可（KOGL）第 1 类开放，由 KERIS 以及 Google 与 Adobe 以 SIL OFL 开放，可从 Gongu（gongu.copyright.or.kr）免费下载。
 
+## 从 Gongu 查找图片
+
+- 在韩国著作权委员会的 Gongu 资料库中查找版权已过期的古画和照片并插入。在公共数据门户（data.go.kr）申请该委员会的过期作品服务即可免费获得密钥，把它填入 **设置 › 集成** 中的 **Gongu 图片** 卡片，然后按 **检查**。每天最多可查找 1,000 次。
+- 在设计窗口 **Elements** 标签页的 **在 Gongu 中查找** 中输入作品名或作者名，选一张缩略图后按 **插入**，图片下方会一并加上出处行。导出时保持 **加入图片出处列表** 打开，末尾会列出所有出处；用 **检查出处** 可以找出没有出处的图片。
+- 在 HWP 和思维导图编辑器中，可以对 AI 说“在 Gongu 里找一幅老虎画插进来”。出处由 Hanpan 而不是 AI 来写：HWP 文档写在图片下方和文末的“图片出处”列表里，思维导图写在该主题的备注里。
+- HWP 标签页的 **Hanpan 工具 › 检查图片出处** 和思维导图的 **发送到文档（HWP、PPT、Word） › 检查图片出处** 会列出没有出处或带有使用条件的图片。
+- 查找时只会把搜索词和你的密钥发送到公共数据门户，文档内容不会发送。在设置中关闭 **允许 AI 使用互联网工具** 后，AI 的 Gongu 查找也会关闭。请保留出处行，不要删除。
+
 ## 本机 AI
 
 - 首次启动时，Hanpan 会查找本机运行的 AI（Ollama、LM Studio、vLLM），如果你还没有选择 AI，就使用它。

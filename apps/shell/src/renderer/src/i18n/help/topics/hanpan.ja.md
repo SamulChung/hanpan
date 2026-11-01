@@ -45,6 +45,14 @@ Hanpan はマインドマップで整理した考えをハングル (HWP) 報告
 - **Templates** タブには、お知らせカード、学校だより、イベントポスター、募集案内、メニュー表、賞状、発表の表紙など 20 種類の見本があります。見本はHanpan に同梱のフォント（Pretendard、Noto Serif KR、Gowun Batang、Black Han Sans、Do Hyeon など）で作られているので、どの PC で開いても同じ見た目になります。**Elements** タブの **Icons** で "calendar" や "place" などを検索して線のアイコンを入れ、右側で色と線の太さを変えます。
 - **Font** 一覧の **Free fonts from Gongu** グループには、Noto Sans KR、Seoul Namsan、Munhwajae Dolbom、Gyeonggi Title と、Hakgyoansim の Poster・Chilpanjiugae・Siganpyo があります。Hanpan に同梱されているため、書き出した PNG や PDF にもそのまま入り、Word・Excel・PowerPoint のフォント一覧にも表示されます。これらは the Seoul Metropolitan Government, Gyeonggi Province and the Korea Heritage Service が韓国公共ライセンス（KOGL）第 1 類で、KERIS と Google・Adobe が SIL OFL で公開したもので、Gongu（gongu.copyright.or.kr）から無料でダウンロードできます。
 
+## Gongu の画像を探す
+
+- 韓国著作権委員会の Gongu ライブラリから、著作権の切れた古い絵や写真を探して挿入します。公共データポータル（data.go.kr）で同委員会の満了著作物サービスを利用申請すると無料のキーがもらえます。**設定 › 連携** の **Gongu の画像** カードに入れて **確認** を押してください。1 日 1,000 回まで探せます。
+- デザインウィンドウの **Elements** タブにある **Gongu で探す** に作品名か作者名を入れ、サムネイルを選んで **挿入** を押すと、画像の下に出典の行も入ります。書き出すときに **画像の出典一覧を入れる** をオンにしておくと最後に出典一覧が付き、**出典チェック** で出典のない画像を探せます。
+- HWP とマインドマップでは、AI に「Gongu で虎の絵を探して入れて」のように頼むと、AI が探して挿入します。出典を書くのは AI ではなく Hanpan です。HWP では画像の下と文書末尾の「画像の出典」一覧に、マインドマップではそのトピックのメモに書かれます。
+- HWP タブの **Hanpan ツール › 画像の出典チェック** とマインドマップの **文書へ送る（HWP・PPT・Word） › 画像の出典チェック** は、出典のない画像や利用条件のある画像を一覧にします。
+- 検索で公共データポータルに送られるのは検索語とキーだけで、文書の内容は送られません。設定で **AI にインターネットツールを使わせる** をオフにすると、AI の Gongu 検索もオフになります。出典の行は消さずに残してください。
+
 ## この PC の AI
 
 - 初回起動時に Ollama・LM Studio・vLLM などこの PC の AI を探し、AI をまだ選んでいなければそれを使います。

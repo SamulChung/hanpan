@@ -45,6 +45,14 @@ Hanpan wysyła to, co uporządkowałeś na mapie myśli, do raportu Hangul (HWP)
 - Karta **Templates** zawiera 20 wzorów, m.in. kartę ogłoszenia, list do rodziców, plakat wydarzenia, ogłoszenie o naborze, kartę menu, dyplom i okładkę prezentacji. Korzystają z czcionek dołączonych do Hanpan (Pretendard, Noto Serif KR, Gowun Batang, Black Han Sans, Do Hyeon i innych), więc na każdym komputerze wyglądają tak samo. W sekcji **Icons** na karcie **Elements** wyszukaj słowo, np. „calendar” lub „place”, aby dodać ikonę liniową, a po prawej zmień jej kolor i grubość linii.
 - Grupa **Free fonts from Gongu** na liście **Font** zawiera Noto Sans KR, Seoul Namsan, Munhwajae Dolbom, Gyeonggi Title oraz czcionki Hakgyoansim Poster, Chilpanjiugae i Siganpyo. Są dołączone do Hanpan, więc eksportowane pliki PNG i PDF je zachowują, a do tego pojawiają się na listach czcionek w Wordzie, Excelu i PowerPoincie. Udostępnili je the Seoul Metropolitan Government, Gyeonggi Province and the Korea Heritage Service na koreańskiej licencji KOGL typu 1 oraz KERIS i Google wraz z Adobe na licencji SIL OFL; można je bezpłatnie pobrać z serwisu Gongu (gongu.copyright.or.kr).
 
+## Obrazy z Gongu
+
+- Szukaj w Gongu, bibliotece Koreańskiej Komisji Praw Autorskich, dawnych obrazów i zdjęć, których ochrona wygasła, i wstawiaj je. Darmowy klucz uzyskasz w Portalu Danych Publicznych (data.go.kr), składając wniosek o usługę Komisji dla dzieł z wygasłymi prawami. Wpisz go na karcie **Obrazy Gongu** w **Ustawienia › Integracje** i naciśnij **Sprawdź**. Możesz szukać do 1000 razy dziennie.
+- W oknie projektu na karcie **Elements** wpisz w polu **Szukaj w Gongu** tytuł lub nazwisko twórcy, wybierz miniaturę i naciśnij **Wstaw**: pod obrazem pojawi się wiersz ze źródłem. Zostaw włączone **Dodaj listę źródeł obrazów** przy eksporcie, by na końcu znalazła się lista źródeł, a przyciskiem **Sprawdź źródła** znajdziesz obrazy bez nich.
+- W edytorach HWP i map myśli poproś AI na przykład: „znajdź w Gongu obraz z tygrysem i wstaw go”. Źródło zapisuje Hanpan, a nie AI: w dokumencie HWP pod obrazem i na liście „źródła obrazów” na końcu, a w mapie myśli w notatce tematu.
+- **Hanpan tools › Sprawdź źródła obrazów** na karcie HWP oraz **Send to a document (HWP, PPT, Word) › Sprawdź źródła obrazów** w mapie myśli pokazują obrazy bez źródła lub z warunkami użycia.
+- Wyszukiwanie wysyła do portalu tylko szukane słowa i Twój klucz, nigdy dokument. Wyłączenie **Pozwól AI używać narzędzi internetowych** w Ustawieniach wyłącza też wyszukiwanie AI w Gongu. Nie usuwaj wierszy ze źródłami.
+
 ## AI na tym komputerze
 
 - Przy pierwszym uruchomieniu Hanpan szuka AI na tym komputerze (Ollama, LM Studio, vLLM) i używa jej, jeśli nie wybrałeś jeszcze AI.

@@ -45,6 +45,14 @@ Hanpan pošle to, co jste uspořádali v myšlenkové mapě, do zprávy Hangul (
 - Karta **Templates** obsahuje 20 vzorů, mimo jiné kartu oznámení, dopis rodičům, plakát akce, náborový inzerát, jídelní lístek, diplom a titulní snímek prezentace. Používají písma dodávaná s Hanpanem (Pretendard, Noto Serif KR, Gowun Batang, Black Han Sans, Do Hyeon a další), takže na každém počítači vypadají stejně. V části **Icons** na kartě **Elements** vyhledejte slovo jako „calendar“ nebo „place“ a vložte čárovou ikonu; vpravo pak změníte její barvu a tloušťku čáry.
 - Skupina **Free fonts from Gongu** v seznamu **Font** obsahuje Noto Sans KR, Seoul Namsan, Munhwajae Dolbom, Gyeonggi Title a písma Hakgyoansim Poster, Chilpanjiugae a Siganpyo. Dodávají se s Hanpanem, takže je exportované soubory PNG a PDF zachovají, a objeví se i v seznamech písem ve Wordu, Excelu a PowerPointu. Vydali je the Seoul Metropolitan Government, Gyeonggi Province and the Korea Heritage Service pod korejskou licencí KOGL typu 1 a KERIS spolu s Googlem a Adobe pod licencí SIL OFL; zdarma je lze stáhnout ze služby Gongu (gongu.copyright.or.kr).
 
+## Obrázky z Gongu
+
+- Hledejte v Gongu, knihovně Korejské komise pro autorské právo, staré malby a fotografie s uplynulou ochranou a vkládejte je. Bezplatný klíč získáte na Portálu veřejných dat (data.go.kr), když požádáte o službu komise pro díla s uplynulou ochranou. Zadejte ho na kartě **Obrázky Gongu** v **Nastavení › Integrace** a stiskněte **Zkontrolovat**. Hledat můžete až 1 000krát denně.
+- V okně návrhu na kartě **Elements** napište do pole **Hledat v Gongu** název nebo jméno autora, vyberte náhled a stiskněte **Vložit**: pod obrázek se přidá řádek se zdrojem. Při exportu nechte zapnuté **Přidat seznam zdrojů obrázků**, aby byl na konci seznam zdrojů, a tlačítkem **Zkontrolovat zdroje** najdete obrázky bez zdroje.
+- V editorech HWP a myšlenkových map požádejte AI třeba: „najdi v Gongu obraz tygra a vlož ho“. Zdroj zapisuje Hanpan, ne AI: v dokumentu HWP pod obrázek a do seznamu „zdroje obrázků“ na konci, v myšlenkové mapě do poznámky tématu.
+- **Hanpan tools › Zkontrolovat zdroje obrázků** na kartě HWP a **Send to a document (HWP, PPT, Word) › Zkontrolovat zdroje obrázků** v myšlenkové mapě vypíšou obrázky bez zdroje nebo s podmínkami užití.
+- Hledání posílá na portál jen hledaná slova a váš klíč, nikdy dokument. Když v Nastavení vypnete **Povolit AI internetové nástroje**, vypne se i hledání AI v Gongu. Řádky se zdroji nemažte.
+
 ## AI na tomto počítači
 
 - Při prvním spuštění Hanpan hledá AI na tomto počítači (Ollama, LM Studio, vLLM) a použije ji, pokud jste ještě žádnou AI nevybrali.

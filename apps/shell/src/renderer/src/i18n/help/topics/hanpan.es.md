@@ -45,6 +45,14 @@ Hanpan envía lo que ordenaste en un mapa mental a un informe Hangul (HWP), una 
 - La pestaña **Templates** tiene 20 muestras, entre ellas una tarjeta de aviso, una carta a las familias, un cartel de evento, una convocatoria, una carta de menú, un diploma y una portada de presentación. Usan las fuentes que vienen con Hanpan (Pretendard, Noto Serif KR, Gowun Batang, Black Han Sans, Do Hyeon y otras), así que se ven igual en cualquier PC. En **Icons** de la pestaña **Elements**, busca una palabra como "calendar" o "place" para añadir un icono de línea y cambia su color y grosor a la derecha.
 - El grupo **Free fonts from Gongu** de la lista **Font** incluye Noto Sans KR, Seoul Namsan, Munhwajae Dolbom, Gyeonggi Title y las fuentes Hakgyoansim Poster, Chilpanjiugae y Siganpyo. Vienen con Hanpan, así que los PNG y PDF exportados las conservan, y también aparecen en las listas de fuentes de Word, Excel y PowerPoint. Las publicaron the Seoul Metropolitan Government, Gyeonggi Province and the Korea Heritage Service con la licencia coreana KOGL tipo 1, y KERIS y Google con Adobe con la licencia SIL OFL; se pueden descargar gratis desde Gongu (gongu.copyright.or.kr).
 
+## Imágenes de Gongu
+
+- Busque en Gongu, la biblioteca de la Comisión Coreana de Derechos de Autor, pinturas antiguas y fotos cuyos derechos ya expiraron, e insértelas. Consiga una clave gratuita en el Portal de Datos Públicos (data.go.kr) solicitando el servicio de obras expiradas de la Comisión, escríbala en la tarjeta **Imágenes de Gongu** de **Ajustes › Integraciones** y pulse **Comprobar**. Puede buscar hasta 1.000 veces al día.
+- En la ventana de diseño, escriba un título o el nombre de un artista en **Buscar en Gongu** de la pestaña **Elements**, elija una miniatura y pulse **Insertar**: bajo la imagen se añade una línea de crédito. Deje activado **Añadir una lista de créditos de imágenes** al exportar para listar los créditos al final, y use **Revisar créditos** para encontrar imágenes sin crédito.
+- En los editores de HWP y de mapas mentales, pida a la IA algo como «busca un cuadro de un tigre en Gongu e insértalo». El crédito lo escribe Hanpan, no la IA: bajo la imagen y en una lista de «créditos de imágenes» al final del documento HWP, y en la nota del tema en un mapa mental.
+- **Hanpan tools › Revisar créditos de imágenes** en la pestaña HWP y **Send to a document (HWP, PPT, Word) › Revisar créditos de imágenes** en un mapa mental listan las imágenes sin crédito o con condiciones de uso.
+- Una búsqueda solo envía al portal las palabras buscadas y su clave, nunca su documento. Si desactiva **Permitir que la IA use herramientas de internet** en Ajustes, también se desactiva la búsqueda de Gongu de la IA. No borre las líneas de crédito.
+
 ## La IA de este PC
 
 - Al primer inicio, Hanpan busca una IA en este PC (Ollama, LM Studio, vLLM) y la usa si aún no elegiste una IA.
