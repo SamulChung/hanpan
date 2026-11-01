@@ -48,7 +48,8 @@ describe('template font names', () => {
     for (const face of family.faces) {
       it(`${face.file} is the real ${family.family} face it is listed as`, () => {
         const facts = factsOf(join(FOLDER, face.file))
-        expect(facts.family).toBe(family.family)
+        // a file that groups its weights under a typographic family (name ID 16) records it
+        expect(facts.family).toBe(family.typographicFamily ?? family.family)
         // Office lists the face under its family (name ID 1): a face that is a family of
         // its own there (a SemiBold, say) would need registering under that name too
         expect(facts.legacyFamily).toBe(family.family)

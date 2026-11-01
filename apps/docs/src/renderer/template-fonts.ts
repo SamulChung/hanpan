@@ -30,6 +30,15 @@ export const TEMPLATE_LINE_FACTORS: Readonly<Record<string, number>> = {
   'Space Grotesk': 1.276,
   'Playfair Display': 1.333,
   'Archivo Black': 1.088,
+  'Noto Sans KR': 1.8824,
+  'Hakgyoansim Poster B': 1.4833,
+  'Hakgyoansim Chilpanjiugae TTF B': 1.404,
+  'Hakgyoansim Siganpyo R': 1.3,
+  'GyeonggiTitle Bold': 1.3,
+  'SeoulNamsan M': 1.5405,
+  'SeoulNamsan B': 1.5405,
+  'MunhwajaeDolbom Regular': 1.56,
+  'MunhwajaeDolbom Bold': 1.56,
 }
 
 type FontFaceCtor = new (

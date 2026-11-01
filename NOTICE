@@ -121,6 +121,27 @@ exact source of every file. All files were downloaded on 2026-10-14.
 - Archivo Black 1.006, SIL OFL 1.1,
   https://github.com/google/fonts/tree/main/ofl/archivoblack
 
+The same folder holds free fonts taken on 2026-11-01 from Gongu
+(공유마당, https://gongu.copyright.or.kr), the free-works service of the Korea
+Copyright Commission. Each is unmodified and is licensed under the SIL Open
+Font License 1.1 or the Korea Open Government License (공공누리) type 1,
+which requires attributing the source. Each KOGL font's attribution is in
+its *-KOGL.txt file beside it.
+
+- Noto Sans KR 2.004, SIL OFL 1.1, https://github.com/notofonts/noto-cjk
+- Hakgyoansim Poster B 1.000, Hakgyoansim Chilpanjiugae TTF B 1.00 and
+  Hakgyoansim Siganpyo R 1.000 (학교안심 포스터·칠판지우개·시간표),
+  © KERIS (한국교육학술정보원), SIL OFL 1.1
+- 경기천년제목 Bold 1.100, 공공누리 제1유형.
+  이 글꼴은 '경기도'에서 공공누리 제1유형으로 개방한 '경기천년제목체'이며,
+  공유마당에서 무료로 내려받을 수 있습니다.
+- 서울남산체 M and B 3.2.0, 공공누리 제1유형.
+  이 글꼴은 '서울특별시'에서 공공누리 제1유형으로 개방한 '서울남산체'이며,
+  공유마당에서 무료로 내려받을 수 있습니다.
+- 문화재돌봄체 Regular and Bold 1.000, 공공누리 제1유형.
+  이 글꼴은 '문화재청(현 국가유산청)'에서 공공누리 제1유형으로 개방한
+  '문화재돌봄체'이며, 공유마당에서 무료로 내려받을 수 있습니다.
+
 Built-in skills
 
 apps/shell/resources/builtin-skills holds the five skills shipped with the

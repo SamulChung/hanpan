@@ -55,6 +55,15 @@ export const KOREAN_FAMILIES: readonly string[] = [
   'Do Hyeon',
   'Gowun Dodum',
   'Gowun Batang',
+  // free fonts from Gongu (공유마당), bundled with the design templates too
+  'Hakgyoansim Poster B',
+  'Hakgyoansim Chilpanjiugae TTF B',
+  'Hakgyoansim Siganpyo R',
+  'GyeonggiTitle Bold',
+  'SeoulNamsan M',
+  'SeoulNamsan B',
+  'MunhwajaeDolbom Regular',
+  'MunhwajaeDolbom Bold',
 ]
 
 export const TRADITIONAL_CJK_FAMILIES: readonly string[] = [
@@ -125,4 +134,10 @@ export const KOREAN_FAMILY_READINGS: Readonly<Record<string, readonly string[]>>
   'Do Hyeon': ['도현', '배달의민족 도현'],
   'Gowun Dodum': ['고운돋움'],
   'Gowun Batang': ['고운바탕'],
+  'Hakgyoansim Poster': ['학교안심 포스터'],
+  'Hakgyoansim Chilpanjiugae': ['학교안심 칠판지우개'],
+  'Hakgyoansim Siganpyo': ['학교안심 시간표'],
+  GyeonggiTitle: ['경기천년제목'],
+  SeoulNamsan: ['서울남산체'],
+  MunhwajaeDolbom: ['문화재돌봄체'],
 }

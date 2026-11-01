@@ -139,11 +139,22 @@ describe('third-party license aggregation', () => {
       'Space Grotesk',
       'Playfair Display',
       'Archivo Black',
+      'Noto Sans KR',
+      'Hakgyoansim Poster B',
+      'Hakgyoansim Chilpanjiugae TTF B',
+      'Hakgyoansim Siganpyo R',
+      'GyeonggiTitle Bold',
+      'SeoulNamsan',
+      'MunhwajaeDolbom',
     ]) {
       expect(text, family).toMatch(
         new RegExp(`\\n${family} [\\d.]+ \\(slide design templates, resources/template-fonts\\)`),
       )
     }
+    expect(text).toMatch(/\nSeoulNamsan [\d.]+ \(slide design templates, [^)]+\) — KOGL type 1/)
+    expect(text).toContain(
+      "이 글꼴은 '서울특별시'에서 공공누리 제1유형으로 개방한 '서울남산체'이며",
+    )
     expect(text).toContain('Copyright (c) 2021, Kil Hyung-jin')
     expect(text).toContain('3. Rust crates (rhwp HWP engine, compiled into rhwp_bg.wasm)')
   })

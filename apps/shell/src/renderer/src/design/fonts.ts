@@ -1,6 +1,6 @@
 /**
  * Fonts on the design board: the template font set the installer already ships
- * (resources/template-fonts, @genoffice/ui/template-fonts, all SIL OFL 1.1) and
+ * (resources/template-fonts, @genoffice/ui/template-fonts, SIL OFL 1.1 or KOGL type 1) and
  * the fonts most Windows PCs have. Each bundled face is registered at start as a
  * FontFace pointing at its URL, so a file is read only when text first uses it.
  */
@@ -28,6 +28,23 @@ export const BUNDLED_FONTS: readonly FontChoice[] = [
   { family: 'Playfair Display', label: 'Playfair Display' },
 ]
 
+/**
+ * Free fonts from Gongu (공유마당), bundled the same way (OFL or KOGL type 1; the
+ * attribution is in NOTICE and the help). A family whose name ends in its weight is
+ * one weight of its own, as Office lists it.
+ */
+export const GONGU_FONTS: readonly FontChoice[] = [
+  { family: 'Noto Sans KR', label: '본고딕 (Noto Sans KR)' },
+  { family: 'SeoulNamsan M', label: '서울남산체', display: true },
+  { family: 'SeoulNamsan B', label: '서울남산체 굵게', display: true },
+  { family: 'MunhwajaeDolbom Regular', label: '문화재돌봄체', display: true },
+  { family: 'MunhwajaeDolbom Bold', label: '문화재돌봄체 굵게', display: true },
+  { family: 'GyeonggiTitle Bold', label: '경기천년제목', display: true },
+  { family: 'Hakgyoansim Poster B', label: '학교안심 포스터', display: true },
+  { family: 'Hakgyoansim Chilpanjiugae TTF B', label: '학교안심 칠판지우개', display: true },
+  { family: 'Hakgyoansim Siganpyo R', label: '학교안심 시간표', display: true },
+]
+
 /** On the PC already (Windows with Hancom or Office). */
 export const SYSTEM_FONTS: readonly FontChoice[] = [
   { family: '맑은 고딕', label: '맑은 고딕' },
@@ -39,7 +56,9 @@ export const SYSTEM_FONTS: readonly FontChoice[] = [
   { family: 'Georgia', label: 'Georgia' },
 ]
 
-const DISPLAY = new Set(BUNDLED_FONTS.filter((f) => f.display).map((f) => f.family))
+const DISPLAY = new Set(
+  [...BUNDLED_FONTS, ...GONGU_FONTS].filter((f) => f.display).map((f) => f.family),
+)
 
 /** A face that has one weight only, where bold is better left off. */
 export const isDisplayFont = (family: string | undefined): boolean =>

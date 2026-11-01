@@ -5,7 +5,7 @@
  * `DesignDoc`, and `draw.ts` paints a page for export.
  */
 import { outlineFromIndentedText } from '@genoffice/hanpan-core/renderer'
-import { BUNDLED_FONTS, SYSTEM_FONTS } from './fonts'
+import { BUNDLED_FONTS, GONGU_FONTS, SYSTEM_FONTS } from './fonts'
 import { iconPaths } from './icons'
 
 export type ElementKind =
@@ -140,7 +140,9 @@ export const FORMATS: readonly PageFormat[] = [
 ]
 
 /** The font list: the fonts Hanpan ships first, then the ones on the PC. */
-export const FONTS: readonly string[] = [...BUNDLED_FONTS, ...SYSTEM_FONTS].map((f) => f.family)
+export const FONTS: readonly string[] = [...BUNDLED_FONTS, ...GONGU_FONTS, ...SYSTEM_FONTS].map(
+  (f) => f.family,
+)
 
 export const PALETTE: readonly string[] = [
   '#1E3A5F',

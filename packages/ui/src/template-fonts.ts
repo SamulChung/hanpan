@@ -34,11 +34,20 @@ export interface TemplateFontFace {
 export interface TemplateFontFamily {
   /** the family exactly as the font's name table states it (typographic family, else family) */
   readonly family: string
+  /**
+   * The typographic family (name ID 16) where the file states one that differs from
+   * `family`: the font groups its weights under it, while Office lists each file under its
+   * own family (name ID 1), which is the name a document stores and `family` holds.
+   */
+  readonly typographicFamily?: string
   readonly script: TemplateFontScript
   readonly faces: readonly TemplateFontFace[]
-  /** SPDX identifier, confirmed from the distributor's license file */
-  readonly license: 'OFL-1.1'
-  /** the license text shipped in the folder */
+  /**
+   * SPDX identifier, confirmed from the distributor's license file; 'KOGL-Type1' is the
+   * Korea Open Government License type 1 (attribution), which SPDX does not list
+   */
+  readonly license: 'OFL-1.1' | 'KOGL-Type1'
+  /** the license text shipped in the folder (for KOGL, the terms and the attribution owed) */
   readonly licenseFile: string
   /** the distributor's license file that was read */
   readonly licenseUrl: string
@@ -59,9 +68,19 @@ export const TEMPLATE_FONTS_README = 'README.md'
  * Budget for the font files together (raw bytes). The installer compresses them, so its
  * growth is smaller still; the budget bounds what lands on disk. Tune it here.
  */
-export const TEMPLATE_FONTS_MAX_BYTES = 45 * 1024 * 1024
+export const TEMPLATE_FONTS_MAX_BYTES = 70 * 1024 * 1024
 
 const DOWNLOADED = '2026-10-14'
+/** the free fonts taken from Gongu (gongu.copyright.or.kr) and the Noto Sans KR files */
+const GONGU_DOWNLOADED = '2026-11-01'
+const GONGU_LIST = 'https://gongu.copyright.or.kr/gongu/bbs/B0000018/list.do?menuNo=200195'
+/** A Gongu font: its detail page states the license and serves the file that was taken. */
+const gongu = (wrtSn: number, list: '02' | '03') => ({
+  distributorUrl: `${GONGU_LIST}&bbsSeCd=${list}`,
+  sourceUrl: `https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=${wrtSn}&menuNo=200195`,
+  licenseUrl: `https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=${wrtSn}&menuNo=200195`,
+  downloaded: GONGU_DOWNLOADED,
+})
 const GOOGLE_FONTS = 'https://github.com/google/fonts'
 const GOOGLE_FONTS_COMMIT = '66928797f271fed5ee428544e7229685e2d90127'
 const googleFonts = (dir: string) => ({
@@ -207,6 +226,105 @@ export const TEMPLATE_FONTS: readonly TemplateFontFamily[] = [
     ...googleFonts('archivoblack'),
     version: '1.006',
     downloaded: DOWNLOADED,
+  },
+  // ── Free fonts from Gongu (공유마당) ──────────────────────────────────────────
+  // Taken unmodified from their Gongu pages; OFL or KOGL type 1 only, the terms that
+  // allow shipping the file. Several publish each weight as a family of its own (its
+  // name ID 1 names the weight), so each such file is listed as the family Office shows.
+  {
+    family: 'Noto Sans KR',
+    script: 'korean',
+    faces: [
+      { file: 'NotoSansKR-Regular.otf', weight: 400 },
+      { file: 'NotoSansKR-Bold.otf', weight: 700 },
+    ],
+    license: 'OFL-1.1',
+    licenseFile: 'NotoSansKR-OFL.txt',
+    licenseUrl:
+      'https://github.com/notofonts/noto-cjk/blob/f8d157532fbfaeda587e826d4cd5b21a49186f7c/Sans/LICENSE',
+    distributorUrl: 'https://github.com/notofonts/noto-cjk',
+    sourceUrl:
+      'https://github.com/notofonts/noto-cjk/tree/f8d157532fbfaeda587e826d4cd5b21a49186f7c/Sans/SubsetOTF/KR',
+    version: '2.004',
+    downloaded: GONGU_DOWNLOADED,
+  },
+  {
+    family: 'Hakgyoansim Poster B',
+    script: 'korean',
+    faces: [{ file: 'Hakgyoansim_PosterB.ttf', weight: 400 }],
+    license: 'OFL-1.1',
+    licenseFile: 'Hakgyoansim-OFL.txt',
+    ...gongu(13383120, '03'),
+    version: '1.000',
+  },
+  {
+    family: 'Hakgyoansim Chilpanjiugae TTF B',
+    typographicFamily: 'Hakgyoansim Chilpanjiugae TTF',
+    script: 'korean',
+    faces: [{ file: 'Hakgyoansim Chilpanjiugae TTF B.ttf', weight: 600 }],
+    license: 'OFL-1.1',
+    licenseFile: 'Hakgyoansim-OFL.txt',
+    ...gongu(13372636, '03'),
+    version: '1.00',
+  },
+  {
+    family: 'Hakgyoansim Siganpyo R',
+    script: 'korean',
+    faces: [{ file: 'Hakgyoansim_SiganpyoR.ttf', weight: 400 }],
+    license: 'OFL-1.1',
+    licenseFile: 'Hakgyoansim-OFL.txt',
+    ...gongu(13383112, '03'),
+    version: '1.000',
+  },
+  {
+    family: 'GyeonggiTitle Bold',
+    typographicFamily: 'GyeonggiTitle',
+    script: 'korean',
+    faces: [{ file: '경기천년제목_Bold.ttf', weight: 700 }],
+    license: 'KOGL-Type1',
+    licenseFile: 'GyeonggiTitle-KOGL.txt',
+    ...gongu(13288411, '02'),
+    version: '1.100',
+  },
+  {
+    // both weights state weight class 400; B is the heavier design
+    family: 'SeoulNamsan M',
+    typographicFamily: 'SeoulNamsan',
+    script: 'korean',
+    faces: [{ file: 'SeoulNamsanM.ttf', weight: 400 }],
+    license: 'KOGL-Type1',
+    licenseFile: 'SeoulNamsan-KOGL.txt',
+    ...gongu(13288440, '02'),
+    version: '3.2.0',
+  },
+  {
+    family: 'SeoulNamsan B',
+    typographicFamily: 'SeoulNamsan',
+    script: 'korean',
+    faces: [{ file: 'SeoulNamsanB.ttf', weight: 400 }],
+    license: 'KOGL-Type1',
+    licenseFile: 'SeoulNamsan-KOGL.txt',
+    ...gongu(13288441, '02'),
+    version: '3.2.0',
+  },
+  {
+    family: 'MunhwajaeDolbom Regular',
+    script: 'korean',
+    faces: [{ file: '문화재돌봄체 Regular.ttf', weight: 400 }],
+    license: 'KOGL-Type1',
+    licenseFile: 'MunhwajaeDolbom-KOGL.txt',
+    ...gongu(13288427, '02'),
+    version: '1.000',
+  },
+  {
+    // its weight class is 400 too; the file is the heavier design
+    family: 'MunhwajaeDolbom Bold',
+    script: 'korean',
+    faces: [{ file: '문화재돌봄체 Bold.ttf', weight: 400 }],
+    license: 'KOGL-Type1',
+    licenseFile: 'MunhwajaeDolbom-KOGL.txt',
+    ...gongu(13288426, '02'),
+    version: '1.000',
   },
 ]
 

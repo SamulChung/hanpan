@@ -41,6 +41,7 @@ Hanpan はマインドマップで整理した考えをハングル (HWP) 報告
 - デザイン画面左の **Templates**・**Elements**・**Text** タブで、テンプレート、図形、QR コード、文字スタイルを追加します。Shift を押しながらクリックするか空白をドラッグすると複数選択でき、ガイドに沿って移動し、ハンドルでサイズと回転を変え、テキストボックスはダブルクリックでその場で直せます。右側でグラデーション・影・縁取り・写真フィルターを、**Layers** タブで重なり順とロックを決め、**Resize** はレイアウトを保ったままページサイズを変えます。JPG でも保存できます。
 - 複数を選んで **Ctrl+G** を押すとグループになり、まとめて選択・移動できます。**Ctrl+Shift+G** で解除します。要素や空白を右クリックすると、コピー・貼り付け・重なり順・ロックのメニューが開きます。写真はダブルクリックしてからドラッグで見せる部分を選び、右側の **Crop** で拡大します。**Elements** タブのペンで手書きや蛍光ペンの線を引き、上の **Rulers** で位置を測り、Space を押しながらドラッグすると表示を動かせます。フォント一覧の **Add a font file…** で追加したフォントはデザインファイルに一緒に保存されます。
 - **Templates** タブには、お知らせカード、学校だより、イベントポスター、募集案内、メニュー表、賞状、発表の表紙など 20 種類の見本があります。見本はHanpan に同梱のフォント（Pretendard、Noto Serif KR、Gowun Batang、Black Han Sans、Do Hyeon など）で作られているので、どの PC で開いても同じ見た目になります。**Elements** タブの **Icons** で "calendar" や "place" などを検索して線のアイコンを入れ、右側で色と線の太さを変えます。
+- **Font** 一覧の **Free fonts from Gongu** グループには、Noto Sans KR、Seoul Namsan、Munhwajae Dolbom、Gyeonggi Title と、Hakgyoansim の Poster・Chilpanjiugae・Siganpyo があります。Hanpan に同梱されているため、書き出した PNG や PDF にもそのまま入り、Word・Excel・PowerPoint のフォント一覧にも表示されます。これらは the Seoul Metropolitan Government, Gyeonggi Province and the Korea Heritage Service が韓国公共ライセンス（KOGL）第 1 類で、KERIS と Google・Adobe が SIL OFL で公開したもので、Gongu（gongu.copyright.or.kr）から無料でダウンロードできます。
 
 ## この PC の AI
 

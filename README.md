@@ -477,8 +477,12 @@ Parallel과 DuckDuckGo로, 업데이트 확인은 GitHub로 갑니다. 편집기
 
 슬라이드 디자인 템플릿은
 [frontend-slides](https://github.com/zarazhangrui/frontend-slides)(MIT
-라이선스)의 디자인을 바탕으로 다시 만들었고, 템플릿 글꼴은 모두 SIL Open Font
-License 1.1입니다. 고지와 글꼴 목록은 [NOTICE](NOTICE)에 있습니다. 템플릿의
+라이선스)의 디자인을 바탕으로 다시 만들었고, 템플릿 글꼴은 SIL Open Font
+License 1.1입니다. 디자인 보드의 공유마당 무료 글꼴은 공유마당
+(gongu.copyright.or.kr)에서 SIL Open Font License 1.1이나 공공누리 제1유형인 것만
+골라 넣었고, 공공누리 글꼴은 서울특별시, 경기도, 문화재청(현 국가유산청)이 공공누리 제1유형으로
+개방한 것입니다. 고지와 글꼴
+목록은 [NOTICE](NOTICE)에 있습니다. 템플릿의
 한글 글꼴 조합은 [k-slide](https://k-slide.web.app)를 참고했습니다.
 
 한글(HWP·HWPX) 편집기는 [rhwp](https://github.com/edwardkim/rhwp)(MIT

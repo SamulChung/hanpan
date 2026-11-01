@@ -16,7 +16,7 @@ import {
   type ShadowKind,
 } from './model'
 import { REWRITE_MODES, type RewriteMode } from './ai'
-import { BUNDLED_FONTS, SYSTEM_FONTS } from './fonts'
+import { BUNDLED_FONTS, GONGU_FONTS, SYSTEM_FONTS } from './fonts'
 import type { AlignMode } from './geometry'
 import type { Words } from './words'
 
@@ -408,6 +408,13 @@ export function Inspector(p: InspectorProps) {
             >
               <optgroup label={w.bundledFonts}>
                 {BUNDLED_FONTS.map((f) => (
+                  <option key={f.family} value={f.family}>
+                    {f.label}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label={w.gonguFonts}>
+                {GONGU_FONTS.map((f) => (
                   <option key={f.family} value={f.family}>
                     {f.label}
                   </option>

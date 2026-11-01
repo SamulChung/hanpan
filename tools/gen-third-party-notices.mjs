@@ -718,12 +718,21 @@ const TEMPLATE_FONTS = [
   ['Space Grotesk 2.000', 'SpaceGrotesk-OFL.txt'],
   ['Playfair Display 1.203', 'PlayfairDisplay-OFL.txt'],
   ['Archivo Black 1.006', 'ArchivoBlack-OFL.txt'],
+  // free fonts from Gongu (공유마당): OFL, or KOGL type 1 with the attribution it requires
+  ['Noto Sans KR 2.004', 'NotoSansKR-OFL.txt', '© 2014-2021 Adobe (http://www.adobe.com/).'],
+  ['Hakgyoansim Poster B 1.000', 'Hakgyoansim-OFL.txt'],
+  ['Hakgyoansim Chilpanjiugae TTF B 1.00', 'Hakgyoansim-OFL.txt'],
+  ['Hakgyoansim Siganpyo R 1.000', 'Hakgyoansim-OFL.txt'],
+  ['GyeonggiTitle Bold 1.100', 'GyeonggiTitle-KOGL.txt'],
+  ['SeoulNamsan 3.2.0', 'SeoulNamsan-KOGL.txt'],
+  ['MunhwajaeDolbom 1.000', 'MunhwajaeDolbom-KOGL.txt'],
 ]
 
 out += hr('4. Bundled fonts')
 for (const [name, spdx, copyright] of FONTS) out += sub(`${name} — ${spdx}`) + copyright + '\n'
 for (const [name, file, copyright] of TEMPLATE_FONTS) {
-  out += sub(`${name} (slide design templates, resources/template-fonts) — SIL OFL 1.1`)
+  const license = file.endsWith('-KOGL.txt') ? 'KOGL type 1 (공공누리 제1유형)' : 'SIL OFL 1.1'
+  out += sub(`${name} (slide design templates, resources/template-fonts) — ${license}`)
   if (copyright) out += `${copyright}\n\n`
   out += readFileSync(join(TEMPLATE_FONTS_DIR, file), 'utf8').trim() + '\n'
 }

@@ -29,6 +29,16 @@ export const SLIDE_TEMPLATE_FONTS = [
   'Space Grotesk',
   'Playfair Display',
   'Archivo Black',
+  // free fonts from Gongu (SIL OFL 1.1 or KOGL type 1)
+  'Noto Sans KR',
+  'Hakgyoansim Poster B',
+  'Hakgyoansim Chilpanjiugae TTF B',
+  'Hakgyoansim Siganpyo R',
+  'GyeonggiTitle Bold',
+  'SeoulNamsan M',
+  'SeoulNamsan B',
+  'MunhwajaeDolbom Regular',
+  'MunhwajaeDolbom Bold',
 ] as const
 
 /** The MIT-licensed project the templates are re-authored from, and the commit they were read at. */

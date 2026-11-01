@@ -24,11 +24,20 @@ describe('template font folder', () => {
     for (const file of fontFiles) expect(statSync(join(FOLDER, file)).isFile(), file).toBe(true)
   })
 
-  it('ships a license text for every family, and it is the OFL 1.1', () => {
+  it('ships a license text for every family: the OFL 1.1, or the KOGL type 1 with its attribution', () => {
     for (const family of TEMPLATE_FONTS) {
-      expect(family.license).toBe('OFL-1.1')
       const text = readFileSync(join(FOLDER, family.licenseFile), 'utf8')
-      expect(text, family.licenseFile).toContain('SIL OPEN FONT LICENSE Version 1.1')
+      if (family.license === 'OFL-1.1') {
+        expect(text, family.licenseFile).toContain('SIL OPEN FONT LICENSE Version 1.1')
+      } else {
+        expect(family.license).toBe('KOGL-Type1')
+        expect(text, family.licenseFile).toContain('공공누리 제1유형')
+        expect(text, family.licenseFile).toContain('https://www.kogl.or.kr/info/license.do')
+        expect(text, family.licenseFile).toContain(family.sourceUrl.split('?')[1]!.split('&')[0]!)
+        expect(text, family.licenseFile).toMatch(
+          /^이 글꼴은 .+에서 무료로 내려받을 수 있습니다\.$/m,
+        )
+      }
     }
   })
 
@@ -38,6 +47,7 @@ describe('template font folder', () => {
       ...TEMPLATE_FONTS.map((f) => f.licenseFile),
       TEMPLATE_FONTS_README,
     ])
+    expect(readdirSync(FOLDER).filter((f) => /\.(exe|zip|woff2?)$/i.test(f))).toEqual([])
     expect(new Set(readdirSync(FOLDER))).toEqual(expected)
   })
 
@@ -65,22 +75,26 @@ describe('template font list', () => {
     expect(new Set(fontFiles.map((f) => f.toLowerCase())).size).toBe(fontFiles.length)
   })
 
-  it('gives every Korean family a regular face', () => {
+  it('gives every Korean family a regular face, unless the family is one weight of its own', () => {
     for (const family of TEMPLATE_FONTS.filter((f) => f.script === 'korean')) {
       expect(
-        family.faces.some((face) => face.weight === 400),
+        family.faces.length === 1 || family.faces.some((face) => face.weight === 400),
         family.family,
       ).toBe(true)
     }
   })
 
   it('records where and when each family was taken from', () => {
+    // GitHub, or the Gongu (공유마당) page that states the license and serves the file
+    const source = /^https:\/\/(github\.com|gongu\.copyright\.or\.kr)\//
     for (const family of TEMPLATE_FONTS) {
-      expect(family.distributorUrl).toMatch(/^https:\/\/github\.com\//)
-      expect(family.sourceUrl).toMatch(/^https:\/\/github\.com\//)
-      expect(family.licenseUrl).toMatch(/^https:\/\/github\.com\//)
+      expect(family.distributorUrl).toMatch(source)
+      expect(family.sourceUrl).toMatch(source)
+      expect(family.licenseUrl).toMatch(source)
       expect(family.downloaded).toMatch(/^\d{4}-\d{2}-\d{2}$/)
     }
+    for (const family of TEMPLATE_FONTS.filter((f) => f.license === 'KOGL-Type1'))
+      expect(family.sourceUrl, family.family).toMatch(/^https:\/\/gongu\.copyright\.or\.kr\//)
   })
 })
 
@@ -156,5 +170,12 @@ describe('shared font list', () => {
     expect(matchesFontQuery('검은고딕', 'Black Han Sans')).toBe(true)
     expect(matchesFontQuery('프리텐다드', 'Pretendard')).toBe(true)
     expect(matchesFontQuery('본명조', 'Noto Serif KR')).toBe(true)
+    expect(matchesFontQuery('본고딕', 'Noto Sans KR')).toBe(true)
+    expect(matchesFontQuery('학교안심 포스터', 'Hakgyoansim Poster B')).toBe(true)
+    expect(matchesFontQuery('칠판지우개', 'Hakgyoansim Chilpanjiugae TTF B')).toBe(true)
+    expect(matchesFontQuery('시간표', 'Hakgyoansim Siganpyo R')).toBe(true)
+    expect(matchesFontQuery('경기천년제목', 'GyeonggiTitle Bold')).toBe(true)
+    expect(matchesFontQuery('서울남산', 'SeoulNamsan B')).toBe(true)
+    expect(matchesFontQuery('문화재돌봄', 'MunhwajaeDolbom Regular')).toBe(true)
   })
 })
