@@ -9,7 +9,8 @@
  *   the summaries the view shows: floating topics, callouts, the branches
  *   under a summary topic, topics of a kind the engine does not know, and
  *   every topic below any of those;
- * - a boundary, on whichever topic it sits;
+ * - a boundary the view does not show: the one round a whole branch
+ *   (`"master"`), or one whose record has no id or a range that does not fit;
  * - a relationship the view does not show, because one of its ends is not
  *   shown or the record is incomplete.
  *
@@ -31,6 +32,7 @@ export function countPreservedElements(sheet: XmindSheet): number {
   const shownSummaryTopics = new Set(shown.summaries.map((summary) => summary.topic))
   let count = topics.length - shown.topics.size - shownSummaryTopics.size
   for (const topic of topics) count += recordsOf(topic.boundaries).length
+  count -= shown.boundaries.length
   for (const relationship of recordsOf(sheet.relationships)) {
     if (!isShownRelationship(relationship, shown.ends)) count++
   }

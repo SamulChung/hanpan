@@ -12,7 +12,9 @@
  *   `pt` and `px`, written back as a number of CSS pixels.
  *
  * Words are taken only when they are in the short lists below, and each stands
- * for a value this app chose (`bold` is 700, `none` is "no fill"). Everything
+ * for a value this app chose (`bold` is 700, `none` is "no fill", a shape's
+ * name is one of three box shapes). A font family is taken when it is letters,
+ * digits, spaces and hyphens only, and is drawn inside quotes. Everything
  * else (another word, a function, a list, a sentence, a sign, an exponent) is
  * no value: the answer is null and the property is drawn the way the theme
  * draws it. The file's own value is never touched by any of this.
@@ -36,7 +38,31 @@ export interface OwnTopicStyle {
   fontWeight: number | null
   /** CSS pixels */
   fontSize: number | null
+  italic: boolean | null
+  /** underline and strike-through, each on or off; null: as the theme draws it */
+  decoration: { underline: boolean; lineThrough: boolean } | null
+  fontFamily: string | null
+  borderColor: SafeColor | null
+  /** CSS pixels */
+  borderWidth: number | null
+  shape: TopicShape | null
+  /** the lines from this topic to its branches */
+  lineColor: SafeColor | null
+  /** CSS pixels */
+  lineWidth: number | null
 }
+
+/** The shapes this app draws a topic's box in. */
+export type TopicShape = 'rounded' | 'pill' | 'underline'
+
+/** The format's name of each shape (checked against the format's published themes). */
+export const SHAPE_CLASS: Readonly<Record<TopicShape, string>> = {
+  rounded: 'org.xmind.topicShape.roundedRect',
+  pill: 'org.xmind.topicShape.ellipserect',
+  underline: 'org.xmind.topicShape.underline',
+}
+
+const FONT_FAMILY = /^[\p{L}\p{N}][\p{L}\p{N} -]{0,63}$/u
 
 const HEX_COLOR = /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i
 /** up to four digits, up to three decimals, one known unit or none */
@@ -114,6 +140,32 @@ export function safeLineWidth(value: unknown): number | null {
   return round(Math.min(LINE_WIDTH_DRAWN_MAX, pixels))
 }
 
+/** Italic or not; null for any other word. */
+export function safeItalic(value: unknown): boolean | null {
+  return value === 'italic' ? true : value === 'normal' ? false : null
+}
+
+/** Underline and strike-through from the words of the format, spaces around them allowed. */
+export function safeDecoration(value: unknown): OwnTopicStyle['decoration'] {
+  if (typeof value !== 'string') return null
+  const words = value.trim().split(/\s+/)
+  if (words.length === 1 && words[0] === 'none') return { underline: false, lineThrough: false }
+  if (words.some((word) => word !== 'underline' && word !== 'line-through')) return null
+  return { underline: words.includes('underline'), lineThrough: words.includes('line-through') }
+}
+
+/** A font family name of letters, digits, spaces and hyphens; null for anything else. */
+export function safeFontFamily(value: unknown): string | null {
+  return typeof value === 'string' && FONT_FAMILY.test(value) ? value : null
+}
+
+/** The shape a format name stands for; null for a name this app does not draw. */
+export function safeShape(value: unknown): TopicShape | null {
+  for (const [shape, name] of Object.entries(SHAPE_CLASS))
+    if (value === name) return shape as TopicShape
+  return null
+}
+
 /** The style values set on a topic itself, as far as they may reach a style. */
 export function ownTopicStyle(style: ViewTopicStyle | null | undefined): OwnTopicStyle {
   return {
@@ -121,12 +173,20 @@ export function ownTopicStyle(style: ViewTopicStyle | null | undefined): OwnTopi
     fill: safeFill(style?.fill),
     fontWeight: safeFontWeight(style?.fontWeight),
     fontSize: safeFontSize(style?.fontSize),
+    italic: safeItalic(style?.fontStyle),
+    decoration: safeDecoration(style?.textDecoration),
+    fontFamily: safeFontFamily(style?.fontFamily),
+    borderColor: safeColor(style?.borderColor),
+    borderWidth: safeLineWidth(style?.borderWidth),
+    shape: safeShape(style?.shape),
+    lineColor: safeColor(style?.lineColor),
+    lineWidth: safeLineWidth(style?.lineWidth),
   }
 }
 
 /** Whether a topic sets nothing of its own that is drawn. */
 export function isPlainStyle(own: OwnTopicStyle): boolean {
-  return own.color === null && own.fill === null && own.fontWeight === null && own.fontSize === null
+  return Object.values(own).every((value) => value === null)
 }
 
 /** The `#rrggbb` part of a safe colour and its opacity from 0 to 1. */

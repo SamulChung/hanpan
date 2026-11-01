@@ -73,11 +73,14 @@ export function ConfirmDialog(p: { request: ConfirmRequest; onAnswer(ok: boolean
   )
 }
 
-export type TopicField = 'label' | 'note' | 'link'
+export type TopicField = 'label' | 'note' | 'link' | 'boundary'
 
 export interface TopicFieldRequest {
   field: TopicField
+  /** for a boundary: the topic that carries it */
   topicId: string
+  /** for a boundary: the boundary's id */
+  boundaryId?: string
   /** the value as it is now: labels joined by ", ", the note, or the link */
   value: string
 }
@@ -108,7 +111,14 @@ export function TopicFieldDialog(p: {
   }, [])
 
   const { field: kind } = p.request
-  const title = kind === 'label' ? t('tbLabel') : kind === 'note' ? t('tbNote') : t('tbLink')
+  const title =
+    kind === 'label'
+      ? t('tbLabel')
+      : kind === 'note'
+        ? t('tbNote')
+        : kind === 'boundary'
+          ? t('boundaryName')
+          : t('tbLink')
   const linkKind = kind === 'link' ? (p.linkKind?.(value) ?? 'opens') : 'opens'
   const hintKey: StringKey =
     kind === 'label'
@@ -149,7 +159,7 @@ export function TopicFieldDialog(p: {
           }}
         />
       )}
-      {kind !== 'note' && (
+      {kind !== 'note' && kind !== 'boundary' && (
         <p
           className={`mm-modal-hint${hintTone}`}
           data-link-kind={kind === 'link' ? linkKind : undefined}
@@ -159,7 +169,7 @@ export function TopicFieldDialog(p: {
         </p>
       )}
       <div className="mm-modal-actions">
-        {p.request.value !== '' && (
+        {p.request.value !== '' && kind !== 'boundary' && (
           <button
             type="button"
             className="mm-btn mm-btn-start"

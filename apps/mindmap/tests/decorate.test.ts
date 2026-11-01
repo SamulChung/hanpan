@@ -50,6 +50,7 @@ function show(doc: XmindDocument, sheetIndex = 0) {
     confirmDelete: vi.fn(async () => true),
     openLink: vi.fn(),
     onRequest: vi.fn(),
+    onBoundaryRequest: vi.fn(),
     onStateChange: vi.fn(),
   }
   const key = session.tabs()[sheetIndex]!.key
@@ -706,7 +707,7 @@ describe('pictures', () => {
     expect(revoked.mock.calls.map(([url]) => url).sort()).toEqual([...urls].sort())
   })
 
-  it('a topic pasted from the clipboard cannot bring a picture or a style; markers of the right shape it can', async () => {
+  it('a topic pasted from the clipboard cannot bring a picture; markers and style values of the right shape it can', async () => {
     const { mind, el } = await mountPictures()
     const pasted = {
       id: 'pasted',
@@ -716,7 +717,7 @@ describe('pictures', () => {
       metadata: {
         image: { src: 'https://outside.example/meta.png', entryName: 'resources/inside.png' },
         markers: ['priority-1', 'flag-red"><img src=x>'],
-        style: { fill: '#ff0000' },
+        style: { fill: '#ff0000', color: 'url(https://outside.example/c.png)' },
       },
     }
     mind.selectNode(mind.findEle(ID.four))
@@ -728,8 +729,10 @@ describe('pictures', () => {
     expect(added.querySelector('img, .mm-picture')).toBeNull()
     const glyphs = added.querySelectorAll<SVGElement>('.mm-marker')
     expect([...glyphs].map((glyph) => glyph.dataset.markerFamily)).toEqual(['priority'])
-    expect(added.style.backgroundColor).toBe('')
+    // the fill is taken; the text colour is the one picked to read on it, not the pasted one
+    expect(added.style.backgroundColor).toBe('rgb(255, 0, 0)')
     expect(el.innerHTML).not.toContain('pasted.png')
+    expect(el.innerHTML).not.toContain('c.png')
     expect(el.innerHTML).not.toContain('pasted-style')
   })
 })
@@ -764,5 +767,58 @@ describe('the edit box', () => {
     const box = el.querySelector<HTMLElement>('#input-box')!
     expect(box.style.fontWeight).toBe('650')
     expect(box.style.lineHeight).toBe('22px')
+  })
+})
+
+describe('boundaries', () => {
+  /** jsdom lays nothing out: every element gets the same box, so that a boundary is drawn. */
+  function fakeLayout(): void {
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+      left: 10,
+      top: 10,
+      right: 110,
+      bottom: 40,
+      width: 100,
+      height: 30,
+      x: 10,
+      y: 10,
+      toJSON: () => ({}),
+    } as DOMRect)
+    vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(100)
+  }
+
+  it('a title that looks like markup is drawn as text, in the layer the export keeps', async () => {
+    fakeLayout()
+    const { el, controller } = await mount(
+      sheetOf(
+        topic(ID.one, 'One', {}, [topic(ID.sub, 'Sub'), topic(ID.two, 'Two')]),
+        topic(ID.three, 'Three'),
+      ),
+    )
+    const hostile = '<img src=x onerror=alert(1)><script>x</script>'
+    controller.mind.selectNodes([topicEl(el, ID.sub), topicEl(el, ID.two)] as never)
+    expect(controller.addBoundary()).toBe(true)
+    const [made] = controller.boundariesOf(ID.one)
+    controller.setBoundaryTitle(ID.one, made!.id, hostile)
+    await settle()
+    const layer = el.querySelector('me-nodes > svg.mm-boundaries')!
+    expect(layer).not.toBeNull()
+    expect(layer.querySelectorAll('g.mm-boundary')).toHaveLength(1)
+    expect(layer.querySelector('.mm-boundary-title')!.textContent).toBe(hostile)
+    expect(layer.querySelector('img, script')).toBeNull()
+    expect(el.querySelector('img[src="x"], script')).toBeNull()
+  })
+
+  it('the layer goes away with the last boundary', async () => {
+    fakeLayout()
+    const { el, controller } = await mount(sheetOf(topic(ID.one, 'One'), topic(ID.two, 'Two')))
+    controller.mind.selectNode(topicEl(el, ID.one) as never)
+    controller.addBoundary()
+    await settle()
+    expect(el.querySelector('svg.mm-boundaries')).not.toBeNull()
+    const [made] = controller.boundariesOf(ID.root)
+    controller.removeBoundary(ID.root, made!.id)
+    await settle()
+    expect(el.querySelector('svg.mm-boundaries')).toBeNull()
   })
 })

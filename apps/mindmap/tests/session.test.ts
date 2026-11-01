@@ -248,7 +248,7 @@ describe('what the editor does not show', () => {
     const { session, first, second } = await richSession()
     expect(session.preservedTotal()).toBe(RICH_PRESERVED)
     // Alpha carries the callout, the branch under its summary and the boundary
-    expect(session.preservedWith(first.key, [IDS.a])).toBe(3)
+    expect(session.preservedWith(first.key, [IDS.a])).toBe(2)
     expect(session.preservedWith(first.key, [IDS.b])).toBe(0)
     expect(session.preservedWith(first.key, [IDS.summaryTopic])).toBe(1)
     expect(session.preservedWith(second.key, ['cccccccc-cccc-4ccc-8ccc-ccccccccccc1'])).toBe(0)

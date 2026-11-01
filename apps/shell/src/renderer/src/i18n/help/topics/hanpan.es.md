@@ -14,6 +14,7 @@ Hanpan envía lo que ordenaste en un mapa mental a un informe Hangul (HWP), una 
 - **Insertar › Imagen** pone una imagen PNG, JPG o GIF (10 MB como máximo) en el tema seleccionado, o quita la que tiene. **Formato › Ordenar** ordena alfabéticamente las ramas del tema seleccionado; púlsalo otra vez para el orden inverso.
 - **Vista › Niveles** despliega el mapa hasta el nivel 1, 2 o 3, y **Vista › Mostrar** oculta notas, etiquetas, enlaces, iconos o imágenes solo en pantalla. El archivo los conserva todos.
 - **Insertar › Iconos** abre el panel de iconos: prioridad, progreso, banderas, estrellas, caras y flechas. Un tema lleva un icono de cada tipo; pulsa uno que ya tenga para quitarlo. Haz clic en un icono del mapa para cambiarlo por otro de su tipo o quitarlo.
+- La pestaña **Estilo** cambia el aspecto de los temas seleccionados: forma, relleno, contorno, fuente, negrita, cursiva, subrayado y color del texto y de las ramas. **Estilo › Copiar formato** copia el formato de un tema al siguiente tema en que hagas clic; con doble clic sigue activo hasta pulsar Esc. **Inicio › Borde** rodea con un marco los temas hermanos seleccionados; haz doble clic en el marco para ponerle nombre, o haz clic y pulsa Supr para quitarlo.
 
 ## Sincronizar el mapa y el documento
 

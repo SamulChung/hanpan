@@ -14,6 +14,7 @@ Hanpan stuurt wat u in een mindmap hebt geordend naar een Hangul-rapport (HWP), 
 - **Invoegen › Afbeelding** zet een PNG-, JPG- of GIF-afbeelding (hooguit 10 MB) op het gekozen onderwerp, of haalt de bestaande weg. **Opmaak › Sorteren** zet de takken van het gekozen onderwerp op alfabetische volgorde; druk nogmaals voor de omgekeerde volgorde.
 - **Beeld › Niveaus** vouwt de kaart open tot niveau 1, 2 of 3, en **Beeld › Weergeven** verbergt notities, labels, koppelingen, pictogrammen of afbeeldingen alleen op het scherm. Het bestand houdt ze allemaal.
 - **Invoegen › Pictogrammen** opent het paneel met pictogrammen: prioriteit, voortgang, vlaggen, sterren, smileys en pijlen. Een onderwerp krijgt er één van elke soort; druk op een die het al heeft om het weg te halen. Klik op een pictogram in de kaart om het te wisselen voor een ander van dezelfde soort of weg te halen.
+- Het tabblad **Stijl** verandert het uiterlijk van de gekozen onderwerpen: vorm, vulling, omtrek, lettertype, vet, cursief, onderstreept, tekstkleur en takkleur. **Stijl › Opmaak kopiëren** neemt de opmaak van één onderwerp over op het volgende onderwerp waarop je klikt; dubbelklik om het aan te laten tot Esc. **Start › Kader** zet een kader om de gekozen onderwerpen naast elkaar; dubbelklik op het kader om het een naam te geven, of klik erop en druk op Delete om het weg te halen.
 
 ## Kaart en document gelijkzetten
 

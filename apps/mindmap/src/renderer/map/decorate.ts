@@ -1,6 +1,7 @@
 /**
  * What this editor adds to the topics the drawing library made: the colours
- * of each main branch, the markers, the picture and the topic's own style.
+ * of each main branch, the markers, the picture, the topic's own style and
+ * the boundaries round runs of branches.
  *
  * The library is never given a node's `style`, `image` or `icons` (it would
  * put file values into styles and addresses into elements as they are; see
@@ -22,7 +23,9 @@
  * branch by its place in the map, and it draws every line again from the
  * exact boxes: the library measures in whole pixels, each line in the frame
  * of its own drawing, so a line and the underline it continues could end up
- * a pixel apart. Measured exactly, they meet.
+ * a pixel apart. Measured exactly, they meet. Last it draws the boundaries,
+ * one dashed box each round the branches it covers, behind the topics, in
+ * the colour of their main branch.
  */
 import type { MindElixirInstance, Topic } from 'mind-elixir'
 import { mixColors, type ThemeLook, type ViewImage } from '@genoffice/xmind-engine'
@@ -78,6 +81,10 @@ interface DecoratedTopic extends Topic {
 }
 
 const SVG = 'http://www.w3.org/2000/svg'
+export const BOUNDARIES_CLASS = 'mm-boundaries'
+export const BOUNDARY_CLASS = 'mm-boundary'
+/** How far a boundary's box stands off the branches it covers (CSS pixels). */
+const BOUNDARY_PAD = 7
 export const MARKERS_CLASS = 'mm-markers'
 export const PICTURE_CLASS = 'mm-picture'
 export const PICTURE_MISSING_CLASS = 'mm-picture-missing'
@@ -129,6 +136,8 @@ export class TopicDecorator {
   #look: ThemeLook
   #geometry: BranchGeometry
   #strings: DecorationStrings
+  /** the boundary picked on the map, drawn as picked */
+  selectedBoundary: string | null = null
 
   constructor(options: {
     mind: MindElixirInstance
@@ -194,10 +203,71 @@ export class TopicDecorator {
       if (!topic) return
       const index = Math.max(0, mains.indexOf(topic.nodeObj as never))
       lines[at]?.setAttribute('stroke', branchColor(look, index))
-      // the library writes the colour of its own palette here; the rules of `map.css` decide instead
-      topic.style.borderColor = ''
+      // the library writes the colour of its own palette here; the rules of `map.css` decide
+      // instead, unless the topic has an outline colour of its own
+      topic.style.borderColor = ownTopicStyle(metaOf(topic).style).borderColor ?? ''
     })
     this.#drawExactly(wrappers, only ?? null)
+    this.#drawBoundaries()
+  }
+
+  /** Marks the picked boundary without drawing the boxes again. */
+  markBoundary(id: string | null): void {
+    this.selectedBoundary = id
+    for (const group of this.#mind.nodes.querySelectorAll<SVGGElement>(`g.${BOUNDARY_CLASS}`)) {
+      if (group.dataset.boundaryId === id) group.dataset.selected = 'true'
+      else delete group.dataset.selected
+    }
+  }
+
+  /**
+   * One box per boundary, round the branches it covers as they are drawn now,
+   * in a layer of its own at the back of the library's `me-nodes` (so a copy
+   * of the drawing for export takes it along). A boundary over a folded topic,
+   * or over branches that are not drawn, is not drawn.
+   */
+  #drawBoundaries(): void {
+    const { nodes } = this.#mind
+    let layer = nodes.querySelector<SVGSVGElement>(`:scope > svg.${BOUNDARIES_CLASS}`)
+    const owners = this.#topics().filter((topic) => (metaOf(topic).boundaries ?? []).length > 0)
+    const frame = nodes.getBoundingClientRect()
+    if (owners.length === 0 || !(frame.width > 0) || !(nodes.offsetWidth > 0)) {
+      layer?.remove()
+      return
+    }
+    const scale = frame.width / nodes.offsetWidth
+    if (!layer) {
+      layer = document.createElementNS(SVG, 'svg')
+      layer.classList.add(BOUNDARIES_CLASS)
+      layer.setAttribute('aria-hidden', 'true')
+    }
+    // first in `me-nodes`: drawn under the topics, which stay in front for clicks
+    if (nodes.firstChild !== layer) nodes.prepend(layer)
+    layer.replaceChildren()
+    const mains = this.#mind.nodeData.children ?? []
+    for (const owner of owners) {
+      const node = owner.nodeObj
+      if (node.expanded === false) continue
+      const wrappers = branchWrappersOf(owner)
+      for (const boundary of metaOf(owner).boundaries ?? []) {
+        const covered = (node.children ?? [])
+          .slice(boundary.start, boundary.end + 1)
+          .map((child) => wrappers.get(child.id))
+          .filter((wrapper): wrapper is HTMLElement => wrapper !== undefined)
+        if (covered.length === 0) continue
+        const rects = covered.map((wrapper) => wrapper.getBoundingClientRect())
+        const left = (Math.min(...rects.map((r) => r.left)) - frame.left) / scale - BOUNDARY_PAD
+        const top = (Math.min(...rects.map((r) => r.top)) - frame.top) / scale - BOUNDARY_PAD
+        const right = (Math.max(...rects.map((r) => r.right)) - frame.left) / scale + BOUNDARY_PAD
+        const bottom = (Math.max(...rects.map((r) => r.bottom)) - frame.top) / scale + BOUNDARY_PAD
+        const main = mainTopicOf(covered[0]!.closest('me-main > me-wrapper') ?? covered[0]!)
+        const color = branchColor(this.#look, Math.max(0, mains.indexOf(main?.nodeObj as never)))
+        layer.appendChild(
+          boundaryGroup(boundary, { left, top, width: right - left, height: bottom - top }, color),
+        )
+      }
+    }
+    this.markBoundary(this.selectedBoundary)
   }
 
   /**
@@ -260,20 +330,26 @@ export class TopicDecorator {
         main = mainBranchPath(geometry, boxes(centre, rect, frame, direction))
       }
       lines[at]?.setAttribute('d', main)
+      const line = lines[at] as SVGPathElement | undefined
+      if (line) ownLine(line, this.#mind.map.querySelector<Topic>('me-root me-tpc'))
       if (only && only !== wrapper) return
       const drawn = wrapper.lastElementChild
       if (!drawn || drawn.tagName.toLowerCase() !== 'svg') return
       const origin = wrapper.getBoundingClientRect()
       const paths: string[] = []
+      // the topic each path leaves from: its own line style is drawn on it
+      const owners: (Topic | null)[] = []
       const walk = (branch: Element, isFirst: boolean): void => {
         const parent = branch.firstElementChild
         const below = branch.children[1]
         if (!parent || !below || below.tagName !== 'ME-CHILDREN') return
         const from = parent.getBoundingClientRect()
+        const owner = parent.querySelector<Topic>(':scope > me-tpc')
         for (const child of below.children) {
           const to = child.firstElementChild
           if (!to) continue
           paths.push(subPath(boxes(from, to.getBoundingClientRect(), origin, direction, isFirst)))
+          owners.push(owner)
           // the library draws below a topic only while its fold handle says it is open
           if ((to.children[1] as { expanded?: boolean } | undefined)?.expanded) walk(child, false)
         }
@@ -281,7 +357,11 @@ export class TopicDecorator {
       walk(wrapper, true)
       // any other number of paths means the library drew something this walk does not know: its paths stand
       if (paths.length !== drawn.children.length) return
-      paths.forEach((d, index) => drawn.children[index]!.setAttribute('d', d))
+      paths.forEach((d, index) => {
+        const path = drawn.children[index] as SVGPathElement
+        path.setAttribute('d', d)
+        ownLine(path, owners[index] ?? null)
+      })
     })
   }
 
@@ -350,6 +430,26 @@ export class TopicDecorator {
     style.fontWeight = own.fontWeight === null ? '' : String(own.fontWeight)
     style.fontSize = own.fontSize === null ? '' : `${own.fontSize}px`
     style.lineHeight = own.fontSize === null ? '' : `${lineHeightFor(own.fontSize)}px`
+    style.fontStyle = own.italic === null ? '' : own.italic ? 'italic' : 'normal'
+    style.textDecorationLine =
+      own.decoration === null
+        ? ''
+        : [
+            own.decoration.underline ? 'underline' : '',
+            own.decoration.lineThrough ? 'line-through' : '',
+          ]
+            .filter(Boolean)
+            .join(' ') || 'none'
+    // the name passed the filter (letters, digits, spaces, hyphens), so the quotes hold it whole
+    style.fontFamily = own.fontFamily === null ? '' : `"${own.fontFamily}", sans-serif`
+    // an outline colour alone still shows: a box the theme draws without one gets a thin one
+    const outlined = own.borderColor !== null || own.borderWidth !== null
+    style.borderColor = own.borderColor ?? ''
+    style.borderWidth =
+      own.borderWidth !== null ? `${own.borderWidth}px` : own.borderColor ? '1.5px' : ''
+    style.borderStyle = outlined && own.shape !== 'underline' ? 'solid' : ''
+    if (own.shape === null) delete topic.dataset.mmShape
+    else topic.dataset.mmShape = own.shape
     if (key === '') delete topic.dataset.mmOwn
     else topic.dataset.mmOwn = 'true'
     // a fill of its own on a topic that is bare text in this skeleton still needs the shape of a box
@@ -466,6 +566,69 @@ export class TopicDecorator {
     }
     box.appendChild(svg)
   }
+}
+
+/** The `me-wrapper` of each branch of a topic, by the branch's id. The centre's are under `me-main`. */
+function branchWrappersOf(topic: Topic): Map<string, HTMLElement> {
+  const out = new Map<string, HTMLElement>()
+  const isCentre = !topic.nodeObj.parent
+  const wrappers = isCentre
+    ? topic.closest('me-nodes')?.querySelectorAll<HTMLElement>(':scope > me-main > me-wrapper')
+    : topic
+        .closest('me-wrapper')
+        ?.querySelectorAll<HTMLElement>(':scope > me-children > me-wrapper')
+  for (const wrapper of wrappers ?? []) {
+    const branch = wrapper.querySelector<Topic>(':scope > me-parent > me-tpc')
+    if (branch?.nodeObj) out.set(branch.nodeObj.id, wrapper)
+  }
+  return out
+}
+
+/**
+ * A boundary's box and its title. The colour is the branch colour of the
+ * theme; the title is text (`textContent`), and nothing of the file reaches
+ * an attribute but the boundary's id, which the controller reads back.
+ */
+function boundaryGroup(
+  boundary: { id: string; title: string },
+  box: { left: number; top: number; width: number; height: number },
+  color: string,
+): SVGGElement {
+  const group = document.createElementNS(SVG, 'g')
+  group.classList.add(BOUNDARY_CLASS)
+  group.dataset.boundaryId = boundary.id
+  const frame = document.createElementNS(SVG, 'rect')
+  frame.setAttribute('x', box.left.toFixed(2))
+  frame.setAttribute('y', box.top.toFixed(2))
+  frame.setAttribute('width', box.width.toFixed(2))
+  frame.setAttribute('height', box.height.toFixed(2))
+  frame.setAttribute('rx', '10')
+  frame.setAttribute('fill', color)
+  frame.setAttribute('fill-opacity', '0.07')
+  frame.setAttribute('stroke', color)
+  frame.classList.add('mm-boundary-box')
+  group.appendChild(frame)
+  if (boundary.title !== '') {
+    const label = document.createElementNS(SVG, 'text')
+    label.classList.add('mm-boundary-title')
+    label.setAttribute('x', (box.left + 10).toFixed(2))
+    label.setAttribute('y', (box.top - 5).toFixed(2))
+    label.setAttribute('fill', color)
+    label.textContent = boundary.title
+    group.appendChild(label)
+  }
+  return group
+}
+
+/**
+ * The line colour and width the topic a line leaves from sets for itself, or
+ * none. Inline, so that they win over the rules of `map.css`; the values are
+ * the filter's own.
+ */
+function ownLine(path: SVGPathElement, from: Topic | null): void {
+  const own = from ? ownTopicStyle(metaOf(from).style) : null
+  path.style.stroke = own?.lineColor ?? ''
+  path.style.strokeWidth = own?.lineWidth != null ? `${own.lineWidth}px` : ''
 }
 
 function mainTopicOf(wrapper: Element): Topic | null {

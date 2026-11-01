@@ -175,6 +175,24 @@
   border-radius: max(6px, var(--mm-sub-radius));
 }
 
+/* a shape of the topic's own (map/decorate.ts): a rounded box, a pill, or a line under the text */
+.mm-card .map-container me-tpc[data-mm-shape='rounded'] {
+  border-radius: 8px;
+}
+
+.mm-card .map-container me-tpc[data-mm-shape='pill'] {
+  border-radius: 999px;
+}
+
+.mm-card .map-container me-tpc[data-mm-shape='underline'] {
+  border-style: none none solid;
+  border-bottom-width: 2px;
+  border-bottom-color: currentColor;
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+}
+
 /* ---- branch lines: thin, round ends; the lines below a main topic step back as one layer ---- */
 
 .mm-card .map-container .lines path {
@@ -391,4 +409,39 @@
 .mm-card .map-container[data-mm-hide~='pictures'] .mm-picture,
 .mm-card .map-container[data-mm-hide~='pictures'] .mm-picture-missing {
   display: none;
+}
+
+/* ---- boundaries (map/decorate.ts): a dashed box behind the branches it covers ---- */
+.mm-card .map-container me-nodes > svg.mm-boundaries {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.mm-card .map-container .mm-boundary-box {
+  stroke-width: 1.5;
+  stroke-dasharray: 6 4;
+  pointer-events: visiblePainted;
+  cursor: pointer;
+}
+
+.mm-card .map-container .mm-boundary[data-selected] .mm-boundary-box {
+  stroke-width: 2.5;
+  stroke-dasharray: none;
+}
+
+.mm-card .map-container .mm-boundary-title {
+  font-size: 12px;
+  font-weight: 600;
+  pointer-events: visiblePainted;
+  cursor: pointer;
+}
+
+/* the format painter is on: the next topic clicked takes the style */
+.mm-card .map-container[data-mm-painting] me-tpc {
+  cursor: copy;
 }

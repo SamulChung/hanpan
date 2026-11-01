@@ -84,6 +84,7 @@ async function mount(sheets: XmindSheet[] = [richSheet()], hostOverrides: Partia
     confirmDelete: vi.fn(async (_count: number) => true),
     openLink: vi.fn(),
     onRequest: vi.fn(),
+    onBoundaryRequest: vi.fn(),
     onStateChange: vi.fn(),
     ...hostOverrides,
   }
@@ -289,7 +290,7 @@ describe('deleting', () => {
     mind.selectNode(mind.findEle(IDS.a))
     press(mind.container, 'Delete')
     await settle()
-    expect(host.confirmDelete).toHaveBeenCalledExactlyOnceWith(3)
+    expect(host.confirmDelete).toHaveBeenCalledExactlyOnceWith(2)
     expect(attached().map((child) => child.id)).toEqual([IDS.a, IDS.b, IDS.c])
     expect(doc.changed).toBe(false)
   })
@@ -299,7 +300,7 @@ describe('deleting', () => {
     mind.selectNode(mind.findEle(IDS.a))
     press(mind.container, 'Delete')
     await settle()
-    expect(host.confirmDelete).toHaveBeenCalledExactlyOnceWith(3)
+    expect(host.confirmDelete).toHaveBeenCalledExactlyOnceWith(2)
     expect(attached().map((child) => child.id)).toEqual([IDS.b, IDS.c])
     expect(JSON.stringify(doc.sheets[0])).not.toContain(IDS.callout)
   })
@@ -307,7 +308,7 @@ describe('deleting', () => {
   it('a caller that may not ask (the AI) is refused, and told how many elements are in the way', async () => {
     const { controller, host, attached } = await mount()
     const refused = await controller.removeTopics([IDS.a], 'refuse')
-    expect(refused).toEqual({ ok: false, reason: 'preserved', preserved: 3 })
+    expect(refused).toEqual({ ok: false, reason: 'preserved', preserved: 2 })
     expect(host.confirmDelete).not.toHaveBeenCalled()
     expect(attached()).toHaveLength(3)
     expect(await controller.removeTopics([IDS.b], 'refuse')).toEqual({ ok: true })
@@ -748,6 +749,159 @@ describe('markers', () => {
   })
 })
 
+describe("a topic's own style", () => {
+  it('setStyle writes only the values it is given, keeps the record and its other keys, as one step', async () => {
+    const { controller, attached, el } = await mount()
+    expect(
+      controller.setStyle([IDS.a, IDS.c], {
+        fill: '#112233',
+        shape: 'org.xmind.topicShape.ellipserect',
+        lineColor: '#445566',
+      }),
+    ).toBe(true)
+    expect(attached()[0]!.style).toEqual({
+      id: 'style-a',
+      properties: {
+        'fo:color': '#aa0000',
+        'unknown:prop': 'kept',
+        'svg:fill': '#112233',
+        'shape-class': 'org.xmind.topicShape.ellipserect',
+        'line-color': '#445566',
+      },
+    })
+    expect(attached()[2]!.style).toMatchObject({ id: expect.stringMatching(UUID) })
+    expect(topicEl(el, IDS.c).dataset.mmShape).toBe('pill')
+    controller.undo()
+    expect(attached()[2]!).not.toHaveProperty('style')
+    expect(controller.canUndo).toBe(false)
+  })
+
+  it('refuses a value in a form the file does not take, and one that changes nothing', async () => {
+    const { controller } = await mount()
+    expect(controller.setStyle([IDS.a], { color: 'red' })).toBe(false)
+    expect(controller.setStyle([IDS.a], { shape: 'org.xmind.topicShape.diamond' })).toBe(false)
+    expect(controller.setStyle([IDS.a], { color: '#aa0000' })).toBe(false)
+    expect(controller.canUndo).toBe(false)
+  })
+
+  it('bold, italic, underline and strike-through toggle, and Ctrl+B, Ctrl+U do the same', async () => {
+    const { controller, mind, el } = await mount()
+    expect(controller.toggleItalic([IDS.c])).toBe(true)
+    expect(controller.styleOf(IDS.c).fontStyle).toBe('italic')
+    expect(controller.toggleItalic([IDS.c])).toBe(true)
+    expect(controller.styleOf(IDS.c).fontStyle).toBe('normal')
+    controller.toggleDecoration([IDS.c], 'underline')
+    controller.toggleDecoration([IDS.c], 'line-through')
+    expect(controller.styleOf(IDS.c).textDecoration).toBe('underline line-through')
+    controller.toggleDecoration([IDS.c], 'underline')
+    controller.toggleDecoration([IDS.c], 'line-through')
+    expect(controller.styleOf(IDS.c)).not.toHaveProperty('textDecoration')
+    mind.selectNode(topicEl(el, IDS.c) as never)
+    press(mind.container, 'b', { ctrlKey: true })
+    expect(controller.styleOf(IDS.c).fontWeight).toBe('bold')
+    expect(topicEl(el, IDS.c).style.fontWeight).toBe('700')
+    press(mind.container, 'u', { ctrlKey: true })
+    expect(controller.styleOf(IDS.c).textDecoration).toBe('underline')
+    expect(topicEl(el, IDS.c).style.textDecorationLine).toBe('underline')
+  })
+
+  it('the text grows and shrinks a step at a time from the size it is drawn at', async () => {
+    const { controller, el } = await mount()
+    topicEl(el, IDS.c).style.fontSize = '16px'
+    expect(controller.stepFontSize([IDS.c], true)).toBe(true)
+    expect(controller.styleOf(IDS.c).fontSize).toBe('14pt')
+    controller.stepFontSize([IDS.c], false)
+    expect(controller.styleOf(IDS.c).fontSize).toBe('12pt')
+  })
+
+  it('the format painter copies the style it can write to the next topic clicked, then stops', async () => {
+    const { controller, mind, el, attached } = await mount()
+    controller.setStyle([IDS.c], { fill: '#123456', fontStyle: 'italic' })
+    mind.selectNode(topicEl(el, IDS.c) as never)
+    expect(controller.startPainting(false)).toBe(true)
+    expect(mind.container.dataset.mmPainting).toBe('true')
+    topicEl(el, IDS.a).dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(controller.painting).toBe(false)
+    expect(mind.container.dataset.mmPainting).toBeUndefined()
+    // the file's colour is taken off, as the source has none; its unknown key stays
+    expect(attached()[0]!.style).toEqual({
+      id: 'style-a',
+      properties: { 'unknown:prop': 'kept', 'svg:fill': '#123456', 'fo:font-style': 'italic' },
+    })
+  })
+
+  it('a painter that stays on paints every topic clicked until Esc', async () => {
+    const { controller, mind, el } = await mount()
+    controller.setStyle([IDS.c], { fill: '#123456' })
+    mind.selectNode(topicEl(el, IDS.c) as never)
+    controller.startPainting(true)
+    topicEl(el, IDS.a).dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    topicEl(el, IDS.b).dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(controller.painting).toBe(true)
+    press(mind.container, 'Escape')
+    expect(controller.painting).toBe(false)
+    expect([IDS.a, IDS.b].map((id) => controller.styleOf(id).fill)).toEqual(['#123456', '#123456'])
+  })
+
+  it('clearStyle takes every value of the own style off', async () => {
+    const { controller, attached } = await mount()
+    expect(controller.clearStyle([IDS.a])).toBe(true)
+    expect(attached()[0]!.style).toEqual({ id: 'style-a', properties: { 'unknown:prop': 'kept' } })
+  })
+})
+
+describe('boundaries', () => {
+  it('shows the boundary of the file on the topic that carries it', async () => {
+    const { controller } = await mount()
+    expect(controller.boundariesOf(IDS.a)).toEqual([
+      { id: IDS.boundary, title: 'group', start: 0, end: 2 },
+    ])
+  })
+
+  it('addBoundary puts one round the selected siblings, as one step that reaches the file', async () => {
+    const { controller, mind, el, root } = await mount()
+    mind.selectNodes([topicEl(el, IDS.b), topicEl(el, IDS.c)] as never)
+    expect(controller.addBoundary()).toBe(true)
+    const [made] = controller.boundariesOf(IDS.root)
+    expect(made).toEqual({ id: expect.stringMatching(UUID), title: '', start: 1, end: 2 })
+    expect(controller.selectedBoundary).toEqual({ owner: IDS.root, id: made!.id })
+    expect(root().boundaries).toEqual([{ id: made!.id, range: '(1,2)' }])
+    controller.undo()
+    expect(controller.boundariesOf(IDS.root)).toEqual([])
+    expect(root()).not.toHaveProperty('boundaries')
+  })
+
+  it('a boundary is named, its name taken off, and removed with Delete when picked', async () => {
+    const { controller, mind, el, attached } = await mount()
+    expect(controller.setBoundaryTitle(IDS.a, IDS.boundary, '  Phase one ')).toBe(true)
+    expect(attached()[0]!.boundaries).toEqual([
+      { id: IDS.boundary, range: '(0,2)', title: 'Phase one' },
+    ])
+    controller.setBoundaryTitle(IDS.a, IDS.boundary, '')
+    expect(attached()[0]!.boundaries).toEqual([{ id: IDS.boundary, range: '(0,2)' }])
+    mind.selectNodes([topicEl(el, IDS.a1), topicEl(el, IDS.a2)] as never)
+    controller.addBoundary()
+    expect(controller.boundariesOf(IDS.a)).toHaveLength(2)
+    press(mind.container, 'Delete')
+    expect(controller.boundariesOf(IDS.a)).toHaveLength(1)
+    // the topics were not deleted with it
+    expect(attached()[0]!.children!.attached!.map((each) => each.id)).toEqual([
+      IDS.a1,
+      IDS.a2,
+      IDS.a3,
+    ])
+    expect(controller.removeBoundary(IDS.a, IDS.boundary)).toBe(true)
+    expect(attached()[0]!).not.toHaveProperty('boundaries')
+    expect(controller.removeBoundary(IDS.a, IDS.boundary)).toBe(false)
+  })
+
+  it('the central topic alone takes no boundary', async () => {
+    const { controller, mind, el } = await mount()
+    mind.selectNode(topicEl(el, IDS.root) as never)
+    expect(controller.addBoundary()).toBe(false)
+  })
+})
+
 describe('text from the file is never markup', () => {
   const HOSTILE = '<img src=x onerror="window.pwned=1"><script>window.pwned=1</script><b>bold</b>'
 
@@ -986,7 +1140,7 @@ describe('cut and paste', () => {
     })
 
     const clipboard = await cut(mind, IDS.a)
-    expect(host.confirmDelete).toHaveBeenCalledExactlyOnceWith(3)
+    expect(host.confirmDelete).toHaveBeenCalledExactlyOnceWith(2)
     expect(attached().map((source) => source.id)).toEqual([IDS.b, IDS.c])
     const afterCut = JSON.stringify(doc.sheets[0])
 

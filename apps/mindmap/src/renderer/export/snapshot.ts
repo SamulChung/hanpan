@@ -159,6 +159,12 @@ const TOPIC_STYLE = [
   'font-weight',
   'font-size',
   'line-height',
+  'font-style',
+  'text-decoration-line',
+  'font-family',
+  'border-color',
+  'border-width',
+  'border-style',
 ] as const
 
 function keepTopicStyle(topic: HTMLElement): void {
@@ -298,7 +304,7 @@ export function base64Of(bytes: Uint8Array): string {
 /**
  * The part of the sheet that is drawn: the library's `me-nodes` (the topics
  * and the room the theme leaves around them), widened to take in a
- * relationship or a summary that reaches past it. In CSS pixels of the map at
+ * relationship, a summary or a boundary that reaches past it. In CSS pixels of the map at
  * its own size, whatever the zoom on screen. Null when the sheet is not laid
  * out.
  */
@@ -312,7 +318,7 @@ export function measureDrawing(mind: MindElixirInstance): DrawnBox | null {
   let right = nodes.offsetWidth
   let bottom = nodes.offsetHeight
   for (const part of nodes.querySelectorAll(
-    '.topiclinks path, .summary path, .label-container > *',
+    '.topiclinks path, .summary path, .label-container > *, .mm-boundaries g',
   )) {
     const rect = part.getBoundingClientRect()
     if (rect.width === 0 && rect.height === 0) continue

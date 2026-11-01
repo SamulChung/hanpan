@@ -104,10 +104,8 @@ describe('reconcileSheet: a state that changes nothing', () => {
 
   it('does not count the parts of the state it never writes', async () => {
     const { document, result } = await edit((view) => {
-      // (an empty picture takes the picture off and markers are written: see
-      // resource-image.test.ts and markers.test.ts)
-      const beta = inView(view, 'b')
-      beta.style = { color: '#000000' }
+      // (an empty picture takes the picture off, and markers and styles are
+      // written: see resource-image.test.ts, markers.test.ts and style.test.ts)
       view.title = 'not applied here'
       view.id = 'other'
       view.index = 9
@@ -371,7 +369,7 @@ describe('reconcileSheet: topics only the state has', () => {
     expect(inView(applied.view, written).children[0]!.id).toBe(SOME_UUID)
   })
 
-  it('never writes a web picture or the style of the state onto a new topic; its markers it does', async () => {
+  it('never writes a web picture onto a new topic; its markers and style it does', async () => {
     const { sheet } = await edit((view) => {
       view.root.children.push(
         freshTopic(SOME_UUID, 'Plain', {
@@ -385,6 +383,7 @@ describe('reconcileSheet: topics only the state has', () => {
       id: SOME_UUID,
       title: 'Plain',
       markers: [{ markerId: 'priority-1' }],
+      style: { id: expect.stringMatching(UUID_V4), properties: { 'svg:fill': '#ff0000' } },
     })
   })
 
@@ -422,10 +421,22 @@ describe('reconcileSheet: topics only the state has', () => {
     shown.relationships = []
     const back = expectApplied(reconcileSheet(document, 0, shown))
     expect(back.ids.topics.size).toBe(0)
-    expect(back.inSync).toBe(false) // the picture and style were not brought back
+    expect(back.inSync).toBe(false) // the picture was not brought back
     expect(inSource(document.sheets[0]!, SOME_UUID)).toEqual({
       id: SOME_UUID,
       title: 'Beta \u{1F600} 한글',
+      // the style the view showed comes back under a new record
+      style: {
+        id: expect.stringMatching(UUID_V4),
+        properties: {
+          'fo:color': '#112233',
+          'svg:fill': '#445566',
+          'fo:font-weight': '700',
+          'fo:font-size': '18pt',
+          'fo:font-family': 'Some Family',
+          'line-width': '2pt',
+        },
+      },
     })
   })
 })

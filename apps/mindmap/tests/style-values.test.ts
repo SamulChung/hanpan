@@ -206,11 +206,23 @@ describe('a line width', () => {
   })
 })
 
+/** the new style keys, none set */
+const UNSET = {
+  italic: null,
+  decoration: null,
+  fontFamily: null,
+  borderColor: null,
+  borderWidth: null,
+  shape: null,
+  lineColor: null,
+  lineWidth: null,
+}
+
 describe("a topic's own style", () => {
   it('keeps what is colour-shaped or number-shaped and the known words', () => {
     expect(
       ownTopicStyle({ color: '#AA0000', fill: 'none', fontWeight: 'bold', fontSize: '14pt' }),
-    ).toEqual({ color: '#aa0000', fill: NO_FILL, fontWeight: 700, fontSize: 18.67 })
+    ).toEqual({ color: '#aa0000', fill: NO_FILL, fontWeight: 700, fontSize: 18.67, ...UNSET })
   })
 
   it('drops each value that is anything else, on its own', () => {
@@ -220,7 +232,7 @@ describe("a topic's own style", () => {
       fontWeight: '600',
       fontSize: 'calc(100px)',
     })
-    expect(own).toEqual({ color: null, fill: null, fontWeight: 600, fontSize: null })
+    expect(own).toEqual({ color: null, fill: null, fontWeight: 600, fontSize: null, ...UNSET })
     expect(isPlainStyle(own)).toBe(false)
   })
 
@@ -238,6 +250,44 @@ describe("a topic's own style", () => {
         }),
       ),
     ).toBe(true)
+  })
+
+  it('takes the shape, outline, text and line values in the forms of the format', () => {
+    expect(
+      ownTopicStyle({
+        fontStyle: 'italic',
+        textDecoration: ' underline line-through',
+        fontFamily: 'Noto Sans KR',
+        borderColor: '#112233',
+        borderWidth: '2pt',
+        shape: 'org.xmind.topicShape.ellipserect',
+        lineColor: '#445566',
+        lineWidth: '3pt',
+      }),
+    ).toMatchObject({
+      italic: true,
+      decoration: { underline: true, lineThrough: true },
+      fontFamily: 'Noto Sans KR',
+      borderColor: '#112233',
+      borderWidth: 2.67,
+      shape: 'pill',
+      lineColor: '#445566',
+      lineWidth: 4,
+    })
+    expect(ownTopicStyle({ textDecoration: 'none', fontStyle: 'normal' })).toMatchObject({
+      italic: false,
+      decoration: { underline: false, lineThrough: false },
+    })
+  })
+
+  it('drops a font name, shape or decoration it does not know', () => {
+    const own = ownTopicStyle({
+      fontFamily: 'a"; color:red',
+      shape: 'org.xmind.topicShape.diamond',
+      textDecoration: 'blink',
+      fontStyle: 'oblique',
+    })
+    expect(isPlainStyle(own)).toBe(true)
   })
 
   it('never hands on a string of the file: what comes out is rebuilt', () => {

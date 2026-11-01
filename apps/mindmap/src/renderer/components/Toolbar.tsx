@@ -4,9 +4,10 @@
  * band below shows the tab that is picked, with big buttons (a picture over
  * its name), like the other editors' ribbons.
  *
- * Tabs, left to right: Home (topics, relationship and summary, find,
- * delete), Insert (picture, link, note, label), Format (layout, sort, theme)
- * and View (present, folding, what the map shows, zoom). Export, "make
+ * Tabs, left to right: Home (topics, relationship, summary and boundary,
+ * find, delete), Insert (picture, icons, link, note, label), Format (layout,
+ * sort, theme), Style (the selected topics' own style: `StyleTab.tsx`) and
+ * View (present, folding, what the map shows, zoom). Export, "make
  * another document from this one", sending and the AI stay at the end of the
  * band whatever tab is picked.
  *
@@ -23,7 +24,9 @@ import type { ExportFormat } from '../../shared/ipc'
 import type { HiddenPart } from '../map/hidden-parts'
 import { ExportMenu } from './ExportMenu'
 import { RibbonMenu } from './RibbonMenu'
+import { StyleTab, type StyleTabProps } from './StyleTab'
 import {
+  IconBoundary,
   IconChild,
   IconDelete,
   IconFind,
@@ -54,13 +57,14 @@ import {
   IconZoomOut,
 } from './icons'
 
-export const RIBBON_TABS = ['home', 'insert', 'format', 'view'] as const
+export const RIBBON_TABS = ['home', 'insert', 'format', 'style', 'view'] as const
 export type RibbonTab = (typeof RIBBON_TABS)[number]
 
 const TAB_LABEL = {
   home: 'tabHome',
   insert: 'tabInsert',
   format: 'tabFormat',
+  style: 'tabStyle',
   view: 'tabView',
 } as const
 
@@ -114,6 +118,9 @@ export interface ToolbarProps {
   onAddSibling(): void
   onRelationship(): void
   onSummary(): void
+  onBoundary(): void
+  /** the Style tab: what it shows and what its buttons do (it is off while no topic is selected) */
+  style: Omit<StyleTabProps, 'disabled'>
   onFind(): void
   onDelete(): void
   onPicture(): void
@@ -296,6 +303,14 @@ export function Toolbar(p: ToolbarProps) {
               >
                 <IconSummary />
               </Big>
+              <Big
+                action="boundary"
+                label={t('tbBoundary')}
+                disabled={topicOff}
+                onClick={p.onBoundary}
+              >
+                <IconBoundary />
+              </Big>
             </Group>
             <Group>
               <Big
@@ -399,6 +414,7 @@ export function Toolbar(p: ToolbarProps) {
             </Group>
           </>,
         )}
+        {pane('style', <StyleTab disabled={topicOff} {...p.style} />)}
         {pane(
           'view',
           <>

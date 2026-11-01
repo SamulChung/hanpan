@@ -214,6 +214,22 @@ export default function App() {
           .catch(() => say('linkNotOpened'))
       },
       onRequest: (field, topicId) => openTopicFieldRef.current(field, topicId),
+      onBoundaryRequest: (ownerId, boundaryId) => {
+        const active = [...controllers.current.values()].find((candidate) =>
+          candidate.boundariesOf(ownerId).some((boundary) => boundary.id === boundaryId),
+        )
+        const boundary = active
+          ?.boundariesOf(ownerId)
+          .find((candidate) => candidate.id === boundaryId)
+        if (boundary) {
+          setFieldRequest({
+            field: 'boundary',
+            topicId: ownerId,
+            boundaryId,
+            value: boundary.title,
+          })
+        }
+      },
       onStateChange: () => setMapTick((tick) => tick + 1),
     }),
     [ask, say],
@@ -946,6 +962,9 @@ export default function App() {
     const map = controller
     if (!map || !fieldRequest) return true
     const { field, topicId } = fieldRequest
+    if (field === 'boundary') {
+      return map.setBoundaryTitle(topicId, fieldRequest.boundaryId ?? '', value)
+    }
     if (field === 'label') return map.setLabels(topicId, value.split(LABEL_SEPARATORS))
     if (field === 'note') return map.setNote(topicId, value)
     // Any address is kept; the controller turns down only a reference into the file.
@@ -1039,6 +1058,29 @@ export default function App() {
         }}
         onSummary={() => {
           if (!controller?.addSummary()) say('selectTopicFirst')
+        }}
+        onBoundary={() => {
+          if (!controller?.addBoundary()) say('selectTopicFirst')
+        }}
+        style={{
+          style: selectedId ? (controller?.styleOf(selectedId) ?? {}) : {},
+          themeColors: controller?.themeColors ?? [],
+          painting: controller?.painting ?? false,
+          onStyle: (patch) => controller?.setStyle(selectedIds, patch),
+          onToggle: (which) => {
+            if (!controller) return
+            if (which === 'bold') controller.toggleBold(selectedIds)
+            else if (which === 'italic') controller.toggleItalic(selectedIds)
+            else controller.toggleDecoration(selectedIds, which)
+          },
+          onFontStep: (up) => controller?.stepFontSize(selectedIds, up),
+          onPainter: (sticky) => {
+            if (!controller) return
+            // a second click of a double click turns a painter just started into one that stays on
+            if (controller.painting && !sticky) controller.stopPainting()
+            else if (!controller.startPainting(sticky)) say('selectTopicFirst')
+          },
+          onClear: () => controller?.clearStyle(selectedIds),
         }}
         onFind={() => (find ? setFind(null) : openFind(false))}
         onDelete={() => {

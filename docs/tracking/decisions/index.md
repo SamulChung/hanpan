@@ -86,3 +86,4 @@
 | [0083](0083-command-line-archive.md)                          | 데스크톱 앱 없이 도는 명령줄 묶음을 따로 내고, Node는 설치 스크립트가 받는다                    | 2026-10-27 |
 | [0084](0084-hanpan-local-ai-first.md)                         | 한판은 첫 시작 때 내 PC의 AI 서버를 찾아, 선택이 기본값이면 그것을 기본 AI로 쓴다               | 2026-10-30 |
 | [0085](0085-mindmap-engine-writes-markers.md)                 | 마인드맵 엔진이 토픽의 아이콘을 쓰되, 새로 붙인 것만 검사하고 파일의 기록은 그대로 둔다         | 2026-11-01 |
+| [0086](0086-mindmap-engine-writes-style-and-boundaries.md)    | 마인드맵 엔진이 토픽 서식은 바뀐 속성만, 테두리는 식별자로 짝지어 쓴다                          | 2026-11-01 |

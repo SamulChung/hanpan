@@ -128,6 +128,8 @@ describe('sheetToView', () => {
       fill: '#445566',
       fontWeight: '700',
       fontSize: '18pt',
+      fontFamily: 'Some Family',
+      lineWidth: '2pt',
     })
     expect(find(sheetToView(sample(), 0).root, 'a')!.style).toEqual({})
     const remote = sheetWithRoot({ image: { src: 'https://example.com/p.png' } })
@@ -248,10 +250,8 @@ describe('sheetToView', () => {
       'float',
       'callout-1',
       'under-summary',
-      'bound-1',
       'futureTopicKey',
       'futureSheetKey',
-      'Some Family',
       'theme-map',
       'controlPoints',
       'someone.else',
@@ -299,8 +299,31 @@ describe('sheetToView', () => {
       markers: ['flag'],
       style: { fill: '#abc' },
       summaries: [],
+      boundaries: [],
       children: [],
     })
+  })
+
+  it('shows a boundary over a run of branches, and keeps the one round a whole branch out', () => {
+    const sheet = sheetWithRoot({
+      children: {
+        attached: [
+          { id: 'x', title: 'X' },
+          { id: 'y', title: 'Y' },
+        ],
+      },
+      boundaries: [
+        { id: 'b-run', range: '(0,1)', title: 'Run', 'style-id': 'kept' },
+        { id: 'b-plain', range: '(1,1)' },
+        { id: 'b-master', range: 'master' },
+        { id: 'b-past', range: '(0,5)' },
+        { range: '(0,0)' },
+      ],
+    })
+    expect(sheetToView(sheet, 0).root.boundaries).toEqual([
+      { id: 'b-run', title: 'Run', start: 0, end: 1 },
+      { id: 'b-plain', title: '', start: 1, end: 1 },
+    ])
   })
 })
 

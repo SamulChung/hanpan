@@ -115,7 +115,7 @@ describe('ranges: the covered branches move to another topic', () => {
     })
     expect(sheet.relationships).toEqual([RELATIONSHIP])
     expect(countPreservedElements(sheet)).toBe(countPreservedElements(before))
-    expect(countPreservedElements(before)).toBe(3)
+    expect(countPreservedElements(before)).toBe(2)
     // the state still showed the summary on the topic it came from
     expect(inSync).toBe(false)
     expect(inView(view, 'p').summaries).toEqual([])
@@ -133,6 +133,8 @@ describe('ranges: the covered branches move to another topic', () => {
       inView(state, 'm').children.push(detach(state, 'k1'), detach(state, 'k2'))
       const [summary] = inView(state, 'p').summaries.splice(0, 1)
       inView(state, 'm').summaries.push({ ...summary!, start: 0, end: 1 })
+      const [boundary] = inView(state, 'p').boundaries.splice(0, 1)
+      inView(state, 'm').boundaries.push({ ...boundary!, start: 0, end: 1 })
     })
     expect(moved.inSync).toBe(true)
     expect(moved.sheet).toEqual(stale.sheet)
@@ -385,22 +387,23 @@ describe('ranges: dragging on a map as the format draws it', () => {
     const { before, sheet, topic, inSync } = await edit(drawn(), (state) => {
       inView(state, 'A').children.push(detach(state, 'B'))
     })
-    expect(countPreservedElements(before)).toBe(5)
-    expect(countPreservedElements(sheet)).toBe(5)
+    expect(countPreservedElements(before)).toBe(3)
+    expect(countPreservedElements(sheet)).toBe(3)
     expect(sheet.rootTopic).not.toHaveProperty('boundaries')
     expect(topic('A').boundaries).toEqual([
       { id: 'bound-A', range: '(2,3)' },
       { id: 'bound-B', range: '(4,4)' },
     ])
     expect(topic('A').summaries).toEqual(inSource(before, 'A')!.summaries)
-    expect(inSync).toBe(true)
+    // the state still showed the boundary on the central topic, where it was
+    expect(inSync).toBe(false)
   })
 
   it('keeps the summary, its topic and the branch under it when its branches are dragged away', async () => {
     const { before, sheet, topic } = await edit(drawn(), (state) => {
       inView(state, 'C').children.push(detach(state, 'A2'), detach(state, 'A3'))
     })
-    expect(countPreservedElements(sheet)).toBe(5)
+    expect(countPreservedElements(sheet)).toBe(3)
     expect(topic('C')).toEqual({
       id: 'C',
       title: 'C',

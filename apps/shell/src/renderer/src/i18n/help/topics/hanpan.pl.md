@@ -14,6 +14,7 @@ Hanpan wysyła to, co uporządkowałeś na mapie myśli, do raportu Hangul (HWP)
 - **Wstawianie › Obraz** dodaje do zaznaczonego tematu obraz PNG, JPG lub GIF (najwyżej 10 MB) albo usuwa ten, który ma. **Format › Sortuj** układa gałęzie zaznaczonego tematu alfabetycznie; naciśnij ponownie, aby odwrócić kolejność.
 - **Widok › Poziomy** rozwija mapę do poziomu 1, 2 lub 3, a **Widok › Pokaż** ukrywa notatki, etykiety, linki, ikony lub obrazy tylko na ekranie. Plik zachowuje je wszystkie.
 - **Wstawianie › Ikony** otwiera panel ikon: priorytet, postęp, flagi, gwiazdki, buźki i strzałki. Temat ma jedną ikonę każdego rodzaju; naciśnij tę, którą już ma, aby ją usunąć. Kliknij ikonę na mapie, aby zamienić ją na inną tego samego rodzaju albo usunąć.
+- Karta **Styl** zmienia wygląd wybranych tematów: kształt, wypełnienie, obrys, czcionkę, pogrubienie, kursywę, podkreślenie, kolor tekstu i kolor gałęzi. **Styl › Malarz formatów** przenosi formatowanie jednego tematu na następny kliknięty temat; dwukrotne kliknięcie zostawia go włączonego do naciśnięcia Esc. **Narzędzia główne › Ramka** otacza ramką wybrane tematy z jednej gałęzi; kliknij ramkę dwukrotnie, aby ją nazwać, albo kliknij ją i naciśnij Delete, aby ją usunąć.
 
 ## Uzgadnianie mapy i dokumentu
 

@@ -35,7 +35,9 @@ import {
   type ThemeLook,
   type ViewLayout,
   type ViewSheet,
+  type ViewBoundary,
   type ViewTopic,
+  type ViewTopicStyle,
   type XmindTopic,
 } from '@genoffice/xmind-engine'
 import {
@@ -58,6 +60,16 @@ import {
 } from '../document/convert'
 import type { DocumentSession } from '../document/session'
 import { type DecorationStrings, TopicDecorator } from './decorate'
+import {
+  clearPatch,
+  isWritablePatch,
+  paintPatch,
+  sameStyle,
+  type StylePatch,
+  steppedFontSize,
+  toggledDecoration,
+  withStylePatch,
+} from './style-edit'
 import { PictureStore } from './images'
 import { libraryTheme, lookOfSheet } from './look'
 import { escapeMapText } from './text-guard'
@@ -97,6 +109,8 @@ export interface MapHost {
   openLink(url: string): void
   /** the user asked to edit the labels, the note or the link of a topic */
   onRequest(kind: TopicRequest, topicId: string): void
+  /** the user asked to name a boundary (a double click on it) */
+  onBoundaryRequest(ownerId: string, boundaryId: string): void
   /** the selection, the history, the zoom or the layout changed */
   onStateChange(): void
 }
@@ -153,6 +167,10 @@ export class MapController {
   #quietTimer: ReturnType<typeof setTimeout> | null = null
   /** the topic a relationship is being drawn from, while the user picks its other end */
   #pickingFrom: string | null = null
+  /** the boundary picked on the map: Delete removes it, a double click names it */
+  #boundary: { owner: string; id: string } | null = null
+  /** the style the format painter puts on the next topic clicked; `sticky` keeps it on for more */
+  #painting: { style: StylePatch; sticky: boolean } | null = null
   /** topics a cut is about to take out, kept until the library reports that it removed them */
   #cutPending: CutStash | null = null
   /** topics a cut took out of this sheet: pasted back here, they return as they were */
@@ -289,6 +307,12 @@ export class MapController {
     const container = mind.container
     const onKeyDownFirst = (event: KeyboardEvent): void => this.#guardKeys(event)
     const onClick = (event: MouseEvent): void => this.#onClick(event)
+    const onDoubleClick = (event: MouseEvent): void => {
+      const boundary = event.target instanceof Element ? this.#boundaryAt(event.target) : null
+      if (!boundary) return
+      event.stopPropagation()
+      this.#host.onBoundaryRequest(boundary.owner, boundary.id)
+    }
     const onCut = (event: Event): void => this.#onCut(event)
     const onCopy = (): void => this.#forgetCut()
     const onComposition = (event: Event): void => {
@@ -296,6 +320,7 @@ export class MapController {
     }
     container.addEventListener('keydown', onKeyDownFirst, true)
     container.addEventListener('click', onClick, true)
+    container.addEventListener('dblclick', onDoubleClick, true)
     container.addEventListener('cut', onCut, true)
     container.addEventListener('copy', onCopy, true)
     container.addEventListener('compositionstart', onComposition)
@@ -303,6 +328,7 @@ export class MapController {
     this.#dispose.push(() => {
       container.removeEventListener('keydown', onKeyDownFirst, true)
       container.removeEventListener('click', onClick, true)
+      container.removeEventListener('dblclick', onDoubleClick, true)
       container.removeEventListener('cut', onCut, true)
       container.removeEventListener('copy', onCopy, true)
       container.removeEventListener('compositionstart', onComposition)
@@ -341,6 +367,11 @@ export class MapController {
   /** The theme the sheet is drawn with: its own when this app wrote it, the default one otherwise. */
   get themeId(): ThemeId {
     return this.#look.id
+  }
+
+  /** The colours of the sheet's theme: the light end, the four accents and the dark end. */
+  get themeColors(): readonly string[] {
+    return this.#look.bandColors
   }
 
   /** false while the sheet is drawn with the default look because its theme is not one of this app's */
@@ -475,6 +506,203 @@ export class MapController {
       }
     })
     return true
+  }
+
+  // ---- boundaries ----
+
+  /** The boundaries over a topic's branches; none for a topic that is not on the sheet. */
+  boundariesOf(topicId: string): ViewBoundary[] {
+    const node = this.#node(topicId)
+    return node ? this.#meta(node).boundaries.map((boundary) => ({ ...boundary })) : []
+  }
+
+  /** The boundary picked on the map, with the topic that carries it. */
+  get selectedBoundary(): { owner: string; id: string } | null {
+    return this.#boundary
+  }
+
+  /**
+   * A boundary round the selected topics, or round the run of branches from
+   * the first to the last of them when they are branches of one topic. One
+   * step. False when nothing is selected or only the central topic is.
+   */
+  addBoundary(): boolean {
+    const range = this.#summaryRange()
+    const node = range ? this.#node(range.parent) : null
+    if (!range || !node) return false
+    this.commitEdit()
+    const boundary: ViewBoundary = {
+      id: newXmindId(),
+      title: '',
+      start: range.start,
+      end: range.end,
+    }
+    this.#editMeta(range.parent, { boundaries: [...this.#meta(node).boundaries, boundary] })
+    this.#pickBoundary({ owner: range.parent, id: boundary.id })
+    return true
+  }
+
+  /** Names a boundary; an empty name takes the name off. One step. */
+  setBoundaryTitle(ownerId: string, boundaryId: string, title: string): boolean {
+    const node = this.#node(ownerId)
+    const boundaries = node ? this.#meta(node).boundaries : []
+    const at = boundaries.findIndex((boundary) => boundary.id === boundaryId)
+    if (at < 0) return false
+    const name = title.trim()
+    if (boundaries[at]!.title === name) return true
+    this.commitEdit()
+    this.#editMeta(ownerId, {
+      boundaries: boundaries.map((boundary, index) =>
+        index === at ? { ...boundary, title: name } : boundary,
+      ),
+    })
+    return true
+  }
+
+  /** Takes a boundary off. One step. */
+  removeBoundary(ownerId: string, boundaryId: string): boolean {
+    const node = this.#node(ownerId)
+    const boundaries = node ? this.#meta(node).boundaries : []
+    if (!boundaries.some((boundary) => boundary.id === boundaryId)) return false
+    this.commitEdit()
+    this.#editMeta(ownerId, {
+      boundaries: boundaries.filter((boundary) => boundary.id !== boundaryId),
+    })
+    if (this.#boundary?.id === boundaryId) this.#pickBoundary(null)
+    return true
+  }
+
+  #pickBoundary(picked: { owner: string; id: string } | null): void {
+    if (picked) this.mind.clearSelection()
+    this.#boundary = picked
+    this.#decorator.markBoundary(picked?.id ?? null)
+    this.#host.onStateChange()
+  }
+
+  /** The boundary drawn under a click, with the topic that carries it. */
+  #boundaryAt(target: Element): { owner: string; id: string } | null {
+    const id = target.closest<SVGGElement>('g.mm-boundary')?.dataset.boundaryId
+    if (!id) return null
+    for (const topic of this.mind.map.querySelectorAll<Topic>('me-tpc')) {
+      const node = topic.nodeObj
+      if (node && this.#meta(node).boundaries.some((boundary) => boundary.id === id)) {
+        return { owner: node.id, id }
+      }
+    }
+    return null
+  }
+
+  // ---- a topic's own style ----
+
+  /** The style values a topic sets for itself; none for a topic that is not on the sheet. */
+  styleOf(topicId: string): ViewTopicStyle {
+    const node = this.#node(topicId)
+    return node ? { ...this.#meta(node).style } : {}
+  }
+
+  /**
+   * Puts `patch` on the own style of every topic in `topicIds`, as one step.
+   * False, with nothing changed, when a value is not in a form the file takes
+   * or no topic would change.
+   */
+  setStyle(topicIds: readonly string[], patch: StylePatch): boolean {
+    if (!isWritablePatch(patch)) return false
+    return this.#restyle(topicIds, (style) => withStylePatch(style, patch))
+  }
+
+  /** Takes every value of their own style off the topics in `topicIds`. One step. */
+  clearStyle(topicIds: readonly string[]): boolean {
+    return this.setStyle(topicIds, clearPatch())
+  }
+
+  /** Bold on, or off when every one of the topics is drawn bold already. One step. */
+  toggleBold(topicIds: readonly string[]): boolean {
+    const on = !topicIds.every((id) => Number(this.#drawn(id)?.fontWeight ?? 400) >= 600)
+    return this.setStyle(topicIds, { fontWeight: on ? 'bold' : 'normal' })
+  }
+
+  /** Italic on, or off when every one of the topics is drawn in italic already. One step. */
+  toggleItalic(topicIds: readonly string[]): boolean {
+    const on = !topicIds.every((id) => this.#drawn(id)?.fontStyle === 'italic')
+    return this.setStyle(topicIds, { fontStyle: on ? 'italic' : 'normal' })
+  }
+
+  /** Underline or strike-through on, or off when every one of the topics has it already. One step. */
+  toggleDecoration(topicIds: readonly string[], which: 'underline' | 'line-through'): boolean {
+    const has = (id: string): boolean =>
+      (this.styleOf(id).textDecoration ?? '').split(/\s+/).includes(which)
+    const on = !topicIds.every(has)
+    return this.#restyle(topicIds, (style) =>
+      withStylePatch(style, { textDecoration: toggledDecoration(style.textDecoration, which, on) }),
+    )
+  }
+
+  /** Each topic's text one size larger or smaller than it is drawn now. One step. */
+  stepFontSize(topicIds: readonly string[], up: boolean): boolean {
+    const sizes = new Map<string, string>()
+    for (const id of topicIds) {
+      const size = steppedFontSize(Number.parseFloat(this.#drawn(id)?.fontSize ?? '') || 16, up)
+      if (size) sizes.set(id, size)
+    }
+    return this.#restyle([...sizes.keys()], (style, id) =>
+      withStylePatch(style, { fontSize: sizes.get(id) ?? null }),
+    )
+  }
+
+  /** The format painter is on: the next topic clicked takes the style it copied. */
+  get painting(): boolean {
+    return this.#painting !== null
+  }
+
+  /**
+   * Copies the own style of the topic selected last, to put on the next topic
+   * clicked; `sticky` keeps it on for every topic clicked until it is stopped
+   * (Esc, or the button again). False when no topic is selected.
+   */
+  startPainting(sticky: boolean): boolean {
+    const from = this.selectedTopicIds().at(-1)
+    if (!from) return false
+    this.#painting = { style: paintPatch(this.styleOf(from)), sticky }
+    this.mind.container.dataset.mmPainting = 'true'
+    this.#host.onStateChange()
+    return true
+  }
+
+  stopPainting(): void {
+    if (this.#painting === null) return
+    this.#painting = null
+    delete this.mind.container.dataset.mmPainting
+    this.#host.onStateChange()
+  }
+
+  /** The style of every topic in `topicIds` remade by `change`; one step for the ones that differ. */
+  #restyle(
+    topicIds: readonly string[],
+    change: (style: ViewTopicStyle, id: string) => ViewTopicStyle,
+  ): boolean {
+    const ids = [...new Set(topicIds)].filter((id) => {
+      const node = this.#node(id)
+      if (!node) return false
+      const style = this.#meta(node).style
+      return !sameStyle(change(style, id), style)
+    })
+    if (ids.length === 0) return false
+    this.commitEdit()
+    this.edit((root) => {
+      for (const id of ids) {
+        const target = this.mind.getObjById(id, root as NodeObj)
+        if (!target) continue
+        const meta = this.#meta(target)
+        Object.assign(target, nodePatch({ ...meta, style: change(meta.style, id) }))
+      }
+    })
+    return true
+  }
+
+  /** How a topic is drawn now (its weight, slant and size), theme and own style together. */
+  #drawn(topicId: string): CSSStyleDeclaration | null {
+    const element = this.#element(topicId)
+    return element ? getComputedStyle(element) : null
   }
 
   hasPicture(topicId: string): boolean {
@@ -1372,8 +1600,32 @@ export class MapController {
       this.cancelRelationshipPick()
       return
     }
+    if (event.key === 'Escape' && this.#painting !== null) {
+      this.stopPainting()
+      return
+    }
+    if (
+      this.#boundary &&
+      !(event.target instanceof Element && event.target.closest('#input-box'))
+    ) {
+      if (event.key === 'Delete' || event.key === 'Backspace') {
+        event.stopImmediatePropagation()
+        event.preventDefault()
+        this.removeBoundary(this.#boundary.owner, this.#boundary.id)
+        return
+      }
+      if (event.key === 'Escape') {
+        this.#pickBoundary(null)
+        return
+      }
+    }
     // While a title is typed, every key belongs to the text (Ctrl+arrow moves by words).
     if (event.target instanceof Element && event.target.closest('#input-box')) return
+    if (this.#styleKey(event)) {
+      event.stopImmediatePropagation()
+      event.preventDefault()
+      return
+    }
     if (this.#timelineArrow(event)) {
       event.stopImmediatePropagation()
       event.preventDefault()
@@ -1386,6 +1638,19 @@ export class MapController {
       event.stopImmediatePropagation()
       event.preventDefault()
     }
+  }
+
+  /** Ctrl+B, Ctrl+I and Ctrl+U on the selected topics. True when the key was taken. */
+  #styleKey(event: KeyboardEvent): boolean {
+    if (!(event.ctrlKey || event.metaKey) || event.altKey || event.shiftKey) return false
+    const key = event.key.toLowerCase()
+    if (key !== 'b' && key !== 'i' && key !== 'u') return false
+    const ids = this.selectedTopicIds()
+    if (ids.length === 0) return false
+    if (key === 'b') this.toggleBold(ids)
+    else if (key === 'i') this.toggleItalic(ids)
+    else this.toggleDecoration(ids, 'underline')
+    return true
   }
 
   /** In a timeline the plain arrow keys move the way the map looks (`timeline-keys.ts`). True when the key was taken. */
@@ -1406,6 +1671,12 @@ export class MapController {
     const target = event.target instanceof Element ? event.target : null
     if (!target) return
     const topic = target.closest('me-tpc') as Topic | null
+    const boundary = topic ? null : this.#boundaryAt(target)
+    if (boundary && this.#pickingFrom === null && this.#painting === null) {
+      this.#pickBoundary(boundary)
+      return
+    }
+    if (this.#boundary && topic) this.#pickBoundary(null)
     if (this.#pickingFrom !== null) {
       const from = this.#pickingFrom
       this.#pickingFrom = null
@@ -1417,6 +1688,12 @@ export class MapController {
       return
     }
     if (!topic) return
+    if (this.#painting !== null) {
+      const { style, sticky } = this.#painting
+      this.setStyle([topic.nodeObj.id], style)
+      if (!sticky) this.stopPainting()
+      return
+    }
     if (target.closest('.mm-chip-link')) {
       // The map never opens anything itself. Whatever the address is, it goes to
       // the main process, which opens it only when it is a web or mail address.

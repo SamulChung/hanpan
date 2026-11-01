@@ -14,6 +14,7 @@ Hanpan menghantar apa yang anda susun dalam peta minda ke laporan Hangul (HWP), 
 - **Sisip › Gambar** meletakkan gambar PNG, JPG atau GIF (paling besar 10 MB) pada topik yang dipilih, atau menanggalkan gambar yang sedia ada. **Format › Isih** menyusun cabang topik yang dipilih mengikut abjad; tekan sekali lagi untuk susunan terbalik.
 - **Paparan › Tahap** membuka peta hingga tahap 1, 2 atau 3, dan **Paparan › Tunjuk** menyembunyikan nota, label, pautan, ikon atau gambar pada skrin sahaja. Fail tetap menyimpan semuanya.
 - **Sisip › Ikon** membuka panel ikon: keutamaan, kemajuan, bendera, bintang, wajah dan anak panah. Satu topik membawa satu ikon bagi setiap jenis; tekan ikon yang sudah ada untuk menanggalkannya. Klik ikon pada peta untuk menukarnya dengan ikon lain yang sejenis atau menanggalkannya.
+- Tab **Gaya** menukar rupa topik yang dipilih: bentuk, isian, garis luar, fon, tebal, condong, garis bawah, warna teks dan warna garis cabang. **Gaya › Salin format** menyalin format satu topik ke topik seterusnya yang anda klik; klik dua kali supaya ia kekal aktif hingga Esc. **Utama › Sempadan** membingkai topik sejajar yang dipilih; klik dua kali bingkai untuk menamakannya, atau klik dan tekan Delete untuk membuangnya.
 
 ## Menyelaraskan peta dan dokumen
 

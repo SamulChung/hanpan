@@ -4,14 +4,15 @@
  * The state comes from a renderer window and is not trusted: it is typed as
  * view data, but nothing has checked that. Everything reconciling reads is
  * checked and copied here first, so the rest works on values of a known shape
- * and never on the caller's objects. What reconciling never writes (styles,
- * the sheet's own title) is not looked at.
+ * and never on the caller's objects. What reconciling never writes (the
+ * sheet's own title) is not looked at. Style values are checked only where
+ * they differ from the view (`reconcile-style.ts`).
  */
 
 import { VIEW_LAYOUTS, type ViewLayout } from './layout'
 import { MAX_TOPIC_DEPTH } from './structure-check'
 import { isRecord } from './types'
-import { isShownLink, type ViewImage } from './view'
+import { isShownLink, STYLE_KEYS, type ViewImage, type ViewTopicStyle } from './view'
 
 /** Thrown for a state that cannot be applied. It never leaves the package: callers get a result. */
 export class Refusal extends Error {}
@@ -47,8 +48,26 @@ export interface StateTopic {
    * the view did not show are checked (see `reconcile-tree.ts`).
    */
   markers: string[] | null
+  /**
+   * The topic's own style values, or null for a state without a `style` key:
+   * that one leaves the style alone. Keys this package does not carry are
+   * dropped here.
+   */
+  style: ViewTopicStyle | null
   summaries: StateSummary[]
+  /**
+   * The boundaries over the topic's branches, or null for a state without a
+   * `boundaries` key: that one leaves the topic's boundaries alone.
+   */
+  boundaries: StateBoundary[] | null
   children: StateTopic[]
+}
+
+export interface StateBoundary {
+  id: string
+  title: string
+  start: number
+  end: number
 }
 
 export interface StateSummary {
@@ -97,7 +116,20 @@ export function readState(state: unknown): StateSheet {
  */
 function readTopic(topic: unknown, depth: number, seen: Set<string>): StateTopic {
   if (!isRecord(topic)) refuse('a topic of the state is not an object')
-  const { id, title, folded, labels, note, link, image, markers, summaries, children } = topic
+  const {
+    id,
+    title,
+    folded,
+    labels,
+    note,
+    link,
+    image,
+    markers,
+    style,
+    summaries,
+    boundaries,
+    children,
+  } = topic
   if (typeof id !== 'string' || id === '') refuse('a topic of the state has no id')
   if (seen.has(id)) refuse(`topic id ${id} is used more than once in the state`)
   seen.add(id)
@@ -116,7 +148,21 @@ function readTopic(topic: unknown, depth: number, seen: Set<string>): StateTopic
     refuse(`the markers of topic ${id} are not a list of ids`)
   }
   if (!Array.isArray(summaries)) refuse(`the summaries of topic ${id} are not a list`)
+  if (boundaries !== undefined && !Array.isArray(boundaries)) {
+    refuse(`the boundaries of topic ${id} are not a list`)
+  }
   if (!Array.isArray(children)) refuse(`the children of topic ${id} are not a list`)
+  let ownStyle: ViewTopicStyle | null = null
+  if (style !== undefined) {
+    if (!isRecord(style)) refuse(`the style of topic ${id} is not an object`)
+    ownStyle = {}
+    for (const key of STYLE_KEYS) {
+      const value = style[key]
+      if (value === undefined) continue
+      if (typeof value !== 'string') refuse(`style ${key} of topic ${id} is not text`)
+      ownStyle[key] = value
+    }
+  }
   return {
     id,
     title,
@@ -126,7 +172,10 @@ function readTopic(topic: unknown, depth: number, seen: Set<string>): StateTopic
     link,
     image: image == null ? null : copyImage(image),
     markers: markers === undefined ? null : [...markers],
+    style: ownStyle,
     summaries: summaries.map((summary) => readSummary(summary, id)),
+    boundaries:
+      boundaries === undefined ? null : boundaries.map((boundary) => readBoundary(boundary, id)),
     children: children.map((child) => readTopic(child, depth + 1, seen)),
   }
 }
@@ -158,6 +207,17 @@ function readSummary(summary: unknown, owner: string): StateSummary {
     refuse(`the range of summary ${topicId} is not a first and a last position`)
   }
   return { id, topicId, title, start, end }
+}
+
+function readBoundary(boundary: unknown, owner: string): StateBoundary {
+  if (!isRecord(boundary)) refuse(`a boundary of topic ${owner} is not an object`)
+  const { id, title, start, end } = boundary
+  if (typeof id !== 'string' || id === '') refuse(`a boundary of topic ${owner} has no id`)
+  if (typeof title !== 'string') refuse(`the title of boundary ${id} is not text`)
+  if (!isPosition(start) || !isPosition(end) || start > end) {
+    refuse(`the range of boundary ${id} is not a first and a last position`)
+  }
+  return { id, title, start, end }
 }
 
 function readRelationship(relationship: unknown): StateRelationship {

@@ -11,8 +11,8 @@
  *   chip each for a note and for a link. The library sets them with
  *   `textContent`. The link chip is a span holding the address as text,
  *   whatever the address is; it is never an anchor.
- * - `metadata` carries the values themselves (labels, note, link) plus what
- *   the editor shows without editing (picture, markers, style).
+ * - `metadata` carries the values themselves (labels, note, link, markers,
+ *   style, the boundaries over the topic's branches) plus the picture.
  * - `dangerouslySetInnerHTML`, `hyperLink`, `image`, `icons` and `style` are
  *   never set.
  *
@@ -29,7 +29,10 @@
 import type { MindElixirData, NodeObj, TagObj } from 'mind-elixir'
 import {
   isShownLink,
+  isWritableStyleValue,
   newXmindId,
+  type ViewBoundary,
+  STYLE_KEYS,
   type ViewImage,
   type ViewLayout,
   type ViewRelationship,
@@ -51,6 +54,8 @@ export interface MapNodeMeta {
   image: ViewImage | null
   markers: string[]
   style: ViewTopicStyle
+  /** boundaries round runs of this topic's branches; drawn by `map/decorate.ts` */
+  boundaries: ViewBoundary[]
 }
 
 export type MapNode = NodeObj<MapNodeMeta>
@@ -96,7 +101,7 @@ export function layoutOfDirection(direction: unknown, structure: MapStructure = 
 }
 
 export function emptyMeta(): MapNodeMeta {
-  return { labels: [], note: null, link: null, image: null, markers: [], style: {} }
+  return { labels: [], note: null, link: null, image: null, markers: [], style: {}, boundaries: [] }
 }
 
 /** The tags a node is drawn with. Plain text only. */
@@ -131,6 +136,7 @@ function topicToNode(topic: ViewTopic, isRoot: boolean): MapNode {
       image: topic.image ? { ...topic.image } : null,
       markers: [...topic.markers],
       style: { ...topic.style },
+      boundaries: topic.boundaries.map((boundary) => ({ ...boundary })),
     },
   }
   // The library has no fold handle on the central topic; its value is kept by `mindToState`.
@@ -202,7 +208,22 @@ function readMeta(value: unknown): MapNodeMeta {
       ? meta.markers.filter((marker) => typeof marker === 'string')
       : [],
     style: isObject(meta.style) ? (meta.style as ViewTopicStyle) : {},
+    boundaries: Array.isArray(meta.boundaries) ? meta.boundaries.filter(isBoundary) : [],
   }
+}
+
+function isBoundary(value: unknown): value is ViewBoundary {
+  if (!isObject(value)) return false
+  const { id, title, start, end } = value
+  const position = (n: unknown): boolean => Number.isSafeInteger(n) && (n as number) >= 0
+  return (
+    typeof id === 'string' &&
+    id !== '' &&
+    typeof title === 'string' &&
+    position(start) &&
+    position(end) &&
+    (start as number) <= (end as number)
+  )
 }
 
 /**
@@ -223,6 +244,7 @@ export function mindToState(data: MindElixirData, base: StateBase): ViewSheet {
       image: meta.image,
       markers: meta.markers,
       style: meta.style,
+      boundaries: meta.boundaries,
       summaries: [],
       children: [],
     }
@@ -346,9 +368,9 @@ function isObject(value: unknown): value is Record<string, unknown> {
  *
  * What stays: the id (the library replaces it anyway), the title as text,
  * folding, the side, the labels, note and web link, markers of the shape a
- * file may gain, and the children. What a state cannot write from a paste
- * (picture, style) is cleared, so the screen never shows something the file
- * will not hold.
+ * file may gain, style values in the forms the file takes, and the children.
+ * What a state cannot write from a paste (a picture, other style values) is
+ * cleared, so the screen never shows something the file will not hold.
  */
 export function cleanPastedNode(node: unknown, depth = 0): void {
   if (!isObject(node)) return
@@ -359,6 +381,12 @@ export function cleanPastedNode(node: unknown, depth = 0): void {
     note: pasted.note,
     link: pasted.link,
     markers: pasted.markers.filter((id) => PASTED_MARKER_ID.test(id)).slice(0, 50),
+    style: Object.fromEntries(
+      STYLE_KEYS.flatMap((key) => {
+        const value: unknown = pasted.style[key]
+        return typeof value === 'string' && isWritableStyleValue(key, value) ? [[key, value]] : []
+      }),
+    ),
   }
   const kept: Record<string, unknown> = {
     id: typeof node.id === 'string' ? node.id : '',

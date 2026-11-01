@@ -14,6 +14,7 @@ Hanpan schickt, was Sie in einer Mindmap geordnet haben, als Hangul-Bericht (HWP
 - **Einfügen › Bild** setzt ein PNG-, JPG- oder GIF-Bild (höchstens 10 MB) auf das gewählte Thema oder nimmt das vorhandene ab. **Format › Sortieren** ordnet die Zweige des gewählten Themas alphabetisch; erneut drücken ordnet umgekehrt.
 - **Ansicht › Ebenen** klappt die Karte bis Ebene 1, 2 oder 3 auf, und **Ansicht › Anzeigen** blendet Notizen, Etiketten, Links, Symbole oder Bilder nur am Bildschirm aus. Die Datei behält alles.
 - **Einfügen › Symbole** öffnet den Symbolbereich: Priorität, Fortschritt, Flaggen, Sterne, Smileys und Pfeile. Ein Thema trägt ein Symbol je Art; ein vorhandenes erneut drücken nimmt es ab. Ein Klick auf ein Symbol in der Karte tauscht es gegen ein anderes seiner Art oder entfernt es.
+- Die Registerkarte **Stil** ändert das Aussehen der ausgewählten Themen: Form, Füllung, Umriss, Schrift, fett, kursiv, unterstrichen, Text- und Zweigfarbe. **Stil › Format übertragen** überträgt das Format eines Themas auf das nächste angeklickte Thema; ein Doppelklick lässt es an, bis Esc gedrückt wird. **Start › Umrandung** zieht einen Rahmen um die ausgewählten Geschwisterthemen; ein Doppelklick auf den Rahmen benennt ihn, ein Klick und Entf entfernt ihn.
 
 ## Karte und Dokument abgleichen
 

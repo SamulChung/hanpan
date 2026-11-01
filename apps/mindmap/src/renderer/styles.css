@@ -1434,3 +1434,138 @@ textarea.mm-field {
   color: var(--text-secondary);
   font-size: 12px;
 }
+
+/* ---- the Style tab (components/StyleTab.tsx) ---- */
+
+/* the text tools stand in two rows: the font and its size above, the marks below */
+.mm-style-text {
+  gap: 2px;
+}
+
+.mm-style-text .ribbon-group-items {
+  flex: 0 0 auto;
+}
+
+.mm-font-pick {
+  width: 132px;
+  height: 26px;
+  font-size: 12.5px;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.mm-tool-menu {
+  width: 32px;
+}
+
+.gs-dd-pop.mm-style-pop {
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mm-shape-sample {
+  display: inline-block;
+  width: 22px;
+  height: 12px;
+  border: 1.5px solid currentColor;
+  border-radius: 4px;
+}
+
+.mm-shape-sample[data-shape='pill'] {
+  border-radius: 999px;
+}
+
+.mm-shape-sample[data-shape='underline'] {
+  border-style: none none solid;
+  border-radius: 0;
+}
+
+.mm-swatches {
+  display: grid;
+  grid-template-columns: repeat(8, 20px);
+  gap: 4px;
+  padding: 6px 8px;
+}
+
+.mm-swatch {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.mm-swatch[aria-pressed='true'] {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.mm-color-code {
+  display: flex;
+  gap: 4px;
+  padding: 2px 8px 6px;
+}
+
+.mm-color-code input {
+  width: 84px;
+  height: 26px;
+  font-size: 12.5px;
+  font-family: inherit;
+  padding: 0 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.mm-color-code input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.mm-widths {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px 0 2px;
+  border-top: 1px solid var(--border);
+}
+
+.mm-widths-label {
+  padding: 2px 10px;
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+}
+
+.mm-width {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px;
+  border: none;
+  background: none;
+  font-size: 12.5px;
+  color: var(--text-primary);
+  text-align: start;
+  cursor: pointer;
+}
+
+.mm-width:hover {
+  background: var(--hover);
+}
+
+.mm-width[aria-pressed='true'] {
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+
+.mm-width > span {
+  display: inline-block;
+  width: 36px;
+  background: currentColor;
+  border-radius: 1px;
+}

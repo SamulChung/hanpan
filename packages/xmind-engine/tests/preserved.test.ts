@@ -15,7 +15,8 @@ const sample = (): XmindSheet => sampleSheets()[0] as XmindSheet
  * A sheet with every kind of part the view leaves out, nested: 9 topics
  * (`u1` `u2` `u3` under a shown summary topic, the summary topic `unplaced-st`
  * that no shown summary names and `w1` under it, `f1` of a kind from a later
- * version, the floating `d` with `d1` and `d2`), 3 boundaries (`ub` `xb` `db`)
+ * version, the floating `d` with `d1` and `d2`), 2 boundaries the view does not
+ * show (`ub` under the summary topic, `db` on the floating topic; `xb` it shows)
  * and 2 relationships the view does not show (`hidden`, `half`).
  */
 function nested(): XmindSheet {
@@ -74,9 +75,9 @@ function nested(): XmindSheet {
 
 describe('countPreservedElements', () => {
   it('counts the topics, boundaries and relationships the view leaves out', () => {
-    // float, callout-1, under-summary; bound-1; rel-2
-    expect(countPreservedElements(sample())).toBe(5)
-    expect(countPreservedElements(nested())).toBe(9 + 3 + 2)
+    // float, callout-1, under-summary; rel-2 (bound-1 is shown)
+    expect(countPreservedElements(sample())).toBe(4)
+    expect(countPreservedElements(nested())).toBe(9 + 2 + 2)
   })
 
   it('is zero for a sheet that shows everything it has', () => {
@@ -102,7 +103,7 @@ describe('countPreservedElements', () => {
 
   it('counts per sheet and for the whole document', async () => {
     const document = await openSheets([sample(), { id: 's2', rootTopic: { id: 'r' } }, nested()])
-    expect(countPreservedInDocument(document)).toEqual({ total: 19, sheets: [5, 0, 14] })
+    expect(countPreservedInDocument(document)).toEqual({ total: 17, sheets: [4, 0, 13] })
   })
 
   it('does not change the sheet it counts', () => {
@@ -116,8 +117,8 @@ describe('countPreservedElements', () => {
 
 describe('countPreservedWithTopics', () => {
   it('counts what the view leaves out below the topic', () => {
-    // callout-1, under-summary, bound-1
-    expect(countPreservedWithTopics(sample(), ['a'])).toBe(3)
+    // callout-1, under-summary (bound-1 is shown, and goes as the user sees)
+    expect(countPreservedWithTopics(sample(), ['a'])).toBe(2)
     expect(countPreservedWithTopics(sample(), ['c'])).toBe(0)
     expect(countPreservedWithTopics(sample(), ['a3'])).toBe(0)
   })
@@ -125,22 +126,22 @@ describe('countPreservedWithTopics', () => {
   it('counts a relationship the view does not show that ends on the topic', () => {
     // rel-2 runs from the floating topic to b
     expect(countPreservedWithTopics(sample(), ['b'])).toBe(1)
-    // six topics, ub and xb, hidden and half
-    expect(countPreservedWithTopics(nested(), ['x'])).toBe(6 + 2 + 2)
+    // six topics, ub, hidden and half
+    expect(countPreservedWithTopics(nested(), ['x'])).toBe(6 + 1 + 2)
   })
 
-  it('counts a boundary and the branches under a summary that go with the last covered branch', () => {
+  it('counts the branches under a summary that go with the last covered branch, not a shown boundary', () => {
     expect(countPreservedWithTopics(sample(), ['a1'])).toBe(0)
-    expect(countPreservedWithTopics(sample(), ['a1', 'a2'])).toBe(1) // bound-1
+    expect(countPreservedWithTopics(sample(), ['a1', 'a2'])).toBe(0) // bound-1 is shown
     expect(countPreservedWithTopics(sample(), ['a2', 'a3'])).toBe(1) // under-summary
-    expect(countPreservedWithTopics(sample(), ['a1', 'a2', 'a3'])).toBe(2)
-    // u1, u2, u3 and ub under the summary topic; xb around x1 alone
-    expect(countPreservedWithTopics(nested(), ['x1'])).toBe(1)
-    expect(countPreservedWithTopics(nested(), ['x1', 'x2'])).toBe(4 + 1)
+    expect(countPreservedWithTopics(sample(), ['a1', 'a2', 'a3'])).toBe(1)
+    // u1, u2, u3 and ub under the summary topic; xb around x1 alone is shown
+    expect(countPreservedWithTopics(nested(), ['x1'])).toBe(0)
+    expect(countPreservedWithTopics(nested(), ['x1', 'x2'])).toBe(4)
   })
 
   it('counts each part once when a topic and one of its branches are both named', () => {
-    expect(countPreservedWithTopics(sample(), ['a', 'a1', 'a', 'b'])).toBe(4)
+    expect(countPreservedWithTopics(sample(), ['a', 'a1', 'a', 'b'])).toBe(3)
   })
 
   it('counts the branches under a summary topic when the summary itself is named', () => {

@@ -14,6 +14,7 @@ Hanpan sends what you sorted out in a mind map to a Hangul (HWP) report, a slide
 - **Insert › Picture** puts a PNG, JPG or GIF picture (10 MB at most) on the selected topic, or takes off the one it has. **Format › Sort** puts the branches of the selected topic in alphabetical order; press it again for the reverse order.
 - **View › Levels** unfolds the map down to level 1, 2 or 3, and **View › Show** hides notes, labels, links, icons or pictures on screen only. The file keeps them all.
 - **Insert › Icons** opens the icon panel: priority, progress, flags, stars, smileys and arrows. A topic takes one icon of each kind; press one it has to take it off. Click an icon on the map to swap it for another of its kind or remove it.
+- The **Style** tab changes how the selected topics look: shape, fill, outline, font, bold, italic, underline, text colour and branch line colour. **Style › Format painter** copies the look of one topic to the next topic you click; double-click it to keep it on until Esc. **Home › Boundary** draws a box round the selected sibling topics; double-click the box to name it, or click it and press Delete to remove it.
 
 ## Sync the map and the document
 

@@ -9,10 +9,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot } from 'react-dom/client'
-import {
-  defaultAiSettings,
-  type AiSubscriptionState,
-} from '@genoffice/ai-provider'
+import { defaultAiSettings, type AiSubscriptionState } from '@genoffice/ai-provider'
 import type { SubscriptionStatusMap } from '@genoffice/ai-provider/browser'
 import type { Lang } from '@genoffice/i18n'
 import type { SplitPaneRole } from '@genoffice/ui'

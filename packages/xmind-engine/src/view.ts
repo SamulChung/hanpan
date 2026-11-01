@@ -4,11 +4,11 @@
  * This is the engine's own shape, not the data shape of the drawing library;
  * the editor converts. It carries only what is shown or edited: titles, the
  * order of branches, folding, labels, the note as plain text, the link,
- * summaries, relationships, the layout, the picture reference, marker ids and
- * the style values set on a topic itself.
+ * summaries, boundaries, relationships, the layout, the picture reference,
+ * marker ids and the style values set on a topic itself.
  *
- * Everything else stays in the source tree and is not here: boundaries,
- * floating topics, callouts, the branches under a summary topic, links to
+ * Everything else stays in the source tree and is not here: the boundary
+ * around a whole branch (`"master"`) and a boundary's own style, floating topics, callouts, the branches under a summary topic, links to
  * topics and to attachments, curve shapes, sheet styles, extensions, themes and
  * every key the engine does not know. A view is a fresh copy on every call; it
  * shares nothing with the tree and reading it never changes the tree.
@@ -56,6 +56,8 @@ export interface ViewTopic {
   style: ViewTopicStyle
   /** summaries over this topic's branches */
   summaries: ViewSummary[]
+  /** boundaries round runs of this topic's branches */
+  boundaries: ViewBoundary[]
   /** the attached branches, in file order */
   children: ViewTopic[]
 }
@@ -66,6 +68,19 @@ export interface ViewTopicStyle {
   fill?: string
   fontWeight?: string
   fontSize?: string
+  /** `italic` or `normal` */
+  fontStyle?: string
+  /** `underline`, `line-through`, both, or `none` */
+  textDecoration?: string
+  fontFamily?: string
+  /** the outline of the topic's box */
+  borderColor?: string
+  borderWidth?: string
+  /** the format's name of the box's shape, e.g. `org.xmind.topicShape.roundedRect` */
+  shape?: string
+  /** the lines from this topic to its branches */
+  lineColor?: string
+  lineWidth?: string
 }
 
 export interface ViewImage {
@@ -83,6 +98,16 @@ export interface ViewSummary {
   id: string
   /** id of the summary topic that holds the title */
   topicId: string
+  title: string
+  start: number
+  end: number
+}
+
+/** A boundary round branches `start`..`end` (inclusive) of the topic that carries it. */
+export interface ViewBoundary {
+  /** id of the boundary record */
+  id: string
+  /** the title written on it; empty for none */
   title: string
   start: number
   end: number
@@ -133,6 +158,7 @@ function topicToView(topic: XmindTopic, shown: Set<string>): ViewTopic {
     markers: markerIdsOf(topic.markers),
     style: styleToView(topic.style),
     summaries,
+    boundaries: boundariesToView(topic, attached.length),
     children: attached.map((child) => topicToView(child, shown)),
   }
 }
@@ -184,15 +210,30 @@ export function imageToView(image: unknown): ViewImage | null {
   }
 }
 
-/** The style properties the view carries, by the name the file uses for each. */
-const STYLE_PROPERTIES = {
+/**
+ * The style properties the view carries, by the name the file uses for each.
+ * Each name was checked against the format's published theme files.
+ */
+export const STYLE_PROPERTIES = {
   color: 'fo:color',
   fill: 'svg:fill',
   fontWeight: 'fo:font-weight',
   fontSize: 'fo:font-size',
+  fontStyle: 'fo:font-style',
+  textDecoration: 'fo:text-decoration',
+  fontFamily: 'fo:font-family',
+  borderColor: 'border-line-color',
+  borderWidth: 'border-line-width',
+  shape: 'shape-class',
+  lineColor: 'line-color',
+  lineWidth: 'line-width',
 } as const satisfies Record<keyof ViewTopicStyle, string>
 
-function styleToView(style: unknown): ViewTopicStyle {
+export type StyleKey = keyof typeof STYLE_PROPERTIES
+
+export const STYLE_KEYS = Object.keys(STYLE_PROPERTIES) as StyleKey[]
+
+export function styleToView(style: unknown): ViewTopicStyle {
   const properties = isRecord(style) && isRecord(style.properties) ? style.properties : {}
   const out: ViewTopicStyle = {}
   for (const [key, property] of Object.entries(STYLE_PROPERTIES)) {
@@ -219,6 +260,27 @@ function summariesToView(topic: XmindTopic, branchCount: number): ViewSummary[] 
     const title = titles.get(topicId)
     if (title === undefined || range.end >= branchCount) continue
     out.push({ id, topicId, title, start: range.start, end: range.end })
+  }
+  return out
+}
+
+/**
+ * A boundary is shown when its record has an id and a range that lies inside
+ * the branches. The boundary round a whole branch (`"master"`) and any other
+ * record stay in the file only.
+ */
+function boundariesToView(topic: XmindTopic, branchCount: number): ViewBoundary[] {
+  const out: ViewBoundary[] = []
+  for (const record of records(topic.boundaries)) {
+    const range = parseRange(record.range)
+    if (typeof record.id !== 'string' || record.id === '' || !range) continue
+    if (range.end >= branchCount) continue
+    out.push({
+      id: record.id,
+      title: stringOr(record.title, ''),
+      start: range.start,
+      end: range.end,
+    })
   }
   return out
 }

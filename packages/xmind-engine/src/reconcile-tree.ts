@@ -27,6 +27,7 @@
 import { newXmindId } from './ids'
 import { layoutFromStructureClass, structureClassForLayout } from './layout'
 import { noteText } from './notes'
+import { settleBoundaries } from './reconcile-boundaries'
 import {
   addSummary,
   dropEmptyChildren,
@@ -35,6 +36,7 @@ import {
   snapshotRanges,
 } from './reconcile-ranges'
 import { readState, Refusal, refuse, type StateSheet, type StateTopic } from './reconcile-state'
+import { writeStyle } from './reconcile-style'
 import { isResourceEntry } from './resource-entry'
 import { checkContentStructure } from './structure-check'
 import {
@@ -130,6 +132,7 @@ function apply(sheet: XmindSheet, want: StateSheet, context: TreeContext): Recon
 
   settleTopics(run)
   const settled = settleSummaries(run)
+  for (const record of settleBoundaries(run)) settled.add(record)
   // Every range the sheet had is placed again, also one on a topic that is now
   // deleted: a covered branch may live on under another topic.
   const parentOf = new Map<string, XmindTopic>()
@@ -202,6 +205,7 @@ function writeValues(topic: XmindTopic, want: StateTopic, run: Run): void {
   }
   writeImage(topic, want, run)
   writeMarkers(topic, want)
+  writeStyle(topic, want)
 }
 
 /** The shape of a marker id this file may gain: lower-case words joined by hyphens. */

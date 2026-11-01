@@ -60,6 +60,7 @@ function rig(session: DocumentSession, untitled = false): Rig {
         confirmDelete: async () => true,
         openLink: () => {},
         onRequest: () => {},
+        onBoundaryRequest: () => {},
         onStateChange: () => {},
       },
     })
@@ -648,5 +649,107 @@ describe('markers', () => {
     expect(written.rootTopic.title).toBe('Center')
     expect(titles(written.rootTopic)).toEqual(['Branch'])
     expect(attached(written.rootTopic)[0]!).not.toHaveProperty('labels')
+  })
+})
+
+describe('style and boundaries', () => {
+  it('set_style writes the given values and gives one back to the theme with null', async () => {
+    const r = await rigOf(richSheet())
+    const out = await editMap(
+      r.host,
+      {
+        edits: [
+          { op: 'set_style', id: IDS.c, fill: '#FFEEDD', bold: true, shape: 'pill' },
+          { op: 'set_style', id: IDS.a, color: null, italic: true },
+        ],
+      },
+      null,
+    )
+    expect(out.output).toContain('2 of 2 edit(s) applied')
+    const [alpha, , gamma] = attached(r.sheet(1).rootTopic)
+    expect(gamma!.style!.properties).toEqual({
+      'svg:fill': '#ffeedd',
+      'fo:font-weight': 'bold',
+      'shape-class': 'org.xmind.topicShape.ellipserect',
+    })
+    expect(alpha!.style).toEqual({
+      id: 'style-a',
+      properties: { 'unknown:prop': 'kept', 'fo:font-style': 'italic' },
+    })
+  })
+
+  it('a style value in another form fails that edit alone', async () => {
+    const r = await rigOf(richSheet())
+    const out = await editMap(
+      r.host,
+      {
+        edits: [
+          { op: 'set_style', id: IDS.c, fill: 'red' },
+          { op: 'set_style', id: IDS.c, shape: 'diamond' },
+          { op: 'set_style', id: IDS.c, bold: 'yes' },
+          { op: 'set_style', id: IDS.c },
+        ],
+      },
+      null,
+    )
+    expect(out.output).toContain('0 of 4 edit(s) applied')
+    expect(out.output).toMatch(/#0 set_style FAILED.*#rrggbb/)
+    expect(out.output).toMatch(/#1 set_style FAILED.*rounded, pill, underline/)
+    expect(out.output).toMatch(/#3 set_style FAILED.*at least one/)
+    expect(attached(r.sheet(1).rootTopic)[2]!).not.toHaveProperty('style')
+  })
+
+  it('read_map lists the boundaries with ids; read_topic gives the style and the boundaries', async () => {
+    const r = await rigOf(richSheet())
+    expect(readMap(r.host, {}).output).toContain(
+      `- ${IDS.boundary}: {#${IDS.a1}} to {#${IDS.a3}} "group"`,
+    )
+    const info = JSON.parse(
+      readTopic(r.host, { id: IDS.a }).output.replace(/^[^{]*/, ''),
+    ) as Record<string, unknown>
+    expect(info.style).toEqual({ color: '#aa0000' })
+    expect(info.boundaries).toEqual([
+      { id: IDS.boundary, title: 'group', round: [IDS.a1, IDS.a2, IDS.a3] },
+    ])
+  })
+
+  it('add_boundary goes round subtopics of one topic; remove_boundary takes one off', async () => {
+    const r = await rigOf(richSheet())
+    const out = await editMap(
+      r.host,
+      {
+        edits: [
+          { op: 'add_boundary', topicIds: [IDS.c, IDS.b], title: ' Later\nwork ' },
+          { op: 'remove_boundary', id: IDS.boundary },
+        ],
+      },
+      null,
+    )
+    expect(out.output).toContain('2 of 2 edit(s) applied')
+    const root = r.sheet(1).rootTopic
+    expect(root.boundaries).toEqual([
+      { id: expect.any(String), range: '(1,2)', title: 'Later work' },
+    ])
+    expect(attached(root)[0]!).not.toHaveProperty('boundaries')
+  })
+
+  it('a boundary over topics of different parents, or over the central topic, is refused', async () => {
+    const r = await rigOf(richSheet())
+    const out = await editMap(
+      r.host,
+      {
+        edits: [
+          { op: 'add_boundary', topicIds: [IDS.a1, IDS.b] },
+          { op: 'add_boundary', topicIds: [IDS.root] },
+          { op: 'add_boundary', topicIds: [] },
+          { op: 'remove_boundary', id: 'nope' },
+        ],
+      },
+      null,
+    )
+    expect(out.output).toContain('0 of 4 edit(s) applied')
+    expect(out.output).toMatch(/#0 add_boundary FAILED.*one topic/)
+    expect(out.output).toMatch(/#1 add_boundary FAILED.*central topic/)
+    expect(out.output).toMatch(/#3 remove_boundary FAILED.*no boundary/)
   })
 })

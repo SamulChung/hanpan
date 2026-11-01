@@ -281,3 +281,110 @@ export const IconZoom100 = () => (
     <Dot cx={10} cy={11.5} />
   </Icon>
 )
+
+/** Shape: a topic's box with a rounded one behind it. */
+export const IconShape = () => (
+  <Icon>
+    <rect x="3.25" y="6.25" width="9.5" height="7.5" rx="3.75" />
+    <path d="M9.75 6.25V4.75a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v6.5a1 1 0 0 1-1 1h-3" />
+  </Icon>
+)
+
+/** Fill: a paint pot tipped over, with a drop. */
+export const IconFill = () => (
+  <Icon>
+    <path d="m8.25 3.75 6.5 6.5-5 5a1.5 1.5 0 0 1-2.12 0l-3.88-3.88a1.5 1.5 0 0 1 0-2.12zM4.25 10.25h10.5" />
+    <path d="M16.25 13.25c.75 1 1 1.6 1 2a1 1 0 0 1-2 0c0-.4.25-1 1-2z" />
+  </Icon>
+)
+
+/** Outline: a topic's box drawn twice as thick. */
+export const IconOutline = () => (
+  <Icon>
+    <rect x="3.25" y="5.25" width="13.5" height="9.5" rx="4.75" strokeWidth="2.5" />
+  </Icon>
+)
+
+/** Larger text: an A with a caret up. */
+export const IconFontGrow = () => (
+  <Icon>
+    <path d="m3.25 15.75 4-11.5 4 11.5M4.75 11.75h5M13.25 7.75l2-2.5 2 2.5" />
+  </Icon>
+)
+
+/** Smaller text: an A with a caret down. */
+export const IconFontShrink = () => (
+  <Icon>
+    <path d="m3.25 15.75 4-11.5 4 11.5M4.75 11.75h5M13.25 5.25l2 2.5 2-2.5" />
+  </Icon>
+)
+
+/** Bold: a heavy B. */
+export const IconBold = () => (
+  <Icon>
+    <path
+      d="M6.25 4.25h4.5a2.75 2.75 0 0 1 0 5.5h-4.5zM6.25 9.75h5.25a3 3 0 0 1 0 6H6.25z"
+      strokeWidth="2.25"
+    />
+  </Icon>
+)
+
+/** Italic: a slanted stroke between two bars. */
+export const IconItalic = () => (
+  <Icon>
+    <path d="M8.75 4.25h6M5.25 15.75h6M11.75 4.25l-3.5 11.5" />
+  </Icon>
+)
+
+/** Underline: a U over a line. */
+export const IconUnderline = () => (
+  <Icon>
+    <path d="M6.25 3.75v5.5a3.75 3.75 0 0 0 7.5 0v-5.5M4.75 16.25h10.5" />
+  </Icon>
+)
+
+/** Strike-through: an S crossed by a line. */
+export const IconStrike = () => (
+  <Icon>
+    <path d="M13.75 5.75a3.75 2.5 0 0 0-3.75-1.5c-2.25 0-3.75 1.1-3.75 2.75 0 1.1.75 1.9 2.25 2.5M6.25 14.25a3.75 2.5 0 0 0 3.75 1.5c2.25 0 3.75-1.1 3.75-2.75 0-.5-.15-.9-.4-1.25M3.25 10h13.5" />
+  </Icon>
+)
+
+/** Text colour: an A over a thick bar. */
+export const IconTextColor = () => (
+  <Icon>
+    <path d="m5.75 12.75 4.25-9.5 4.25 9.5M7.25 9.75h5.5" />
+    <path d="M4.25 16.25h11.5" strokeWidth="2.5" />
+  </Icon>
+)
+
+/** Line colour: a branch with a thick bar under it. */
+export const IconLineColor = () => (
+  <Icon>
+    <path d="M3.25 11.75c4.5 0 4.5-7.5 9-7.5h3.5" />
+    <path d="M4.25 16.25h11.5" strokeWidth="2.5" />
+  </Icon>
+)
+
+/** Format painter: a brush. */
+export const IconPainter = () => (
+  <Icon>
+    <rect x="3.25" y="3.25" width="11.5" height="4.5" rx="1" />
+    <path d="M14.75 5.5h1.5a.5.5 0 0 1 .5.5v3.25a.5.5 0 0 1-.5.5H10a.5.5 0 0 0-.5.5v1.5M8.75 11.75h1.5v5h-1.5z" />
+  </Icon>
+)
+
+/** Clear format: an eraser over a line. */
+export const IconClearStyle = () => (
+  <Icon>
+    <path d="m9.25 15.75-4.4-4.4a1.25 1.25 0 0 1 0-1.77l5.73-5.73a1.25 1.25 0 0 1 1.77 0l3.4 3.4a1.25 1.25 0 0 1 0 1.77l-6.73 6.73M7.25 7.25l5.5 5.5M9.25 15.75h7.5" />
+  </Icon>
+)
+
+/** Boundary: three topics with a dashed box round two of them. */
+export const IconBoundary = () => (
+  <Icon>
+    <rect x="3.25" y="3.25" width="13.5" height="9.5" rx="2" strokeDasharray="2 2" />
+    <path d="M6.25 6.25h7.5M6.25 9.75h7.5M6.25 16.25h7.5" />
+  </Icon>
+)

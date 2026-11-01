@@ -53,6 +53,26 @@ export interface ShownSummary {
   end: number
 }
 
+/** A boundary the view shows: its record and the branches it covers. */
+export interface ShownBoundary {
+  record: JsonRecord
+  start: number
+  end: number
+}
+
+/** The boundaries of a topic that the view shows, in file order (see `boundariesToView`). */
+export function shownBoundaries(topic: XmindTopic): ShownBoundary[] {
+  const branchCount = topic.children?.attached?.length ?? 0
+  const out: ShownBoundary[] = []
+  for (const record of recordsOf(topic.boundaries)) {
+    const range = parseRange(record.range)
+    if (typeof record.id !== 'string' || record.id === '' || !range) continue
+    if (range.end >= branchCount) continue
+    out.push({ record, start: range.start, end: range.end })
+  }
+  return out
+}
+
 /** The summaries of a topic that the view shows, in file order. */
 export function shownSummaries(topic: XmindTopic): ShownSummary[] {
   const summaryTopics = new Map<string, XmindTopic>()
@@ -77,6 +97,8 @@ export interface ShownParts {
   topics: Map<string, XmindTopic>
   /** the shown summaries, each with the topic that carries it */
   summaries: (ShownSummary & { owner: XmindTopic })[]
+  /** the shown boundaries, each with the topic that carries it */
+  boundaries: (ShownBoundary & { owner: XmindTopic })[]
   /** the ids a shown relationship ends on: the topics above and the summary topics */
   ends: Set<string>
 }
@@ -84,6 +106,7 @@ export interface ShownParts {
 export function shownParts(sheet: XmindSheet): ShownParts {
   const topics = new Map<string, XmindTopic>()
   const summaries: ShownParts['summaries'] = []
+  const boundaries: ShownParts['boundaries'] = []
   const ends = new Set<string>()
   const pending: XmindTopic[] = [sheet.rootTopic]
   for (let topic = pending.pop(); topic; topic = pending.pop()) {
@@ -93,9 +116,10 @@ export function shownParts(sheet: XmindSheet): ShownParts {
       summaries.push({ ...summary, owner: topic })
       ends.add(summary.topic.id)
     }
+    for (const boundary of shownBoundaries(topic)) boundaries.push({ ...boundary, owner: topic })
     for (const branch of topic.children?.attached ?? []) pending.push(branch)
   }
-  return { topics, summaries, ends }
+  return { topics, summaries, boundaries, ends }
 }
 
 /** Whether the view shows a relationship: it names both ends, and both are shown. */

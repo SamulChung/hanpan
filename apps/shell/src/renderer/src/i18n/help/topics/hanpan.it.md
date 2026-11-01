@@ -14,6 +14,7 @@ Hanpan invia ciò che hai organizzato in una mappa mentale a un rapporto Hangul 
 - **Inserisci › Immagine** mette un'immagine PNG, JPG o GIF (al massimo 10 MB) sull'argomento selezionato, o toglie quella che ha. **Formato › Ordina** ordina alfabeticamente i rami dell'argomento selezionato; premilo di nuovo per l'ordine inverso.
 - **Visualizza › Livelli** apre la mappa fino al livello 1, 2 o 3, e **Visualizza › Mostra** nasconde note, etichette, collegamenti, icone o immagini solo sullo schermo. Il file li conserva tutti.
 - **Inserisci › Icone** apre il pannello delle icone: priorità, avanzamento, bandiere, stelle, faccine e frecce. Un argomento ha un'icona per tipo; premi quella che ha già per toglierla. Fai clic su un'icona nella mappa per cambiarla con un'altra del suo tipo o toglierla.
+- La scheda **Stile** cambia l'aspetto degli argomenti selezionati: forma, riempimento, contorno, carattere, grassetto, corsivo, sottolineato, colore del testo e dei rami. **Stile › Copia formato** copia il formato di un argomento sul prossimo argomento su cui fai clic; con un doppio clic resta attivo fino a Esc. **Home › Riquadro** racchiude in un riquadro gli argomenti fratelli selezionati; fai doppio clic sul riquadro per dargli un nome, oppure fai clic e premi Canc per toglierlo.
 
 ## Allineare mappa e documento
 

@@ -386,6 +386,7 @@ describe('the colours of a map are document content', () => {
       'marker-families.ts',
       'markers.ts',
       'sort.ts',
+      'style-edit.ts',
       'style-values.ts',
       'timeline-keys.ts',
     ])

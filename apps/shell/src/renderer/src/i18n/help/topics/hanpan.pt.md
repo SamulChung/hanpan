@@ -14,6 +14,7 @@ O Hanpan envia o que você organizou num mapa mental para um relatório Hangul (
 - **Inserir › Imagem** coloca uma imagem PNG, JPG ou GIF (no máximo 10 MB) no tópico selecionado, ou tira a que ele tem. **Formatar › Classificar** põe os ramos do tópico selecionado em ordem alfabética; toque de novo para a ordem inversa.
 - **Exibir › Níveis** expande o mapa até o nível 1, 2 ou 3, e **Exibir › Mostrar** oculta notas, rótulos, links, ícones ou imagens só na tela. O arquivo mantém tudo.
 - **Inserir › Ícones** abre o painel de ícones: prioridade, progresso, bandeiras, estrelas, carinhas e setas. Um tópico leva um ícone de cada tipo; toque num que ele já tem para tirá-lo. Clique num ícone do mapa para trocá-lo por outro do mesmo tipo ou tirá-lo.
+- O separador **Estilo** muda o aspeto dos tópicos selecionados: forma, preenchimento, contorno, tipo de letra, negrito, itálico, sublinhado e cor do texto e dos ramos. **Estilo › Pincel de formatação** copia o formato de um tópico para o próximo tópico em que clicares; com duplo clique fica ativo até premires Esc. **Página inicial › Contorno** põe uma moldura à volta dos tópicos irmãos selecionados; faz duplo clique na moldura para lhe dar nome, ou clica nela e prime Delete para a tirar.
 
 ## Sincronizar o mapa e o documento
 

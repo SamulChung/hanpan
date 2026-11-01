@@ -14,6 +14,7 @@ Hanpan envoie ce que vous avez organisé dans une carte mentale vers un rapport 
 - **Insertion › Image** ajoute une image PNG, JPG ou GIF (10 Mo au plus) au sujet sélectionné, ou retire celle qu'il a. **Format › Trier** range les branches du sujet sélectionné par ordre alphabétique ; appuyez de nouveau pour l'ordre inverse.
 - **Affichage › Niveaux** déplie la carte jusqu'au niveau 1, 2 ou 3, et **Affichage › Afficher** masque les notes, étiquettes, liens, icônes ou images à l'écran seulement. Le fichier les garde tous.
 - **Insertion › Icônes** ouvre le panneau des icônes : priorité, avancement, drapeaux, étoiles, émoticônes et flèches. Un sujet prend une icône de chaque sorte ; appuyez sur celle qu'il a pour la retirer. Cliquez sur une icône de la carte pour la changer contre une autre de sa sorte ou la retirer.
+- L'onglet **Style** change l'aspect des sujets sélectionnés : forme, remplissage, contour, police, gras, italique, souligné, couleur du texte et des branches. **Style › Reproduire la mise en forme** copie la mise en forme d'un sujet sur le prochain sujet cliqué ; un double-clic le garde actif jusqu'à Échap. **Accueil › Cadre** entoure d'un cadre les sujets frères sélectionnés ; double-cliquez sur le cadre pour le nommer, ou cliquez dessus et appuyez sur Suppr pour le retirer.
 
 ## Synchroniser la carte et le document
 

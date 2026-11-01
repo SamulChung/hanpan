@@ -2,7 +2,13 @@ import type { XmindDocument } from './document'
 import { type ReconcileIds, reconcileTree } from './reconcile-tree'
 import { idsInUse } from './tree-walk'
 import { isRecord } from './types'
-import { sheetToView, type ViewSheet, type ViewTopic, type ViewTopicStyle } from './view'
+import {
+  sheetToView,
+  STYLE_KEYS,
+  type ViewSheet,
+  type ViewTopic,
+  type ViewTopicStyle,
+} from './view'
 
 export type { ReconcileIds } from './reconcile-tree'
 
@@ -38,10 +44,10 @@ export type ReconcileResult =
  *
  * `state` is the sheet's view data as it stands after the user's edit. What
  * is applied: the topics with their order and nesting, and per topic the
- * title, folding, labels, note, link, picture and markers; summaries;
- * relationships; the layout. What is never written from a state: styles,
- * which the editor shows without editing, and the sheet's own title and
- * place, which `renameSheet` and its neighbours change.
+ * title, folding, labels, note, link, picture, markers and own style;
+ * summaries; boundaries; relationships; the layout. What is never written
+ * from a state: the sheet's own title and place, which `renameSheet` and its
+ * neighbours change.
  *
  * Sheets are reconciled one at a time: topics are paired by id inside the
  * sheet at `index`, and the same id on another sheet is another topic.
@@ -91,8 +97,9 @@ export function reconcileSheet(
 
 /**
  * Everything a view shows of a map, in a form two views can be compared by.
- * The order of summaries and of relationships is left out, as are the ids of
- * summary records: a summary is known by its summary topic. A state that
+ * The order of summaries, boundaries and relationships is left out, as are
+ * the ids of summary and boundary records: a summary is known by its summary
+ * topic, a boundary by its place. A state that
  * passed reconciling has the shape read here for all it applies; the parts
  * reconciling never reads are taken as "nothing" when they are missing.
  */
@@ -118,6 +125,14 @@ function shownBy(sheet: ViewSheet, ids?: ReconcileIds): string {
         summary.end,
       ]),
     ),
+    // a state without boundaries leaves them alone, and is taken as showing none (like markers)
+    sorted(
+      (Array.isArray(shown.boundaries) ? shown.boundaries : []).map((boundary) => [
+        boundary.title,
+        boundary.start,
+        boundary.end,
+      ]),
+    ),
     shown.children.map(topic),
   ]
   const relationships = sheet.relationships.map((relationship) => [
@@ -130,7 +145,7 @@ function shownBy(sheet: ViewSheet, ids?: ReconcileIds): string {
 }
 
 function styleValues(style: ViewTopicStyle): unknown[] {
-  return [style.color, style.fill, style.fontWeight, style.fontSize].map((value) => value ?? null)
+  return STYLE_KEYS.map((key) => style[key] ?? null)
 }
 
 function sorted(items: unknown[]): string[] {

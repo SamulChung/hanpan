@@ -14,6 +14,7 @@ Hanpan pošle to, co jste uspořádali v myšlenkové mapě, do zprávy Hangul (
 - **Vložení › Obrázek** vloží k vybranému tématu obrázek PNG, JPG nebo GIF (nejvýše 10 MB), nebo odebere ten, který má. **Formát › Seřadit** seřadí větve vybraného tématu abecedně; dalším stisknutím v opačném pořadí.
 - **Zobrazení › Úrovně** rozbalí mapu do úrovně 1, 2 nebo 3 a **Zobrazení › Zobrazit** skryje poznámky, štítky, odkazy, ikony nebo obrázky jen na obrazovce. Soubor je zachová všechny.
 - **Vložení › Ikony** otevře panel ikon: priorita, průběh, vlajky, hvězdy, smajlíci a šipky. Téma nese jednu ikonu od každého druhu; stisknutím té, kterou už má, ji odeberete. Kliknutím na ikonu v mapě ji vyměníte za jinou téhož druhu nebo ji odeberete.
+- Karta **Styl** mění vzhled vybraných témat: tvar, výplň, obrys, písmo, tučné, kurzívu, podtržení, barvu textu a barvu větví. **Styl › Kopírovat formát** přenese formát jednoho tématu na další téma, na které kliknete; dvojklikem zůstane zapnutý až do Esc. **Domů › Ohraničení** ohraničí vybraná sourozenecká témata rámečkem; dvojklikem na rámeček ho pojmenujete, kliknutím a klávesou Delete ho odeberete.
 
 ## Sladění mapy a dokumentu
 

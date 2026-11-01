@@ -102,6 +102,7 @@ describe('ranges: a covered branch is deleted', () => {
     const renumbered = await edit(ranged('(2,3)', '(1,2)'), (view) => {
       detach(view, 'k0')
       Object.assign(inView(view, 'p').summaries[0]!, { start: 0, end: 1 })
+      Object.assign(inView(view, 'p').boundaries[0]!, { start: 1, end: 2 })
     })
     expect(renumbered.result.inSync).toBe(true)
     expect(renumbered.p).toMatchObject({ summaries: [{ range: '(0,1)' }] })

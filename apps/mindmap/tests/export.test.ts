@@ -339,13 +339,29 @@ describe('cleaning a copy', () => {
     root.innerHTML =
       '<me-tpc style="position: fixed; width: 9999px; opacity: 0; border-color: red; ' +
       'color: #112233; background-color: #445566; font-size: 20px; font-weight: 700; ' +
-      'line-height: 28px; box-shadow: none">t</me-tpc>'
+      'line-height: 28px; box-shadow: none; font-style: italic; font-family: Arial; ' +
+      'text-decoration-line: underline; border-width: 2px; border-style: solid">t</me-tpc>'
     cleanCopy(root)
     const topic = root.querySelector<HTMLElement>('me-tpc')!
-    const names = Array.from({ length: topic.style.length }, (_, at) => topic.style.item(at))
-    expect(names.sort()).toEqual(
-      ['background-color', 'box-shadow', 'color', 'font-size', 'font-weight', 'line-height'].sort(),
-    )
+    for (const dropped of ['position', 'width', 'opacity']) {
+      expect(topic.style.getPropertyValue(dropped), dropped).toBe('')
+    }
+    for (const kept of [
+      'background-color',
+      'box-shadow',
+      'color',
+      'font-size',
+      'font-weight',
+      'line-height',
+      'font-style',
+      'font-family',
+      'text-decoration-line',
+      'border-color',
+      'border-width',
+      'border-style',
+    ]) {
+      expect(topic.style.getPropertyValue(kept), kept).not.toBe('')
+    }
     expect(topic.style.fontSize).toBe('20px')
     expect(topic.style.lineHeight).toBe('28px')
   })

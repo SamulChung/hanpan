@@ -370,12 +370,28 @@ describe('nodes from the clipboard', () => {
       id: 'x',
       topic: '<img src=x onerror=alert(1)>',
       tags: ['ok'],
-      metadata: { labels: ['ok'], note: null, link: null, image: null, markers: [], style: {} },
+      metadata: {
+        labels: ['ok'],
+        note: null,
+        link: null,
+        image: null,
+        markers: [],
+        style: {},
+        boundaries: [],
+      },
       children: [
         {
           id: 'y',
           topic: '42',
-          metadata: { labels: [], note: null, link: null, image: null, markers: [], style: {} },
+          metadata: {
+            labels: [],
+            note: null,
+            link: null,
+            image: null,
+            markers: [],
+            style: {},
+            boundaries: [],
+          },
         },
       ],
     })
