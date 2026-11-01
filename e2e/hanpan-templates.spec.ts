@@ -26,7 +26,7 @@ test('a template opens as HWP, and the Hanpan tools work on it', async () => {
     await page.locator('[data-hanpan="templates"]').click()
     const picker = page.locator('.hp-tpl')
     await expect(picker).toBeVisible()
-    await expect(picker.locator('.hp-tpl-card')).toHaveCount(22)
+    await expect(picker.locator('.hp-tpl-card')).toHaveCount(25)
     await page.screenshot({ path: screenshotPath('hanpan-template-picker') })
     await picker.locator('[data-template="gongmun-cooperation"] [data-open="hwp"]').click()
     await expect(picker).toBeHidden({ timeout: 30_000 })

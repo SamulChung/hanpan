@@ -2,7 +2,8 @@
  * Hanpan: the template picker on the Home screen. The 글집 templates (official
  * letters, reports, proposals, minutes, plans) grouped by kind; each opens as a
  * new untitled HWP or Word document laid out like a Hanpan report, or as a
- * mind map of its headings and lists.
+ * mind map of its headings and lists. The official forms (서식) open as a copy of
+ * the HWP file the law publishes, so they offer HWP only.
  */
 import { useEffect, useMemo, useState } from 'react'
 import { useI18n } from '../locale'
@@ -14,6 +15,8 @@ export interface TemplateSummary {
   category: string
   description: string
   icon: string
+  /** an official form: the statute it is attached to, e.g. 「…시행규칙」 별지 제3호서식 (…개정) */
+  form?: string
 }
 
 export interface HanpanApi extends Partial<MarkdownConverterApi> {
@@ -31,7 +34,7 @@ declare global {
 }
 
 /** The order the kinds are shown in: public-sector letters first. */
-const CATEGORY_ORDER = ['공문', '보고서', '제안서', '회의록', '메모', '사업기획', '교육', '콘텐츠', '기타']
+const CATEGORY_ORDER = ['공문', '서식', '보고서', '제안서', '회의록', '메모', '사업기획', '교육', '콘텐츠', '기타']
 
 export function TemplatePicker(p: { onClose(): void }) {
   const { t } = useI18n()
@@ -75,6 +78,7 @@ export function TemplatePicker(p: { onClose(): void }) {
           {groups.map(([category, list]) => (
             <section key={category}>
               <h3>{category}</h3>
+              {list.some((tpl) => tpl.form) && <p className="hp-tpl-note">{t('hpTemplatesFormsNote')}</p>}
               <div className="hp-tpl-grid">
                 {list.map((tpl) => (
                   <div key={tpl.id} className="hp-tpl-card" data-template={tpl.id}>
@@ -82,16 +86,21 @@ export function TemplatePicker(p: { onClose(): void }) {
                       <span aria-hidden="true">{tpl.icon}</span> {tpl.title}
                     </div>
                     <div className="hp-tpl-desc">{tpl.description}</div>
+                    {tpl.form && <div className="hp-tpl-source">{tpl.form}</div>}
                     <div className="hp-tpl-actions">
                       <button type="button" disabled={busy !== null} data-open="hwp" onClick={() => void open(tpl.id, 'hwp')}>
                         {t('hpTemplatesHwp')}
                       </button>
-                      <button type="button" disabled={busy !== null} data-open="docx" onClick={() => void open(tpl.id, 'docx')}>
-                        {t('hpTemplatesDocx')}
-                      </button>
-                      <button type="button" disabled={busy !== null} data-open="xmind" onClick={() => void open(tpl.id, 'xmind')}>
-                        {t('hpTemplatesMap')}
-                      </button>
+                      {!tpl.form && (
+                        <>
+                          <button type="button" disabled={busy !== null} data-open="docx" onClick={() => void open(tpl.id, 'docx')}>
+                            {t('hpTemplatesDocx')}
+                          </button>
+                          <button type="button" disabled={busy !== null} data-open="xmind" onClick={() => void open(tpl.id, 'xmind')}>
+                            {t('hpTemplatesMap')}
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))}

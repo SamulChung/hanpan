@@ -6,8 +6,10 @@
 import {
   DOC_TEMPLATES,
   DOC_THEMES,
+  OFFICIAL_FORMS,
   PICTURE_TEMPLATES,
   TEMPLATE_PICTURES,
+  officialFormSource,
   pictureCredit,
   templateMapOutline,
   changeHwpTone,
@@ -51,6 +53,9 @@ import geumgangJpg from './pictures/geumgang.jpg?asset'
 import inwangJpg from './pictures/inwang.jpg?asset'
 import seodangJpg from './pictures/seodang.jpg?asset'
 import ssireumJpg from './pictures/ssireum.jpg?asset'
+import adminAppealHwp from './forms/admin-appeal.hwp?asset'
+import infoDisclosureHwp from './forms/info-disclosure.hwp?asset'
+import powerOfAttorneyHwp from './forms/power-of-attorney.hwp?asset'
 
 /** The 글집 templates, then Hanpan's own with pictures. */
 const ALL_TEMPLATES = [...DOC_TEMPLATES, ...PICTURE_TEMPLATES]
@@ -62,6 +67,13 @@ const PICTURE_FILES: Record<string, string> = {
   inwang: inwangJpg,
   seodang: seodangJpg,
   ssireum: ssireumJpg,
+}
+
+/** Where each official form's HWP file is; what each one is lives in hanpan-core (`OFFICIAL_FORMS`). */
+const FORM_FILES: Record<string, string> = {
+  'form-admin-appeal': adminAppealHwp,
+  'form-info-disclosure': infoDisclosureHwp,
+  'form-power-of-attorney': powerOfAttorneyHwp,
 }
 
 /** A template picture with its credit, or undefined (the line stays its caption) when it cannot be read. */
@@ -158,10 +170,10 @@ export interface HanpanSetup {
   adoptLocalAi(): void
   /** one of 글집's document tools on the HWP document open in tab `wc` */
   hwpTool(wc: Electron.WebContents, request: unknown): Promise<unknown>
-  /** the 글집 templates, for the Home picker */
-  templates(): { id: string; title: string; category: string; description: string; icon: string }[]
+  /** the 글집 templates, then the official forms (`form`: the statute it comes from), for the Home picker */
+  templates(): { id: string; title: string; category: string; description: string; icon: string; form?: string }[]
   /** a template as a new untitled HWP or Word document in a tab */
-  /** `xmind` opens the template's headings and lists as a mind map */
+  /** `xmind` opens the template's headings and lists as a mind map; an official form opens only as HWP */
   openTemplate(id: unknown, target: unknown): Promise<{ ok: true } | { ok: false; error: string }>
   /** a new untitled mind map in a tab with `topic` as its central topic (Home's start box) */
   newMap(topic: unknown): Promise<{ ok: true } | { ok: false; error: string }>
@@ -232,6 +244,23 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
     mkdirSync(dir, { recursive: true })
     return dir
   }
+  /** an official form: a copy of the HWP file as published, unchanged, in a new HWP tab */
+  const openForm = async (id: string, title: string): Promise<{ ok: true } | { ok: false; error: string }> => {
+    const file = FORM_FILES[id]
+    if (!file) return { ok: false, error: 'no such form' }
+    const bytes = new Uint8Array(await readFile(file))
+    const fileName = documentFileName(title, 'hwp')
+    const dir = await makeCopyDir()
+    const path = join(dir, fileName)
+    await atomicWriteFile(path, Buffer.from(bytes))
+    const opened = await deps.openCopy({ editor: 'hwp', path, dir, bytes, fileName, title })
+    if (!opened) {
+      rmSync(dir, { recursive: true, force: true })
+      return { ok: false, error: 'the new tab did not open' }
+    }
+    opened.contents.once('destroyed', () => rmSync(dir, { recursive: true, force: true }))
+    return { ok: true }
+  }
   /** A new untitled mind map from outline text, opened in its own tab. */
   const openMap = async (outline: string, title: string): Promise<{ ok: true } | { ok: false; error: string }> => {
     const map = await createXmindDocumentFromOutline(outline, { untitled: title })
@@ -284,8 +313,13 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
         doc.free()
       }
     },
-    templates: () => ALL_TEMPLATES.map(({ id, title, category, description, icon }) => ({ id, title, category, description, icon })),
+    templates: () => [
+      ...ALL_TEMPLATES.map(({ id, title, category, description, icon }) => ({ id, title, category, description, icon })),
+      ...OFFICIAL_FORMS.map((f) => ({ id: f.id, title: f.title, category: '서식', description: f.description, icon: f.icon, form: officialFormSource(f) })),
+    ],
     openTemplate: async (id, target) => {
+      const form = OFFICIAL_FORMS.find((f) => f.id === id)
+      if (form) return target === 'hwp' ? openForm(form.id, form.title) : { ok: false, error: 'an official form opens only as HWP' }
       const template = ALL_TEMPLATES.find((t) => t.id === id)
       if (!template || (target !== 'hwp' && target !== 'docx' && target !== 'xmind')) return { ok: false, error: 'no such template' }
       if (target === 'xmind') return openMap(templateMapOutline(template.markdown), template.title)

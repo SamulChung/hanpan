@@ -88,3 +88,4 @@
 | [0085](0085-mindmap-engine-writes-markers.md)                 | 마인드맵 엔진이 토픽의 아이콘을 쓰되, 새로 붙인 것만 검사하고 파일의 기록은 그대로 둔다         | 2026-11-01 |
 | [0086](0086-mindmap-engine-writes-style-and-boundaries.md)    | 마인드맵 엔진이 토픽 서식은 바뀐 속성만, 테두리는 식별자로 짝지어 쓴다                          | 2026-11-01 |
 | [0087](0087-hanpan-bundles-free-gongu-works.md)               | 한판은 공유마당의 만료·CC BY 저작물만 앱에 담고, 넣을 때마다 출처를 적는다                      | 2026-11-01 |
+| [0088](0088-hanpan-bundles-official-law-forms.md)             | 한판은 법령에 붙은 서식을 국가법령정보센터의 파일 그대로 담고, 한글로만 연다                    | 2026-11-01 |
