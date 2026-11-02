@@ -85,7 +85,10 @@ function templatePicture(id: string): MarkdownPicture | undefined {
   if (!known || !file) return undefined
   try {
     const bytes = new Uint8Array(readFileSync(file))
-    return { image: { bytes, mime: 'image/jpeg', width: known.width, height: known.height }, credit: pictureCredit(known) }
+    return {
+      image: { bytes, mime: 'image/jpeg', width: known.width, height: known.height },
+      credit: pictureCredit(known),
+    }
   } catch (error) {
     console.warn('[hanpan] template picture missing', id, error)
     return undefined
@@ -112,11 +115,22 @@ let engine: Promise<HwpEngine> | null = null
 export async function printHtmlToPdf(html: string): Promise<Uint8Array> {
   const win = new BrowserWindow({
     show: false,
-    webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false, javascript: false },
+    webPreferences: {
+      sandbox: true,
+      contextIsolation: true,
+      nodeIntegration: false,
+      javascript: false,
+    },
   })
   try {
-    await win.loadURL(`data:text/html;charset=utf-8;base64,${Buffer.from(html, 'utf8').toString('base64')}`)
-    const pdf = await win.webContents.printToPDF({ pageSize: 'A4', printBackground: true, preferCSSPageSize: true })
+    await win.loadURL(
+      `data:text/html;charset=utf-8;base64,${Buffer.from(html, 'utf8').toString('base64')}`,
+    )
+    const pdf = await win.webContents.printToPDF({
+      pageSize: 'A4',
+      printBackground: true,
+      preferCSSPageSize: true,
+    })
     return new Uint8Array(pdf)
   } finally {
     win.destroy()
@@ -142,7 +156,10 @@ export function loadHwpEngine(): Promise<HwpEngine> {
  * Slides → deck. With a style, the style draws every slide (slide-styles.ts);
  * without one, the shell's own outline-to-ops builder makes the plain deck.
  */
-export async function buildHanpanDeck(slides: SlidePlan[], style?: SlideStyleId): Promise<Uint8Array> {
+export async function buildHanpanDeck(
+  slides: SlidePlan[],
+  style?: SlideStyleId,
+): Promise<Uint8Array> {
   if (style) return buildDeck(styledDeckOps(slides, style) as Op[])
   const ops: Op[] = outlineToOps(
     slides.map((s) => ({
@@ -173,7 +190,14 @@ export interface HanpanSetup {
   /** one of 글집's document tools on the HWP document open in tab `wc` */
   hwpTool(wc: Electron.WebContents, request: unknown): Promise<unknown>
   /** the 글집 templates, then the official forms (`form`: the statute it comes from), for the Home picker */
-  templates(): { id: string; title: string; category: string; description: string; icon: string; form?: string }[]
+  templates(): {
+    id: string
+    title: string
+    category: string
+    description: string
+    icon: string
+    form?: string
+  }[]
   /** a template as a new untitled HWP or Word document in a tab */
   /** `xmind` opens the template's headings and lists as a mind map; an official form opens only as HWP */
   openTemplate(id: unknown, target: unknown): Promise<{ ok: true } | { ok: false; error: string }>
@@ -221,10 +245,13 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
     loadHwpEngine,
     documentTab: (link): SyncTab | null => {
       const holder = links.holderOf(link.id)
-      if (holder !== null && liveContents(holder)) return { id: holder, title: deps.tabTitleOf(holder) ?? '' }
+      if (holder !== null && liveContents(holder))
+        return { id: holder, title: deps.tabTitleOf(holder) ?? '' }
       if (!link.docPath) return null
       const open = deps.tabForFile(link.docPath)
-      return open && liveContents(open.contentsId) ? { id: open.contentsId, title: open.title } : null
+      return open && liveContents(open.contentsId)
+        ? { id: open.contentsId, title: open.title }
+        : null
     },
     readTab: (tab) => {
       const wc = liveContents(tab.id)
@@ -247,7 +274,10 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
     return dir
   }
   /** an official form: a copy of the HWP file as published, unchanged, in a new HWP tab */
-  const openForm = async (id: string, title: string): Promise<{ ok: true } | { ok: false; error: string }> => {
+  const openForm = async (
+    id: string,
+    title: string,
+  ): Promise<{ ok: true } | { ok: false; error: string }> => {
     const file = FORM_FILES[id]
     if (!file) return { ok: false, error: 'no such form' }
     const bytes = new Uint8Array(await readFile(file))
@@ -264,7 +294,10 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
     return { ok: true }
   }
   /** A new untitled mind map from outline text, opened in its own tab. */
-  const openMap = async (outline: string, title: string): Promise<{ ok: true } | { ok: false; error: string }> => {
+  const openMap = async (
+    outline: string,
+    title: string,
+  ): Promise<{ ok: true } | { ok: false; error: string }> => {
     const map = await createXmindDocumentFromOutline(outline, { untitled: title })
     const bytes = await map.save()
     const fileName = documentFileName(title, 'xmind')
@@ -295,7 +328,8 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
             changed = tidyGongmun(doc)
             break
           case 'tone':
-            if (request.target !== '60대' && request.target !== '40대' && request.target !== 'MZ') return { ok: false, error: 'bad tone' }
+            if (request.target !== '60대' && request.target !== '40대' && request.target !== 'MZ')
+              return { ok: false, error: 'bad tone' }
             changed = changeHwpTone(doc, request.target)
             break
           case 'review':
@@ -316,23 +350,55 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
       }
     },
     templates: () => [
-      ...ALL_TEMPLATES.map(({ id, title, category, description, icon }) => ({ id, title, category, description, icon })),
-      ...OFFICIAL_FORMS.map((f) => ({ id: f.id, title: f.title, category: '서식', description: f.description, icon: f.icon, form: officialFormSource(f) })),
+      ...ALL_TEMPLATES.map(({ id, title, category, description, icon }) => ({
+        id,
+        title,
+        category,
+        description,
+        icon,
+      })),
+      ...OFFICIAL_FORMS.map((f) => ({
+        id: f.id,
+        title: f.title,
+        category: '서식',
+        description: f.description,
+        icon: f.icon,
+        form: officialFormSource(f),
+      })),
     ],
     openTemplate: async (id, target) => {
       const form = OFFICIAL_FORMS.find((f) => f.id === id)
-      if (form) return target === 'hwp' ? openForm(form.id, form.title) : { ok: false, error: 'an official form opens only as HWP' }
+      if (form)
+        return target === 'hwp'
+          ? openForm(form.id, form.title)
+          : { ok: false, error: 'an official form opens only as HWP' }
       const template = ALL_TEMPLATES.find((t) => t.id === id)
-      if (!template || (target !== 'hwp' && target !== 'docx' && target !== 'xmind')) return { ok: false, error: 'no such template' }
+      if (!template || (target !== 'hwp' && target !== 'docx' && target !== 'xmind'))
+        return { ok: false, error: 'no such template' }
       if (target === 'xmind') return openMap(templateMapOutline(template.markdown), template.title)
       const blocks = markdownToBlocks(template.markdown, { picture: templatePicture })
-      const theme = template.category === '공문' ? DOC_THEMES.gongmun! : template.category === '보고서' ? DOC_THEMES.report! : DOC_THEMES.plain!
-      const bytes = target === 'hwp' ? blocksToHwp(await loadHwpEngine(), blocks, theme, 'hwpx').bytes : await blocksToDocx(blocks, theme)
+      const theme =
+        template.category === '공문'
+          ? DOC_THEMES.gongmun!
+          : template.category === '보고서'
+            ? DOC_THEMES.report!
+            : DOC_THEMES.plain!
+      const bytes =
+        target === 'hwp'
+          ? blocksToHwp(await loadHwpEngine(), blocks, theme, 'hwpx').bytes
+          : await blocksToDocx(blocks, theme)
       const fileName = documentFileName(template.title, target === 'hwp' ? 'hwpx' : 'docx')
       const dir = await makeCopyDir()
       const path = join(dir, fileName)
       await atomicWriteFile(path, Buffer.from(bytes))
-      const opened = await deps.openCopy({ editor: target === 'hwp' ? 'hwp' : 'docs', path, dir, bytes, fileName, title: template.title })
+      const opened = await deps.openCopy({
+        editor: target === 'hwp' ? 'hwp' : 'docs',
+        path,
+        dir,
+        bytes,
+        fileName,
+        title: template.title,
+      })
       if (!opened) {
         rmSync(dir, { recursive: true, force: true })
         return { ok: false, error: 'the new tab did not open' }
@@ -342,7 +408,14 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
     },
     newMap: async (raw) => {
       // one line of plain text: list and heading marks at its start would read as structure
-      const topic = typeof raw === 'string' ? raw.replace(/\s+/g, ' ').replace(/^[#>*+\-\s]+/, '').trim().slice(0, 120) : ''
+      const topic =
+        typeof raw === 'string'
+          ? raw
+              .replace(/\s+/g, ' ')
+              .replace(/^[#>*+\-\s]+/, '')
+              .trim()
+              .slice(0, 120)
+          : ''
       if (!topic) return { ok: false, error: 'no topic' }
       return openMap(`- ${topic}\n`, topic)
     },
@@ -368,7 +441,8 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
         readSettings: readStoredAiSettings,
         writeSettings: writeStoredAiSettings,
         settled: () => existsSync(mark),
-        markSettled: (outcome) => writeFileSync(mark, JSON.stringify({ outcome, at: new Date().toISOString() })),
+        markSettled: (outcome) =>
+          writeFileSync(mark, JSON.stringify({ outcome, at: new Date().toISOString() })),
         choose: defaultChoose,
       }).catch((error: unknown) => console.warn('[hanpan] local AI detection failed', error))
     },

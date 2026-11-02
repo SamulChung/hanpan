@@ -21,7 +21,10 @@ export interface TemplateSummary {
 
 export interface HanpanApi extends Partial<MarkdownConverterApi> {
   templates(): Promise<TemplateSummary[]>
-  openTemplate(id: string, target: 'hwp' | 'docx' | 'xmind'): Promise<{ ok: true } | { ok: false; error: string }>
+  openTemplate(
+    id: string,
+    target: 'hwp' | 'docx' | 'xmind',
+  ): Promise<{ ok: true } | { ok: false; error: string }>
   openDesign?(): Promise<void>
   /** a new mind map with `topic` as its central topic */
   newMap?(topic: string): Promise<{ ok: true } | { ok: false; error: string }>
@@ -34,7 +37,18 @@ declare global {
 }
 
 /** The order the kinds are shown in: public-sector letters first. */
-const CATEGORY_ORDER = ['공문', '서식', '보고서', '제안서', '회의록', '메모', '사업기획', '교육', '콘텐츠', '기타']
+const CATEGORY_ORDER = [
+  '공문',
+  '서식',
+  '보고서',
+  '제안서',
+  '회의록',
+  '메모',
+  '사업기획',
+  '교육',
+  '콘텐츠',
+  '기타',
+]
 
 export function TemplatePicker(p: { onClose(): void }) {
   const { t } = useI18n()
@@ -52,33 +66,58 @@ export function TemplatePicker(p: { onClose(): void }) {
   const groups = useMemo(() => {
     const by = new Map<string, TemplateSummary[]>()
     for (const tpl of templates) by.set(tpl.category, [...(by.get(tpl.category) ?? []), tpl])
-    return [...by].sort(([a], [b]) => (CATEGORY_ORDER.indexOf(a) + 99) % 99 - (CATEGORY_ORDER.indexOf(b) + 99) % 99)
+    return [...by].sort(
+      ([a], [b]) =>
+        ((CATEGORY_ORDER.indexOf(a) + 99) % 99) - ((CATEGORY_ORDER.indexOf(b) + 99) % 99),
+    )
   }, [templates])
 
   const open = async (id: string, target: 'hwp' | 'docx' | 'xmind') => {
     setBusy(`${id}:${target}`)
     setError(null)
-    const result = await window.hanpanApi?.openTemplate(id, target).catch((e: unknown) => ({ ok: false as const, error: String(e) }))
+    const result = await window.hanpanApi
+      ?.openTemplate(id, target)
+      .catch((e: unknown) => ({ ok: false as const, error: String(e) }))
     setBusy(null)
     if (result?.ok) p.onClose()
     else setError(t('hpTemplatesFailed', { error: result && !result.ok ? result.error : '?' }))
   }
 
   return (
-    <div className="hp-tpl-backdrop" onMouseDown={(e) => e.target === e.currentTarget && p.onClose()}>
-      <div className="hp-tpl" role="dialog" aria-modal="true" aria-label={t('hpTemplatesTitle')} onKeyDown={(e) => e.key === 'Escape' && p.onClose()}>
+    <div
+      className="hp-tpl-backdrop"
+      onMouseDown={(e) => e.target === e.currentTarget && p.onClose()}
+    >
+      <div
+        className="hp-tpl"
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('hpTemplatesTitle')}
+        onKeyDown={(e) => e.key === 'Escape' && p.onClose()}
+      >
         <div className="hp-tpl-head">
           <h2>{t('hpTemplatesTitle')}</h2>
-          <button type="button" className="hp-tpl-close" onClick={p.onClose} aria-label={t('hpTemplatesClose')}>
+          <button
+            type="button"
+            className="hp-tpl-close"
+            onClick={p.onClose}
+            aria-label={t('hpTemplatesClose')}
+          >
             ×
           </button>
         </div>
-        {error && <p className="hp-tpl-error" role="alert">{error}</p>}
+        {error && (
+          <p className="hp-tpl-error" role="alert">
+            {error}
+          </p>
+        )}
         <div className="hp-tpl-body">
           {groups.map(([category, list]) => (
             <section key={category}>
               <h3>{category}</h3>
-              {list.some((tpl) => tpl.form) && <p className="hp-tpl-note">{t('hpTemplatesFormsNote')}</p>}
+              {list.some((tpl) => tpl.form) && (
+                <p className="hp-tpl-note">{t('hpTemplatesFormsNote')}</p>
+              )}
               <div className="hp-tpl-grid">
                 {list.map((tpl) => (
                   <div key={tpl.id} className="hp-tpl-card" data-template={tpl.id}>
@@ -88,15 +127,30 @@ export function TemplatePicker(p: { onClose(): void }) {
                     <div className="hp-tpl-desc">{tpl.description}</div>
                     {tpl.form && <div className="hp-tpl-source">{tpl.form}</div>}
                     <div className="hp-tpl-actions">
-                      <button type="button" disabled={busy !== null} data-open="hwp" onClick={() => void open(tpl.id, 'hwp')}>
+                      <button
+                        type="button"
+                        disabled={busy !== null}
+                        data-open="hwp"
+                        onClick={() => void open(tpl.id, 'hwp')}
+                      >
                         {t('hpTemplatesHwp')}
                       </button>
                       {!tpl.form && (
                         <>
-                          <button type="button" disabled={busy !== null} data-open="docx" onClick={() => void open(tpl.id, 'docx')}>
+                          <button
+                            type="button"
+                            disabled={busy !== null}
+                            data-open="docx"
+                            onClick={() => void open(tpl.id, 'docx')}
+                          >
                             {t('hpTemplatesDocx')}
                           </button>
-                          <button type="button" disabled={busy !== null} data-open="xmind" onClick={() => void open(tpl.id, 'xmind')}>
+                          <button
+                            type="button"
+                            disabled={busy !== null}
+                            data-open="xmind"
+                            onClick={() => void open(tpl.id, 'xmind')}
+                          >
                             {t('hpTemplatesMap')}
                           </button>
                         </>

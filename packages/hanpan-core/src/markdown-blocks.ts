@@ -47,7 +47,10 @@ function cells(line: string): string[] {
     .map((c) => plainInline(c))
 }
 
-export function markdownToBlocks(markdown: string, options: MarkdownBlocksOptions = {}): DocBlock[] {
+export function markdownToBlocks(
+  markdown: string,
+  options: MarkdownBlocksOptions = {},
+): DocBlock[] {
   const lines = markdown.replace(/\r\n?/g, '\n').split('\n')
   const blocks: DocBlock[] = []
   let sawTitle = false
@@ -107,13 +110,19 @@ export function markdownToBlocks(markdown: string, options: MarkdownBlocksOption
     if (picture && supplied) {
       blocks.push({ kind: 'image', depth, image: supplied.image })
       const caption = plainInline(picture[1]!)
-      blocks.push({ kind: 'para', depth, text: caption ? `${caption} — ${supplied.credit}` : supplied.credit, role: 'note' })
+      blocks.push({
+        kind: 'para',
+        depth,
+        text: caption ? `${caption} — ${supplied.credit}` : supplied.credit,
+        role: 'note',
+      })
       i++
       continue
     }
     if (line.startsWith('>')) {
       const text = plainInline(line.replace(/^>\s?/, ''))
-      if (text.startsWith('※')) blocks.push({ kind: 'reference', depth, text: text.replace(/^※\s*/, '') })
+      if (text.startsWith('※'))
+        blocks.push({ kind: 'reference', depth, text: text.replace(/^※\s*/, '') })
       else if (text) blocks.push({ kind: 'para', depth, text, role: 'note' })
       i++
       continue
@@ -123,13 +132,23 @@ export function markdownToBlocks(markdown: string, options: MarkdownBlocksOption
       const level = Math.floor(list[1]!.replace(/\t/g, '  ').length / 2)
       const itemDepth = depth + 1 + level
       const ordered = /\d/.test(list[2]!)
-      blocks.push({ kind: 'item', depth: itemDepth, marker: ordered ? list[2]! : reportMarker(itemDepth), text: plainInline(list[3]!) })
+      blocks.push({
+        kind: 'item',
+        depth: itemDepth,
+        marker: ordered ? list[2]! : reportMarker(itemDepth),
+        text: plainInline(list[3]!),
+      })
       i++
       continue
     }
     // a paragraph; Korean documents indent sub-points (가. 나.) with spaces
     const indent = Math.floor((raw.length - raw.trimStart().length) / 2)
-    blocks.push({ kind: 'para', depth: depth + Math.max(0, indent - 1), text: plainInline(line), role: 'body' })
+    blocks.push({
+      kind: 'para',
+      depth: depth + Math.max(0, indent - 1),
+      text: plainInline(line),
+      role: 'body',
+    })
     i++
   }
   if (!sawTitle) blocks.unshift({ kind: 'title', text: '' })
