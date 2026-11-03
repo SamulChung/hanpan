@@ -56,7 +56,7 @@ description: IeumOffice의 새 버전을 내는 작업(버전 올리기, Windows
 ## 설치
 
 - Windows: …
-- Mac (베타): … (Apple Silicon은 `-arm64.dmg`, Intel은 `-x64.dmg`)
+- Mac (베타): … (Apple Silicon은 `-arm64.dmg`, Intel은 `-x64.dmg`). "손상되었기 때문에 열 수 없습니다"가 뜨면 **취소** 뒤 터미널에서 `xattr -dr com.apple.quarantine /Applications/<앱 이름>.app`
 - Linux (베타): … (AppImage·deb·rpm, README의 "Linux (베타)")
 ```
 
