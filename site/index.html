@@ -508,6 +508,17 @@
         margin: 0 0 10px;
         color: var(--ink-soft);
       }
+      .mac-install .cmd {
+        display: block;
+        margin: 0 0 10px;
+        padding: 10px 14px;
+        background: var(--paper);
+        border-radius: 8px;
+        color: var(--ink);
+        font-size: 14px;
+        overflow-wrap: anywhere;
+        user-select: all;
+      }
       .final .mac-final {
         margin: 22px auto 0;
         font-size: 15px;
@@ -1159,6 +1170,14 @@
               프로그램이라 나오는 안내입니다. Mac에서는 스스로 업데이트하지 못해, 새 버전이 나오면
               알려 주는 대로 다시 내려받아 바꿔 넣습니다.
             </p>
+            <p>
+              "'Hanpan'은(는) 손상되었기 때문에 열 수 없습니다"라고 나오면
+              <strong>휴지통으로 이동</strong>이 아니라 <strong>취소</strong>를 누릅니다. 파일이
+              망가진 것이 아니라, 인터넷에서 받은 서명 없는 앱을 macOS가 막는 것입니다. 한판을 응용
+              프로그램 폴더로 옮긴 뒤 <strong>터미널</strong>(Spotlight에서 "터미널" 검색)에 아래 한
+              줄을 붙여 넣고 Return을 누른 다음, 한판을 다시 엽니다.
+            </p>
+            <code class="cmd">xattr -dr com.apple.quarantine /Applications/Hanpan.app</code>
           </div>
         </div>
       </section>
