@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>한판 방문 통계</title>
+    <style>
+      :root {
+        --board: #183f33;
+        --paper: #ffffff;
+        --mist: #f1f6f3;
+        --ink: #13201a;
+        --ink-soft: #4a5b53;
+        --line: #d5e0da;
+        --node: #f2c94c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: 'Noto Sans KR', system-ui, sans-serif;
+        background: var(--mist);
+        color: var(--ink);
+        line-height: 1.5;
+      }
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 32px 16px 64px;
+      }
+      h1 {
+        font-size: 24px;
+        margin: 0 0 4px;
+      }
+      h2 {
+        font-size: 17px;
+        margin: 32px 0 8px;
+      }
+      .note {
+        color: var(--ink-soft);
+        font-size: 14px;
+        margin: 0 0 16px;
+      }
+      form,
+      .bar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      input,
+      select,
+      button {
+        font: inherit;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+        color: var(--ink);
+      }
+      button {
+        background: var(--board);
+        color: var(--paper);
+        border-color: var(--board);
+        cursor: pointer;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px 16px;
+      }
+      .card b {
+        display: block;
+        font-size: 28px;
+      }
+      .card span {
+        color: var(--ink-soft);
+        font-size: 14px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+      }
+      .scroll {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        font-size: 14px;
+      }
+      th,
+      td {
+        padding: 7px 10px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        white-space: nowrap;
+      }
+      td.n,
+      th.n {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      tr:last-child td {
+        border-bottom: 0;
+      }
+      .error {
+        color: #a12a1c;
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>한판 방문 통계</h1>
+      <p class="note">
+        홈페이지 방문과 내려받기 버튼 클릭을 하루 단위로 센 숫자입니다. 지역은 접속 위치로 추정한
+        것이라 정확하지 않을 수 있습니다.
+      </p>
+
+      <form id="login">
+        <input
+          id="password"
+          type="password"
+          placeholder="비밀번호"
+          autocomplete="current-password"
+        />
+        <button>보기</button>
+        <span id="login-error" class="error" role="alert"></span>
+      </form>
+
+      <div id="report" hidden>
+        <div class="bar">
+          <label for="days">기간</label>
+          <select id="days">
+            <option value="7">최근 7일</option>
+            <option value="30" selected>최근 30일</option>
+            <option value="90">최근 90일</option>
+            <option value="365">최근 1년</option>
+          </select>
+          <button type="button" id="logout">잠그기</button>
+        </div>
+
+        <div class="cards" id="cards"></div>
+
+        <h2>날짜별</h2>
+        <div class="scroll"><table id="daily"></table></div>
+
+        <div class="grid">
+          <section>
+            <h2>방문한 지역</h2>
+            <div class="scroll"><table id="geo"></table></div>
+          </section>
+          <section>
+            <h2>내려받은 지역</h2>
+            <div class="scroll"><table id="dlgeo"></table></div>
+          </section>
+          <section>
+            <h2>들어온 곳</h2>
+            <div class="scroll"><table id="ref"></table></div>
+          </section>
+          <section>
+            <h2>누른 버튼 위치</h2>
+            <div class="scroll"><table id="dlplace"></table></div>
+          </section>
+        </div>
+
+        <h2>GitHub 다운로드 횟수 (전체 기간)</h2>
+        <p class="note">
+          GitHub이 세는 설치 파일 다운로드 횟수입니다. 앱의 자동 업데이트로 받은 것도 들어 있습니다.
+        </p>
+        <div class="scroll"><table id="github"></table></div>
+      </div>
+    </main>
+
+    <script>
+      const $ = (id) => document.getElementById(id)
+      const KEY = 'hanpan-stats-password'
+      const regionNames = new Intl.DisplayNames(['ko'], { type: 'region' })
+      const PLACES = { hero: '맨 위', install: '설치하기', final: '맨 아래', other: '기타' }
+      let password = ''
+      try {
+        password = localStorage.getItem(KEY) || ''
+      } catch {}
+
+      function esc(s) {
+        return String(s).replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`)
+      }
+
+      function regionLabel(code) {
+        const [country, city] = code.split('|')
+        let name = country
+        try {
+          name = country === '??' ? '알 수 없음' : regionNames.of(country)
+        } catch {}
+        return city ? `${name} · ${city}` : name
+      }
+
+      function table(el, head, rows) {
+        if (rows.length === 0) {
+          el.innerHTML = '<tr><td>아직 기록이 없습니다.</td></tr>'
+          return
+        }
+        el.innerHTML =
+          '<tr>' +
+          head.map((h, i) => `<th${i ? ' class="n"' : ''}>${esc(h)}</th>`).join('') +
+          '</tr>' +
+          rows
+            .map(
+              (r) =>
+                '<tr>' +
+                r.map((c, i) => `<td${i ? ' class="n"' : ''}>${esc(c)}</td>`).join('') +
+                '</tr>',
+            )
+            .join('')
+      }
+
+      function ranked(counts, label) {
+        return Object.entries(counts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 30)
+          .map(([k, v]) => [label(k), v.toLocaleString('ko-KR')])
+      }
+
+      async function load() {
+        const res = await fetch('/api/stats?days=' + $('days').value, {
+          headers: { Authorization: 'Bearer ' + password },
+        })
+        if (res.status === 401) throw new Error('비밀번호가 맞지 않습니다.')
+        if (!res.ok) throw new Error('통계를 불러오지 못했습니다. (' + res.status + ')')
+        const data = await res.json()
+
+        const sum = (k) => data.daily.reduce((n, d) => n + d[k], 0)
+        const cards = [
+          ['방문', sum('views')],
+          ['하루 방문자 합계', sum('visitors')],
+          ['Windows 내려받기 클릭', sum('windows')],
+          ['Mac 내려받기 클릭', sum('macArm64') + sum('macX64')],
+        ]
+        $('cards').innerHTML = cards
+          .map(
+            ([l, v]) =>
+              `<div class="card"><b>${v.toLocaleString('ko-KR')}</b><span>${l}</span></div>`,
+          )
+          .join('')
+
+        table(
+          $('daily'),
+          ['날짜', '방문', '방문자', 'Windows', 'Mac M1 이상', 'Mac Intel'],
+          data.daily
+            .slice()
+            .reverse()
+            .filter((d) => d.views || d.windows || d.macArm64 || d.macX64)
+            .map((d) => [d.day, d.views, d.visitors, d.windows, d.macArm64, d.macX64]),
+        )
+        table($('geo'), ['지역', '방문'], ranked(data.geo, regionLabel))
+        table($('dlgeo'), ['지역', '클릭'], ranked(data.dlgeo, regionLabel))
+        table(
+          $('ref'),
+          ['사이트', '방문'],
+          ranked(data.ref, (k) => k),
+        )
+        table(
+          $('dlplace'),
+          ['위치', '클릭'],
+          ranked(data.dlplace, (k) => PLACES[k] || k),
+        )
+      }
+
+      async function loadGithub() {
+        try {
+          const res = await fetch(
+            'https://api.github.com/repos/SamulChung/hanpan/releases?per_page=30',
+          )
+          const releases = await res.json()
+          const rows = releases.map((r) => {
+            const count = (re) =>
+              r.assets.filter((a) => re.test(a.name)).reduce((n, a) => n + a.download_count, 0)
+            return [r.tag_name, count(/Setup-.*\.exe$/), count(/-arm64\.dmg$/), count(/-x64\.dmg$/)]
+          })
+          table($('github'), ['버전', 'Windows', 'Mac M1 이상', 'Mac Intel'], rows)
+        } catch {
+          $('github').innerHTML = '<tr><td>GitHub에서 숫자를 받지 못했습니다.</td></tr>'
+        }
+      }
+
+      async function open() {
+        try {
+          await load()
+          $('login').hidden = true
+          $('report').hidden = false
+          $('login-error').textContent = ''
+          try {
+            localStorage.setItem(KEY, password)
+          } catch {}
+          loadGithub()
+        } catch (err) {
+          $('login').hidden = false
+          $('report').hidden = true
+          $('login-error').textContent = err.message
+        }
+      }
+
+      $('login').addEventListener('submit', (e) => {
+        e.preventDefault()
+        password = $('password').value
+        open()
+      })
+      $('days').addEventListener('change', () => open())
+      $('logout').addEventListener('click', () => {
+        password = ''
+        try {
+          localStorage.removeItem(KEY)
+        } catch {}
+        $('password').value = ''
+        $('login').hidden = false
+        $('report').hidden = true
+      })
+      if (password) open()
+    </script>
+  </body>
+</html>

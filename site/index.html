@@ -1251,6 +1251,10 @@
             >오픈소스 <a href="https://github.com/pblsketch/openoffice">이음오피스</a>(Apache-2.0)를
             바탕으로 만들었습니다.</span
           >
+          <span
+            >이 페이지는 방문 수와 내려받기 버튼을 누른 횟수를 하루 단위 합계로만 셉니다. 쿠키와 IP
+            주소는 남기지 않고, 브라우저의 '추적 안 함' 설정을 지킵니다.</span
+          >
         </div>
       </div>
     </footer>
@@ -1276,6 +1280,25 @@
           })
         })
         .catch(() => {})
+
+      // daily counts of visits and download clicks (site/api/track.js); only on the real
+      // site, and not when the browser asks not to be tracked
+      const counting =
+        location.hostname === 'hanpan-blond.vercel.app' && navigator.doNotTrack !== '1'
+      const count = (data) => {
+        if (counting) navigator.sendBeacon('/api/track', JSON.stringify(data))
+      }
+      count({ e: 'view', r: document.referrer })
+      document.addEventListener('click', (e) => {
+        const a = e.target.closest('.download-link, .mac-link')
+        if (!a) return
+        const section = a.closest('section')
+        count({
+          e: 'download',
+          p: a.classList.contains('mac-link') ? 'mac-' + a.dataset.arch : 'windows',
+          place: section ? section.id || section.classList[0] : 'other',
+        })
+      })
     </script>
   </body>
 </html>
