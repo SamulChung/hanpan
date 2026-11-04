@@ -92,3 +92,4 @@
 | [0089](0089-hanpan-gongu-picture-search.md)                   | 공유마당 그림 찾기는 사용자 자신의 공공데이터포털 키로 공식 API를 쓰고, 출처는 앱이 적는다      | 2026-11-01 |
 | [0090](0090-hanpan-bundles-artcraft-apps.md)                  | 한판은 PhotoCraft·VectorCraft를 공식 zip 그대로 Windows 설치판에 담고 따로 실행한다             | 2026-11-05 |
 | [0091](0091-hanpan-korean-doc-features.md)                    | 한판의 한국 문서 기능은 화면 언어로 기본값을 정하고, 설정 스위치로 바꿀 수 있다                 | 2026-11-05 |
+| [0092](0092-hanpan-first-language-follows-windows.md)         | 한판의 첫 화면 언어는 운영체제 표시 언어를 따르고, 한판에 없는 언어면 한국어다                  | 2026-11-05 |

@@ -120,6 +120,7 @@ import {
   writeAppSettingThen,
 } from './app-settings'
 import { KOREAN_DOC_FEATURES_KEY, readKoreanDocFeatures } from './korean-doc-features'
+import { fallbackUiLang } from './ui-lang-fallback'
 import {
   builtinSkillsDirFor,
   createTemplateTabs,
@@ -887,8 +888,9 @@ function currentLang(): Lang {
   }
   const saved = readAppSettings(APP_SETTINGS_PATH()).language
   if (isLang(saved)) uiLang = saved
-  // Hanpan is Korean-first: with no language chosen in Settings the UI is Korean, whatever the OS says
-  uiLang ??= 'ko'
+  // Hanpan: with no language chosen in Settings the UI follows the first OS display language
+  // Hanpan has, and is Korean when it has none of them (decision 0092)
+  uiLang ??= fallbackUiLang(app.getPreferredSystemLanguages())
   setUiLang(uiLang)
   return uiLang
 }
