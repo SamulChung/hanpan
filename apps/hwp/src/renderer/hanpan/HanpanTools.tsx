@@ -7,6 +7,7 @@
  */
 import { useEffect, useRef, useState } from 'react'
 import { composePrompt, type TaskType } from '@genoffice/hanpan-core/renderer'
+import { useKoreanDocFeatures } from '@genoffice/ui'
 import type { HanpanToolRequest, HanpanToolResult } from '../../shared/ipc'
 import { useI18n, type StringKey } from '../i18n/locale'
 import type { AgentBridge } from '../ai/agent-bridge'
@@ -32,7 +33,8 @@ const TASKS: [TaskType, string][] = [
 ]
 
 export function HanpanTools(p: { bridge?: AgentBridge }) {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
+  const korean = useKoreanDocFeatures(lang)
   const [open, setOpen] = useState(false)
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState<string[] | null>(null)
@@ -65,7 +67,8 @@ export function HanpanTools(p: { bridge?: AgentBridge }) {
     return () => window.removeEventListener('mousedown', onDown)
   }, [open])
 
-  if (!window.hwpApi.hanpanTool) return null
+  // a Korean document feature (decision 0091): off, the editor opens without the tools
+  if (!korean || !window.hwpApi.hanpanTool) return null
 
   const run = async (request: HanpanToolRequest) => {
     setBusy(true)

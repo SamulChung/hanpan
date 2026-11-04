@@ -207,6 +207,14 @@ const send: MindmapSendApi = {
   sendToDesign: (outline) => ipcRenderer.send(MINDMAP_CHANNELS.sendToDesign, outline),
   syncCheck: (request) => ipcRenderer.invoke(MINDMAP_CHANNELS.syncCheck, request),
   syncFinish: (request) => ipcRenderer.invoke(MINDMAP_CHANNELS.syncFinish, request),
+  getKoreanDocFeatures: () =>
+    ipcRenderer
+      .invoke(APP_CHANNELS.getKoreanDocFeatures)
+      .then((stored: unknown) => (typeof stored === 'boolean' ? stored : null)),
+  onKoreanDocFeaturesChanged: (handler) =>
+    listen<[unknown]>(APP_CHANNELS.koreanDocFeaturesChanged, (stored) =>
+      handler(typeof stored === 'boolean' ? stored : null),
+    ),
 }
 
 // ---- crash-recovery copies ----

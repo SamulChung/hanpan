@@ -101,6 +101,16 @@ const api: HwpApi = {
   requestFileCommand: (command) => ipcRenderer.send(HWP_CHANNELS.fileCommand, command),
   setDirty: (dirty) => ipcRenderer.send(HWP_CHANNELS.dirtyChanged, dirty),
   hanpanTool: (request) => ipcRenderer.invoke(HWP_CHANNELS.hanpanTool, request),
+  getKoreanDocFeatures: () =>
+    ipcRenderer
+      .invoke(HWP_CHANNELS.getKoreanDocFeatures)
+      .then((stored: unknown) => (typeof stored === 'boolean' ? stored : null)),
+  onKoreanDocFeaturesChanged: (handler) => {
+    const listener = (_e: Electron.IpcRendererEvent, stored: unknown) =>
+      handler(typeof stored === 'boolean' ? stored : null)
+    ipcRenderer.on(HWP_CHANNELS.koreanDocFeaturesChanged, listener)
+    return () => ipcRenderer.removeListener(HWP_CHANNELS.koreanDocFeaturesChanged, listener)
+  },
   onHanpanReplace: (handler) => {
     const listener = (_e: Electron.IpcRendererEvent, bytes: unknown) => {
       if (bytes instanceof Uint8Array) handler(bytes)

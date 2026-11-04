@@ -69,6 +69,9 @@ export const HWP_CHANNELS = {
   getAiPanelPrefs: 'app:get-ai-panel-prefs',
   setAiPanelPrefs: 'app:set-ai-panel-prefs',
   aiPanelPrefsChanged: 'app:ai-panel-prefs-changed',
+  /** Hanpan: the stored Korean document features switch (true, false, or null when never set) */
+  getKoreanDocFeatures: 'app:get-korean-doc-features',
+  koreanDocFeaturesChanged: 'app:korean-doc-features-changed',
 } as const
 
 /**
@@ -320,6 +323,9 @@ export interface HwpApi {
   setDirty(dirty: boolean): void
   /** Hanpan: run a document tool (tidy, check, tone, review) on the open document (absent in an older preload) */
   hanpanTool?(request: HanpanToolRequest): Promise<HanpanToolResult>
+  /** Hanpan: the stored Korean document features switch (decision 0091), null when never set (absent in an older preload) */
+  getKoreanDocFeatures?(): Promise<boolean | null>
+  onKoreanDocFeaturesChanged?(handler: (stored: boolean | null) => void): () => void
   /** Hanpan sync: the main process hands updated bytes for the open document (absent in an older preload) */
   onHanpanReplace?(handler: (bytes: Uint8Array) => void): () => void
   onSaveRequest(handler: (mode: SaveMode) => void): () => void

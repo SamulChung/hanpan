@@ -2,7 +2,9 @@
  * Hanpan: the "send this map to a document" dialog. The person picks the layout,
  * the fonts, and whether the map's words go as they are or the AI writes
  * sentences for them; the shell makes the document and opens it in a new tab,
- * linked to this map.
+ * linked to this map. With the Korean document features off (decision 0091) a
+ * Word report skips the Korean report settings and goes out as a plain
+ * chapter report.
  *
  * The AI is whatever the person chose in Settings: a local model (Ollama,
  * LM Studio, vLLM) when one is set up. If it does not answer, the map is sent
@@ -22,6 +24,7 @@ import {
   type SendTarget,
 } from '@genoffice/hanpan-core/renderer'
 import type { AiSettings } from '@genoffice/ai-provider'
+import { useKoreanDocFeatures } from '@genoffice/ui'
 import { Modal } from '../components/dialogs'
 import type { DocumentSession } from '../document/session'
 import { createElectronTransport } from '../ai/transport'
@@ -97,6 +100,9 @@ export function SendDialog(p: {
   const abort = useRef<AbortController | null>(null)
   const busy = phase.kind === 'ai' || phase.kind === 'sending'
   const isDocument = p.target !== 'slides'
+  const korean = useKoreanDocFeatures(lang)
+  /** the Korean report settings (layout, look, date, department) */
+  const reportSettings = isDocument && korean
 
   const close = () => {
     abort.current?.abort()
@@ -131,10 +137,10 @@ export function SendDialog(p: {
     const result = await window.mindmapApi.sendToDocument?.({
       target: p.target,
       outline,
-      style: isDocument ? style : 'report',
-      theme: theme === 'plain' ? 'plain' : undefined,
-      date: isDocument && date.trim() ? date.trim() : undefined,
-      department: isDocument && department.trim() ? department.trim() : undefined,
+      style: reportSettings ? style : isDocument ? 'chapter-report' : 'report',
+      theme: isDocument && !reportSettings ? 'plain' : theme === 'plain' ? 'plain' : undefined,
+      date: reportSettings && date.trim() ? date.trim() : undefined,
+      department: reportSettings && department.trim() ? department.trim() : undefined,
       includeNotes: notes,
       slideStyle: !isDocument && slideStyle !== 'plain' ? slideStyle : undefined,
       mapPath: p.mapPath,
@@ -152,7 +158,7 @@ export function SendDialog(p: {
   return (
     <Modal title={t(TITLE[p.target])} kind="hanpan-send" onCancel={close}>
       <div className="hp-send-form">
-        {isDocument && (
+        {reportSettings && (
           <>
             <label className="hp-send-row">
               <span>{t('sendStyle')}</span>
