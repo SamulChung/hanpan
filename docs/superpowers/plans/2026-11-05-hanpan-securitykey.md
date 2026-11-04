@@ -5,6 +5,7 @@
 **Goal:** 11/20 Windows 정식판은 tenai.kr에서 받은 보안키가 있어야 켜진다. 14일 유예 뒤부터다. USB를 뽑으면 잠기고, AI 키는 두 겹으로 잠긴다. Mac과 Linux의 동작은 그대로다.
 
 **Architecture:**
+
 - **모듈 위치:** `apps/shell/src/main/securekey/`. Electron에 묶이지 않는 순수 로직(형식·서명·기기·판정)과 Electron 연결(창·시작·감시)을 다른 파일로 나눈다.
 - **시작은 두 단계다.**
   - 창 없는 "키 열기": `setAiSecretCodec` 바로 다음에 둔다. 등록 정보를 찾아 서명과 기기를 확인하고, 통과하면 vault 키를 v2 코덱에 넣는다. `--reveal-ai-secrets` 실행도 이 단계만 거친다.
@@ -23,12 +24,12 @@
 - **Windows 전용:** `process.platform !== 'win32'`이면 보안키 코드 전체를 건너뛴다. Mac·Linux는 지금 동작 그대로다(스펙 2장, 사용자 결정).
 - **빌드 값:** `electron.vite.config.ts`의 `main.define`으로 넣는다. 읽을 때는 `declare const`와 `typeof` 확인을 쓴다(`drive-ipc.ts:38-46` 모양). 개발 모드는 환경변수로, GitHub 빌드는 저장소 변수(Task 13)로 값을 준다. 이 PC에는 Rust를 설치하지 않는다(11/5 사용자 결정, 시연판 계획 Global Constraints).
 
-  | 환경변수 | define | 뜻 |
-  |---|---|---|
-  | `HANPAN_REQUIRE_KEY` | `__HANPAN_REQUIRE_KEY__` | `'1'`이면 보안키 확인을 켬 |
-  | `HANPAN_KEY_REQUIRED_FROM` | `__HANPAN_KEY_REQUIRED_FROM__` | `YYYY-MM-DD`. 이 날부터 보안키 필요(유예 마감) |
-  | `HANPAN_KEY_SERVER` | `__HANPAN_KEY_SERVER__` | 서버 주소. 끝에 `/` 없음 |
-  | `HANPAN_KEY_PUBKEYS` | `__HANPAN_KEY_PUBKEYS__` | `{"<kid>":"<base64 32바이트 Ed25519 공개키>"}` JSON |
+  | 환경변수                   | define                         | 뜻                                                  |
+  | -------------------------- | ------------------------------ | --------------------------------------------------- |
+  | `HANPAN_REQUIRE_KEY`       | `__HANPAN_REQUIRE_KEY__`       | `'1'`이면 보안키 확인을 켬                          |
+  | `HANPAN_KEY_REQUIRED_FROM` | `__HANPAN_KEY_REQUIRED_FROM__` | `YYYY-MM-DD`. 이 날부터 보안키 필요(유예 마감)      |
+  | `HANPAN_KEY_SERVER`        | `__HANPAN_KEY_SERVER__`        | 서버 주소. 끝에 `/` 없음                            |
+  | `HANPAN_KEY_PUBKEYS`       | `__HANPAN_KEY_PUBKEYS__`       | `{"<kid>":"<base64 32바이트 Ed25519 공개키>"}` JSON |
 
 - **비밀키:** 서명용 비밀키는 저장소에 넣지 않는다.
   - 테스트는 키 쌍을 메모리에서 만든다.
@@ -63,25 +64,51 @@
 ### Task 1: 키 형식과 서명 확인 (11/10)
 
 **Files:**
+
 - Create: `apps/shell/src/main/securekey/format.ts`
 - Create(테스트 도우미): `apps/shell/tests/securekey/test-signer.ts`
 - Test: `apps/shell/tests/securekey/format.test.ts`
 
 **Interfaces:**
+
 - Produces(`format.ts`)
   - 형식
 
     ```ts
-    interface KeyPayload { v: 1; kid: string; memberId: string; keyId: string; issuedAt: string }
-    interface ActivationPayload { v: 1; keyId: string; memberId: string; deviceType: 'usb' | 'pc'; deviceId: string; activatedAt: string; pcConsentAt?: string }
-    interface StatusPayload { v: 1; keyId: string; status: 'active' | 'revoked'; serverTime: string }
-    interface Signed<T> { payload: T; kid: string; sig: string }
+    interface KeyPayload {
+      v: 1
+      kid: string
+      memberId: string
+      keyId: string
+      issuedAt: string
+    }
+    interface ActivationPayload {
+      v: 1
+      keyId: string
+      memberId: string
+      deviceType: 'usb' | 'pc'
+      deviceId: string
+      activatedAt: string
+      pcConsentAt?: string
+    }
+    interface StatusPayload {
+      v: 1
+      keyId: string
+      status: 'active' | 'revoked'
+      serverTime: string
+    }
+    interface Signed<T> {
+      payload: T
+      kid: string
+      sig: string
+    }
     type PublicKeys = Readonly<Record<string, string>>
     ```
 
     - `deviceId`는 원래 번호의 SHA-256 hex다.
     - `sig`는 `canonicalJson(payload)`의 UTF-8 바이트에 대한 Ed25519 서명을 base64로 쓴 것이다.
     - `PublicKeys`는 kid → base64 32바이트 공개키다.
+
   - 함수
     - `canonicalJson(value: unknown): string`: 모든 깊이에서 키를 정렬하고 공백 없이 쓴다.
     - `verifySigned<T>(doc: unknown, keys: PublicKeys, isPayload: (p: unknown) => p is T): T | null`
@@ -94,18 +121,27 @@
 
 ```ts
 const s = makeTestSigner()
-const key: KeyPayload = { v: 1, kid: 'test1', memberId: 'm1', keyId: 'k1', issuedAt: '2026-11-20T00:00:00Z' }
+const key: KeyPayload = {
+  v: 1,
+  kid: 'test1',
+  memberId: 'm1',
+  keyId: 'k1',
+  issuedAt: '2026-11-20T00:00:00Z',
+}
 it('verifies a payload signed with a known kid', () =>
   expect(verifySigned(s.sign(key), s.keys, isKeyPayload)).toEqual(key))
 it('rejects one changed character', () => {
   const doc = s.sign(key)
-  expect(verifySigned({ ...doc, payload: { ...doc.payload, memberId: 'm2' } }, s.keys, isKeyPayload)).toBeNull()
+  expect(
+    verifySigned({ ...doc, payload: { ...doc.payload, memberId: 'm2' } }, s.keys, isKeyPayload),
+  ).toBeNull()
 })
 it('rejects an unknown kid', () =>
   expect(verifySigned(s.sign(key), makeTestSigner('other').keys, isKeyPayload)).toBeNull())
 it('rejects a payload of the wrong shape', () =>
   expect(verifySigned(s.sign({ v: 1, kid: 'test1' }), s.keys, isKeyPayload)).toBeNull())
-it('sorts keys at every depth', () => expect(canonicalJson({ b: 1, a: { d: 2, c: 3 } })).toBe('{"a":{"c":3,"d":2},"b":1}'))
+it('sorts keys at every depth', () =>
+  expect(canonicalJson({ b: 1, a: { d: 2, c: 3 } })).toBe('{"a":{"c":3,"d":2},"b":1}'))
 it('reads the build value of public keys', () => {
   expect(parsePublicKeys('{"k1":"QUJD"}')).toEqual({ k1: 'QUJD' })
   expect(parsePublicKeys('not json')).toEqual({})
@@ -120,10 +156,12 @@ it('reads the build value of public keys', () => {
 ### Task 2: 기기 식별 (11/11)
 
 **Files:**
+
 - Create: `apps/shell/src/main/securekey/devices.ts`
 - Test: `apps/shell/tests/securekey/devices.test.ts`
 
 **Interfaces:**
+
 - Produces
   - `interface UsbVolume { letter: string; diskSerial: string; volumeSerial: string }`
     - `letter`는 `'E'` 같은 드라이브 문자다.
@@ -153,15 +191,19 @@ it('reads one USB volume from a single JSON object', () =>
 it('reads several volumes and drops unreadable ones', () => {}) // array of 2, volumeSerialOf null for one → 1
 it('reads nothing from empty or broken output', () => {}) // '' and '{' → []
 it('falls back to the volume number when the stick has no serial', () =>
-  expect(usbDeviceId({ letter: 'E', diskSerial: '', volumeSerial: '1a2b3c4d' })).toBe('vol:1a2b3c4d'))
+  expect(usbDeviceId({ letter: 'E', diskSerial: '', volumeSerial: '1a2b3c4d' })).toBe(
+    'vol:1a2b3c4d',
+  ))
 it('hashes device numbers', () => {
   expect(deviceIdHash('AA11')).toMatch(/^[0-9a-f]{64}$/)
   expect(deviceIdHash('AA11')).not.toBe(deviceIdHash('AA12'))
 })
 it('reads MachineGuid from reg output', () =>
-  expect(parseMachineGuid('\r\nHKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Cryptography\r\n    MachineGuid    REG_SZ    3f1c2a9e-0000-4000-8000-1234567890ab\r\n')).toBe(
-    '3f1c2a9e-0000-4000-8000-1234567890ab',
-  ))
+  expect(
+    parseMachineGuid(
+      '\r\nHKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Cryptography\r\n    MachineGuid    REG_SZ    3f1c2a9e-0000-4000-8000-1234567890ab\r\n',
+    ),
+  ).toBe('3f1c2a9e-0000-4000-8000-1234567890ab'))
 it('runs PowerShell by full path from the system folder with the constant script', async () => {
   // fake run records calls: file ends with \System32\WindowsPowerShell\v1.0\powershell.exe,
   // cwd is the system folder, args end with USB_VOLUMES_SCRIPT, timeout 15000
@@ -179,10 +221,12 @@ it('runs PowerShell by full path from the system folder with the constant script
 ### Task 3: 등록 정보 보관과 찾기 (11/11)
 
 **Files:**
+
 - Create: `apps/shell/src/main/securekey/store.ts`
 - Test: `apps/shell/tests/securekey/store.test.ts`
 
 **Interfaces:**
+
 - Consumes: Task 1의 형식과 `verifySigned`. Task 2의 `DeviceProbe`, `UsbVolume`, `usbDeviceId`, `deviceIdHash`.
 - Produces
   - 상수: `KEY_FILES = { key: 'hanpan.key', activation: 'activation.json', vault: 'vault.key' } as const`, `USB_KEY_DIR = 'Hanpan'`
@@ -219,10 +263,12 @@ it('round-trips what it writes', () => {}) // writeRegistration then findRegistr
 ### Task 4: 폐기 확인과 30일 규칙 (11/12)
 
 **Files:**
+
 - Create: `apps/shell/src/main/securekey/status.ts`
 - Test: `apps/shell/tests/securekey/status.test.ts`
 
 **Interfaces:**
+
 - Consumes: Task 1의 `StatusPayload`, `Signed`, `verifySigned`, `isStatusPayload`
 - Produces
   - 상수: `STATUS_MAX_AGE_MS = 30 * 24 * 3600_000`, `STATUS_EVERY_MS = 24 * 3600_000`, `CLOCK_SKEW_MS = 5 * 60_000`
@@ -244,15 +290,38 @@ it('round-trips what it writes', () => {}) // writeRegistration then findRegistr
 
 ```ts
 const at = (iso: string) => new Date(iso)
-const last = (serverTime: string, status: 'active' | 'revoked' = 'active'): StatusPayload => ({ v: 1, keyId: 'k1', status, serverTime })
+const last = (serverTime: string, status: 'active' | 'revoked' = 'active'): StatusPayload => ({
+  v: 1,
+  keyId: 'k1',
+  status,
+  serverTime,
+})
 it('is fine 29 days after the last server time', () =>
-  expect(judgeStatus({ now: at('2026-12-30T00:00:00Z'), activatedAt: '2026-11-20T00:00:00Z', last: last('2026-12-01T00:00:00Z') })).toEqual({ ok: true }))
+  expect(
+    judgeStatus({
+      now: at('2026-12-30T00:00:00Z'),
+      activatedAt: '2026-11-20T00:00:00Z',
+      last: last('2026-12-01T00:00:00Z'),
+    }),
+  ).toEqual({ ok: true }))
 it('is stale after 31 days', () =>
-  expect(judgeStatus({ now: at('2027-01-01T00:00:00Z'), activatedAt: '2026-11-20T00:00:00Z', last: last('2026-12-01T00:00:00Z') })).toEqual({ ok: false, reason: 'stale' }))
+  expect(
+    judgeStatus({
+      now: at('2027-01-01T00:00:00Z'),
+      activatedAt: '2026-11-20T00:00:00Z',
+      last: last('2026-12-01T00:00:00Z'),
+    }),
+  ).toEqual({ ok: false, reason: 'stale' }))
 it('counts from activation when no status was seen yet', () => {}) // activatedAt + 31 days → stale
 it('a revoked key is locked', () => {}) // last status 'revoked' → reason 'revoked'
 it('a clock set back before the last server time fails', () =>
-  expect(judgeStatus({ now: at('2026-11-30T23:00:00Z'), activatedAt: '2026-11-20T00:00:00Z', last: last('2026-12-01T00:00:00Z') })).toEqual({ ok: false, reason: 'clock' }))
+  expect(
+    judgeStatus({
+      now: at('2026-11-30T23:00:00Z'),
+      activatedAt: '2026-11-20T00:00:00Z',
+      last: last('2026-12-01T00:00:00Z'),
+    }),
+  ).toEqual({ ok: false, reason: 'clock' }))
 it('allows a few minutes of clock skew', () => {}) // now = serverTime − 2 min → ok
 it('accepts only a signed answer for the same key', async () => {}) // tampered → null, other keyId → null, network error → null
 it('asks once a day', () => {}) // checkedAt 23 h ago → false, 25 h ago → true, no state → true
@@ -266,10 +335,12 @@ it('asks once a day', () => {}) // checkedAt 23 h ago → false, 25 h ago → tr
 ### Task 5: 시작 판정 (11/12)
 
 **Files:**
+
 - Create: `apps/shell/src/main/securekey/gate.ts`
 - Test: `apps/shell/tests/securekey/gate.test.ts`
 
 **Interfaces:**
+
 - Consumes: Task 3의 `FindResult`, `Registration`. Task 4의 `SecureKeyState`, `StatusVerdict`.
 - Produces
   - `interface GateConfig { platform: NodeJS.Platform; requireKey: boolean; requiredFrom: string | null; server: string; keys: PublicKeys }`
@@ -306,10 +377,12 @@ it('is in grace the day before the date and not on it', () => {
 ### Task 6: 등록 흐름 (11/11)
 
 **Files:**
+
 - Create: `apps/shell/src/main/securekey/register.ts`
 - Test: `apps/shell/tests/securekey/register.test.ts`
 
 **Interfaces:**
+
 - Consumes: Task 1~4
 - Produces
   - `activateKey(opts: { server: string; fetch: typeof fetch; key: Signed<KeyPayload>; deviceType: 'usb' | 'pc'; deviceIdHash: string; pcConsentAt?: string; keys: PublicKeys }): Promise<{ ok: true; activation: Signed<ActivationPayload> } | { ok: false; error: 'limit' | 'used' | 'refused' | 'network' | 'bad-answer' }>`
@@ -345,6 +418,7 @@ it('needs the internet', async () => {}) // fetch throws → network
 ### Task 7: 보안키 창 (등록·잠금 화면) (11/11)
 
 **Files:**
+
 - Create
   - `apps/shell/src/shared/securekey-api.ts`
   - `apps/shell/src/preload/securekey.ts`(`electron`과 `../shared/securekey-api`만 가져온다)
@@ -356,6 +430,7 @@ it('needs the internet', async () => {}) // fetch throws → network
 - Test: `apps/shell/tests/securekey/window.test.ts`, `apps/shell/tests/securekey/strings.test.ts`
 
 **Interfaces:**
+
 - Consumes: Task 5의 `GateDecision`, `LockReason`, `KEY_PAGE_URL`. Task 6의 `registerKey`.
 - Produces
   - `SECUREKEY_CHANNELS = { getState: 'securekey:get-state', pickKeyFile: 'securekey:pick-key-file', register: 'securekey:register', later: 'securekey:later', retry: 'securekey:retry', quit: 'securekey:quit', openKeyPage: 'securekey:open-key-page', changed: 'securekey:changed' } as const`
@@ -373,6 +448,7 @@ it('needs the internet', async () => {}) // fetch throws → network
   - `strings.ts`: 21개 언어 블록을 `  ko: {` 꼴로 두고, `createI18n`으로 감싼다(`index.ts:969`의 `tMain` 모양). JSON 값은 `tools/hanpan-add-block-strings.mjs <strings.ts> skTitle <strings.json>`로 넣는다.
 
 화면 흐름(스펙 7-1):
+
 - 등록 모드는 세 단계다.
   1. [보안키 파일 고르기](메인의 `dialog.showOpenDialog`, 필터 `.key`)
   2. 보관 위치: USB 목록 또는 "이 PC". 이 PC를 고르면 경고와 [이해했습니다] 체크가 있어야 [등록]이 켜진다.
@@ -405,6 +481,7 @@ it('the warning and privacy lines are the spec text in Korean', () => {}) // skP
 ### Task 8: 시작 연결 (11/11~11/12)
 
 **Files:**
+
 - Create: `apps/shell/src/main/securekey/runtime.ts`
 - Modify
   - `apps/shell/electron.vite.config.ts`: `main.define`에 네 값
@@ -414,6 +491,7 @@ it('the warning and privacy lines are the spec text in Korean', () => {}) // skP
 - Test: `apps/shell/tests/securekey/runtime.test.ts`, `apps/shell/tests/securekey/gate-wiring.test.ts`
 
 **Interfaces:**
+
 - Consumes: Task 2~7
 - Produces
   - `createSecureKeyRuntime(deps: { config: GateConfig; userData: string; probe: DeviceProbe; fetch: typeof fetch; now(): Date; lang(): string; showWindow: typeof showSecureKeyWindow; lockAi(): void; unlockAi(): void }): SecureKeyRuntime`
@@ -467,11 +545,13 @@ it('a second launch during the gate queues its files', () => {}) // second-insta
 ### Task 9: 실행 중 감시와 잠금 덮개 (11/12)
 
 **Files:**
+
 - Create: `apps/shell/src/main/securekey/watch.ts`, `apps/shell/src/main/securekey/lock-overlay.ts`
 - Modify: `apps/shell/src/main/securekey/runtime.ts`(감시 시작, 잠금·풀림)
 - Test: `apps/shell/tests/securekey/watch.test.ts`, `apps/shell/tests/securekey/lock-overlay.test.ts`
 
 **Interfaces:**
+
 - Consumes: Task 2의 `volumeSerialOf`, Task 3의 `Registration`, Task 7의 창 문구와 `securekey.html`
 - Produces
   - `startPresenceWatch(opts: { activationPath: string; volumeSerial: string | null; everyMs?: number; serialOf?: (root: string) => string | null; exists?: (p: string) => boolean; onChange(present: boolean): void }): () => void`
@@ -512,6 +592,7 @@ it('follows the parent when it moves', () => {})
 ### Task 10: 잠긴 동안 AI·MCP·제어 채널 막기 (11/12)
 
 **Files:**
+
 - Create: `packages/ai-provider/src/ai-lock.ts`. Modify: `packages/ai-provider/src/index.ts`(export)
 - Modify(지점마다 막기)
   - `packages/ai-provider/src/stream.ts:32`(`streamForProvider`), `packages/ai-provider/src/chat.ts:13`(`chatForProvider`)
@@ -527,6 +608,7 @@ it('follows the parent when it moves', () => {})
 - Test: `packages/ai-provider/tests/ai-lock.test.ts`, `apps/docs/tests/abort-all-ai-streams.test.ts`, `apps/shell/tests/mcp/mcp-server.test.ts`(사례 추가), `apps/shell/tests/control-server.test.ts`(사례 추가)
 
 **Interfaces:**
+
 - Produces
   - `@genoffice/ai-provider`
     - `setAiLocked(locked: boolean): void`, `isAiLocked(): boolean`
@@ -581,6 +663,7 @@ it('answers app_unavailable while locked', async () => {})
 ### Task 11: AI 키 이중 잠금 (sealed:v2) (11/12)
 
 **Files:**
+
 - Modify: `packages/ai-provider/src/settings-secrets.ts`(17-34행). `isSealedSecret`이 v1과 v2를 모두 알아보게 한다.
 - Create: `apps/shell/src/main/securekey/vault-codec.ts`
 - Modify: `apps/shell/src/main/ai-secrets.ts`(`holdsPlainSecrets` 96행, `sealStoredAiSettings` 110행, `fileSearchHoldsPlainKeys` 160행). vault가 있으면 v1을 v2로 다시 잠근다.
@@ -593,6 +676,7 @@ it('answers app_unavailable while locked', async () => {})
 - Test: `apps/shell/tests/securekey/vault-codec.test.ts`, `packages/ai-provider/tests/settings-secrets.test.ts`(사례 추가), `apps/shell/tests/ai-secrets.test.ts`(사례 추가), `apps/docs/tests/ai-settings-write-lock.test.ts`, `packages/cli/tests/secrets.test.ts`(사례 추가)
 
 **Interfaces:**
+
 - Consumes: Task 8의 `secureKey.vault()`, Task 10의 `assertAiUnlocked`
 - Produces
   - `SEALED_PREFIX_V2 = 'sealed:v2:'`(settings-secrets.ts)
@@ -653,6 +737,7 @@ it('keeps v2 values for the reveal request', () => {})
 ### Task 12: 가짜 서버, 문서, 손 시험 (11/13~11/16)
 
 **Files:**
+
 - Create: `tools/securekey-dev-server.mjs`
 - Modify
   - `docs/contracts.md`: 새 절 "보안키 파일과 서버 응답". Task 1의 형식, `canonicalJson`과 서명 규칙, 스펙 7-6의 요청 4개, 상태 코드 409·429를 적는다.
@@ -661,6 +746,7 @@ it('keeps v2 values for the reveal request', () => {})
 - Test: `packages/cli/tests/securekey-dev-server.test.ts`
 
 **Interfaces:**
+
 - Produces: `node tools/securekey-dev-server.mjs [--port 3870]`
   - 키 쌍은 `%TEMP%\hanpan-securekey-dev\`에 처음 한 번 만들어 둔다.
   - 시작하면 빌드 값 두 줄을 출력한다: `HANPAN_KEY_SERVER=http://127.0.0.1:3870`, `HANPAN_KEY_PUBKEYS={"dev1":"…"}`
@@ -691,12 +777,14 @@ it('reports a revoked key', async () => {})
 ### Task 13: 정식판 연결 (11/16~11/20, D가 준비된 뒤)
 
 **Files:**
+
 - Modify: `apps/shell/electron-builder.cjs`(`beforePack`)
 - Modify: `.github/workflows/windows-build.yml`("Package" 단계의 `env`)
 - Modify(대표님 승인 글이 있을 때만): `PRIVACY.md`, `README.md`, `README.en.md`
 - Test: `apps/shell/tests/securekey-build-values.test.ts`
 
 **Interfaces:**
+
 - Produces: `beforePack`은 `HANPAN_REQUIRE_KEY=1`일 때 다음을 확인하고, 하나라도 어긋나면 throw한다.
   - `HANPAN_KEY_SERVER`가 `https://`로 시작한다.
   - `HANPAN_KEY_PUBKEYS`가 키 하나 이상으로 읽힌다(`parsePublicKeys`).

@@ -5,6 +5,7 @@
 **Goal:** 11/13까지 시연용 Windows 설치판을 만든다. 베트남어 화면에서 한판이 더한 문구가 베트남어로 나오고, 한국 문서 기능은 숨겨지고, 화면에 옛 제품 이름이 없고, 홈에서 PhotoCraft·VectorCraft를 실행할 수 있어야 한다.
 
 **Architecture:**
+
 - 한판 문구는 JSON 사전이 원본이다. 고친 두 도구가 언어 파일에 넣는다.
 - 한국 문서 기능은 `app-settings.json`의 `koreanDocFeatures` 값 하나로 정한다. 값이 없으면 화면 언어가 `ko`일 때만 켜진다.
   - 셸 메인 프로세스가 값을 읽고 쓰고, 바뀌면 모든 화면에 알린다.
@@ -69,6 +70,7 @@
 시작 전 상태를 기록하고, Rust 없이 이 PC에서 개발 모드와 시험용 빌드가 되는지 확인한다. 바뀌는 파일은 없다.
 
 **Interfaces:**
+
 - Produces:
   - 기준선 실패 목록 `%TEMP%\hanpan-baseline\test-baseline.txt`. 이후 모든 작업이 "원본에서도 실패하는가"를 이 목록으로 판단한다.
   - 동작하는 개발 모드(`npm run dev`)
@@ -98,8 +100,8 @@
 npm run build -w @genoffice/docs && (cd apps/sheets && npx electron-vite build) && npm run build -w @genoffice/slides && npm run build -w @genoffice/pdf && npm run build -w @genoffice/markdown && npm run build -w @genoffice/html && npm run build -w @genoffice/mindmap && npm run build -w @genoffice/hwp && npm run build -w @genoffice/epub && npm run build -w @genoffice/cli && npm run build -w @genoffice/shell
 ```
 
-  - Expected: 종료 코드 0. 한글 편집기 빌드는 git과 인터넷이 필요하다.
-  - Run: `npm run test:e2e -- e2e/home.spec.ts e2e/hanpan-home.spec.ts` → 결과를 기준선 파일에 덧붙인다.
+- Expected: 종료 코드 0. 한글 편집기 빌드는 git과 인터넷이 필요하다.
+- Run: `npm run test:e2e -- e2e/home.spec.ts e2e/hanpan-home.spec.ts` → 결과를 기준선 파일에 덧붙인다.
 - [ ] **Step 7: main의 CI 실패 원인 기록**
   - 저장소의 CI는 11/1부터 main에서 계속 실패한다.
   - Run: `gh run list --repo tenaico/hanpan --workflow ci.yml --branch main --limit 1`, 이어서 `gh run view <id> --repo tenaico/hanpan --log-failed`
@@ -110,6 +112,7 @@ npm run build -w @genoffice/docs && (cd apps/sheets && npx electron-vite build) 
 스펙 6장. 11/5 확인을 통과한 앱만 싣는다.
 
 **Files:**
+
 - Create: `tools/artcraft-pins.json`, `tools/fetch-artcraft.mjs`, `tools/fetch-artcraft.d.mts`
 - Modify
   - `.gitignore`, `.prettierignore`, `eslint.config.mjs`(ignores)
@@ -121,6 +124,7 @@ npm run build -w @genoffice/docs && (cd apps/sheets && npx electron-vite build) 
 - Test: `packages/cli/tests/fetch-artcraft.test.ts`, `apps/shell/tests/artcraft-resources.test.ts`
 
 **Interfaces:**
+
 - Produces
   - `tools/artcraft-pins.json`: `{ "<app>": { repo, tag, asset, size, sha256, exe, licenseDir } }`. 앱은 `photocraft`, `vectorcraft`.
   - `tools/fetch-artcraft.mjs`의 export
@@ -139,9 +143,9 @@ npm run build -w @genoffice/docs && (cd apps/sheets && npx electron-vite build) 
 
 pins 값(11/4 GitHub 릴리스에서 확인한 SHA256):
 
-| app | repo | tag | asset | size | sha256 |
-|---|---|---|---|---|---|
-| photocraft | storytold/photocraft | v0.20.1 | photocraft-0.20.1-windows-x64-portable.zip | 129241796 | e21ac903cf0477b05d8d1b6071f1f579b80f8ee9c8737a0b47b53948a17c5c73 |
+| app         | repo                  | tag     | asset                                       | size      | sha256                                                           |
+| ----------- | --------------------- | ------- | ------------------------------------------- | --------- | ---------------------------------------------------------------- |
+| photocraft  | storytold/photocraft  | v0.20.1 | photocraft-0.20.1-windows-x64-portable.zip  | 129241796 | e21ac903cf0477b05d8d1b6071f1f579b80f8ee9c8737a0b47b53948a17c5c73 |
 | vectorcraft | storytold/vectorcraft | v0.21.0 | vectorcraft-0.21.0-windows-x64-portable.zip | 145817499 | 611227768f067e31788156aa3fd76220febe6fcf66be349f27a399c88de200d8 |
 
 `exe`와 `licenseDir`는 Step 4에서 받은 내용을 보고 채운다.
@@ -242,6 +246,7 @@ git commit -m "feat(hanpan): bundle pinned PhotoCraft and VectorCraft builds in 
 ### Task 3: 한판 문구 도구 고치기 (11/6)
 
 두 도구에는 고칠 점이 셋 있다.
+
 - prettier가 두 줄로 나눈 값을 찾지 못한다.
 - 큰따옴표로 바뀐 값을 찾지 못한다.
 - 블록 도구는 이미 있는 값을 바꾸지 않는다.
@@ -249,11 +254,13 @@ git commit -m "feat(hanpan): bundle pinned PhotoCraft and VectorCraft builds in 
 그래서 지금 다시 돌리면 중복 키가 생기거나(형 검사 실패) 영어가 그대로 남는다. 베트남어를 넣기 전에 고친다.
 
 **Files:**
+
 - Modify: `tools/hanpan-add-strings.mjs`, `tools/hanpan-add-block-strings.mjs`
 - Create: `tools/hanpan-add-strings.d.mts`, `tools/hanpan-add-block-strings.d.mts`
 - Test: `packages/cli/tests/hanpan-string-tools.test.ts`
 
 **Interfaces:**
+
 - Produces
   - `type HanpanEntries = Record<string, Record<string, string>>` (키 → 언어 → 글)
   - `upsertFileStrings(source: string, lang: string, entries: HanpanEntries): { text: string; added: number; replaced: number }`: 언어 파일 하나(`export const vi = { … }`)를 처리한다.
@@ -261,6 +268,7 @@ git commit -m "feat(hanpan): bundle pinned PhotoCraft and VectorCraft builds in 
   - 명령줄 사용법은 지금과 같다.
 
 두 함수의 공통 규칙:
+
 - 언어의 값은 `entries[key][lang] ?? entries[key].en`이다.
 - 이미 있는 키는 세 모양을 모두 찾는다: `KEY: '…',`, `KEY: "…",`, `KEY:` 다음 줄에 `'…',`가 오는 두 줄 모양.
 - 있는 값이 그 키의 `en`이나 `zh` 값과 같을 때만 새 값으로 바꾼다. 이미 번역된 값은 그대로 둔다.
@@ -311,6 +319,7 @@ it('inserts a missing key after afterKey in every block', () => {
 ### Task 4: 베트남어 문구 넣기 (11/6)
 
 **Files:**
+
 - Modify(`vi` 추가)
   - `apps/shell/src/renderer/src/hanpan/home-strings.json`, `strings.json`, `convert-strings.json`
   - `apps/mindmap/src/renderer/i18n/hanpan-strings.json`, `hanpan-style-strings.json`
@@ -321,6 +330,7 @@ it('inserts a missing key after afterKey in every block', () => {
 - Test: `apps/shell/tests/hanpan-vi-strings.test.ts`, `apps/mindmap/tests/hanpan-vi-strings.test.ts`
 
 **Interfaces:**
+
 - Consumes: Task 3의 두 도구
 
 - [ ] **Step 1: 실패하는 테스트**
@@ -373,6 +383,7 @@ Expected: `git diff --stat`에는 JSON 다섯 개, `strings.ts`, `app/vi.ts`만 
 스펙 5-3은 `check-no-genspark.mjs` 같은 별도 검사 스크립트를 말한다. 이 계획은 대신 `npm test`에 들어가는 테스트로 막는다. 화면 문구가 모두 사전에 모여 있어 테스트 하나로 다 볼 수 있고, CI 설정을 새로 바꾸지 않아도 되기 때문이다.
 
 **Files:**
+
 - Modify
   - `apps/shell/src/renderer/src/strings.ts:2848`: ko `setAiPanelStartDesc`의 `이음오피스를`을 `GenOffice를`로 바꾼다. 화면에는 "한판을"로 나간다.
   - `apps/shell/src/renderer/update.html:260`: `alt="IeumOffice"`를 `alt=""`로 바꾼다. 옆 제목에 제품 이름이 있어 꾸밈 그림이다.
@@ -393,11 +404,15 @@ const read = (rel: string) => readFileSync(new URL(`../${rel}`, import.meta.url)
 
 it('no screen string carries the old product name', () => {
   for (const [lang, table] of Object.entries(strings))
-    for (const [key, value] of Object.entries(table)) expect(`${lang}.${key}: ${value}`).not.toMatch(OLD)
+    for (const [key, value] of Object.entries(table))
+      expect(`${lang}.${key}: ${value}`).not.toMatch(OLD)
 })
-it('the update window has no old name', () => expect(read('src/renderer/update.html')).not.toMatch(OLD))
+it('the update window has no old name', () =>
+  expect(read('src/renderer/update.html')).not.toMatch(OLD))
 it('the HWP memo author fallback is the product name', () =>
-  expect(read('../hwp/studio-plugin/agent-plugin.mjs')).toContain(`return clean || '${PRODUCT_NAME}'`))
+  expect(read('../hwp/studio-plugin/agent-plugin.mjs')).toContain(
+    `return clean || '${PRODUCT_NAME}'`,
+  ))
 it('the CLI installer prints the product name', () =>
   expect(read('../../packaging/cli/install.sh')).not.toMatch(OLD))
 ```
@@ -410,6 +425,7 @@ it('the CLI installer prints the product name', () =>
 ### Task 6: 한국 문서 기능 스위치 — 값과 전달 (11/9)
 
 **Files:**
+
 - Create: `packages/i18n/src/korean-doc-features.ts`. Modify: `packages/i18n/src/index.ts`(`export * from './korean-doc-features'`)
 - Create: `packages/ui/src/korean-doc-features-store.ts`. Modify: `packages/ui/src/index.ts`
 - Create: `apps/shell/src/main/korean-doc-features.ts`
@@ -425,6 +441,7 @@ it('the CLI installer prints the product name', () =>
 - Test: `packages/i18n/tests/korean-doc-features.test.ts`, `apps/shell/tests/korean-doc-features.test.ts`, `apps/shell/tests/settings-korean-docs.test.ts`
 
 **Interfaces:**
+
 - Produces
   - `@genoffice/i18n`: `koreanDocFeaturesOn(stored: boolean | null, lang: Lang): boolean`. 값은 `stored ?? lang === 'ko'`이다.
   - `@genoffice/ui`
@@ -459,7 +476,8 @@ it.each([
   [true, 'en', true],
   [false, 'ko', false],
 ] as const)('stored %s on %s → %s', (stored, lang, on) =>
-  expect(koreanDocFeaturesOn(stored, lang)).toBe(on))
+  expect(koreanDocFeaturesOn(stored, lang)).toBe(on),
+)
 ```
 
 ```ts
@@ -495,6 +513,7 @@ it('saves the new value when clicked', () => {}) // setKoreanDocFeatures called 
 ### Task 7: 홈·시작 보드·메뉴·설정에서 숨기기 (11/9)
 
 **Files:**
+
 - Modify
   - `apps/shell/src/renderer/src/Home.tsx`: `renderQuickCards`, 1922-1992행
   - `apps/shell/src/renderer/src/hanpan/StartBoard.tsx`
@@ -506,6 +525,7 @@ it('saves the new value when clicked', () => {}) // setKoreanDocFeatures called 
 - Test: `apps/shell/tests/home-korean-cards.test.ts`, `apps/shell/tests/hanpan-start-board.test.ts`, `apps/shell/tests/korean-doc-menu-wiring.test.ts`
 
 **Interfaces:**
+
 - Consumes: Task 6의 `useKoreanDocFeatures`, `koreanDocFeaturesOn`, `readKoreanDocFeatures`
 - Produces
   - `StartBoard`의 props: `{ greeting, t, korean: boolean }`
@@ -513,6 +533,7 @@ it('saves the new value when clicked', () => {}) // setKoreanDocFeatures called 
   - index.ts의 `const koreanDocsOn = (): boolean => koreanDocFeaturesOn(readKoreanDocFeatures(APP_SETTINGS_PATH()), currentLang())`
 
 꺼졌을 때 숨기는 것:
+
 - 홈: `primary`의 `hwp`(AI 한글)와 `templates`, `secondary`의 `design`
 - 시작 보드: `hpFlowHwp`, `hpFlowCard`. 카드뉴스는 디자인 보드로 가기 때문이다.
 - 설정 > 통합: `GonguSettingsCard`
@@ -521,10 +542,11 @@ it('saves the new value when clicked', () => {}) // setKoreanDocFeatures called 
 - 스펙 5-2의 "공유마당 그림 검색(슬라이드 리본)"은 실제로 없다(결정 0089는 워드·슬라이드를 뺐다). 공유마당 그림 검색은 디자인 보드에만 있고, 디자인 보드는 통째로 숨긴다. 슬라이드의 국악 효과음은 문서 기능이 아니라서 그대로 둔다.
 
 `flowGeometry`의 계산:
+
 - 칩 32px에 간격 11px을 더한 43px이 한 칸이다.
 - `height = 43 * count - 6`이다. 4개일 때 지금 값 166이 된다.
 - `rootY = height / 2`, `ends[k] = 19 + 43 * k`
-- SVG는 `` viewBox={`0 0 64 ${height}`} ``와 `style={{ height }}`로 그린다.
+- SVG는 ``viewBox={`0 0 64 ${height}`}``와 `style={{ height }}`로 그린다.
 
 - [ ] **Step 1: 실패하는 테스트**
 
@@ -564,6 +586,7 @@ it('every New HWP menu item sits behind the Korean switch', () => {
 ### Task 8: 마인드맵·한글 편집기에서 숨기기 (11/9)
 
 **Files:**
+
 - Modify(마인드맵)
   - `apps/mindmap/src/shared/ipc.ts`: `APP_CHANNELS`(134-146행)에 `getKoreanDocFeatures: 'app:get-korean-doc-features'`, `koreanDocFeaturesChanged: 'app:korean-doc-features-changed'`를 더하고, API 형(417행 부근)도 고친다.
   - `apps/mindmap/src/preload/index.ts`, `apps/mindmap/src/renderer/main.tsx`
@@ -574,10 +597,12 @@ it('every New HWP menu item sits behind the Korean switch', () => {
 - Test: `apps/mindmap/tests/hanpan-send-menu.test.ts`, `apps/mindmap/tests/hanpan-send-dialog.test.ts`, `apps/hwp/tests/hanpan-tools-visibility.test.ts`
 
 **Interfaces:**
+
 - Consumes: Task 6의 `useKoreanDocFeatures(lang)`, `applyKoreanDocFeatures`, `'app:get-korean-doc-features'` 처리기
 - Produces: `window.mindmapApi`와 `window.hwpApi`의 `getKoreanDocFeatures(): Promise<boolean | null>`, `onKoreanDocFeaturesChanged(handler: (stored: boolean | null) => void): () => void`
 
 꺼졌을 때:
+
 - **SendMenu:** `hwp` 항목과 `design`·`sync`·`credits` 항목을 그리지 않는다. `slides`와 `docx`는 남는다.
 - **SendDialog(Word):** 문서 형식·모양·날짜·부서 줄을 숨긴다. `style: 'chapter-report'`, `theme: 'plain'`으로 보내고, `date`와 `department`는 보내지 않는다.
 - **HanpanTools:** 아무것도 그리지 않는다(`return null`). 한글 편집기 자체는 그대로 열린다.
@@ -615,12 +640,14 @@ it('renders the tools button when on', () => {})
 지금은 언어를 고른 적이 없으면 항상 한국어로 켜진다(`index.ts:877-878`, "Hanpan is Korean-first"). 그래서 베트남어 Windows에서도 한국어 화면이 뜬다. 스펙에 없는 결정이므로 사용자가 승인한 경우에만 한다.
 
 **Files:**
+
 - Create: `apps/shell/src/main/ui-lang-fallback.ts`
 - Modify: `apps/shell/src/main/index.ts:877-878`
 - Create: `docs/tracking/decisions/0092-hanpan-first-language-follows-windows.md`. Modify: `index.md`
 - Test: `apps/shell/tests/ui-lang-fallback.test.ts`
 
 **Interfaces:**
+
 - Produces: `fallbackUiLang(osLocales: readonly string[]): Lang`
   - 앞에서부터 locale마다 `normalizeLang(locale)`을 본다.
   - 결과가 `'en'`이 아니거나 locale이 정말 영어(`/^en(\b|[-_])/i`)이면 그 언어를 쓴다.
@@ -649,6 +676,7 @@ it.each([
 ### Task 10: 홈에서 PhotoCraft·VectorCraft 열기 (11/9)
 
 **Files:**
+
 - Create: `apps/shell/src/main/hanpan/artcraft.ts`
 - Modify
   - `apps/shell/src/main/index.ts`: `configureDesignWindow` 옆(8927행 부근)에서 `registerArtcraftIpc`를 부른다.
@@ -660,6 +688,7 @@ it.each([
 - Test: `apps/shell/tests/hanpan-artcraft-ipc.test.ts`, `apps/shell/tests/home-artcraft-cards.test.ts`
 
 **Interfaces:**
+
 - Consumes: Task 2의 `tools/artcraft-pins.json`(`exe`)
 - Produces
   - `ARTCRAFT_APPS = ['photocraft', 'vectorcraft'] as const`, `type ArtcraftApp`
@@ -686,6 +715,7 @@ it.each([
     - `hpArtcraftFailed`: "앱을 열지 못했습니다. 설치 폴더의 artcraft 폴더를 확인하세요."
 
 홈 화면 동작:
+
 - 처음 그릴 때 `artcraftAvailable()`를 한 번 묻는다. 있는 앱만 `secondary`의 `pdf-tools` 다음에 넣는다. 언어와 관계없이 보인다.
 - 그림은 일반 그림(붓·펜 모양 SVG, 색은 토큰)을 쓴다.
 - 열기에 실패하면 카드 아래 `<p className="hp-start-note hp-start-failed" role="alert">`에 `hpArtcraftFailed`를 보여 준다.
