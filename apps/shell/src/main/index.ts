@@ -62,7 +62,14 @@ import menuEpubIcon2x from './assets/menu-epub@2x.png?asset'
 import menuHomeIcon1x from './assets/menu-home.png?asset'
 import menuHomeIcon2x from './assets/menu-home@2x.png?asset'
 import { gonguImageSearch, testGonguKey } from '@genoffice/ai-search'
-import { createI18n, isLang, normalizeLang, setUiLang, type Lang } from '@genoffice/i18n'
+import {
+  createI18n,
+  isLang,
+  koreanDocFeaturesOn,
+  normalizeLang,
+  setUiLang,
+  type Lang,
+} from '@genoffice/i18n'
 import { DEV_USER_DATA_DIR_NAME, PRODUCT_CONTACT_EMAIL, productName } from '@genoffice/i18n'
 import {
   DEFAULT_SAVE_DIR_KEY,
@@ -865,6 +872,11 @@ function readStoredAiSettings(): AiSettings {
 }
 
 let uiLang: Lang | null = null
+
+/** Hanpan: whether the Korean document features are on (decision 0091): the switch, else a Korean UI */
+function koreanDocsOn(): boolean {
+  return koreanDocFeaturesOn(readKoreanDocFeatures(APP_SETTINGS_PATH()), currentLang())
+}
 
 function currentLang(): Lang {
   if (uiLang) return uiLang
@@ -7174,11 +7186,15 @@ function registerTabsIpc(): void {
         icon: menuIcons().mindmap,
         click: () => newMindmapTab(),
       },
-      {
-        label: tm('menuNewHwp'),
-        icon: menuIcons().hwp,
-        click: () => newHwpTab(),
-      },
+      ...(koreanDocsOn()
+        ? [
+            {
+              label: tm('menuNewHwp'),
+              icon: menuIcons().hwp,
+              click: () => newHwpTab(),
+            },
+          ]
+        : []),
       {
         label: tm('menuNewPdf'),
         icon: menuIcons().pdf,
@@ -7229,7 +7245,7 @@ function buildHomeMenu(): void {
         { label: tm('menuNewMarkdown'), click: () => newMarkdownTab() },
         { label: tm('menuNewHtml'), click: () => newHtmlTab() },
         { label: tm('menuNewMindmap'), click: () => newMindmapTab() },
-        { label: tm('menuNewHwp'), click: () => newHwpTab() },
+        ...(koreanDocsOn() ? [{ label: tm('menuNewHwp'), click: () => newHwpTab() }] : []),
         { label: tm('menuNewPdf'), click: () => void newPdfTab() },
         { type: 'separator' },
         {

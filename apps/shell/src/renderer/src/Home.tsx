@@ -39,6 +39,7 @@ import {
   aiSubscriptionProviderName,
   aiSubscriptionText,
   useDismissablePopover,
+  useKoreanDocFeatures,
 } from '@genoffice/ui'
 import type { AiSettings } from '@genoffice/ai-provider/browser'
 import { productName } from '@genoffice/i18n'
@@ -1073,6 +1074,8 @@ export function Home({
 }) {
   const i18n = useI18n()
   const { t, lang } = i18n
+  // Hanpan: the HWP, templates and design cards follow the Korean document features switch (decision 0091)
+  const koreanDocs = useKoreanDocFeatures(lang)
   // ── Paged list state (rows loaded for the current view + filter) ──
   const [entries, setEntries] = useState<RecentEntry[]>([])
   /** total count under the current view + filter (not just the loaded rows) */
@@ -1923,15 +1926,17 @@ export function Home({
     const made = (ext: string) => NEW_ITEMS.find((item) => item.ext === ext)!
     const primary = [
       { key: 'xmind', badge: <FileBadge ext="xmind" size={34} />, title: made('xmind').title, sub: t('hpCardMapSub'), ai: true, start: true, action: made('xmind').action },
-      { key: 'hwp', badge: <FileBadge ext="hwp" size={34} />, title: made('hwp').title, sub: t('hpCardHwpSub'), ai: true, action: made('hwp').action },
+      ...(koreanDocs
+        ? [{ key: 'hwp', badge: <FileBadge ext="hwp" size={34} />, title: made('hwp').title, sub: t('hpCardHwpSub'), ai: true, action: made('hwp').action }]
+        : []),
       { key: 'pptx', badge: <FileBadge ext="pptx" size={34} />, title: made('pptx').title, sub: t('hpCardPptSub'), ai: true, action: made('pptx').action },
-      ...(window.hanpanApi
+      ...(window.hanpanApi && koreanDocs
         ? [{ key: 'templates', badge: <FileBadge ext="hwp" size={34} />, title: t('hpTemplatesCard'), sub: t('hpTemplatesCardSub'), ai: false, action: () => setTemplatesOpen(true) }]
         : []),
     ]
     const secondary = [
       ...['docx', 'xlsx'].map((ext) => ({ key: ext, icon: <FileBadge ext={ext} size={24} />, title: made(ext).title, ai: true, tip: undefined as string | undefined, action: made(ext).action })),
-      ...(window.hanpanApi?.openDesign
+      ...(window.hanpanApi?.openDesign && koreanDocs
         ? [{ key: 'design', icon: <span className="quick-folder hp-design-badge" aria-hidden="true">✦</span>, title: t('hpDesignCard'), ai: false, tip: t('hpDesignCardSub'), action: () => window.hanpanApi?.openDesign?.() }]
         : []),
       { key: 'md', icon: <FileBadge ext="md" size={24} />, title: made('md').title, ai: true, tip: undefined as string | undefined, action: made('md').action },
@@ -3129,7 +3134,11 @@ export function Home({
       <main className="content">
         <section className="quick-start" aria-label={t('secQuickStart')}>
           {window.hanpanApi?.newMap ? (
-            <StartBoard greeting={greeting.trim()} t={(key) => t(key as Parameters<typeof t>[0])} />
+            <StartBoard
+              greeting={greeting.trim()}
+              t={(key) => t(key as Parameters<typeof t>[0])}
+              korean={koreanDocs}
+            />
           ) : (
             <div className="home-hero">
               <h1 className="hero-title">

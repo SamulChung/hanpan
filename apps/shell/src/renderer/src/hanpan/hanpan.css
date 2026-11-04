@@ -295,7 +295,6 @@
 
 .hp-flow-lines {
   width: 64px;
-  height: 166px;
   fill: none;
   stroke: var(--hp-board-line);
   stroke-width: 2;
