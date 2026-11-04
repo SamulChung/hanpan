@@ -55,8 +55,25 @@ const winArch = winArm64 ? 'arm64' : 'x64'
 // x86_64-pc-windows-msvc; native/xlsx-engine/.cargo/config.toml links its CRT statically,
 // so it needs no VC++ redistributable either. GENOFFICE_WIN_SIDECAR_TARGET names that target.
 const winSidecarTarget =
-  process.env.GENOFFICE_WIN_SIDECAR_TARGET || (winArm64 ? 'aarch64-pc-windows-msvc' : 'x86_64-pc-windows-gnu')
+  process.env.GENOFFICE_WIN_SIDECAR_TARGET ||
+  (winArm64 ? 'aarch64-pc-windows-msvc' : 'x86_64-pc-windows-gnu')
 const WIN_SIDECAR = `../sheets/native/xlsx-engine/target/${winSidecarTarget}/release/xlsx-sidecar.exe`
+
+// Hanpan: the ArtCraft desktop apps the Windows installer carries (decision 0090).
+// tools/fetch-artcraft.mjs fetches them into vendor/artcraft/<app>; the pins
+// (tools/artcraft-pins.json) are read in beforePack only, since module-level
+// code here may use process.* alone (tests evaluate this file in a sandbox).
+const ARTCRAFT_APPS = ['photocraft', 'vectorcraft']
+
+function assertArtcraftApps() {
+  const pins = JSON.parse(readFileSync(join(__dirname, '../../tools/artcraft-pins.json'), 'utf8'))
+  for (const app of ARTCRAFT_APPS) {
+    const exe = pins[app] && pins[app].exe
+    if (!exe || !existsSync(join(__dirname, '../../vendor/artcraft', app, exe))) {
+      throw new Error(`ArtCraft ${app} is missing: run node tools/fetch-artcraft.mjs first`)
+    }
+  }
+}
 
 function assertExtraResourceSources() {
   for (const rel of [
@@ -728,6 +745,10 @@ const config = {
         from: 'build/epub.ico',
         to: 'epub.ico',
       },
+      ...ARTCRAFT_APPS.map((app) => ({
+        from: `../../vendor/artcraft/${app}`,
+        to: `artcraft/${app}`,
+      })),
     ],
   },
   // Unlike win (which cross-compiles the sidecar to an explicit target
@@ -867,6 +888,7 @@ const config = {
         `win extraResources source missing: ${WIN_SIDECAR} (cargo build --target ${winSidecarTarget} first)`,
       )
     }
+    if (context.electronPlatformName === 'win32') assertArtcraftApps()
   },
   dmg: {
     sign: true,

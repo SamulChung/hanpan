@@ -777,6 +777,56 @@ for (const dir of ['apps/shell/src/main/hanpan/pictures', 'apps/slides/src/main/
   out += readFileSync(join(ROOT, dir, 'CREDITS.md'), 'utf8').trim() + '\n'
 }
 
+// Hanpan: the ArtCraft desktop apps in the Windows installer (decision 0090), fetched
+// unmodified by tools/fetch-artcraft.mjs. Each folder ships its licenses, NOTICE,
+// asset list and the OFL texts of its bundled fonts; all of them are carried here,
+// and a text both apps ship is written once. Only the Windows build carries the apps.
+const ARTCRAFT_NOTICE_FILE = /^(NOTICE(\.\w+)?|ATTRIBUTION\.md|ASSETS\.md|OFL-.+\.txt)$/i
+
+/** the notice files of one unpacked app, top-level ones first, then everything under licenses/ */
+function artcraftNoticeFiles(dir) {
+  const top = readdirSync(dir, { withFileTypes: true })
+    .filter((e) => e.isFile() && ARTCRAFT_NOTICE_FILE.test(e.name))
+    .map((e) => e.name)
+    .sort()
+  const nested = []
+  const walk = (rel) => {
+    for (const e of readdirSync(join(dir, rel), { withFileTypes: true })) {
+      const child = `${rel}/${e.name}`
+      if (e.isDirectory()) walk(child)
+      else if (e.isFile()) nested.push(child)
+    }
+  }
+  if (existsSync(join(dir, 'licenses'))) walk('licenses')
+  return [...top, ...nested.sort()]
+}
+
+if (process.platform === 'win32') {
+  const pins = JSON.parse(readFileSync(join(ROOT, 'tools/artcraft-pins.json'), 'utf8'))
+  out += hr('8. Bundled desktop apps (ArtCraft)')
+  const seen = new Map()
+  for (const [app, pin] of Object.entries(pins)) {
+    const dir = join(ROOT, 'vendor/artcraft', app, pin.licenseDir || '.')
+    const license = existsSync(dir) ? licenseText(app, dir) : null
+    if (!license) {
+      gap(`vendor/artcraft/${app}: run node tools/fetch-artcraft.mjs`)
+      continue
+    }
+    out += sub(`${app} ${pin.tag} (https://github.com/${pin.repo})`)
+    out += `${license}\n`
+    for (const file of artcraftNoticeFiles(dir)) {
+      const text = readFileSync(join(dir, file), 'utf8').trim()
+      const label = `${app}/${file}`
+      if (seen.has(text)) {
+        out += `\n[${label}: same text as ${seen.get(text)}]\n`
+        continue
+      }
+      seen.set(text, label)
+      out += `\n--- ${label} ---\n${text}\n`
+    }
+  }
+}
+
 for (const term of ['@embedpdf/pdfium', 'Copyright 2014 PDFium Authors', 'Apache License']) {
   if (!out.includes(term)) {
     throw new Error(`generated third-party notice is missing PDFium term: ${term}`)

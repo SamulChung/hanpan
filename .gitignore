@@ -32,6 +32,9 @@ electron-builder.env
 # Playwright artifacts
 /test-results/
 
+# ArtCraft apps fetched by tools/fetch-artcraft.mjs for the Windows installer (decision 0090)
+/vendor/artcraft/
+
 .cursor/rules/git-remote.mdc
 __pycache__/
 /notes/

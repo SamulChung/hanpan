@@ -96,6 +96,11 @@ jobs:
           mkdir -p "$engine/x86_64-pc-windows-gnu/release"
           cp "$engine/release/xlsx-sidecar.exe" "$engine/x86_64-pc-windows-gnu/release/"
 
+      # the ArtCraft desktop apps the installer carries (decision 0090), pinned by
+      # version and SHA-256 in tools/artcraft-pins.json
+      - name: Fetch ArtCraft apps
+        run: node tools/fetch-artcraft.mjs
+
       - name: Package
         run: npm run dist:win -w @genoffice/shell -- --publish never
 
@@ -108,7 +113,9 @@ jobs:
             "$dir/resources/native/xlsx-sidecar.exe" \
             "$dir/resources/ocr/win-ocr.exe" \
             "$dir/resources/cli/genoffice.cjs" \
-            "$dir/resources/cli/ieumoffice.cmd"; do
+            "$dir/resources/cli/ieumoffice.cmd" \
+            "$dir/resources/artcraft/photocraft/photocraft.exe" \
+            "$dir/resources/artcraft/vectorcraft/vectorcraft.exe"; do
             test -f "$bin" || { echo "missing: $bin"; exit 1; }
           done
           version=$(node -p "require('./apps/shell/package.json').version")

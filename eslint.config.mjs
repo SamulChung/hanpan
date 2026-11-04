@@ -20,6 +20,8 @@ export default tseslint.config(
       'packages/*/src/vendor/**',
       // the rhwp engine build (tools/build-rhwp-core.mjs): wasm-bindgen glue, kept verbatim
       'vendor/rhwp-core/**',
+      // ArtCraft desktop apps fetched for the Windows installer (tools/fetch-artcraft.mjs), git-ignored
+      'vendor/artcraft/**',
       // Browser-side extractor fragments are function-body slices (top-level
       // return), not modules; they are injected as raw text.
       'packages/html2docx/src/browser/**',
