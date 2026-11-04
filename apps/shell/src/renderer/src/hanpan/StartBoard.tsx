@@ -16,7 +16,11 @@ const FLOW_STEP = 43
 /** the connector drawing for `count` branches: four give the original 166px drawing */
 export function flowGeometry(count: number): { height: number; rootY: number; ends: number[] } {
   const height = FLOW_STEP * count - 6
-  return { height, rootY: height / 2, ends: Array.from({ length: count }, (_, k) => 19 + FLOW_STEP * k) }
+  return {
+    height,
+    rootY: height / 2,
+    ends: Array.from({ length: count }, (_, k) => 19 + FLOW_STEP * k),
+  }
 }
 
 export function StartBoard({
@@ -96,12 +100,21 @@ export function StartBoard({
         </form>
         <div className="hp-start-examples">
           {examples.map((example) => (
-            <button key={example} type="button" className="hp-example" onClick={() => void start(example)} disabled={busy}>
+            <button
+              key={example}
+              type="button"
+              className="hp-example"
+              onClick={() => void start(example)}
+              disabled={busy}
+            >
               {example}
             </button>
           ))}
         </div>
-        <p className={failed ? 'hp-start-note hp-start-failed' : 'hp-start-note'} role={failed ? 'alert' : undefined}>
+        <p
+          className={failed ? 'hp-start-note hp-start-failed' : 'hp-start-note'}
+          role={failed ? 'alert' : undefined}
+        >
           {failed ? t('hpStartFailed') : t('hpStartHint')}
         </p>
       </div>
