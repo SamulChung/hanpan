@@ -31,6 +31,7 @@ import type { MenuItemConstructorOptions, NativeImage, WebContents } from 'elect
 import { atomicWriteFile } from './atomic-write'
 import { setupHanpan } from './hanpan/setup'
 import { configureDesignWindow, openDesignWithOutline } from './hanpan/design-window'
+import { registerArtcraftIpc } from './hanpan/artcraft'
 import { tabStripOverlay } from './title-bar-overlay'
 import { shellWindowBackground } from './window-background'
 import { installPointerSize } from './pointer-size'
@@ -8964,6 +8965,16 @@ app.whenReady().then(async () => {
     theme: () => currentTheme(),
     title: (lang) => `${lang === 'ko' ? '디자인' : 'Design'} - ${productName(lang as never)}`,
     gonguKey: () => readStoredAiSettings().gongu?.apiKey ?? '',
+  })
+  // Hanpan: Home's PhotoCraft and VectorCraft cards (decision 0090)
+  registerArtcraftIpc({
+    parentWindow: () => shellWindow,
+    host: {
+      platform: process.platform,
+      isPackaged: app.isPackaged,
+      resourcesPath: process.resourcesPath,
+      appPath: app.getAppPath(),
+    },
   })
   configurePdfToolsWindow({
     parentWindow: () => shellWindow,

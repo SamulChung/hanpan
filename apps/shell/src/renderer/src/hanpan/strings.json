@@ -127,7 +127,17 @@
     "ar": "ميزات المستندات الكورية",
     "he": "תכונות מסמכים קוריאניים",
     "hi": "कोरियाई दस्तावेज़ सुविधाएँ",
-    "vi": "Tính năng tài liệu Hàn Quốc"
+    "vi": "Tính năng tài liệu Hàn Quốc",
+    "fr": "Fonctions de documents coréens",
+    "de": "Koreanische Dokumentfunktionen",
+    "es": "Funciones de documentos coreanos",
+    "it": "Funzioni per documenti coreani",
+    "pt": "Recursos de documentos coreanos",
+    "nl": "Koreaanse documentfuncties",
+    "pl": "Funkcje dokumentów koreańskich",
+    "cs": "Funkce korejských dokumentů",
+    "id": "Fitur dokumen Korea",
+    "ms": "Ciri dokumen Korea"
   },
   "setKoreanDocsDesc": {
     "ko": "한글 문서, 공문 도구, 한판 양식, 디자인 보드, 공유마당. 끄면 홈과 편집기에서 숨깁니다.",
@@ -140,6 +150,16 @@
     "ar": "مستندات HWP وأدوات الخطابات الرسمية وقوالب Hanpan ولوحة التصميم وGongu. أوقفها لإخفائها من الصفحة الرئيسية والمحررات.",
     "he": "מסמכי HWP, כלים למכתבים רשמיים, תבניות Hanpan, לוח העיצוב ו-Gongu. כבו כדי להסתיר אותם במסך הבית ובעורכים.",
     "hi": "HWP दस्तावेज़, आधिकारिक पत्र टूल, Hanpan टेम्पलेट, डिज़ाइन बोर्ड और Gongu. होम और संपादकों में छिपाने के लिए बंद करें.",
-    "vi": "Tài liệu HWP, công cụ công văn, mẫu Hanpan, bảng thiết kế và Gongu. Tắt để ẩn chúng ở Trang chủ và trong các trình soạn thảo."
+    "vi": "Tài liệu HWP, công cụ công văn, mẫu Hanpan, bảng thiết kế và Gongu. Tắt để ẩn chúng ở Trang chủ và trong các trình soạn thảo.",
+    "fr": "Documents HWP, outils pour courriers officiels, modèles Hanpan, tableau de design et Gongu. Désactivez-les pour les masquer sur l’accueil et dans les éditeurs.",
+    "de": "HWP-Dokumente, Werkzeuge für Behördenschreiben, Hanpan-Vorlagen, das Design-Board und Gongu. Schalten Sie sie aus, um sie auf der Startseite und in den Editoren auszublenden.",
+    "es": "Documentos HWP, herramientas para oficios, plantillas de Hanpan, el tablero de diseño y Gongu. Desactívalos para ocultarlos en Inicio y en los editores.",
+    "it": "Documenti HWP, strumenti per lettere ufficiali, modelli Hanpan, la bacheca di design e Gongu. Disattivali per nasconderli nella Home e negli editor.",
+    "pt": "Documentos HWP, ferramentas para ofícios, modelos do Hanpan, o quadro de design e o Gongu. Desative para ocultá-los no Início e nos editores.",
+    "nl": "HWP-documenten, hulpmiddelen voor officiële brieven, Hanpan-sjablonen, het ontwerpbord en Gongu. Zet ze uit om ze te verbergen op Start en in de editors.",
+    "pl": "Dokumenty HWP, narzędzia do pism urzędowych, szablony Hanpan, tablica projektowa i Gongu. Wyłącz, aby ukryć je na stronie głównej i w edytorach.",
+    "cs": "Dokumenty HWP, nástroje pro úřední dopisy, šablony Hanpan, návrhová tabule a Gongu. Vypnutím je skryjete na domovské obrazovce a v editorech.",
+    "id": "Dokumen HWP, alat surat resmi, templat Hanpan, papan desain, dan Gongu. Matikan untuk menyembunyikannya di Beranda dan di editor.",
+    "ms": "Dokumen HWP, alat surat rasmi, templat Hanpan, papan reka bentuk dan Gongu. Matikan untuk menyembunyikannya di Laman Utama dan dalam editor."
   }
 }

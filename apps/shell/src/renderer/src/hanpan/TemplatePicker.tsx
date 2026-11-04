@@ -8,6 +8,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useI18n } from '../locale'
 import type { MarkdownConverterApi } from './MarkdownConverter'
+import type { ArtcraftApp, ArtcraftOpenResult } from '../../../shared/artcraft-api'
 
 export interface TemplateSummary {
   id: string
@@ -28,6 +29,9 @@ export interface HanpanApi extends Partial<MarkdownConverterApi> {
   openDesign?(): Promise<void>
   /** a new mind map with `topic` as its central topic */
   newMap?(topic: string): Promise<{ ok: true } | { ok: false; error: string }>
+  /** the ArtCraft apps whose program the install carries (decision 0090) */
+  artcraftAvailable?(): Promise<ArtcraftApp[]>
+  openArtcraft?(app: ArtcraftApp): Promise<ArtcraftOpenResult>
 }
 
 declare global {
