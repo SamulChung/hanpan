@@ -31,11 +31,19 @@ import { createElectronTransport } from '../ai/transport'
 import { useI18n, type StringKey } from '../i18n/locale'
 import { sheetOutline } from './map-outline'
 
-const TITLE: Record<SendTarget, StringKey> = { hwp: 'sendHwp', slides: 'sendSlides', docx: 'sendDocx' }
+const TITLE: Record<SendTarget, StringKey> = {
+  hwp: 'sendHwp',
+  slides: 'sendSlides',
+  docx: 'sendDocx',
+}
 /** Longest answer taken for one branch (a branch of 200 topics at 2 sentences each fits). */
 const MAX_ANSWER_CHARS = 60_000
 
-type Phase = { kind: 'idle' } | { kind: 'ai'; done: number; total: number } | { kind: 'sending' } | { kind: 'error'; text: string }
+type Phase =
+  | { kind: 'idle' }
+  | { kind: 'ai'; done: number; total: number }
+  | { kind: 'sending' }
+  | { kind: 'error'; text: string }
 
 async function fleshOut(
   outline: PanOutline,
@@ -73,7 +81,10 @@ async function fleshOut(
     if (signal.aborted) break
   }
   progress(jobs.length, jobs.length)
-  return { outline: applyBodies(outline, bodies), error: bodies.size ? null : (lastError ?? 'no sentences') }
+  return {
+    outline: applyBodies(outline, bodies),
+    error: bodies.size ? null : (lastError ?? 'no sentences'),
+  }
 }
 
 export function SendDialog(p: {
@@ -125,8 +136,12 @@ export function SendDialog(p: {
       if (!settings) {
         warning = t('sendAiFallback', { error: 'AI settings' })
       } else {
-        const result = await fleshOut(outline, settings, () => lang, controller.signal, (done, total) =>
-          setPhase({ kind: 'ai', done, total }),
+        const result = await fleshOut(
+          outline,
+          settings,
+          () => lang,
+          controller.signal,
+          (done, total) => setPhase({ kind: 'ai', done, total }),
         )
         if (controller.signal.aborted) return
         outline = result.outline
@@ -149,7 +164,10 @@ export function SendDialog(p: {
     if (!result) {
       setPhase({ kind: 'error', text: t('sendFailed', { error: 'not available' }) })
     } else if (!result.ok) {
-      setPhase({ kind: 'error', text: result.error === 'empty' ? t('sendEmpty') : t('sendFailed', { error: result.error }) })
+      setPhase({
+        kind: 'error',
+        text: result.error === 'empty' ? t('sendEmpty') : t('sendFailed', { error: result.error }),
+      })
     } else {
       p.onSent(warning)
     }
@@ -162,7 +180,11 @@ export function SendDialog(p: {
           <>
             <label className="hp-send-row">
               <span>{t('sendStyle')}</span>
-              <select value={style} disabled={busy} onChange={(e) => setStyle(e.target.value as MarkerStyle)}>
+              <select
+                value={style}
+                disabled={busy}
+                onChange={(e) => setStyle(e.target.value as MarkerStyle)}
+              >
                 <option value="report">{t('sendStyleReport')}</option>
                 <option value="chapter-report">{t('sendStyleChapter')}</option>
                 <option value="gongmun">{t('sendStyleGongmun')}</option>
@@ -170,14 +192,24 @@ export function SendDialog(p: {
             </label>
             <label className="hp-send-row">
               <span>{t('sendLook')}</span>
-              <select value={theme} disabled={busy} onChange={(e) => setTheme(e.target.value as 'auto' | 'plain')}>
+              <select
+                value={theme}
+                disabled={busy}
+                onChange={(e) => setTheme(e.target.value as 'auto' | 'plain')}
+              >
                 <option value="auto">{t('sendLookHancom')}</option>
                 <option value="plain">{t('sendLookPlain')}</option>
               </select>
             </label>
             <label className="hp-send-row">
               <span>{t('sendDate')}</span>
-              <input className="mm-field" type="text" value={date} disabled={busy} onChange={(e) => setDate(e.target.value)} />
+              <input
+                className="mm-field"
+                type="text"
+                value={date}
+                disabled={busy}
+                onChange={(e) => setDate(e.target.value)}
+              />
             </label>
             <label className="hp-send-row">
               <span>{t('sendDepartment')}</span>
@@ -195,7 +227,12 @@ export function SendDialog(p: {
           <>
             <label className="hp-send-row">
               <span>{t('sendSlideStyle')}</span>
-              <select value={slideStyle} disabled={busy} data-field="slide-style" onChange={(e) => setSlideStyle(e.target.value as SlideStyleId | 'plain')}>
+              <select
+                value={slideStyle}
+                disabled={busy}
+                data-field="slide-style"
+                onChange={(e) => setSlideStyle(e.target.value as SlideStyleId | 'plain')}
+              >
                 {SLIDE_STYLES.map((st, k) => (
                   <option key={st.id} value={st.id}>
                     {k + 1}. {ko ? st.name.ko : st.name.en}
@@ -204,7 +241,11 @@ export function SendDialog(p: {
                 <option value="plain">{t('sendSlidePlain')}</option>
               </select>
             </label>
-            {styleInfo && <p className="hp-send-hint">{ko ? styleInfo.description.ko : styleInfo.description.en}</p>}
+            {styleInfo && (
+              <p className="hp-send-hint">
+                {ko ? styleInfo.description.ko : styleInfo.description.en}
+              </p>
+            )}
           </>
         )}
         <span className="hp-send-label" id="hp-content-label">
@@ -212,18 +253,41 @@ export function SendDialog(p: {
         </span>
         <div className="hp-send-choice" role="radiogroup" aria-labelledby="hp-content-label">
           <label>
-            <input type="radio" name="hp-content" checked={!ai} disabled={busy} onChange={() => setAi(false)} /> {t('sendAsIs')}
+            <input
+              type="radio"
+              name="hp-content"
+              checked={!ai}
+              disabled={busy}
+              onChange={() => setAi(false)}
+            />{' '}
+            {t('sendAsIs')}
           </label>
           <label>
-            <input type="radio" name="hp-content" checked={ai} disabled={busy} onChange={() => setAi(true)} /> {t('sendFleshOut')}
+            <input
+              type="radio"
+              name="hp-content"
+              checked={ai}
+              disabled={busy}
+              onChange={() => setAi(true)}
+            />{' '}
+            {t('sendFleshOut')}
           </label>
         </div>
         <label className="hp-send-check">
-          <input type="checkbox" checked={notes} disabled={busy} onChange={(e) => setNotes(e.target.checked)} /> {t('sendNotes')}
+          <input
+            type="checkbox"
+            checked={notes}
+            disabled={busy}
+            onChange={(e) => setNotes(e.target.checked)}
+          />{' '}
+          {t('sendNotes')}
         </label>
       </div>
       {phase.kind !== 'idle' && (
-        <p className={`mm-modal-hint${phase.kind === 'error' ? ' error' : ''}`} role={phase.kind === 'error' ? 'alert' : 'status'}>
+        <p
+          className={`mm-modal-hint${phase.kind === 'error' ? ' error' : ''}`}
+          role={phase.kind === 'error' ? 'alert' : 'status'}
+        >
           {phase.kind === 'ai'
             ? t('sendAiWorking', { done: phase.done, total: phase.total })
             : phase.kind === 'sending'
@@ -242,7 +306,12 @@ export function SendDialog(p: {
           disabled={busy}
           onClick={() => {
             send().catch((error: unknown) =>
-              setPhase({ kind: 'error', text: t('sendFailed', { error: error instanceof Error ? error.message : String(error) }) }),
+              setPhase({
+                kind: 'error',
+                text: t('sendFailed', {
+                  error: error instanceof Error ? error.message : String(error),
+                }),
+              }),
             )
           }}
         >
