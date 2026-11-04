@@ -112,6 +112,7 @@ import {
   writeAppSettings,
   writeAppSettingThen,
 } from './app-settings'
+import { KOREAN_DOC_FEATURES_KEY, readKoreanDocFeatures } from './korean-doc-features'
 import {
   builtinSkillsDirFor,
   createTemplateTabs,
@@ -6003,6 +6004,21 @@ function registerHomeIpc(): void {
       autoSaveDefaultUpdatedAt: next.updatedAt,
     })
     for (const wc of webContents.getAllWebContents()) wc.send('app:auto-save-default-changed', next)
+  })
+
+  // Hanpan: the Korean document features switch (decision 0091); editors read it too
+  ipcMain.handle(HOME_CHANNELS.getKoreanDocFeatures, () =>
+    readKoreanDocFeatures(APP_SETTINGS_PATH()),
+  )
+  ipcMain.handle('app:get-korean-doc-features', () => readKoreanDocFeatures(APP_SETTINGS_PATH()))
+  ipcMain.handle(HOME_CHANNELS.setKoreanDocFeatures, (_event, on: unknown) => {
+    if (typeof on !== 'boolean') return
+    writeAppSetting(APP_SETTINGS_PATH(), KOREAN_DOC_FEATURES_KEY, on)
+    for (const wc of webContents.getAllWebContents()) wc.send('app:korean-doc-features-changed', on)
+    // the File menu's New HWP item follows the switch
+    buildHomeMenu()
+    installDockMenu()
+    installBackToHomeItems()
   })
 
   ipcMain.handle(HOME_CHANNELS.getMcpStatus, () => mcpStatus())

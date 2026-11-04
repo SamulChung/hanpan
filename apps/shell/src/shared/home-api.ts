@@ -353,6 +353,11 @@ export interface HomeApi {
   getAutoSaveDefault(): Promise<AutoSaveDefault>
   /** persist the AutoSave default; broadcasts 'app:auto-save-default-changed' to all web contents */
   setAutoSaveDefault(on: boolean): Promise<void>
+  /** Hanpan: the Korean document features switch, null until set (decision 0091) */
+  getKoreanDocFeatures?(): Promise<boolean | null>
+  /** persist the switch; broadcasts 'app:korean-doc-features-changed' to all web contents */
+  setKoreanDocFeatures?(on: boolean): Promise<void>
+  onKoreanDocFeaturesChanged?(handler: (stored: boolean | null) => void): () => void
   /** current local MCP server state (running/enabled/port/url) */
   getMcpStatus(): Promise<McpStatus>
   /** enable/disable the MCP server and/or change its port/background/logging; applies and persists, returns the new state */
@@ -601,6 +606,8 @@ export const HOME_CHANNELS = {
   setDocumentTheme: 'home:set-document-theme',
   getAutoSaveDefault: 'home:get-auto-save-default',
   setAutoSaveDefault: 'home:set-auto-save-default',
+  getKoreanDocFeatures: 'home:get-korean-doc-features',
+  setKoreanDocFeatures: 'home:set-korean-doc-features',
   getMcpStatus: 'home:get-mcp-status',
   setMcpSettings: 'home:set-mcp-settings',
   getMcpLogs: 'home:get-mcp-logs',

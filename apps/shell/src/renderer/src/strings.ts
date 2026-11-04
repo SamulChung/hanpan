@@ -58,6 +58,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'PDF 工具',
     pdfToolsCardSub: '合并 · 拆分 · 整理',
+    setKoreanDocs: '韩国文档功能',
+    setKoreanDocsDesc:
+      'HWP 文档、公文工具、Hanpan 模板、设计板和 Gongu。关闭后将在主页和编辑器中隐藏。',
     hpTemplatesCard: 'Hanpan 模板',
     hpTemplatesCardSub: '公文 · 报告 · 计划书',
     hpTemplatesTitle: '用模板新建文档',
@@ -679,6 +682,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'PDF tools',
     pdfToolsCardSub: 'Merge · split · organize',
+    setKoreanDocs: 'Korean document features',
+    setKoreanDocsDesc:
+      'HWP documents, official-letter tools, Hanpan templates, the design board and Gongu. Turn off to hide them on Home and in the editors.',
     hpTemplatesCard: 'Hanpan templates',
     hpTemplatesCardSub: 'Letters · reports · plans',
     hpTemplatesTitle: 'New document from a template',
@@ -1322,6 +1328,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'Công cụ PDF',
     pdfToolsCardSub: 'Gộp · tách · sắp xếp',
+    setKoreanDocs: 'Tính năng tài liệu Hàn Quốc',
+    setKoreanDocsDesc:
+      'Tài liệu HWP, công cụ công văn, mẫu Hanpan, bảng thiết kế và Gongu. Tắt để ẩn chúng ở Trang chủ và trong các trình soạn thảo.',
     hpTemplatesCard: 'Mẫu Hanpan',
     hpTemplatesCardSub: 'Công văn · báo cáo · kế hoạch',
     hpTemplatesTitle: 'Tài liệu mới từ mẫu',
@@ -1969,6 +1978,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'PDF ツール',
     pdfToolsCardSub: '結合・分割・整理',
+    setKoreanDocs: '韓国の文書機能',
+    setKoreanDocsDesc:
+      'HWP 文書、公文書ツール、Hanpan テンプレート、デザインボード、Gongu。オフにするとホームとエディターで非表示になります。',
     hpTemplatesCard: 'Hanpan テンプレート',
     hpTemplatesCardSub: '公文書・報告書・企画書',
     hpTemplatesTitle: 'テンプレートから新規文書',
@@ -2629,6 +2641,9 @@ export const strings = {
     newHwp: 'AI 한글',
     pdfToolsCard: 'PDF 도구',
     pdfToolsCardSub: '병합 · 분할 · 정리',
+    setKoreanDocs: '한국 문서 기능',
+    setKoreanDocsDesc:
+      '한글 문서, 공문 도구, 한판 양식, 디자인 보드, 공유마당. 끄면 홈과 편집기에서 숨깁니다.',
     hpTemplatesCard: '한판 양식',
     hpTemplatesCardSub: '공문 · 보고서 · 기획서',
     hpTemplatesTitle: '양식으로 새 문서 만들기',
@@ -3273,6 +3288,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'Outils PDF',
     pdfToolsCardSub: 'Fusionner · diviser · organiser',
+    setKoreanDocs: 'Korean document features',
+    setKoreanDocsDesc:
+      'HWP documents, official-letter tools, Hanpan templates, the design board and Gongu. Turn off to hide them on Home and in the editors.',
     hpTemplatesCard: 'Hanpan templates',
     hpTemplatesCardSub: 'Letters · reports · plans',
     hpTemplatesTitle: 'New document from a template',
@@ -3938,6 +3956,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'PDF-Werkzeuge',
     pdfToolsCardSub: 'Zusammenfügen · teilen · ordnen',
+    setKoreanDocs: 'Korean document features',
+    setKoreanDocsDesc:
+      'HWP documents, official-letter tools, Hanpan templates, the design board and Gongu. Turn off to hide them on Home and in the editors.',
     hpTemplatesCard: 'Hanpan templates',
     hpTemplatesCardSub: 'Letters · reports · plans',
     hpTemplatesTitle: 'New document from a template',
@@ -4611,6 +4632,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'Herramientas PDF',
     pdfToolsCardSub: 'Combinar · dividir · organizar',
+    setKoreanDocs: 'Korean document features',
+    setKoreanDocsDesc:
+      'HWP documents, official-letter tools, Hanpan templates, the design board and Gongu. Turn off to hide them on Home and in the editors.',
     hpTemplatesCard: 'Hanpan templates',
     hpTemplatesCardSub: 'Letters · reports · plans',
     hpTemplatesTitle: 'New document from a template',
@@ -5271,6 +5295,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'เครื่องมือ PDF',
     pdfToolsCardSub: 'รวม · แยก · จัดระเบียบ',
+    setKoreanDocs: 'ฟีเจอร์เอกสารเกาหลี',
+    setKoreanDocsDesc:
+      'เอกสาร HWP เครื่องมือหนังสือราชการ เทมเพลต Hanpan บอร์ดออกแบบ และ Gongu ปิดเพื่อซ่อนในหน้าแรกและในตัวแก้ไข',
     hpTemplatesCard: 'เทมเพลต Hanpan',
     hpTemplatesCardSub: 'หนังสือ · รายงาน · แผน',
     hpTemplatesTitle: 'สร้างเอกสารใหม่จากเทมเพลต',
@@ -5914,6 +5941,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'Alat PDF',
     pdfToolsCardSub: 'Gabung · pisah · atur',
+    setKoreanDocs: 'Korean document features',
+    setKoreanDocsDesc:
+      'HWP documents, official-letter tools, Hanpan templates, the design board and Gongu. Turn off to hide them on Home and in the editors.',
     hpTemplatesCard: 'Hanpan templates',
     hpTemplatesCardSub: 'Letters · reports · plans',
     hpTemplatesTitle: 'New document from a template',
@@ -6572,6 +6602,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'Инструменты PDF',
     pdfToolsCardSub: 'Объединить · разделить · упорядочить',
+    setKoreanDocs: 'Функции для корейских документов',
+    setKoreanDocsDesc:
+      'Документы HWP, инструменты для официальных писем, шаблоны Hanpan, доска дизайна и Gongu. Выключите, чтобы скрыть их на главной странице и в редакторах.',
     hpTemplatesCard: 'Шаблоны Hanpan',
     hpTemplatesCardSub: 'Письма · отчёты · планы',
     hpTemplatesTitle: 'Новый документ по шаблону',
@@ -7231,6 +7264,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'أدوات PDF',
     pdfToolsCardSub: 'دمج · تقسيم · تنظيم',
+    setKoreanDocs: 'ميزات المستندات الكورية',
+    setKoreanDocsDesc:
+      'مستندات HWP وأدوات الخطابات الرسمية وقوالب Hanpan ولوحة التصميم وGongu. أوقفها لإخفائها من الصفحة الرئيسية والمحررات.',
     hpTemplatesCard: 'قوالب Hanpan',
     hpTemplatesCardSub: 'خطابات · تقارير · خطط',
     hpTemplatesTitle: 'مستند جديد من قالب',
@@ -7873,6 +7909,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'Ferramentas de PDF',
     pdfToolsCardSub: 'Combinar · dividir · organizar',
+    setKoreanDocs: 'Korean document features',
+    setKoreanDocsDesc:
+      'HWP documents, official-letter tools, Hanpan templates, the design board and Gongu. Turn off to hide them on Home and in the editors.',
     hpTemplatesCard: 'Hanpan templates',
     hpTemplatesCardSub: 'Letters · reports · plans',
     hpTemplatesTitle: 'New document from a template',
@@ -8526,6 +8565,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'Strumenti PDF',
     pdfToolsCardSub: 'Unisci · dividi · organizza',
+    setKoreanDocs: 'Korean document features',
+    setKoreanDocsDesc:
+      'HWP documents, official-letter tools, Hanpan templates, the design board and Gongu. Turn off to hide them on Home and in the editors.',
     hpTemplatesCard: 'Hanpan templates',
     hpTemplatesCardSub: 'Letters · reports · plans',
     hpTemplatesTitle: 'New document from a template',
@@ -9179,6 +9221,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'Narzędzia PDF',
     pdfToolsCardSub: 'Łącz · dziel · porządkuj',
+    setKoreanDocs: 'Korean document features',
+    setKoreanDocsDesc:
+      'HWP documents, official-letter tools, Hanpan templates, the design board and Gongu. Turn off to hide them on Home and in the editors.',
     hpTemplatesCard: 'Hanpan templates',
     hpTemplatesCardSub: 'Letters · reports · plans',
     hpTemplatesTitle: 'New document from a template',
@@ -9828,6 +9873,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'Nástroje PDF',
     pdfToolsCardSub: 'Spojit · rozdělit · uspořádat',
+    setKoreanDocs: 'Korean document features',
+    setKoreanDocsDesc:
+      'HWP documents, official-letter tools, Hanpan templates, the design board and Gongu. Turn off to hide them on Home and in the editors.',
     hpTemplatesCard: 'Hanpan templates',
     hpTemplatesCardSub: 'Letters · reports · plans',
     hpTemplatesTitle: 'New document from a template',
@@ -10472,6 +10520,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'PDF-hulpmiddelen',
     pdfToolsCardSub: 'Samenvoegen · splitsen · ordenen',
+    setKoreanDocs: 'Korean document features',
+    setKoreanDocsDesc:
+      'HWP documents, official-letter tools, Hanpan templates, the design board and Gongu. Turn off to hide them on Home and in the editors.',
     hpTemplatesCard: 'Hanpan templates',
     hpTemplatesCardSub: 'Letters · reports · plans',
     hpTemplatesTitle: 'New document from a template',
@@ -11122,6 +11173,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'Alat PDF',
     pdfToolsCardSub: 'Gabung · pisah · susun',
+    setKoreanDocs: 'Korean document features',
+    setKoreanDocsDesc:
+      'HWP documents, official-letter tools, Hanpan templates, the design board and Gongu. Turn off to hide them on Home and in the editors.',
     hpTemplatesCard: 'Hanpan templates',
     hpTemplatesCardSub: 'Letters · reports · plans',
     hpTemplatesTitle: 'New document from a template',
@@ -11773,6 +11827,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'כלי PDF',
     pdfToolsCardSub: 'איחוד · פיצול · סידור',
+    setKoreanDocs: 'תכונות מסמכים קוריאניים',
+    setKoreanDocsDesc:
+      'מסמכי HWP, כלים למכתבים רשמיים, תבניות Hanpan, לוח העיצוב ו-Gongu. כבו כדי להסתיר אותם במסך הבית ובעורכים.',
     hpTemplatesCard: 'תבניות Hanpan',
     hpTemplatesCardSub: 'מכתבים · דוחות · תוכניות',
     hpTemplatesTitle: 'מסמך חדש מתבנית',
@@ -12398,6 +12455,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'PDF टूल',
     pdfToolsCardSub: 'जोड़ें · बाँटें · व्यवस्थित करें',
+    setKoreanDocs: 'कोरियाई दस्तावेज़ सुविधाएँ',
+    setKoreanDocsDesc:
+      'HWP दस्तावेज़, आधिकारिक पत्र टूल, Hanpan टेम्पलेट, डिज़ाइन बोर्ड और Gongu. होम और संपादकों में छिपाने के लिए बंद करें.',
     hpTemplatesCard: 'Hanpan टेम्पलेट',
     hpTemplatesCardSub: 'पत्र · रिपोर्ट · योजनाएँ',
     hpTemplatesTitle: 'टेम्पलेट से नया दस्तावेज़',
@@ -13039,6 +13099,9 @@ export const strings = {
     newHwp: 'AI HWP',
     pdfToolsCard: 'PDF 工具',
     pdfToolsCardSub: '合併 · 分割 · 整理',
+    setKoreanDocs: '韓國文件功能',
+    setKoreanDocsDesc:
+      'HWP 文件、公文工具、Hanpan 範本、設計板與 Gongu。關閉後會在首頁與編輯器中隱藏。',
     hpTemplatesCard: 'Hanpan 範本',
     hpTemplatesCardSub: '公文 · 報告 · 企劃書',
     hpTemplatesTitle: '用範本新增文件',
