@@ -2066,7 +2066,9 @@ export function Home({
         ),
         title: t(app === 'photocraft' ? 'hpPhotoCraft' : 'hpVectorCraft'),
         ai: false,
-        tip: t('hpArtcraftTip') as string | undefined,
+        // the app's own name, which the short title leaves out
+        tip: `${app === 'photocraft' ? 'PhotoCraft' : 'VectorCraft'} · ${t('hpArtcraftTip')}` as
+          string | undefined,
         action: () => openArtcraft(app),
       })),
       {
