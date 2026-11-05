@@ -137,11 +137,13 @@ describe('Home and the ArtCraft apps', () => {
     expect(order.indexOf('photocraft')).toBe(order.indexOf('pdf-tools') + 1)
   })
 
-  it('keeps the card title short and names the app in the tip', async () => {
+  it('shows what the app does and, under it, its own name (spec 6)', async () => {
     await renderHome('ko')
-    expect(card('photocraft')!.textContent).toBe('사진 편집')
+    const photo = card('photocraft')!
+    expect(photo.querySelector('.quick-title')!.textContent).toBe('사진 편집')
+    expect(photo.querySelector('.hp-compact-sub')!.textContent).toBe('PhotoCraft')
     expect(card('photocraft')!.getAttribute('data-tip')).toBe(
-      'PhotoCraft · ArtCraft의 무료 오픈소스 앱입니다. 별도 창으로 열립니다.',
+      'ArtCraft의 무료 오픈소스 앱입니다. 별도 창으로 열립니다.',
     )
   })
 

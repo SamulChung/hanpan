@@ -856,3 +856,19 @@
   font-size: 12.5px;
   color: var(--danger);
 }
+
+/* Hanpan Home: a compact card with a second line (an ArtCraft app's own name) */
+.hp-compact-text {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.hp-compact-sub {
+  overflow: hidden;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

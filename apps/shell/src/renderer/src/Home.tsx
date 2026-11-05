@@ -2066,9 +2066,9 @@ export function Home({
         ),
         title: t(app === 'photocraft' ? 'hpPhotoCraft' : 'hpVectorCraft'),
         ai: false,
-        // the app's own name, which the short title leaves out
-        tip: `${app === 'photocraft' ? 'PhotoCraft' : 'VectorCraft'} · ${t('hpArtcraftTip')}` as
-          string | undefined,
+        // the app's own name, under what it does (spec 6: the original names stay)
+        sub: app === 'photocraft' ? 'PhotoCraft' : 'VectorCraft',
+        tip: t('hpArtcraftTip') as string | undefined,
         action: () => openArtcraft(app),
       })),
       {
@@ -2125,7 +2125,14 @@ export function Home({
               onClick={() => void card.action()}
             >
               {card.icon}
-              <span className="quick-title">{card.title}</span>
+              {(card as { sub?: string }).sub ? (
+                <span className="hp-compact-text">
+                  <span className="quick-title">{card.title}</span>
+                  <span className="hp-compact-sub">{(card as { sub?: string }).sub}</span>
+                </span>
+              ) : (
+                <span className="quick-title">{card.title}</span>
+              )}
               {card.ai && <span className="ai-chip">AI</span>}
             </button>
           ))}
