@@ -199,6 +199,60 @@ describe('saving', () => {
     expect(showSaveDialog).not.toHaveBeenCalled()
   })
 
+  it('an extension the dialog did not add still asks before replacing a file that is there', async () => {
+    writeFileSync(join(dir, 'poster.vectorcraft'), 'old')
+    const wc = viewFor('illust')
+    showSaveDialog.mockResolvedValue({ canceled: false, filePath: join(dir, 'poster') })
+    showMessageBox.mockResolvedValueOnce({ response: 1 })
+    const canceled = await call<BeginSaveResult>(GRAPHICS_CHANNELS.beginSave, wc, {
+      mode: 'save',
+      layered: false,
+    })
+    expect(canceled).toEqual({ ok: true, canceled: true })
+    expect(showMessageBox).toHaveBeenCalledTimes(1)
+    showMessageBox.mockResolvedValueOnce({ response: 0 })
+    const replaced = await call<BeginSaveResult>(GRAPHICS_CHANNELS.beginSave, wc, {
+      mode: 'save',
+      layered: false,
+    })
+    expect(replaced).toMatchObject({ ok: true, path: join(dir, 'poster.vectorcraft') })
+  })
+
+  it('an export whose added extension names a file that is there asks first', async () => {
+    writeFileSync(join(dir, 'copy.png'), 'old')
+    const wc = viewFor('illust')
+    showSaveDialog.mockResolvedValue({ canceled: false, filePath: join(dir, 'copy') })
+    showMessageBox.mockResolvedValueOnce({ response: 1 })
+    const result = await call<{ ok: boolean; canceled?: boolean }>(
+      GRAPHICS_CHANNELS.exportFile,
+      wc,
+      {
+        bytes: new Uint8Array([1, 2]),
+        defaultName: 'copy.png',
+        format: 'png',
+      },
+    )
+    expect(result).toEqual({ ok: true, canceled: true })
+    expect(readFileSync(join(dir, 'copy.png'), 'utf8')).toBe('old')
+  })
+
+  it('a finished write leaves the changed mark to the page (an edit during the save keeps it)', async () => {
+    const path = join(dir, 'logo.svg')
+    writeFileSync(path, '<svg/>')
+    const wc = viewFor('illust', path)
+    await opened(wc, path)
+    fire(GRAPHICS_CHANNELS.dirtyChanged, wc, true)
+    await call(GRAPHICS_CHANNELS.beginSave, wc, { mode: 'save', layered: false })
+    await call(GRAPHICS_CHANNELS.commitSave, wc, {
+      bytes: new Uint8Array([1, 2, 3]),
+      path,
+      format: 'svg',
+    })
+    expect(graphicsIsDirty(wc.id)).toBe(true)
+    fire(GRAPHICS_CHANNELS.dirtyChanged, wc, false)
+    expect(graphicsIsDirty(wc.id)).toBe(false)
+  })
+
   it('begin-save asks for an untitled document and adds the default extension', async () => {
     const wc = viewFor('illust')
     showSaveDialog.mockResolvedValue({ canceled: false, filePath: join(dir, 'poster') })
@@ -266,7 +320,8 @@ describe('saving', () => {
     expect(commit).toEqual({ ok: true, path: target })
     expect([...readFileSync(target)]).toEqual([1, 2, 3])
     expect(graphicsFilePath(wc.id)).toBe(target)
-    expect(graphicsIsDirty(wc.id)).toBe(false)
+    // the mark is the page's to clear (it reports clean once the app is)
+    expect(graphicsIsDirty(wc.id)).toBe(true)
     expect(hook).toHaveBeenCalledTimes(1)
     expect(hook).toHaveBeenCalledWith(wc, target)
   })
@@ -358,6 +413,19 @@ describe('closing', () => {
     await vi.waitFor(() => expect(wc.sent.at(-1)).toEqual([GRAPHICS_CHANNELS.closeSaveRequest]))
     fire(GRAPHICS_CHANNELS.closeSaveResult, wc, true)
     expect(await closing).toBe(true)
+  })
+
+  it('a second close while one is asking or saving waits for that one (one question, both answered)', async () => {
+    const wc = viewFor('illust')
+    fire(GRAPHICS_CHANNELS.dirtyChanged, wc, true)
+    showMessageBox.mockResolvedValueOnce({ response: 0 })
+    const first = requestGraphicsClose(wc as never)
+    const second = requestGraphicsClose(wc as never)
+    await vi.waitFor(() => expect(wc.sent.at(-1)).toEqual([GRAPHICS_CHANNELS.closeSaveRequest]))
+    fire(GRAPHICS_CHANNELS.closeSaveResult, wc, true)
+    expect(await first).toBe(true)
+    expect(await second).toBe(true)
+    expect(showMessageBox).toHaveBeenCalledTimes(1)
   })
 })
 

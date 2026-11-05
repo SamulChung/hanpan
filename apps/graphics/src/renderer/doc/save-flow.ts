@@ -58,7 +58,9 @@ export async function runSave(mode: SaveMode, deps: SaveDeps): Promise<boolean> 
       notify('saveFailed')
       return false
     }
-    dirty.saved()
+    // an edit made while the bytes were being written keeps the mark
+    const now = await adapter.docInfo().catch(() => null)
+    dirty.saved(now?.dirty === true)
     return true
   } catch {
     if (begun) api.abortSave()

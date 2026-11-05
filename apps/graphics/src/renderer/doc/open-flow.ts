@@ -10,7 +10,13 @@ export async function openPending(
   confirm: (path: string) => void,
   timeoutMs = 30_000,
 ): Promise<'opened' | 'none' | 'failed'> {
-  const pending = await consume()
+  let pending: PendingOpen | null
+  try {
+    pending = await consume()
+  } catch {
+    // main could not read the file: the tab stays usable and says so
+    return 'failed'
+  }
   if (!pending) return 'none'
   try {
     const started = Date.now()

@@ -17,6 +17,9 @@ const tDlg = createI18n({
     btnSave: '保存',
     btnDontSave: '不保存',
     btnCancel: '取消',
+    replaceExistingMsg: '已有同名文件。',
+    replaceExistingDetail: '要替换它吗？',
+    btnReplace: '替换',
   },
   en: {
     dlgSaveTitle: 'Save',
@@ -29,6 +32,9 @@ const tDlg = createI18n({
     btnSave: 'Save',
     btnDontSave: "Don't Save",
     btnCancel: 'Cancel',
+    replaceExistingMsg: 'A file with this name already exists.',
+    replaceExistingDetail: 'Do you want to replace it?',
+    btnReplace: 'Replace',
   },
   vi: {
     dlgSaveTitle: 'Lưu',
@@ -41,6 +47,9 @@ const tDlg = createI18n({
     btnSave: 'Lưu',
     btnDontSave: 'Không lưu',
     btnCancel: 'Hủy',
+    replaceExistingMsg: 'Đã có tệp trùng tên.',
+    replaceExistingDetail: 'Bạn có muốn thay thế tệp đó không?',
+    btnReplace: 'Thay thế',
   },
   ja: {
     dlgSaveTitle: '保存',
@@ -53,6 +62,9 @@ const tDlg = createI18n({
     btnSave: '保存',
     btnDontSave: '保存しない',
     btnCancel: 'キャンセル',
+    replaceExistingMsg: '同じ名前のファイルがすでにあります。',
+    replaceExistingDetail: '置き換えますか？',
+    btnReplace: '置き換える',
   },
   ko: {
     dlgSaveTitle: '저장',
@@ -65,6 +77,9 @@ const tDlg = createI18n({
     btnSave: '저장',
     btnDontSave: '저장 안 함',
     btnCancel: '취소',
+    replaceExistingMsg: '같은 이름의 파일이 이미 있습니다.',
+    replaceExistingDetail: '바꾸시겠습니까?',
+    btnReplace: '바꾸기',
   },
   fr: {
     dlgSaveTitle: 'Enregistrer',
@@ -77,6 +92,9 @@ const tDlg = createI18n({
     btnSave: 'Enregistrer',
     btnDontSave: 'Ne pas enregistrer',
     btnCancel: 'Annuler',
+    replaceExistingMsg: 'Un fichier portant ce nom existe déjà.',
+    replaceExistingDetail: 'Voulez-vous le remplacer ?',
+    btnReplace: 'Remplacer',
   },
   de: {
     dlgSaveTitle: 'Speichern',
@@ -89,6 +107,9 @@ const tDlg = createI18n({
     btnSave: 'Speichern',
     btnDontSave: 'Nicht speichern',
     btnCancel: 'Abbrechen',
+    replaceExistingMsg: 'Eine Datei mit diesem Namen ist bereits vorhanden.',
+    replaceExistingDetail: 'Möchten Sie sie ersetzen?',
+    btnReplace: 'Ersetzen',
   },
   es: {
     dlgSaveTitle: 'Guardar',
@@ -101,6 +122,9 @@ const tDlg = createI18n({
     btnSave: 'Guardar',
     btnDontSave: 'No guardar',
     btnCancel: 'Cancelar',
+    replaceExistingMsg: 'Ya existe un archivo con este nombre.',
+    replaceExistingDetail: '¿Quiere reemplazarlo?',
+    btnReplace: 'Reemplazar',
   },
   th: {
     dlgSaveTitle: 'บันทึก',
@@ -113,6 +137,9 @@ const tDlg = createI18n({
     btnSave: 'บันทึก',
     btnDontSave: 'ไม่บันทึก',
     btnCancel: 'ยกเลิก',
+    replaceExistingMsg: 'มีไฟล์ชื่อนี้อยู่แล้ว',
+    replaceExistingDetail: 'ต้องการแทนที่หรือไม่',
+    btnReplace: 'แทนที่',
   },
   id: {
     dlgSaveTitle: 'Simpan',
@@ -125,6 +152,9 @@ const tDlg = createI18n({
     btnSave: 'Simpan',
     btnDontSave: 'Jangan Simpan',
     btnCancel: 'Batal',
+    replaceExistingMsg: 'Sudah ada file dengan nama ini.',
+    replaceExistingDetail: 'Ganti file tersebut?',
+    btnReplace: 'Ganti',
   },
   ru: {
     dlgSaveTitle: 'Сохранить',
@@ -137,6 +167,9 @@ const tDlg = createI18n({
     btnSave: 'Сохранить',
     btnDontSave: 'Не сохранять',
     btnCancel: 'Отмена',
+    replaceExistingMsg: 'Файл с таким именем уже существует.',
+    replaceExistingDetail: 'Заменить его?',
+    btnReplace: 'Заменить',
   },
   ar: {
     dlgSaveTitle: 'حفظ',
@@ -149,6 +182,9 @@ const tDlg = createI18n({
     btnSave: 'حفظ',
     btnDontSave: 'عدم الحفظ',
     btnCancel: 'إلغاء',
+    replaceExistingMsg: 'يوجد ملف بهذا الاسم بالفعل.',
+    replaceExistingDetail: 'هل تريد استبداله؟',
+    btnReplace: 'استبدال',
   },
   pt: {
     dlgSaveTitle: 'Salvar',
@@ -161,6 +197,9 @@ const tDlg = createI18n({
     btnSave: 'Salvar',
     btnDontSave: 'Não Salvar',
     btnCancel: 'Cancelar',
+    replaceExistingMsg: 'Já existe um arquivo com este nome.',
+    replaceExistingDetail: 'Deseja substituí-lo?',
+    btnReplace: 'Substituir',
   },
   it: {
     dlgSaveTitle: 'Salva',
@@ -173,6 +212,9 @@ const tDlg = createI18n({
     btnSave: 'Salva',
     btnDontSave: 'Non salvare',
     btnCancel: 'Annulla',
+    replaceExistingMsg: 'Esiste già un file con questo nome.',
+    replaceExistingDetail: 'Vuoi sostituirlo?',
+    btnReplace: 'Sostituisci',
   },
   pl: {
     dlgSaveTitle: 'Zapisz',
@@ -185,6 +227,9 @@ const tDlg = createI18n({
     btnSave: 'Zapisz',
     btnDontSave: 'Nie zapisuj',
     btnCancel: 'Anuluj',
+    replaceExistingMsg: 'Plik o tej nazwie już istnieje.',
+    replaceExistingDetail: 'Czy chcesz go zastąpić?',
+    btnReplace: 'Zastąp',
   },
   cs: {
     dlgSaveTitle: 'Uložit',
@@ -197,6 +242,9 @@ const tDlg = createI18n({
     btnSave: 'Uložit',
     btnDontSave: 'Neukládat',
     btnCancel: 'Zrušit',
+    replaceExistingMsg: 'Soubor s tímto názvem už existuje.',
+    replaceExistingDetail: 'Chcete ho nahradit?',
+    btnReplace: 'Nahradit',
   },
   nl: {
     dlgSaveTitle: 'Opslaan',
@@ -209,6 +257,9 @@ const tDlg = createI18n({
     btnSave: 'Opslaan',
     btnDontSave: 'Niet opslaan',
     btnCancel: 'Annuleren',
+    replaceExistingMsg: 'Er bestaat al een bestand met deze naam.',
+    replaceExistingDetail: 'Wilt u het vervangen?',
+    btnReplace: 'Vervangen',
   },
   ms: {
     dlgSaveTitle: 'Simpan',
@@ -221,6 +272,9 @@ const tDlg = createI18n({
     btnSave: 'Simpan',
     btnDontSave: 'Jangan Simpan',
     btnCancel: 'Batal',
+    replaceExistingMsg: 'Fail dengan nama ini sudah wujud.',
+    replaceExistingDetail: 'Adakah anda mahu menggantikannya?',
+    btnReplace: 'Ganti',
   },
   he: {
     dlgSaveTitle: 'שמירה',
@@ -233,6 +287,9 @@ const tDlg = createI18n({
     btnSave: 'שמירה',
     btnDontSave: 'אל תשמור',
     btnCancel: 'ביטול',
+    replaceExistingMsg: 'כבר קיים קובץ בשם הזה.',
+    replaceExistingDetail: 'להחליף אותו?',
+    btnReplace: 'החלפה',
   },
   hi: {
     dlgSaveTitle: 'सहेजें',
@@ -245,6 +302,9 @@ const tDlg = createI18n({
     btnSave: 'सहेजें',
     btnDontSave: 'न सहेजें',
     btnCancel: 'रद्द करें',
+    replaceExistingMsg: 'इस नाम की फ़ाइल पहले से मौजूद है।',
+    replaceExistingDetail: 'क्या आप उसे बदलना चाहते हैं?',
+    btnReplace: 'बदलें',
   },
   'zh-TW': {
     dlgSaveTitle: '儲存',
@@ -257,6 +317,9 @@ const tDlg = createI18n({
     btnSave: '儲存',
     btnDontSave: '不儲存',
     btnCancel: '取消',
+    replaceExistingMsg: '已有同名檔案。',
+    replaceExistingDetail: '要取代它嗎？',
+    btnReplace: '取代',
   },
 })
 
@@ -271,6 +334,9 @@ type MainStringKey =
   | 'btnSave'
   | 'btnDontSave'
   | 'btnCancel'
+  | 'replaceExistingMsg'
+  | 'replaceExistingDetail'
+  | 'btnReplace'
 
 /** A dialog text in the current interface language. */
 export function tm(key: MainStringKey): string {

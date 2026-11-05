@@ -125,6 +125,8 @@ export interface GraphicsAiPanelProps {
   /** a run started or ended (the capture watch ignores the app while one runs) */
   onBusyChange: (busy: boolean) => void
   onCollapse: () => void
+  /** a quick action holds the app: a request waits in the queue until it lets go */
+  appHeld?: boolean
   /** tests only: the transport in place of the preload's stream */
   transport?: AgentTransport
 }
@@ -176,7 +178,7 @@ export function GraphicsAiPanel(props: GraphicsAiPanelProps): ReactElement {
   const [inputTruncated, setInputTruncated] = useState(false)
   const lastStreamErrorRef = useRef<IpcStreamError | null>(null)
   const msgQueue = useChatRunQueue<Record<string, never>>({
-    busy,
+    busy: busy || props.appHeld === true,
     submit: (text) => {
       const loop = loopRef.current
       if (!loop || loop.busy) return false
@@ -394,6 +396,12 @@ export function GraphicsAiPanel(props: GraphicsAiPanelProps): ReactElement {
     const loop = loopRef.current
     const app = adapterRef.current
     if (!instruction || !loop || loop.busy || runRef.current || !app) return false
+    if (propsRef.current.appHeld) {
+      // the app is a quick action's until it ends: the request waits its turn
+      msgQueue.enqueue(instruction, {})
+      setPrompt('')
+      return true
+    }
     if (!sendGate.admit({ text: instruction })) return false
     lastStreamErrorRef.current = null
     setInputTruncated(false)

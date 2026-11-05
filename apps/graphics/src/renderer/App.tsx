@@ -82,8 +82,14 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
       if (done) return
       done = true
       unlockFrame()
-      appLocks.current -= 1
-      if (appLocks.current === 0) setAppBusy(false)
+      // what the run wrote is taken in before the capture watch listens again
+      const absorbed = capturesRef.current?.absorb() ?? Promise.resolve()
+      void absorbed
+        .catch(() => {})
+        .finally(() => {
+          appLocks.current -= 1
+          if (appLocks.current === 0) setAppBusy(false)
+        })
     }
   }
 
@@ -315,6 +321,7 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
             kind={kind}
             adapter={aiAdapter}
             lockFrame={lockApp}
+            appHeld={appBusy}
             onBusyChange={() => {
               // the lock above already marks the run as the app's owner
             }}

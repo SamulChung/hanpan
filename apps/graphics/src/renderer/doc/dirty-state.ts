@@ -5,7 +5,8 @@
 export interface DirtyState {
   fromApp(dirty: boolean): void
   saveFailed(): void
-  saved(): void
+  /** A save was written; `stillChanged` when the document was edited again meanwhile. */
+  saved(stillChanged?: boolean): void
   current(): boolean
 }
 
@@ -29,9 +30,9 @@ export function createDirtyState(setDirty: (dirty: boolean) => void): DirtyState
       failed = true
       publish()
     },
-    saved() {
+    saved(stillChanged = false) {
       failed = false
-      app = false
+      app = stillChanged
       publish()
     },
     current: () => app || failed,

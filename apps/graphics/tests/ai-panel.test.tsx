@@ -154,7 +154,7 @@ async function settle(times = 12): Promise<void> {
   for (let i = 0; i < times; i++) await act(() => new Promise((r) => setTimeout(r, 5)))
 }
 
-async function mount(opts: { settings: AiSettings; turns: Turn[] }) {
+async function mount(opts: { settings: AiSettings; turns: Turn[]; appHeld?: boolean }) {
   const { transport, requests } = scriptedTransport(opts.turns)
   const app = fakeAdapter()
   const unlock = vi.fn()
@@ -168,7 +168,7 @@ async function mount(opts: { settings: AiSettings; turns: Turn[] }) {
   host = document.createElement('div')
   document.body.appendChild(host)
   root = createRoot(host)
-  await act(async () => {
+  const render = (appHeld: boolean) =>
     root!.render(
       <LocaleProvider initial="en">
         <GraphicsAiPanel
@@ -178,12 +178,17 @@ async function mount(opts: { settings: AiSettings; turns: Turn[] }) {
           onBusyChange={onBusyChange}
           onCollapse={() => {}}
           transport={transport}
+          appHeld={appHeld}
         />
       </LocaleProvider>,
     )
-  })
+  await act(async () => render(opts.appHeld ?? false))
   await settle()
-  return { el: host, app, requests, lockFrame, unlock, onBusyChange }
+  const setAppHeld = async (held: boolean) => {
+    await act(async () => render(held))
+    await settle()
+  }
+  return { el: host, app, requests, lockFrame, unlock, onBusyChange, setAppHeld }
 }
 
 async function send(el: HTMLElement, text: string): Promise<void> {
@@ -368,5 +373,19 @@ describe('the graphics AI panel', () => {
     await settle()
     expect(app.adapter.undo).not.toHaveBeenCalled()
     expect(el.textContent).toContain('cannot be undone in one step')
+  })
+
+  it('a request sent while a quick action holds the app waits for it, then runs', async () => {
+    const { el, requests, lockFrame, setAppHeld } = await mount({
+      settings: vision(),
+      turns: [{ text: 'Done.' }],
+      appHeld: true,
+    })
+    await send(el, 'Make it brighter')
+    expect(requests).toHaveLength(0)
+    expect(lockFrame).not.toHaveBeenCalled()
+    await setAppHeld(false)
+    expect(requests).toHaveLength(1)
+    expect(lockFrame).toHaveBeenCalledTimes(1)
   })
 })

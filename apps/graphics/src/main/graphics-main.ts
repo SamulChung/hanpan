@@ -125,11 +125,22 @@ function parentWindowOf(contents: WebContents): BrowserWindow | null {
  * Save / Cancel. On Save the page saves and this waits for the outcome; a
  * canceled save dialog keeps the tab open.
  */
-export async function requestGraphicsClose(
+export function requestGraphicsClose(
   contents: WebContents,
   parent?: BrowserWindow | null,
 ): Promise<boolean> {
-  if (contents.isDestroyed() || !dirtyByWc.has(contents.id)) return true
+  if (contents.isDestroyed() || !dirtyByWc.has(contents.id)) return Promise.resolve(true)
+  // a second close (the tab's ×, then the window's) joins the one already asking or saving
+  const pending = closingByWc.get(contents.id)
+  if (pending) return pending
+  const closing = askAndClose(contents, parent).finally(() => closingByWc.delete(contents.id))
+  closingByWc.set(contents.id, closing)
+  return closing
+}
+
+const closingByWc = new Map<number, Promise<boolean>>()
+
+async function askAndClose(contents: WebContents, parent?: BrowserWindow | null): Promise<boolean> {
   const options = {
     type: 'warning' as const,
     message: tm('closeUnsavedMsg'),
@@ -277,6 +288,33 @@ async function rememberDiskState(wcId: number, path: string): Promise<void> {
   if (state) diskStates.set(wcId, state)
 }
 
+/**
+ * The system dialog asked about replacing the name the person typed; when an
+ * extension was added after it, the file under the new name was never asked
+ * about. Ask now. True: go on.
+ */
+async function mayReplaceAddedName(
+  sender: WebContents,
+  typed: string,
+  path: string,
+): Promise<boolean> {
+  if (path === typed || !existsSync(path)) return true
+  const options = {
+    type: 'warning' as const,
+    message: tm('replaceExistingMsg'),
+    detail: `${basename(path)}\n${tm('replaceExistingDetail')}`,
+    buttons: [tm('btnReplace'), tm('btnCancel')],
+    defaultId: 1,
+    cancelId: 1,
+    noLink: true,
+  }
+  const parent = parentWindowOf(sender)
+  const { response } = parent
+    ? await dialog.showMessageBox(parent, options)
+    : await dialog.showMessageBox(options)
+  return response === 0
+}
+
 let ipcRegistered = false
 
 function registerGraphicsIpc(): void {
@@ -324,6 +362,9 @@ function registerGraphicsIpc(): void {
       })
       if (picked.canceled || !picked.filePath) return { ok: true, canceled: true }
       const path = withWritableExtension(kind, picked.filePath, decision.defaultFormat)
+      if (!(await mayReplaceAddedName(e.sender, picked.filePath, path))) {
+        return { ok: true, canceled: true }
+      }
       pendingTargetByWc.set(wcId, path)
       const result: BeginSaveResult = { ok: true, path, format: extOf(path) }
       if (decision.reason) result.reason = decision.reason
@@ -357,7 +398,7 @@ function registerGraphicsIpc(): void {
       }
       const isNewPath = savePathByWc.get(wcId) !== target
       savePathByWc.set(wcId, target)
-      dirtyByWc.delete(wcId)
+      // the changed mark stays the page's: an edit made while this was written keeps it
       await rememberDiskState(wcId, target)
       if (isNewPath) fileSavedHook?.(e.sender, target)
       return done({ ok: true, path: target })
@@ -405,6 +446,9 @@ function registerGraphicsIpc(): void {
       const path = filterFor(fmt).extensions.includes(ext)
         ? picked.filePath
         : `${picked.filePath}.${fmt}`
+      if (!(await mayReplaceAddedName(e.sender, picked.filePath, path))) {
+        return { ok: true, canceled: true }
+      }
       try {
         await atomicWriteFile(path, Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength))
         return { ok: true, path }

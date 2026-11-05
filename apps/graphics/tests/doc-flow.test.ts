@@ -130,6 +130,21 @@ describe('runSave', () => {
     expect(deps.api.beginSave).toHaveBeenCalledWith({ mode: 'saveAs', layered: false })
   })
 
+  it('an edit made while the save was being written keeps the tab marked changed', async () => {
+    const page = savingPage()
+    const { deps, setDirty } = saveDeps(page)
+    deps.dirty.fromApp(true)
+    // the person draws again after the app wrote its bytes, before main finished the write
+    deps.api.commitSave = vi.fn(async (req) => {
+      page.documents[0] = { title: 'logo.svg', dirty: true }
+      return { ok: true as const, path: req.path }
+    })
+    expect(await runSave('save', deps)).toBe(true)
+    expect(deps.dirty.current()).toBe(true)
+    // never reported clean in between: a close at that moment must still ask
+    expect(setDirty.mock.calls.map(([d]) => d)).not.toContain(false)
+  })
+
   it('a failed write keeps the tab dirty', async () => {
     const page = savingPage()
     const { deps, setDirty } = saveDeps(page)
@@ -245,12 +260,39 @@ describe('watchCaptures', () => {
     return { page, watcher, onAppSave, onAppExport, setBusy: (b: boolean) => (isBusy = b) }
   }
 
-  it('an app save (dirty to clean) runs the Hanpan save', async () => {
+  it('an app save (its document file written, then clean) runs the Hanpan save once', async () => {
+    vi.useFakeTimers()
+    const { watcher, onAppSave, onAppExport, page } = setup()
+    await vi.advanceTimersByTimeAsync(150)
+    watcher.noteDoc({ hasDocument: true, dirty: true, title: 'logo.svg' })
+    page.captured.set('logo.svg', new Uint8Array([5, 5]))
+    watcher.noteDoc({ hasDocument: true, dirty: false, title: 'logo.svg' })
+    await vi.advanceTimersByTimeAsync(250)
+    expect(onAppSave).toHaveBeenCalledTimes(1)
+    expect(onAppExport).not.toHaveBeenCalled()
+    watcher.stop()
+  })
+
+  it('undoing back to the saved state (clean, but no file written) is not a save', async () => {
     vi.useFakeTimers()
     const { watcher, onAppSave } = setup()
+    await vi.advanceTimersByTimeAsync(150)
     watcher.noteDoc({ hasDocument: true, dirty: true, title: 'logo.svg' })
     watcher.noteDoc({ hasDocument: true, dirty: false, title: 'logo.svg' })
+    await vi.advanceTimersByTimeAsync(250)
+    expect(onAppSave).not.toHaveBeenCalled()
+    watcher.stop()
+  })
+
+  it('the app saving a flat picture (its file written, the mark stays on) runs the Hanpan save', async () => {
+    vi.useFakeTimers()
+    const { watcher, onAppSave, onAppExport, page } = setup()
+    watcher.noteDoc({ hasDocument: true, dirty: true, title: 'photo.png' })
+    await vi.advanceTimersByTimeAsync(150)
+    page.captured.set('photo.png', new Uint8Array([1, 2, 3]))
+    await vi.advanceTimersByTimeAsync(150)
     expect(onAppSave).toHaveBeenCalledTimes(1)
+    expect(onAppExport).not.toHaveBeenCalled()
     watcher.stop()
   })
 
@@ -293,6 +335,39 @@ describe('watchCaptures', () => {
     await vi.advanceTimersByTimeAsync(150)
     expect(onAppExport).toHaveBeenCalledTimes(1)
     expect(onAppExport).toHaveBeenCalledWith('logo-web.png')
+    watcher.stop()
+  })
+
+  it('an export again under the same name and size still reaches the export dialog', async () => {
+    vi.useFakeTimers()
+    const { watcher, onAppExport, page } = setup()
+    watcher.noteDoc({ hasDocument: true, dirty: false, title: 'logo.svg' })
+    await vi.advanceTimersByTimeAsync(150)
+    page.captured.set('logo-web.png', new Uint8Array([1, 2, 3, 4]))
+    await vi.advanceTimersByTimeAsync(150)
+    expect(onAppExport).toHaveBeenCalledTimes(1)
+    // the person changes the art and exports once more: same name, same length
+    page.captured.set('logo-web.png', new Uint8Array([9, 8, 7, 6]))
+    await vi.advanceTimersByTimeAsync(150)
+    expect(onAppExport).toHaveBeenCalledTimes(2)
+    // nothing new: no third dialog
+    await vi.advanceTimersByTimeAsync(300)
+    expect(onAppExport).toHaveBeenCalledTimes(2)
+    watcher.stop()
+  })
+
+  it('files written during a run that ends between two looks are taken in quietly at its end', async () => {
+    vi.useFakeTimers()
+    const { watcher, onAppExport, page, setBusy } = setup()
+    watcher.noteDoc({ hasDocument: true, dirty: false, title: 'logo.svg' })
+    await vi.advanceTimersByTimeAsync(150)
+    setBusy(true)
+    page.captured.set('layer-export.png', new Uint8Array([1, 2, 3]))
+    // the run ends before the next look: the host takes in what it wrote, then lets go
+    await watcher.absorb()
+    setBusy(false)
+    await vi.advanceTimersByTimeAsync(300)
+    expect(onAppExport).not.toHaveBeenCalled()
     watcher.stop()
   })
 
@@ -367,6 +442,21 @@ describe('watchCaptures', () => {
 })
 
 describe('openPending', () => {
+  it('a file main could not read (deleted, locked) is an open failure, not a broken tab', async () => {
+    const page = new FakePage()
+    const confirm = vi.fn()
+    const result = await openPending(
+      createAdapter('illust', page),
+      async () => {
+        throw new Error('EBUSY: resource busy or locked')
+      },
+      confirm,
+    )
+    expect(result).toBe('failed')
+    expect(page.opened).toEqual([])
+    expect(confirm).not.toHaveBeenCalled()
+  })
+
   it('does not confirm a file the app could not open', async () => {
     const page = new FakePage()
     page.openFile = () => Promise.resolve(false)
