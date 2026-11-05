@@ -8,11 +8,27 @@ test.describe('home screen', () => {
     try {
       // Hanpan: the start board, then the mind map and the documents it feeds, then the rest
       await expect(page.locator('[data-hanpan="start-board"]')).toBeVisible()
-      const order = await page.locator('.quick-card').evaluateAll((cards) => cards.map((c) => c.getAttribute('data-new')))
+      const order = await page
+        .locator('.quick-card')
+        .evaluateAll((cards) => cards.map((c) => c.getAttribute('data-new')))
       // the ArtCraft cards (decision 0090) appear only on Windows with the programs fetched,
       // right after the PDF tools
       const artcraft = ['photocraft', 'vectorcraft']
-      expect(order.filter((key) => !artcraft.includes(key ?? ''))).toEqual(['xmind', 'hwp', 'pptx', 'templates', 'docx', 'xlsx', 'design', 'md', 'md-convert', 'html', 'pdf', 'pdf-tools', 'open'])
+      expect(order.filter((key) => !artcraft.includes(key ?? ''))).toEqual([
+        'xmind',
+        'hwp',
+        'pptx',
+        'templates',
+        'docx',
+        'xlsx',
+        'design',
+        'md',
+        'md-convert',
+        'html',
+        'pdf',
+        'pdf-tools',
+        'open',
+      ])
       const present = order.filter((key) => artcraft.includes(key ?? ''))
       expect(order.slice(order.indexOf('pdf-tools') + 1, order.indexOf('open'))).toEqual(present)
       await expect(page.locator('.quick-card[data-new="xmind"]')).toContainText('Mind Map')
