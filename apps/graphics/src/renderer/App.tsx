@@ -5,6 +5,8 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Lang } from '@genoffice/i18n'
 import { createAdapter, type GraphicsAdapter } from './adapters'
+import { GraphicsAiDock } from './ai/AiDock'
+import { lockFrameInput } from './ai/input-lock'
 import { watchCaptures, type CaptureWatch } from './doc/capture-watch'
 import { createDirtyState, type DirtyState } from './doc/dirty-state'
 import { watchDoc, type DocWatch } from './doc/doc-watch'
@@ -41,6 +43,9 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
   const [status, setStatus] = useState<Status>('checking')
   const [notice, setNotice] = useState<StringKey | null>(null)
   const [attempt, setAttempt] = useState(0)
+  /** the app's adapter once it is up: the AI panel works through it */
+  const [aiAdapter, setAiAdapter] = useState<GraphicsAdapter | null>(null)
+  const lockRef = useRef<HTMLDivElement | null>(null)
   const frameRef = useRef<HTMLIFrameElement | null>(null)
   const adapterRef = useRef<GraphicsAdapter | null>(null)
   const dirtyRef = useRef<DirtyState>(
@@ -133,6 +138,7 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
         }
         await adapter.afterReady()
         adapterRef.current = adapter
+        setAiAdapter(adapter)
         const opened = await openPending(
           adapter,
           () => window.graphicsApi.consumeOpen(),
@@ -179,6 +185,7 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
     return () => {
       live = false
       for (const stop of stops) stop()
+      setAiAdapter(null)
     }
     // save/exportBytes read refs only
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -226,33 +233,51 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
 
   return (
     <div className="gx-app" data-kind={kind} data-status={status}>
-      <div className="gx-stage">
-        {frameOn && (
-          <iframe
-            ref={frameRef}
-            className="gx-frame"
-            title={kind}
-            src={appFrameUrl(kind, lang)}
-            allow="clipboard-read; clipboard-write"
+      <div className="gx-body">
+        <div className="gx-stage">
+          {frameOn && (
+            <iframe
+              ref={frameRef}
+              className="gx-frame"
+              title={kind}
+              src={appFrameUrl(kind, lang)}
+              allow="clipboard-read; clipboard-write"
+            />
+          )}
+          {/* takes the pointer while the AI works: the person's edits stay out of its undo step */}
+          <div className="gx-lock" ref={lockRef} aria-hidden />
+          {(status === 'checking' || status === 'loading') && (
+            <div className="gx-cover" role="status">
+              {t('loading')}
+            </div>
+          )}
+          {status === 'failed' && (
+            <div className="gx-cover" role="alert">
+              <p>{t('failed')}</p>
+              <button type="button" onClick={() => setAttempt((n) => n + 1)}>
+                {t('retry')}
+              </button>
+            </div>
+          )}
+          {status === 'notInstalled' && (
+            <div className="gx-cover" role="alert">
+              {t('notInstalled')}
+            </div>
+          )}
+        </div>
+        {status === 'ready' && (
+          <GraphicsAiDock
+            kind={kind}
+            adapter={aiAdapter}
+            lockFrame={() =>
+              frameRef.current && lockRef.current
+                ? lockFrameInput(frameRef.current, lockRef.current)
+                : () => {}
+            }
+            onBusyChange={(running) => {
+              aiBusy.current = running
+            }}
           />
-        )}
-        {(status === 'checking' || status === 'loading') && (
-          <div className="gx-cover" role="status">
-            {t('loading')}
-          </div>
-        )}
-        {status === 'failed' && (
-          <div className="gx-cover" role="alert">
-            <p>{t('failed')}</p>
-            <button type="button" onClick={() => setAttempt((n) => n + 1)}>
-              {t('retry')}
-            </button>
-          </div>
-        )}
-        {status === 'notInstalled' && (
-          <div className="gx-cover" role="alert">
-            {t('notInstalled')}
-          </div>
         )}
       </div>
       {notice && (

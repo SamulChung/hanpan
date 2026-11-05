@@ -5,7 +5,10 @@
  * registered by the Word editor's main side and only called here.
  */
 import type { Lang } from '@genoffice/i18n'
+import type { AiPanelPrefs } from '@genoffice/ui'
+import type { AiSettings, AiStreamChunk, AiStreamRequest } from '@genoffice/ai-provider'
 import type { SaveMode } from './save-target'
+import type { GraphicsSubscriptionApi } from './subscription-api'
 
 export type { SaveMode } from './save-target'
 
@@ -30,6 +33,20 @@ export const APP_CHANNELS = {
   languageChanged: 'app:language-changed',
   getTheme: 'app:get-theme',
   themeChanged: 'app:theme-changed',
+  getAiPanelPrefs: 'app:get-ai-panel-prefs',
+  setAiPanelPrefs: 'app:set-ai-panel-prefs',
+  aiPanelPrefsChanged: 'app:ai-panel-prefs-changed',
+} as const
+
+/** The shared AI channels, registered once for the whole app by the Word editor's main. Pass-through only. */
+export const AI_CHANNELS = {
+  getSettings: 'ai:get-settings',
+  setSettings: 'ai:set-settings',
+  settingsChanged: 'ai:settings-changed',
+  openModelSettings: 'ai:open-model-settings',
+  stream: 'ai:stream',
+  streamChunk: 'ai:stream-chunk',
+  streamCancel: 'ai:stream-cancel',
 } as const
 
 export type UiTheme = 'light' | 'dark' | 'system'
@@ -92,4 +109,17 @@ export interface GraphicsApi {
   exportFile(request: ExportRequest): Promise<ExportResult>
   pickImage(): Promise<PickedImage | null>
   onMenuCommand(handler: (command: GraphicsMenuCommand) => void): () => void
+  // ---- the AI panel: no attachments, no web search, no files of its own ----
+  getAiPanelPrefs(): Promise<AiPanelPrefs>
+  setAiPanelPrefs(patch: Partial<AiPanelPrefs>): Promise<AiPanelPrefs>
+  onAiPanelPrefsChanged(handler: (prefs: AiPanelPrefs) => void): () => void
+  getAiSettings(): Promise<AiSettings>
+  setAiSettings(settings: AiSettings): Promise<void>
+  onAiSettingsChanged(handler: () => void): () => void
+  /** shell only: switch to Home and open Settings › AI Model (rejects in standalone) */
+  openAiModelSettings(): Promise<void>
+  subscription: GraphicsSubscriptionApi
+  aiStream(request: AiStreamRequest): Promise<void>
+  aiStreamCancel(requestId: string): Promise<void>
+  onAiStream(handler: (chunk: AiStreamChunk) => void): () => void
 }

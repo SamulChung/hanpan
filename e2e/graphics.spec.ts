@@ -11,7 +11,7 @@ import { launchShell, closeAndSaveVideo, waitForPageWithUrl } from './helpers'
  * built with (GRAPHICS_WEB_ILLUST_DIR or the pinned release): the Home card
  * opens a tab whose app answers its page API, Hanpan's save writes the file
  * the dialog chose, a changed tab asks before closing, and a hidden tab still
- * answers.
+ * answers. The AI panel docks beside the app.
  */
 const ILLUST_WEB = join(
   __dirname,
@@ -65,6 +65,8 @@ test.describe('AI Illustration tab', () => {
           timeout: 60_000,
         })
         .toBeGreaterThan(1000)
+      // the AI panel docks beside the app (its composer is there; nothing is sent)
+      await expect(tab.locator('.ai-dock .ai-composer textarea')).toBeVisible({ timeout: 10_000 })
 
       // a document with a shape: the tab turns changed
       await inApp(

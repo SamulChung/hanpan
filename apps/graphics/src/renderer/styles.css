@@ -15,10 +15,30 @@ body,
   height: 100%;
 }
 
+/* the app on the left, the AI dock on the right */
+.gx-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
 .gx-stage {
   position: relative;
   flex: 1;
+  min-width: 0;
   min-height: 0;
+}
+
+/* over the frame only while the AI works (input-lock.ts sets data-locked) */
+.gx-lock {
+  position: absolute;
+  inset: 0;
+  display: none;
+  cursor: progress;
+}
+
+.gx-lock[data-locked='true'] {
+  display: block;
 }
 
 .gx-frame {
