@@ -109,6 +109,10 @@ export function createIllustAdapter(api: GraphicsPageApi): GraphicsAdapter {
     async isLayered() {
       return false
     },
+    async revision() {
+      const doc = asRecord(await api.execute('document.inspect', { ids: [] }))
+      return typeof doc.revision === 'number' ? doc.revision : -1
+    },
     async historyLength() {
       const doc = await inspectDoc({ ids: [] })
       return Array.isArray(doc.history) ? doc.history.length : 0

@@ -20,12 +20,30 @@ export interface GraphicsSkillDeps {
   exportFile(request: ExportRequest): Promise<ExportResult>
 }
 
-export function createGraphicsSkill(deps: GraphicsSkillDeps): AgentSkill {
+export interface GraphicsSkill extends AgentSkill {
+  /**
+   * Resolves once no tool is running. A Stop ends the run at once, while a
+   * command already sent to the app finishes in the background: the run's
+   * undo count and the input lock wait for this.
+   */
+  settled(): Promise<void>
+}
+
+export function createGraphicsSkill(deps: GraphicsSkillDeps): GraphicsSkill {
+  const running = new Set<Promise<unknown>>()
   return {
     id: 'graphics',
     systemPrompt: deps.kind === 'photo' ? basePhoto : baseIllust,
     tools: graphicsTools(deps.kind),
     buildContext: () => deps.context(),
-    executeTool: (call) => executeGraphicsTool(call, deps),
+    executeTool: (call, signal) => {
+      const run = executeGraphicsTool(call, { ...deps, signal })
+      running.add(run)
+      void run.finally(() => running.delete(run)).catch(() => {})
+      return run
+    },
+    async settled() {
+      while (running.size > 0) await Promise.allSettled([...running])
+    },
   }
 }

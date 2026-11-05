@@ -163,4 +163,23 @@ describe('the host page', () => {
     expect(api.sendCloseSaveResult).toHaveBeenCalledWith(true)
     expect(api.commitSave).toHaveBeenCalled()
   })
+
+  it('the menu Undo waits while a quick action or the AI holds the app', async () => {
+    const { listeners } = fakeApi()
+    await mount('illust')
+    await until(() => frame() !== null)
+    const page = readyPage().withDocument('Untitled-1', false)
+    // a quick action that does not finish: it holds the lock
+    page.handlers['document.inspect'] = () => new Promise(() => {})
+    ;(frame()!.contentWindow as unknown as Record<string, unknown>).vectorcraft = page
+    await until(() => host.querySelector('[data-quick="centerOnArtboard"]') !== null)
+    await act(async () =>
+      (host.querySelector('[data-quick="centerOnArtboard"]') as HTMLButtonElement).click(),
+    )
+    await until(() => page.executed.some(([id]) => id === 'document.inspect'))
+    await act(async () => listeners.menu!('undo'))
+    await act(async () => listeners.menu!('redo'))
+    expect(page.executed.map(([id]) => id)).not.toContain('edit.undo')
+    expect(page.executed.map(([id]) => id)).not.toContain('edit.redo')
+  })
 })

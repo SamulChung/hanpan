@@ -256,6 +256,8 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
         const adapter = adapterRef.current
         if (!adapter) return
         if (command === 'undo' || command === 'redo') {
+          // a run that owns the document counts its own steps: no undo from the menu meanwhile
+          if (appLocks.current > 0) return
           void adapter.api
             .execute(command === 'undo' ? 'edit.undo' : 'edit.redo', {})
             .catch(() => {})

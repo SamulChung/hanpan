@@ -49,7 +49,7 @@ import type { GraphicsKind } from '../../shared/kinds'
 import { t as tGlobal, useI18n, type StringKey } from '../i18n/locale'
 import { aiLangDirective } from './lang-directive'
 import { blockedRunFor, mergeSubscriptionUsage, type BlockedRun } from './connection'
-import { createGraphicsSkill } from './graphics-skill'
+import { createGraphicsSkill, type GraphicsSkill } from './graphics-skill'
 import { canvasShot } from './snapshot'
 import { useSubscriptionConnection } from './subscription-client'
 import { createElectronTransport } from './transport'
@@ -232,12 +232,30 @@ export function GraphicsAiPanel(props: GraphicsAiPanelProps): ReactElement {
     if (!run) return
     runRef.current = null
     void (async () => {
+      // a Stop ends the run while a command may still be changing the picture:
+      // count the steps and give the input back once it has finished
+      await graphicsSkillRef.current?.settled()
       const undo = await trackerRef.current?.finish().catch(() => null)
       if (undo && mountedRef.current) patchLast({ undo })
       run.unlock()
       propsRef.current.onBusyChange(false)
       if (mountedRef.current) setBusy(false)
     })()
+  }
+
+  const graphicsSkillRef = useRef<GraphicsSkill | null>(null)
+  if (!graphicsSkillRef.current) {
+    graphicsSkillRef.current = createGraphicsSkill({
+      kind,
+      get adapter() {
+        return adapterRef.current!
+      },
+      get tracker() {
+        return trackerRef.current!
+      },
+      context: () => contextRef.current,
+      exportFile: (request) => graphicsApi().exportFile(request),
+    })
   }
 
   const transportRef = useRef<AgentTransport | null>(null)
@@ -263,17 +281,7 @@ export function GraphicsAiPanel(props: GraphicsAiPanelProps): ReactElement {
       toolsAllowed: () =>
         settingsRef.current ? localModelCapabilities(settingsRef.current).tools !== false : true,
       skill: composeWithDrive('graphics', '', () => loopRef.current?.messages ?? [], [
-        createGraphicsSkill({
-          kind,
-          get adapter() {
-            return adapterRef.current!
-          },
-          get tracker() {
-            return trackerRef.current!
-          },
-          context: () => contextRef.current,
-          exportFile: (request) => graphicsApi().exportFile(request),
-        }),
+        graphicsSkillRef.current,
       ]),
       systemSuffix: () => aiLangDirective(langRef.current),
       events: {

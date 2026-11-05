@@ -102,21 +102,31 @@ function scriptedTransport(turns: Turn[]) {
 /** An app whose history grows by one per changing command. */
 function fakeAdapter() {
   let history = 4
+  let revision = 10
   const executed: string[] = []
+  /** commands that wait until released (a slow filter on a large picture) */
+  const held = new Map<string, () => void>()
+  const holds = new Set<string>()
   const adapter = {
     kind: 'illust',
     api: {
       commands: async () => [],
       execute: async (id: string) => {
         executed.push(id)
-        if (!id.endsWith('.info')) history += 1
+        if (holds.has(id)) await new Promise<void>((release) => held.set(id, release))
+        if (!id.endsWith('.info')) {
+          history += 1
+          revision += 1
+        }
         return { ok: true }
       },
     },
     historyLength: vi.fn(async () => history),
+    revision: vi.fn(async () => revision),
     undo: vi.fn(async (steps: number) => {
       const done = Math.min(steps, history)
       history -= done
+      revision += done
       return done
     }),
     snapshotPng: vi.fn(async () => new Uint8Array([137, 80, 78, 71])),
@@ -126,7 +136,17 @@ function fakeAdapter() {
   return {
     adapter,
     executed,
-    edit: () => (history += 1),
+    edit: () => {
+      history += 1
+      revision += 1
+    },
+    /** the person's own Ctrl+Z, then a new stroke: the length is back where it was */
+    undoThenEdit: () => {
+      revision += 2
+    },
+    hold: (id: string) => holds.add(id),
+    release: (id: string) => held.get(id)?.(),
+    isHeld: (id: string) => held.has(id),
   }
 }
 
@@ -284,5 +304,69 @@ describe('the graphics AI panel', () => {
     expect(app.adapter.contextSummary).toHaveBeenCalledTimes(1)
     const sent = JSON.stringify(requests[0])
     expect(sent).toContain('Document logo.svg: 1 artboard, 3 layers')
+  })
+
+  it('Stop while a command runs keeps the app locked until it ends, and offers its undo', async () => {
+    const { el, app, unlock } = await mount({
+      settings: vision(),
+      turns: [
+        { tools: [{ name: 'run_command', input: { id: 'filter.slowBlur' } }] },
+        { hang: true },
+      ],
+    })
+    app.hold('filter.slowBlur')
+    await send(el, 'Blur it a lot')
+    expect(app.isHeld('filter.slowBlur')).toBe(true)
+    const stop = el.querySelector('.ai-composer button[aria-label="Stop"]') as HTMLButtonElement
+    await act(async () => stop.click())
+    await settle()
+    // the command is still changing the picture: the person's input stays off
+    expect(unlock).not.toHaveBeenCalled()
+    app.release('filter.slowBlur')
+    await settle()
+    expect(unlock).toHaveBeenCalledTimes(1)
+    await act(async () => undoButton(el)!.click())
+    await settle()
+    expect(app.adapter.undo).toHaveBeenCalledWith(1)
+  })
+
+  it('Stop during a batch runs no further step', async () => {
+    const { el, app } = await mount({
+      settings: vision(),
+      turns: [
+        {
+          tools: [
+            {
+              name: 'run_commands',
+              input: {
+                steps: [{ id: 'shape.rect' }, { id: 'shape.ellipse' }, { id: 'object.align' }],
+              },
+            },
+          ],
+        },
+        { hang: true },
+      ],
+    })
+    app.hold('shape.rect')
+    await send(el, 'Draw three things')
+    const stop = el.querySelector('.ai-composer button[aria-label="Stop"]') as HTMLButtonElement
+    await act(async () => stop.click())
+    await settle()
+    app.release('shape.rect')
+    await settle()
+    expect(app.executed).toEqual(['shape.rect'])
+  })
+
+  it('the undo button refuses after the person undid in the app and drew again (same history length)', async () => {
+    const { el, app } = await mount({
+      settings: vision(),
+      turns: [runThree, { text: 'Drew them.' }],
+    })
+    await send(el, 'Draw two shapes and align them')
+    app.undoThenEdit()
+    await act(async () => undoButton(el)!.click())
+    await settle()
+    expect(app.adapter.undo).not.toHaveBeenCalled()
+    expect(el.textContent).toContain('cannot be undone in one step')
   })
 })

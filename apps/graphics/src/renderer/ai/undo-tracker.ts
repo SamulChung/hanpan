@@ -10,7 +10,8 @@ import type { GraphicsAdapter } from '../adapters'
 export interface RunUndo {
   /** history entries the run added */
   steps: number
-  /** the history length when the run ended; an [Undo] later checks it is still so */
+  /** the document's revision when the run ended; an [Undo] later checks it is still so
+      (any edit or undo moves it, even one that leaves the history as long as before) */
   markerAfter: number
   /** commands changed the document but the history did not grow (the app's history limit) */
   overflow: boolean
@@ -24,7 +25,9 @@ export interface UndoTracker {
   finish(): Promise<RunUndo | null>
 }
 
-export function createUndoTracker(adapter: Pick<GraphicsAdapter, 'historyLength'>): UndoTracker {
+export function createUndoTracker(
+  adapter: Pick<GraphicsAdapter, 'historyLength' | 'revision'>,
+): UndoTracker {
   let before: number | null = null
   let mutated = false
   return {
@@ -42,17 +45,17 @@ export function createUndoTracker(adapter: Pick<GraphicsAdapter, 'historyLength'
       if (!changed || start === null) return null
       const after = await adapter.historyLength()
       const steps = Math.max(0, after - start)
-      return { steps, markerAfter: after, overflow: steps === 0 }
+      return { steps, markerAfter: await adapter.revision(), overflow: steps === 0 }
     },
   }
 }
 
 /** Undoes a run, unless the document's history has moved on since the run ended. */
 export async function undoRun(
-  adapter: Pick<GraphicsAdapter, 'historyLength' | 'undo'>,
+  adapter: Pick<GraphicsAdapter, 'revision' | 'undo'>,
   run: RunUndo,
 ): Promise<'undone' | 'changed-since' | 'failed'> {
-  if ((await adapter.historyLength()) !== run.markerAfter) return 'changed-since'
+  if ((await adapter.revision()) !== run.markerAfter) return 'changed-since'
   const done = await adapter.undo(run.steps)
   return done === run.steps ? 'undone' : 'failed'
 }

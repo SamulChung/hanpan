@@ -8,6 +8,8 @@ function historyAdapter(start: number) {
     grow: (n: number) => (length += n),
     adapter: {
       historyLength: vi.fn(async () => length),
+      // in these cases the revision moves exactly with the history
+      revision: vi.fn(async () => length),
       undo: vi.fn(async (steps: number) => {
         const done = Math.min(steps, length)
         length -= done

@@ -20,7 +20,12 @@ function setup(kind: 'photo' | 'illust' = 'illust') {
     params: `{params of ${c.id}}`,
     disabled_reason: c.id === 'object.ungroup' ? 'nothing selected' : undefined,
   }))
-  page.handlers['document.inspect'] = (_p, p) => ({ history: [...p.history], layers: [] })
+  // the revision moves with every edit, as the real app's does
+  page.handlers['document.inspect'] = (_p, p) => ({
+    history: [...p.history],
+    revision: p.history.length,
+    layers: [],
+  })
   page.handlers['shape.rectangle'] = (_p, p) => {
     p.edit('Rectangle')
     return { id: 7 }
@@ -276,9 +281,12 @@ describe('the blocked commands, checked against the PhotoCraft 0.20.2-h1 command
       'layer.new.layer',
     ])
       expect(isBlockedCommand(id), id).toBe(false)
-    // image.duplicate opens a new document: blocked with the files
+    // these open a second document in the app: never the assistant's
+    const opensDocument = ['image.duplicate', 'layer.smartObjects.editContents']
+    for (const id of opensDocument) expect(isBlockedCommand(id), id).toBe(true)
     const editing = PHOTO.filter(
-      (c) => /^(layer|image|filter|select|type|paint)\./.test(c.id) && c.id !== 'image.duplicate',
+      (c) =>
+        /^(layer|image|filter|select|type|paint)\./.test(c.id) && !opensDocument.includes(c.id),
     )
     expect(editing.length).toBeGreaterThan(300)
     for (const c of editing) expect(isBlockedCommand(c.id), c.id).toBe(false)

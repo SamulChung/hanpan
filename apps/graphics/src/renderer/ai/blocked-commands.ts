@@ -17,6 +17,8 @@ export const BLOCKED_PREFIXES: readonly string[] = [
   'history.',
   'edit.purge',
   'image.duplicate',
+  // opens a smart object's contents as a second document in the tab
+  'layer.smartObjects.editContents',
   'document.open',
   'document.close',
   'document.activate',

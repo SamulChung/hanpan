@@ -31,6 +31,8 @@ class FakePhotoPage {
     selectedLayers: number[]
     hasSelection: boolean
   } | null = null
+  /** a second document in front (a smart object's contents, a duplicate): clean */
+  second: { name: string; dirty: boolean } | null = null
   captured = new Map<string, Uint8Array>()
   capturing = false
   requests: Array<[string, Record<string, unknown>]> = []
@@ -91,9 +93,10 @@ class FakePhotoPage {
         return {
           session: d
             ? {
-                active: 0,
+                active: page.second ? 1 : 0,
                 documents: [
                   { dirty: d.dirty, name: d.name, path: null, revision: d.revision, index: 0 },
+                  ...(page.second ? [{ ...page.second, path: null, revision: 1, index: 1 }] : []),
                 ],
               }
             : { active: null, documents: [] },
@@ -237,5 +240,25 @@ describe('the PhotoCraft adapter', () => {
   it('placeImage is not offered (the web build has no place from bytes)', async () => {
     const page = new FakePhotoPage().open()
     await expect(photo(page).placeImage('cat.png', new Uint8Array([1]))).rejects.toThrow(/AI Photo/)
+  })
+
+  it('follows the tab own document while another one is in front', async () => {
+    const page = new FakePhotoPage().open()
+    page.edit('Fill')
+    page.second = { name: 'Layer 1.psb', dirty: false }
+    const adapter = photo(page)
+    // the picture's own changes still count, and its name stays the tab's
+    expect(await adapter.docInfo()).toEqual({ hasDocument: true, dirty: true, title: 'Untitled' })
+    page.doc!.dirty = false
+    page.second.dirty = true
+    expect((await adapter.docInfo()).dirty).toBe(true)
+  })
+
+  it('refuses to save while another document is in front (it would go over the picture file)', async () => {
+    const page = new FakePhotoPage().open()
+    page.edit('Fill')
+    page.second = { name: 'Layer 1.psb', dirty: true }
+    await expect(photo(page).saveBytes('poster.psd', 'psd')).rejects.toThrow(/another document/)
+    expect(page.requests).toEqual([])
   })
 })

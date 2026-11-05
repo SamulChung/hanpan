@@ -63,6 +63,19 @@ function activeDoc(ui: PhotoInspect): SessionDoc | undefined {
   return typeof index === 'number' ? ui.session?.documents?.[index] : undefined
 }
 
+/**
+ * The tab's own document: the first one. Embedded mode turns New and Open off,
+ * but a smart object's contents, a duplicate or "new document from state" open
+ * further documents from the app's own UI; they are not the tab's file.
+ */
+function tabDoc(ui: PhotoInspect): SessionDoc | undefined {
+  return typeof ui.session?.active === 'number' ? ui.session?.documents?.[0] : undefined
+}
+
+function othersDirty(ui: PhotoInspect): boolean {
+  return (ui.session?.documents ?? []).slice(1).some((d) => d.dirty)
+}
+
 function extOf(path: string): string {
   return /\.([^.\\/]+)$/.exec(path)?.[1]?.toLowerCase() ?? ''
 }
@@ -101,18 +114,20 @@ export function createPhotoAdapter(api: GraphicsPageApi): GraphicsAdapter {
   }
 
   function info(ui: PhotoInspect): DocInfo {
-    const doc = activeDoc(ui)
+    const doc = tabDoc(ui)
     if (!doc) return { hasDocument: false, dirty: false, title: null }
     const name = doc.name ?? null
+    // a second document's unsaved changes keep the tab marked: closing would drop them
+    const others = othersDirty(ui)
     if (flatSave && name !== flatSave.appName) flatSave = null
     if (flatSave) {
       return {
         hasDocument: true,
-        dirty: Boolean(doc.dirty) && doc.revision !== flatSave.revision,
+        dirty: others || (Boolean(doc.dirty) && doc.revision !== flatSave.revision),
         title: flatSave.fileName,
       }
     }
-    return { hasDocument: true, dirty: Boolean(doc.dirty), title: name }
+    return { hasDocument: true, dirty: others || Boolean(doc.dirty), title: name }
   }
 
   return {
@@ -125,6 +140,11 @@ export function createPhotoAdapter(api: GraphicsPageApi): GraphicsAdapter {
       return info(await inspect())
     },
     async saveBytes(fileName, format) {
+      if ((await inspect()).session?.active !== 0) {
+        throw new Error(
+          'another document is in front of the picture; switch back to its own document to save',
+        )
+      }
       const bytes = await writeThroughSave(fileName)
       const ext = (format || extOf(fileName)).toLowerCase()
       const doc = activeDoc(await inspect())
@@ -142,6 +162,9 @@ export function createPhotoAdapter(api: GraphicsPageApi): GraphicsAdapter {
         layers.length > 1 ||
         layers.some((l) => (l.kind ?? 'Pixel') !== 'Pixel' || l.hasMask || l.hasVectorMask)
       )
+    },
+    async revision() {
+      return activeDoc(await inspect())?.revision ?? -1
     },
     async historyLength() {
       const history = (await inspect()).document?.history

@@ -31,6 +31,8 @@ export interface GraphicsAdapter {
   isLayered(): Promise<boolean>
   /** How many entries the app's undo history holds now. */
   historyLength(): Promise<number>
+  /** The document's revision: the app moves it on every edit and every undo. */
+  revision(): Promise<number>
   /** Undoes up to `steps` entries; returns how many it undid. */
   undo(steps: number): Promise<number>
   /** The document as a PNG no larger than maxSide, or null when there is none. */

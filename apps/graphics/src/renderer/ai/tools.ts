@@ -22,6 +22,8 @@ export interface GraphicsToolDeps {
   adapter: GraphicsAdapter
   tracker: UndoTracker
   exportFile(request: ExportRequest): Promise<ExportResult>
+  /** the run's Stop: a batch runs no further step once it is set */
+  signal?: AbortSignal
 }
 
 export function graphicsTools(kind: GraphicsKind): AgentToolDef[] {
@@ -239,8 +241,8 @@ export async function executeGraphicsTool(
       let ran = false
       for (const [i, step] of steps.entries()) {
         const id = ids[i]!
-        if (failed) {
-          lines.push(`${i + 1}. ${id} — not run`)
+        if (failed || deps.signal?.aborted) {
+          lines.push(`${i + 1}. ${id} — not run${failed ? '' : ' (stopped)'}`)
           continue
         }
         try {
