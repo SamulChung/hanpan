@@ -21,6 +21,7 @@ import {
   ARTCRAFT_CHANNELS,
   ARTCRAFT_EXE,
   artcraftExePath,
+  artcraftInUse,
   registerArtcraftIpc,
   type ArtcraftHost,
 } from '../src/main/hanpan/artcraft'
@@ -125,6 +126,26 @@ describe('the ArtCraft channels', () => {
   it('lists only the apps whose program exists', async () => {
     register({ exists: (path) => path.includes('photocraft') })
     expect(await available()).toEqual(['photocraft'])
+  })
+})
+
+describe('artcraftInUse', () => {
+  const fail = (code: string) => () => {
+    throw Object.assign(new Error(code), { code })
+  }
+  it('names an app whose program file is locked by its running process', () => {
+    const open = (path: string) => (path.includes('vectorcraft') ? fail('EBUSY')() : undefined)
+    expect(artcraftInUse(HOST, { exists: () => true, openForWrite: open })).toEqual(['vectorcraft'])
+  })
+  it('does not count a program it may not write (an all-users install) or one that is missing', () => {
+    expect(artcraftInUse(HOST, { exists: () => true, openForWrite: fail('EPERM') })).toEqual([])
+    expect(artcraftInUse(HOST, { exists: () => false, openForWrite: fail('EBUSY') })).toEqual([])
+    expect(
+      artcraftInUse(
+        { ...HOST, platform: 'darwin' },
+        { exists: () => true, openForWrite: fail('EBUSY') },
+      ),
+    ).toEqual([])
   })
 })
 

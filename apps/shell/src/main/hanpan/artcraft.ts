@@ -1,5 +1,5 @@
 import { spawn as nodeSpawn } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { closeSync, existsSync, openSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { ipcMain, type BrowserWindow } from 'electron'
 import {
@@ -35,6 +35,29 @@ export function artcraftExePath(app: ArtcraftApp, host: ArtcraftHost): string | 
     ? join(host.resourcesPath, 'artcraft', app)
     : join(host.appPath, '..', '..', 'vendor', 'artcraft', app)
   return join(folder, ARTCRAFT_EXE[app])
+}
+
+/**
+ * The apps whose program is running now. A running exe is locked on Windows
+ * (opening it for writing fails with EBUSY), and an installer cannot replace a
+ * locked file. Any other failure (EPERM in an all-users install) is not "running".
+ */
+export function artcraftInUse(
+  host: ArtcraftHost,
+  deps: { exists?: (path: string) => boolean; openForWrite?: (path: string) => void } = {},
+): ArtcraftApp[] {
+  const exists = deps.exists ?? existsSync
+  const openForWrite = deps.openForWrite ?? ((path: string) => closeSync(openSync(path, 'r+')))
+  return ARTCRAFT_APPS.filter((app) => {
+    const exe = artcraftExePath(app, host)
+    if (!exe || !exists(exe)) return false
+    try {
+      openForWrite(exe)
+      return false
+    } catch (error) {
+      return (error as NodeJS.ErrnoException).code === 'EBUSY'
+    }
+  })
 }
 
 const isArtcraftApp = (value: unknown): value is ArtcraftApp =>
