@@ -95,6 +95,14 @@ describe('runSave', () => {
     expect(page.executed[0]).toEqual(['file.save', { path: 'logo.svg', svg: {} }])
   })
 
+  it('tells the capture watch the name it saved under', async () => {
+    const page = savingPage()
+    const savedAs = vi.fn()
+    const { deps } = saveDeps(page, { savedAs })
+    await runSave('save', deps)
+    expect(savedAs).toHaveBeenCalledWith('logo.svg')
+  })
+
   it('save as asks main first, then serializes in the chosen format', async () => {
     const page = savingPage()
     const order: string[] = []
@@ -168,6 +176,56 @@ describe('runSave', () => {
   })
 })
 
+describe('saving one at a time', () => {
+  it('a second save while one runs waits for it instead of starting another', async () => {
+    const { singleFlight } = await import('../src/renderer/doc/single-flight')
+    let release!: (v: boolean) => void
+    const run = vi.fn(() => new Promise<boolean>((r) => (release = r)))
+    const save = singleFlight(run)
+    const a = save('save')
+    const b = save('saveAs')
+    release(true)
+    expect(await a).toBe(true)
+    expect(await b).toBe(true)
+    expect(run).toHaveBeenCalledTimes(1)
+    // once it settled, the next save runs anew
+    const c = save('save')
+    expect(run).toHaveBeenCalledTimes(2)
+    release(false)
+    expect(await c).toBe(false)
+  })
+})
+
+describe('app calls that never answer', () => {
+  it('a save whose app call hangs fails after its time limit and ends the host op', async () => {
+    vi.useFakeTimers()
+    const page = savingPage()
+    page.handlers['file.save'] = () => new Promise(() => {})
+    const { deps } = saveDeps(page)
+    const result = runSave('save', { ...deps, timeoutMs: 1000 })
+    await vi.advanceTimersByTimeAsync(1500)
+    expect(await result).toBe(false)
+    expect(deps.hostOp.end).toHaveBeenCalled()
+    expect(deps.dirty.current()).toBe(true)
+  })
+
+  it('a document watch whose inspect hangs asks again after its time limit', async () => {
+    vi.useFakeTimers()
+    const page = new FakePage().withDocument('a.svg', false)
+    const inspect = page.inspect.bind(page)
+    let hang = true
+    page.inspect = () => (hang ? new Promise(() => {}) : inspect())
+    const seen: boolean[] = []
+    const watch = watchDoc(createAdapter('illust', page), (i) => seen.push(i.dirty), 100, 500)
+    await vi.advanceTimersByTimeAsync(700)
+    hang = false
+    // the call that started at 600 ms hangs until its limit (1100 ms); the next one answers
+    await vi.advanceTimersByTimeAsync(600)
+    watch.stop()
+    expect(seen).toEqual([false])
+  })
+})
+
 describe('watchCaptures', () => {
   function setup(busy = false) {
     const page = new FakePage().withDocument('logo.svg', true)
@@ -178,8 +236,10 @@ describe('watchCaptures', () => {
       adapter: createAdapter('illust', page),
       intervalMs: 100,
       busy: () => isBusy,
+      hostSaving: () => isBusy,
       onAppSave,
       onAppExport,
+      onUnexpectedClean: vi.fn(),
     })
     return { page, watcher, onAppSave, onAppExport, setBusy: (b: boolean) => (isBusy = b) }
   }
@@ -235,10 +295,59 @@ describe('watchCaptures', () => {
     watcher.stop()
   })
 
+  it('a host save whose file appears while a scan is in flight is not read as an export', async () => {
+    vi.useFakeTimers()
+    const page = new FakePage().withDocument('Untitled-1', true)
+    const onAppExport = vi.fn()
+    const files = page.files.bind(page)
+    let hold: (() => void) | null = null
+    page.files = async () => {
+      const list = await files()
+      if (hold === null && page.captured.size === 0) await new Promise<void>((r) => (hold = r))
+      return page.captured.size ? files() : list
+    }
+    const watcher = watchCaptures({
+      adapter: createAdapter('illust', page),
+      intervalMs: 100,
+      busy: () => false,
+      hostSaving: () => false,
+      onAppSave: vi.fn(),
+      onAppExport,
+      onUnexpectedClean: vi.fn(),
+    })
+    await vi.advanceTimersByTimeAsync(150) // a scan is waiting on files()
+    page.captured.set('new.svg', new Uint8Array([1, 2]))
+    const noted = watcher.noteHostSave('new.svg')
+    hold?.()
+    await noted
+    await vi.advanceTimersByTimeAsync(300)
+    expect(onAppExport).not.toHaveBeenCalled()
+    watcher.stop()
+  })
+
+  it('the document turning clean during an AI run keeps the tab marked changed', () => {
+    const page = new FakePage().withDocument('a.svg', true)
+    const onUnexpectedClean = vi.fn()
+    const onAppSave = vi.fn()
+    const watcher = watchCaptures({
+      adapter: createAdapter('illust', page),
+      busy: () => true,
+      hostSaving: () => false,
+      onAppSave,
+      onAppExport: vi.fn(),
+      onUnexpectedClean,
+    })
+    watcher.noteDoc({ hasDocument: true, dirty: true, title: 'a.svg' })
+    watcher.noteDoc({ hasDocument: true, dirty: false, title: 'a.svg' })
+    expect(onUnexpectedClean).toHaveBeenCalledTimes(1)
+    expect(onAppSave).not.toHaveBeenCalled()
+    watcher.stop()
+  })
+
   it('a host save does not read as an app save afterwards', async () => {
     const { watcher, onAppSave } = setup()
     watcher.noteDoc({ hasDocument: true, dirty: true, title: 'logo.svg' })
-    await watcher.noteHostSave()
+    await watcher.noteHostSave('logo.svg')
     watcher.noteDoc({ hasDocument: true, dirty: false, title: 'logo.svg' })
     expect(onAppSave).not.toHaveBeenCalled()
     watcher.stop()
@@ -246,22 +355,37 @@ describe('watchCaptures', () => {
 })
 
 describe('openPending', () => {
+  it('does not confirm a file the app could not open', async () => {
+    const page = new FakePage()
+    page.openFile = () => Promise.resolve(false)
+    const confirm = vi.fn()
+    const result = await openPending(
+      createAdapter('illust', page),
+      async () => ({ name: 'bad.ai', path: '/x/bad.ai', bytes: new Uint8Array([1]) }),
+      confirm,
+    )
+    expect(result).toBe('failed')
+    expect(confirm).not.toHaveBeenCalled()
+  })
+
   it('hands the file to the app and waits for the document', async () => {
     const page = new FakePage()
     const bytes = new Uint8Array([1, 2])
-    const result = await openPending(createAdapter('illust', page), async () => ({
-      name: 'logo.svg',
-      path: '/x/logo.svg',
-      bytes,
-    }))
+    const confirm = vi.fn()
+    const result = await openPending(
+      createAdapter('illust', page),
+      async () => ({ name: 'logo.svg', path: '/x/logo.svg', bytes }),
+      confirm,
+    )
     expect(result).toBe('opened')
+    expect(confirm).toHaveBeenCalledWith('/x/logo.svg')
     expect(page.opened[0]![0]).toBe('logo.svg')
     expect(page.opened[0]![1]).not.toBe(bytes)
   })
 
   it('does nothing for a new document', async () => {
     const page = new FakePage()
-    expect(await openPending(createAdapter('illust', page), async () => null)).toBe('none')
+    expect(await openPending(createAdapter('illust', page), async () => null, vi.fn())).toBe('none')
     expect(page.opened).toEqual([])
   })
 })

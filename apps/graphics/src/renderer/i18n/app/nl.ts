@@ -7,4 +7,5 @@ export const nl = {
   notInstalled: 'Deze installatie bevat deze app niet.',
   saveFailed: 'Opslaan mislukt. Het document blijft gemarkeerd als niet opgeslagen.',
   layeredSaveNotice: 'Opslaan als PSD om de lagen en bewerkingsgegevens te behouden.',
+  openFailed: 'Het bestand kon niet worden geopend. Open het opnieuw vanuit de app.',
 } satisfies Record<keyof typeof zh, string>

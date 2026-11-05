@@ -8,4 +8,5 @@ export const de = {
   saveFailed: 'Speichern fehlgeschlagen. Das Dokument bleibt als nicht gespeichert markiert.',
   layeredSaveNotice:
     'Wird als PSD gespeichert, damit Ebenen und Bearbeitungsdaten erhalten bleiben.',
+  openFailed: 'Die Datei konnte nicht geöffnet werden. Öffnen Sie sie erneut in der App.',
 } satisfies Record<keyof typeof zh, string>

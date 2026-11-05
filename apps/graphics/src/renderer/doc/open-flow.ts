@@ -6,6 +6,8 @@ import { copyBytes } from '../frame/bytes'
 export async function openPending(
   adapter: Pick<GraphicsAdapter, 'api' | 'docInfo'>,
   consume: () => Promise<PendingOpen | null>,
+  /** tells main the app opened the file: only then is it the tab's save target */
+  confirm: (path: string) => void,
   timeoutMs = 30_000,
 ): Promise<'opened' | 'none' | 'failed'> {
   const pending = await consume()
@@ -15,7 +17,10 @@ export async function openPending(
     if (queued === false) return 'failed'
     const started = Date.now()
     while (Date.now() - started < timeoutMs) {
-      if ((await adapter.docInfo()).hasDocument) return 'opened'
+      if ((await adapter.docInfo()).hasDocument) {
+        confirm(pending.path)
+        return 'opened'
+      }
       await new Promise((resolve) => setTimeout(resolve, 200))
     }
     return 'failed'

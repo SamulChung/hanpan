@@ -1,6 +1,7 @@
 /**
  * Preload of the AI Photo and AI Illustration tabs: exposes `window.graphicsApi`
- * (see ../shared/ipc). The web app in the page's iframe gets nothing from here.
+ * (see ../shared/ipc). The web app runs in a same-origin iframe and can reach this
+ * through `parent`; main therefore decides every path itself (docs/security.md).
  */
 import { contextBridge, ipcRenderer } from 'electron'
 import { SPLIT_PANE_BRIDGE_KEY, splitPaneBridge } from '@genoffice/electron-utils/split-pane-bridge'
@@ -25,6 +26,7 @@ const api: GraphicsApi = {
   getTheme: () => ipcRenderer.invoke(APP_CHANNELS.getTheme),
   onThemeChanged: (handler) => listen<[UiTheme]>(APP_CHANNELS.themeChanged, handler),
   consumeOpen: () => ipcRenderer.invoke(GRAPHICS_CHANNELS.consumeOpen),
+  confirmOpened: (path) => ipcRenderer.send(GRAPHICS_CHANNELS.openConfirmed, path),
   setDirty: (dirty) => ipcRenderer.send(GRAPHICS_CHANNELS.dirtyChanged, dirty),
   onSaveRequest: (handler) => listen<[SaveMode]>(GRAPHICS_CHANNELS.saveRequest, handler),
   sendSaveRequestAck: (ok) => ipcRenderer.send(GRAPHICS_CHANNELS.saveRequestAck, ok),

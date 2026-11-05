@@ -8,4 +8,5 @@ export const fr = {
   saveFailed: 'Enregistrement impossible. Le document reste marqué comme non enregistré.',
   layeredSaveNotice:
     'Enregistrement au format PSD pour conserver les calques et les données de modification.',
+  openFailed: "Impossible d'ouvrir le fichier. Ouvrez-le à nouveau depuis l'application.",
 } satisfies Record<keyof typeof zh, string>

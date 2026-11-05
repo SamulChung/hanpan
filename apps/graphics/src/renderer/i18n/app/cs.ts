@@ -7,4 +7,5 @@ export const cs = {
   notInstalled: 'Tato instalace tuto aplikaci neobsahuje.',
   saveFailed: 'Uložení se nezdařilo. Dokument zůstává neuložený.',
   layeredSaveNotice: 'Ukládá se jako PSD, aby zůstaly vrstvy a data úprav.',
+  openFailed: 'Soubor se nepodařilo otevřít. Otevřete ho znovu v aplikaci.',
 } satisfies Record<keyof typeof zh, string>

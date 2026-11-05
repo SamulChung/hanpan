@@ -25,6 +25,7 @@ function fakeApi() {
     getTheme: vi.fn(async () => 'light'),
     onThemeChanged: on('theme'),
     consumeOpen: vi.fn(async () => null),
+    confirmOpened: vi.fn(),
     setDirty: vi.fn(),
     onSaveRequest: on('save'),
     sendSaveRequestAck: vi.fn(),

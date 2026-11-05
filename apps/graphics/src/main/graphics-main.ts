@@ -77,6 +77,8 @@ export function configureGraphicsRuntime(paths: GraphicsRuntime): void {
 const kindByWc = new Map<number, GraphicsKind>()
 /** The file a view was made for, handed to its page once */
 const pendingOpenByWc = new Map<number, string>()
+/** The file handed to the page, until the page says the app opened it */
+const handedOpenByWc = new Map<number, string>()
 /** Current save target per view; absent = a new document */
 const savePathByWc = new Map<number, string>()
 /** The target `begin-save` chose; `commit-save` writes nowhere else */
@@ -111,6 +113,7 @@ export function graphicsFileRenamed(contents: WebContents, oldPath: string, newP
   const wcId = contents.id
   if (savePathByWc.get(wcId) === oldPath) savePathByWc.set(wcId, newPath)
   if (pendingOpenByWc.get(wcId) === oldPath) pendingOpenByWc.set(wcId, newPath)
+  if (handedOpenByWc.get(wcId) === oldPath) handedOpenByWc.set(wcId, newPath)
 }
 
 function parentWindowOf(contents: WebContents): BrowserWindow | null {
@@ -284,6 +287,7 @@ function registerGraphicsIpc(): void {
     const path = pendingOpenByWc.get(e.sender.id)
     if (!path) return null
     pendingOpenByWc.delete(e.sender.id)
+    handedOpenByWc.set(e.sender.id, path)
     const bytes = new Uint8Array(await readFile(path))
     await rememberDiskState(e.sender.id, path)
     return { name: basename(path), path, bytes }
@@ -427,6 +431,15 @@ function registerGraphicsIpc(): void {
     return { name: basename(path), bytes: new Uint8Array(await readFile(path)) }
   })
 
+  // the save target is the opened file only once the app has opened it: a file the
+  // app could not read is never written over by whatever the person draws instead
+  ipcMain.on(GRAPHICS_CHANNELS.openConfirmed, (e, path: unknown) => {
+    const handed = handedOpenByWc.get(e.sender.id)
+    if (!handed || path !== handed) return
+    handedOpenByWc.delete(e.sender.id)
+    savePathByWc.set(e.sender.id, handed)
+  })
+
   ipcMain.on(GRAPHICS_CHANNELS.dirtyChanged, (e, dirty: unknown) => {
     if (dirty === true && kindByWc.has(e.sender.id)) dirtyByWc.add(e.sender.id)
     else dirtyByWc.delete(e.sender.id)
@@ -453,10 +466,7 @@ function registerGraphicsIpc(): void {
 function track(wc: WebContents, kind: GraphicsKind, openPath?: string | null): void {
   const wcId = wc.id
   kindByWc.set(wcId, kind)
-  if (openPath && existsSync(openPath)) {
-    pendingOpenByWc.set(wcId, openPath)
-    savePathByWc.set(wcId, openPath)
-  }
+  if (openPath && existsSync(openPath)) pendingOpenByWc.set(wcId, openPath)
   wc.setWindowOpenHandler(() => ({ action: 'deny' }))
   wc.on('will-navigate', (event, url) => {
     if (url !== wc.getURL()) event.preventDefault()
@@ -475,6 +485,7 @@ function track(wc: WebContents, kind: GraphicsKind, openPath?: string | null): v
   wc.once('destroyed', () => {
     kindByWc.delete(wcId)
     pendingOpenByWc.delete(wcId)
+    handedOpenByWc.delete(wcId)
     savePathByWc.delete(wcId)
     pendingTargetByWc.delete(wcId)
     dirtyByWc.delete(wcId)

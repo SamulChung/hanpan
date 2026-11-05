@@ -7,4 +7,5 @@ export const ru = {
   notInstalled: 'Эта установка не содержит это приложение.',
   saveFailed: 'Не удалось сохранить. Документ остаётся несохранённым.',
   layeredSaveNotice: 'Сохраняется в PSD, чтобы не потерять слои и данные правки.',
+  openFailed: 'Не удалось открыть файл. Откройте его снова в приложении.',
 } satisfies Record<keyof typeof zh, string>

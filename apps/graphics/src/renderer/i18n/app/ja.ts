@@ -7,4 +7,5 @@ export const ja = {
   notInstalled: 'このインストールにはこのアプリが含まれていません。',
   saveFailed: '保存できませんでした。ドキュメントは未保存のままです。',
   layeredSaveNotice: 'レイヤーと編集情報を残すため、PSD で保存します。',
+  openFailed: 'ファイルを開けませんでした。アプリからもう一度開いてください。',
 } satisfies Record<keyof typeof zh, string>

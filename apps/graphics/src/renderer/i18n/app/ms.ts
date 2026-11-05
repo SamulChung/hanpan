@@ -7,4 +7,5 @@ export const ms = {
   notInstalled: 'Pemasangan ini tidak termasuk aplikasi ini.',
   saveFailed: 'Tidak dapat menyimpan. Dokumen kekal bertanda belum disimpan.',
   layeredSaveNotice: 'Disimpan sebagai PSD untuk mengekalkan lapisan dan data suntingan.',
+  openFailed: 'Fail tidak dapat dibuka. Buka semula dari aplikasi.',
 } satisfies Record<keyof typeof zh, string>

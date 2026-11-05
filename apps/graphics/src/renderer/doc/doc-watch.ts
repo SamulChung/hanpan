@@ -3,6 +3,7 @@
  * asking every interval; one question at a time, and only changes are reported.
  */
 import type { DocInfo, GraphicsAdapter } from '../adapters'
+import { withTimeout } from '../frame/page-api'
 
 export interface DocWatch {
   stop(): void
@@ -14,15 +15,21 @@ export function watchDoc(
   adapter: Pick<GraphicsAdapter, 'docInfo'>,
   onChange: (info: DocInfo) => void,
   intervalMs = 1000,
+  /** an inspect that takes longer is given up and asked again */
+  callTimeoutMs = 20_000,
 ): DocWatch {
   let stopped = false
   let asking = false
   let last: DocInfo | null = null
+  /** bumped by resync: an answer to an older question is stale */
+  let generation = 0
   const tick = async (): Promise<void> => {
     if (asking || stopped) return
     asking = true
+    const asked = generation
     try {
-      const info = await adapter.docInfo()
+      const info = await withTimeout(adapter.docInfo(), callTimeoutMs, 'inspect')
+      if (asked !== generation) return
       if (
         !stopped &&
         (!last ||
@@ -36,7 +43,8 @@ export function watchDoc(
     } catch {
       // the app is busy or reloading: keep the last state
     } finally {
-      asking = false
+      // a question resync gave up on must not free the slot of the one asked after it
+      if (asked === generation) asking = false
     }
   }
   void tick()
@@ -48,6 +56,8 @@ export function watchDoc(
     },
     resync() {
       last = null
+      generation += 1
+      asking = false
       void tick()
     },
   }

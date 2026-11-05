@@ -118,6 +118,10 @@ function call<T>(channel: string, contents: FakeContents, ...args: unknown[]): P
 function fire(channel: string, contents: FakeContents, ...args: unknown[]): void {
   handlers.get(channel)!({ sender: contents }, ...args)
 }
+async function opened(wc: FakeContents, path: string): Promise<void> {
+  await call(GRAPHICS_CHANNELS.consumeOpen, wc)
+  fire(GRAPHICS_CHANNELS.openConfirmed, wc, path)
+}
 function viewFor(kind: 'photo' | 'illust', path?: string): FakeContents {
   return createGraphicsView(kind, path ?? null).webContents as unknown as FakeContents
 }
@@ -156,7 +160,28 @@ describe('the view', () => {
     expect(first.path).toBe(path)
     expect(Buffer.from(first.bytes).toString()).toBe('png-bytes')
     expect(await call(GRAPHICS_CHANNELS.consumeOpen, wc)).toBeNull()
+    // a save target only once the page says the app opened it
+    expect(graphicsFilePath(wc.id)).toBeUndefined()
+    fire(GRAPHICS_CHANNELS.openConfirmed, wc, path)
     expect(graphicsFilePath(wc.id)).toBe(path)
+  })
+
+  it('a file the app did not open is never saved over', async () => {
+    const path = join(dir, 'logo.ai')
+    writeFileSync(path, 'original')
+    const wc = viewFor('illust', path)
+    await call(GRAPHICS_CHANNELS.consumeOpen, wc)
+    // the app could not open it; the person makes a new drawing and presses Ctrl+S
+    showSaveDialog.mockResolvedValue({ canceled: true })
+    const begin = await call<BeginSaveResult>(GRAPHICS_CHANNELS.beginSave, wc, {
+      mode: 'save',
+      layered: false,
+    })
+    expect(showSaveDialog).toHaveBeenCalled()
+    expect(begin).toEqual({ ok: true, canceled: true })
+    // a confirmation for another path changes nothing
+    fire(GRAPHICS_CHANNELS.openConfirmed, wc, join(dir, 'other.ai'))
+    expect(graphicsFilePath(wc.id)).toBeUndefined()
   })
 })
 
@@ -165,6 +190,7 @@ describe('saving', () => {
     const path = join(dir, 'logo.svg')
     writeFileSync(path, '<svg/>')
     const wc = viewFor('illust', path)
+    await opened(wc, path)
     const begin = await call<BeginSaveResult>(GRAPHICS_CHANNELS.beginSave, wc, {
       mode: 'save',
       layered: false,
@@ -197,6 +223,7 @@ describe('saving', () => {
     const path = join(dir, 'cat.png')
     writeFileSync(path, 'x')
     const wc = viewFor('photo', path)
+    await opened(wc, path)
     showSaveDialog.mockResolvedValue({ canceled: false, filePath: join(dir, 'cat.psd') })
     const begin = await call<BeginSaveResult>(GRAPHICS_CHANNELS.beginSave, wc, {
       mode: 'save',
@@ -283,6 +310,7 @@ describe('saving', () => {
     const path = join(dir, 'logo.svg')
     writeFileSync(path, '<svg/>')
     const wc = viewFor('illust', path)
+    await opened(wc, path)
     const out = join(dir, 'logo.png')
     showSaveDialog.mockResolvedValue({ canceled: false, filePath: out })
     const result = await call<ExportResult>(GRAPHICS_CHANNELS.exportFile, wc, {

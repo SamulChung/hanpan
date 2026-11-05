@@ -7,4 +7,5 @@ export const th = {
   notInstalled: 'การติดตั้งนี้ไม่มีแอปนี้',
   saveFailed: 'บันทึกไม่ได้ เอกสารยังคงเป็นยังไม่ได้บันทึก',
   layeredSaveNotice: 'บันทึกเป็น PSD เพื่อเก็บเลเยอร์และข้อมูลการแก้ไขไว้',
+  openFailed: 'เปิดไฟล์ไม่ได้ โปรดเปิดอีกครั้งจากแอป',
 } satisfies Record<keyof typeof zh, string>

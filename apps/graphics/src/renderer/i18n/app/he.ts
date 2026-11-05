@@ -7,4 +7,5 @@ export const he = {
   notInstalled: 'התקנה זו אינה כוללת את האפליקציה הזו.',
   saveFailed: 'השמירה נכשלה. המסמך נשאר מסומן כלא שמור.',
   layeredSaveNotice: 'נשמר כ-PSD כדי לשמור על השכבות ונתוני העריכה.',
+  openFailed: 'לא ניתן היה לפתוח את הקובץ. פתחו אותו שוב מהאפליקציה.',
 } satisfies Record<keyof typeof zh, string>

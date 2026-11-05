@@ -7,4 +7,5 @@ export const en = {
   notInstalled: 'This installation does not include this app.',
   saveFailed: 'Could not save. The document stays marked as unsaved.',
   layeredSaveNotice: 'Saving as PSD to keep the layers and editing data.',
+  openFailed: 'Could not open the file. Open it again from the app.',
 } satisfies Record<keyof typeof zh, string>

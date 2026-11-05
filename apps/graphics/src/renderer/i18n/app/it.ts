@@ -7,4 +7,5 @@ export const it = {
   notInstalled: 'Questa installazione non include questa app.',
   saveFailed: 'Salvataggio non riuscito. Il documento resta non salvato.',
   layeredSaveNotice: 'Salvataggio in PSD per conservare livelli e dati di modifica.',
+  openFailed: "Impossibile aprire il file. Aprilo di nuovo dall'app.",
 } satisfies Record<keyof typeof zh, string>

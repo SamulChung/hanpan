@@ -10,6 +10,7 @@ import { createDirtyState, type DirtyState } from './doc/dirty-state'
 import { watchDoc, type DocWatch } from './doc/doc-watch'
 import { openPending } from './doc/open-flow'
 import { runSave, type SaveNoticeKey } from './doc/save-flow'
+import { singleFlight } from './doc/single-flight'
 import { copyBytes } from './frame/bytes'
 import { appFrameUrl, waitForPageApi } from './frame/page-api'
 import { clearIllustRecovery, seedPhotoPreferences } from './frame/storage-prep'
@@ -56,9 +57,16 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
     window.setTimeout(() => setNotice((current) => (current === key ? null : current)), 6000)
   }
 
-  const save = async (mode: SaveMode): Promise<boolean> => {
+  // one save at a time: a second request while one runs gets that run's outcome
+  const saveRef = useRef(
+    singleFlight(async (mode: SaveMode): Promise<boolean> => runSaveOnce(mode)),
+  )
+  const save = (mode: SaveMode): Promise<boolean> => saveRef.current(mode)
+
+  const runSaveOnce = async (mode: SaveMode): Promise<boolean> => {
     const adapter = adapterRef.current
     if (!adapter) return false
+    let savedName: string | null = null
     const ok = await runSave(mode, {
       adapter,
       api: window.graphicsApi,
@@ -68,8 +76,11 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
         begin: () => (hostOps.current += 1),
         end: () => (hostOps.current -= 1),
       },
+      savedAs: (name) => {
+        savedName = name
+      },
     })
-    await capturesRef.current?.noteHostSave()
+    if (savedName !== null) await capturesRef.current?.noteHostSave(savedName)
     // the save set the tab's mark; the app's own mark may have moved on meanwhile
     docWatchRef.current?.resync()
     return ok
@@ -122,13 +133,24 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
         }
         await adapter.afterReady()
         adapterRef.current = adapter
-        await openPending(adapter, () => window.graphicsApi.consumeOpen())
+        const opened = await openPending(
+          adapter,
+          () => window.graphicsApi.consumeOpen(),
+          (path) => window.graphicsApi.confirmOpened(path),
+        )
         if (!live) return
+        if (opened === 'failed') notify('openFailed')
         const captures = watchCaptures({
           adapter,
           intervalMs: pollMs,
           busy: () => hostOps.current > 0 || aiBusy.current,
-          onAppSave: () => void save('save'),
+          hostSaving: () => hostOps.current > 0,
+          // the app's own save wrote nothing to disk: Hanpan's save does, or the mark stays
+          onAppSave: () =>
+            void save('save').then((ok) => {
+              if (!ok) dirtyRef.current.saveFailed()
+            }),
+          onUnexpectedClean: () => dirtyRef.current.saveFailed(),
           onAppExport: (path) =>
             void (async () => {
               const format = extOf(path)
