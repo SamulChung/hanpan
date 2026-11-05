@@ -129,4 +129,55 @@ test.describe('AI Illustration tab', () => {
       await closeAndSaveVideo(launched, 'graphics-illust')
     }
   })
+
+  test('the quick actions center a shape and trace a placed picture', async () => {
+    const launched = await launchShell({ onboardingSeen: true, videoDir: 'graphics-quick' })
+    const { app, page } = launched
+    try {
+      await page.locator('.quick-card[data-new="illust"]').click()
+      const tab = await waitForPageWithUrl(app, '://illust/')
+      await expect
+        .poll(() => inApp<number>(tab, 'return (await vc.commands()).length').catch(() => 0), {
+          timeout: 60_000,
+        })
+        .toBeGreaterThan(1000)
+      await inApp(
+        tab,
+        "await vc.execute('file.newWithoutDialog', {}); await vc.execute('shape.rectangle', { x: 10, y: 10, width: 40, height: 20 }); await vc.execute('select.none', {}).catch(() => {}); return 1",
+      )
+      const history = () =>
+        inApp<number>(
+          tab,
+          "return (await vc.execute('document.inspect', { ids: [] })).history.length",
+        )
+
+      // Center on artboard: nothing selected, so everything is, then centred
+      const beforeCenter = await history()
+      await tab.locator('[data-quick="centerOnArtboard"]').click()
+      await expect.poll(history, { timeout: 10_000 }).toBeGreaterThan(beforeCenter)
+      await expect(tab.locator('.gx-notice')).not.toContainText('could not')
+
+      // Trace image: a picture placed and selected is traced without a file dialog
+      await inApp(
+        tab,
+        `const c = new OffscreenCanvas(32, 32); const g = c.getContext('2d');
+         g.fillStyle = '#000'; g.fillRect(0, 0, 32, 32); g.fillStyle = '#fff'; g.fillRect(8, 8, 16, 16);
+         const b = new Uint8Array(await (await c.convertToBlob({ type: 'image/png' })).arrayBuffer());
+         let s = ''; for (const x of b) s += String.fromCharCode(x);
+         await vc.execute('file.place', { name: 'dot.png', dataBase64: btoa(s), link: false });
+         return 1`,
+      )
+      const kind = await inApp<string>(
+        tab,
+        "const d = await vc.execute('document.inspect', { ids: [] }); return (await vc.execute('document.node', { id: d.selection[0] })).kind.type",
+      )
+      expect(kind).toBe('image')
+      const beforeTrace = await history()
+      await tab.locator('[data-quick="traceImage"]').click()
+      await expect.poll(history, { timeout: 20_000 }).toBeGreaterThan(beforeTrace)
+      await expect(tab.locator('.gx-notice')).not.toContainText('could not')
+    } finally {
+      await closeAndSaveVideo(launched, 'graphics-quick')
+    }
+  })
 })

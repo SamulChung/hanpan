@@ -67,3 +67,80 @@ body,
   background: var(--surface-subtle);
   font-size: 12.5px;
 }
+
+/* the quick-action buttons above the app */
+.gx-quick {
+  display: flex;
+  gap: 6px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-subtle);
+}
+
+.gx-quick-btn {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-8, 8px);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.gx-quick-btn:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+.gx-quick-btn:disabled {
+  color: var(--text-muted);
+  cursor: default;
+}
+
+/* the export dialog */
+.gx-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-overlay);
+}
+
+.gx-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 280px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-8, 8px);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.gx-dialog-title {
+  margin: 0 0 4px;
+  font-size: 15px;
+}
+
+.gx-dialog-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.gx-dialog-row input,
+.gx-dialog-row select {
+  width: 120px;
+  font: inherit;
+}
+
+.gx-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}

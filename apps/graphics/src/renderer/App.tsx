@@ -7,6 +7,10 @@ import type { Lang } from '@genoffice/i18n'
 import { createAdapter, type GraphicsAdapter } from './adapters'
 import { GraphicsAiDock } from './ai/AiDock'
 import { lockFrameInput } from './ai/input-lock'
+import { ExportDialog } from './quick/ExportDialog'
+import { QuickBar } from './quick/QuickBar'
+import { runQuickAction, type ExportChoice, type QuickActionId } from './quick/quick-actions'
+import { measureImage, resizeImage, type PixelSize } from './quick/resize'
 import { watchCaptures, type CaptureWatch } from './doc/capture-watch'
 import { createDirtyState, type DirtyState } from './doc/dirty-state'
 import { watchDoc, type DocWatch } from './doc/doc-watch'
@@ -17,7 +21,7 @@ import { copyBytes } from './frame/bytes'
 import { appFrameUrl, waitForPageApi } from './frame/page-api'
 import { clearIllustRecovery, seedPhotoPreferences } from './frame/storage-prep'
 import { useI18n, type StringKey } from './i18n/locale'
-import { APP_GLOBAL, EXPORT_FORMATS, appLanguage, extOf } from '../shared/kinds'
+import { APP_GLOBAL, appLanguage, extOf } from '../shared/kinds'
 import type { GraphicsKind } from '../shared/kinds'
 import type { ExportFormat, SaveMode } from '../shared/ipc'
 
@@ -32,16 +36,18 @@ export interface AppProps {
   pollMs?: number
 }
 
-/** The base of a document title for an export's suggested name. */
-function exportName(title: string | null, format: ExportFormat): string {
-  const base = (title ?? 'export').replace(/\.[^.]+$/, '')
-  return `${base}.${format}`
-}
-
 export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
   const { t } = useI18n()
   const [status, setStatus] = useState<Status>('checking')
-  const [notice, setNotice] = useState<StringKey | null>(null)
+  const [notice, setNotice] = useState<{ id: number; text: string } | null>(null)
+  const noticeSeq = useRef(0)
+  /** the AI or a quick action works on the document: the quick buttons wait */
+  const [appBusy, setAppBusy] = useState(false)
+  /** the export dialog, open while an export asks for its format and size */
+  const [exportAsk, setExportAsk] = useState<{
+    size: PixelSize
+    answer: (choice: ExportChoice | null) => void
+  } | null>(null)
   const [attempt, setAttempt] = useState(0)
   /** the app's adapter once it is up: the AI panel works through it */
   const [aiAdapter, setAiAdapter] = useState<GraphicsAdapter | null>(null)
@@ -55,11 +61,56 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
   const docWatchRef = useRef<DocWatch | null>(null)
   const titleRef = useRef<string | null>(null)
   const hostOps = useRef(0)
-  const aiBusy = useRef(false)
+  /** runs that own the document now (the AI's, a quick action's): the capture watch ignores the app */
+  const appLocks = useRef(0)
 
-  const notify = (key: SaveNoticeKey | StringKey): void => {
-    setNotice(key)
-    window.setTimeout(() => setNotice((current) => (current === key ? null : current)), 6000)
+  const notify = (key: SaveNoticeKey | StringKey, detail?: string): void => {
+    const id = ++noticeSeq.current
+    setNotice({ id, text: detail ? `${t(key)} ${detail}` : t(key) })
+    window.setTimeout(() => setNotice((current) => (current?.id === id ? null : current)), 6000)
+  }
+
+  /** The person's input to the app stops until the returned unlock; the quick buttons wait meanwhile. */
+  const lockApp = (): (() => void) => {
+    const unlockFrame =
+      frameRef.current && lockRef.current
+        ? lockFrameInput(frameRef.current, lockRef.current)
+        : () => {}
+    appLocks.current += 1
+    setAppBusy(true)
+    let done = false
+    return () => {
+      if (done) return
+      done = true
+      unlockFrame()
+      appLocks.current -= 1
+      if (appLocks.current === 0) setAppBusy(false)
+    }
+  }
+
+  const runQuick = async (id: QuickActionId): Promise<void> => {
+    const adapter = adapterRef.current
+    if (!adapter || appLocks.current > 0) return
+    const api = window.graphicsApi
+    const result = await runQuickAction(id, {
+      adapter,
+      pickImage: () => api.pickImage(),
+      exportFile: (request) => api.exportFile(request),
+      askExport: (_kind, size) =>
+        new Promise((resolve) =>
+          setExportAsk({
+            size,
+            answer: (choice) => {
+              setExportAsk(null)
+              resolve(choice)
+            },
+          }),
+        ),
+      lock: lockApp,
+      measure: measureImage,
+      resize: (bytes, width, height, format) => resizeImage(bytes, width, height, format),
+    })
+    if (result.messageKey) notify(result.messageKey, result.detail)
   }
 
   // one save at a time: a second request while one runs gets that run's outcome
@@ -149,7 +200,7 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
         const captures = watchCaptures({
           adapter,
           intervalMs: pollMs,
-          busy: () => hostOps.current > 0 || aiBusy.current,
+          busy: () => hostOps.current > 0 || appLocks.current > 0,
           hostSaving: () => hostOps.current > 0,
           // the app's own save wrote nothing to disk: Hanpan's save does, or the mark stays
           onAppSave: () =>
@@ -211,18 +262,8 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
             .catch(() => {})
           return
         }
-        void (async () => {
-          const format = EXPORT_FORMATS[kind][0]!
-          try {
-            await exportBytes(
-              await adapter.exportBytes(format),
-              exportName(titleRef.current, format),
-              format,
-            )
-          } catch {
-            notify('saveFailed')
-          }
-        })()
+        // the menu's Export: the export dialog, as the quick button does
+        void runQuick(kind === 'photo' ? 'exportAtSize' : 'exportPngSvg')
       }),
     ]
     return () => {
@@ -233,6 +274,9 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
 
   return (
     <div className="gx-app" data-kind={kind} data-status={status}>
+      {status === 'ready' && (
+        <QuickBar kind={kind} disabled={appBusy} onRun={(id) => void runQuick(id)} />
+      )}
       <div className="gx-body">
         <div className="gx-stage">
           {frameOn && (
@@ -269,20 +313,17 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
           <GraphicsAiDock
             kind={kind}
             adapter={aiAdapter}
-            lockFrame={() =>
-              frameRef.current && lockRef.current
-                ? lockFrameInput(frameRef.current, lockRef.current)
-                : () => {}
-            }
-            onBusyChange={(running) => {
-              aiBusy.current = running
+            lockFrame={lockApp}
+            onBusyChange={() => {
+              // the lock above already marks the run as the app's owner
             }}
           />
         )}
       </div>
+      {exportAsk && <ExportDialog kind={kind} size={exportAsk.size} onDone={exportAsk.answer} />}
       {notice && (
         <div className="gx-notice" role="status">
-          {t(notice)}
+          {notice.text}
         </div>
       )}
     </div>
