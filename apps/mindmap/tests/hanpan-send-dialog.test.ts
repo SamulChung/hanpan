@@ -74,7 +74,7 @@ const selects = () => container.querySelectorAll('.hp-send-form select').length
 const textFields = () => container.querySelectorAll('.hp-send-form input[type="text"]').length
 
 describe('the send dialog and the Korean document features switch', () => {
-  it('sends a plain chapter report to Word when Korean features are off', async () => {
+  it('sends a numbered outline in a basic look to Word when Korean features are off', async () => {
     await openDialog('vi', 'docx')
     expect(selects()).toBe(0)
     expect(textFields()).toBe(0)
@@ -82,8 +82,8 @@ describe('the send dialog and the Korean document features switch', () => {
     expect(sendToDocument).toHaveBeenCalledWith(
       expect.objectContaining({
         target: 'docx',
-        style: 'chapter-report',
-        theme: 'plain',
+        style: 'outline',
+        theme: 'basic',
         date: undefined,
         department: undefined,
       }),

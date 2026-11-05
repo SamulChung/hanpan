@@ -64,17 +64,19 @@ export function outlineToBlocks(outline: PanOutline, options: BlockOptions): Doc
     }
   }
 
+  // the first level becomes chapters, and the item ladder starts one level down
+  const chapters = options.style === 'chapter-report' || options.style === 'outline'
   const visit = (nodes: readonly PanNode[], depth: number): void => {
     nodes.forEach((node, i) => {
       const marker = markerFor(options.style, depth, i + 1, nodes.length)
-      if (options.style === 'chapter-report' && depth === 0) {
+      if (chapters && depth === 0) {
         blocks.push({ kind: 'chapter', label: marker, text: node.title, key: node.key })
       } else {
         // in a chapter report the symbol ladder starts one level down
-        const itemDepth = options.style === 'chapter-report' ? depth - 1 : depth
+        const itemDepth = chapters ? depth - 1 : depth
         blocks.push({ kind: 'item', depth: itemDepth, marker, text: node.title, key: node.key })
       }
-      const ownDepth = options.style === 'chapter-report' ? Math.max(0, depth - 1) : depth
+      const ownDepth = chapters ? Math.max(0, depth - 1) : depth
       if (includeBodies && node.body) {
         for (const line of node.body.split('\n').map((l) => l.trim()).filter(Boolean)) {
           blocks.push({ kind: 'para', depth: ownDepth, text: line, role: 'body', key: node.key })

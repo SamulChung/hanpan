@@ -3,8 +3,8 @@
  * the fonts, and whether the map's words go as they are or the AI writes
  * sentences for them; the shell makes the document and opens it in a new tab,
  * linked to this map. With the Korean document features off (decision 0091) a
- * Word report skips the Korean report settings and goes out as a plain
- * chapter report.
+ * Word report skips the Korean report settings and goes out as a numbered
+ * outline in a basic look.
  *
  * The AI is whatever the person chose in Settings: a local model (Ollama,
  * LM Studio, vLLM) when one is set up. If it does not answer, the map is sent
@@ -152,8 +152,8 @@ export function SendDialog(p: {
     const result = await window.mindmapApi.sendToDocument?.({
       target: p.target,
       outline,
-      style: reportSettings ? style : isDocument ? 'chapter-report' : 'report',
-      theme: isDocument && !reportSettings ? 'plain' : theme === 'plain' ? 'plain' : undefined,
+      style: reportSettings ? style : isDocument ? 'outline' : 'report',
+      theme: isDocument && !reportSettings ? 'basic' : theme === 'plain' ? 'plain' : undefined,
       date: reportSettings && date.trim() ? date.trim() : undefined,
       department: reportSettings && department.trim() ? department.trim() : undefined,
       includeNotes: notes,

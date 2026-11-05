@@ -82,10 +82,30 @@ export const PLAIN_THEME: DocTheme = {
   indentStep: 12,
 }
 
+/**
+ * Hanpan without its Korean document features (decision 0091): one font that
+ * Windows and macOS both carry and that covers Vietnamese and the other
+ * Latin, Cyrillic and Greek scripts the UI speaks.
+ */
+export const BASIC_THEME: DocTheme = {
+  id: 'basic',
+  title: { font: 'Arial', size: 18, bold: true, align: 'center', spacingAfter: 6, lineSpacing: 140 },
+  meta: { font: 'Arial', size: 10.5, align: 'right', spacingAfter: 10, lineSpacing: 140 },
+  chapter: { font: 'Arial', size: 14, bold: true, spacingBefore: 12, lineSpacing: 140 },
+  items: [
+    { font: 'Arial', size: 11.5, spacingBefore: 6, lineSpacing: 140 },
+    { font: 'Arial', size: 11, spacingBefore: 4, lineSpacing: 140 },
+  ],
+  body: { font: 'Arial', size: 11, lineSpacing: 140, align: 'left' },
+  reference: { font: 'Arial', size: 10, lineSpacing: 140 },
+  indentStep: 12,
+}
+
 export const DOC_THEMES: Record<string, DocTheme> = {
   report: REPORT_THEME,
   gongmun: GONGMUN_THEME,
   plain: PLAIN_THEME,
+  basic: BASIC_THEME,
 }
 
 export function themeFor(style: MarkerStyle, themeId?: string): DocTheme {
