@@ -19,6 +19,9 @@ import iconHtml from './assets/file-html.svg'
 import iconMindmap from './assets/file-mindmap.svg'
 import iconHwp from './assets/file-hwp.svg'
 import iconEpub from './assets/file-epub.svg'
+import iconPhoto from './assets/file-photo.svg'
+import iconIllust from './assets/file-illust.svg'
+import { GraphicsIcon } from './hanpan/GraphicsIcon'
 import { placeFolderMenu } from './folder-menu-position'
 import type {
   FolderEntry,
@@ -108,13 +111,31 @@ const FILE_ICONS: Record<string, string> = {
   hwp: iconHwp,
   hwpx: iconHwp,
   epub: iconEpub,
+  // AI Photo and AI Illustration (decision 0093)
+  psd: iconPhoto,
+  psb: iconPhoto,
+  png: iconPhoto,
+  jpg: iconPhoto,
+  jpeg: iconPhoto,
+  webp: iconPhoto,
+  gif: iconPhoto,
+  bmp: iconPhoto,
+  tif: iconPhoto,
+  tiff: iconPhoto,
+  heic: iconPhoto,
+  heif: iconPhoto,
+  avif: iconPhoto,
+  svg: iconIllust,
+  svgz: iconIllust,
+  ai: iconIllust,
+  vectorcraft: iconIllust,
 }
 
 /* Formats the open-local card advertises. Too long for the card at any window
    width, so it ellipsizes and a hover ScreenTip carries the full list. Keep in
    sync with the main-process open-dialog filter (OPEN_DIALOG_EXTENSIONS). */
 const OPEN_LOCAL_EXTENSIONS =
-  '.docx / .odt / .xlsx / .xlsm / .xls / .csv / .tsv / .pptx / .pdf / .md / .html / .xmind / .hwp / .hwpx / .epub'
+  '.docx / .odt / .xlsx / .xlsm / .xls / .csv / .tsv / .pptx / .pdf / .md / .html / .xmind / .hwp / .hwpx / .epub / .psd / .png / .jpg / .webp / .svg / .ai'
 
 /** drag payload of home file/folder rows (JSON array of absolute paths) */
 const DRAG_PATHS_MIME = 'application/x-genoffice-paths'
@@ -309,6 +330,8 @@ const FILTERS: { key: string; label: StringKey }[] = [
   { key: 'xmind', label: 'filterMindmap' },
   { key: 'hwp', label: 'filterHwp' },
   { key: 'epub', label: 'filterEpub' },
+  { key: 'photo', label: 'filterPhoto' },
+  { key: 'illust', label: 'filterIllust' },
 ]
 
 /** sidebar filter keys that stand for a family of extensions (mirrors recent-files.ts) */
@@ -319,6 +342,22 @@ const FILTER_FAMILY: Record<string, readonly string[]> = {
   md: ['md', 'markdown', 'txt', 'json'],
   html: ['html', 'htm'],
   hwp: ['hwp', 'hwpx'],
+  photo: [
+    'psd',
+    'psb',
+    'png',
+    'jpg',
+    'jpeg',
+    'webp',
+    'gif',
+    'bmp',
+    'tif',
+    'tiff',
+    'heic',
+    'heif',
+    'avif',
+  ],
+  illust: ['svg', 'svgz', 'ai', 'vectorcraft'],
 }
 
 function matchesFilter(entry: RecentEntry, filter: string): boolean {
@@ -1902,6 +1941,18 @@ export function Home({
       action: () => window.aiOffice.newHwp(newFileOpts),
     },
     {
+      ext: 'psd',
+      title: t('newPhoto'),
+      sub: '.psd',
+      action: () => window.aiOffice.newPhoto(newFileOpts),
+    },
+    {
+      ext: 'vectorcraft',
+      title: t('newIllust'),
+      sub: '.vectorcraft',
+      action: () => window.aiOffice.newIllust(newFileOpts),
+    },
+    {
       ext: 'pdf',
       title: t('newPdf'),
       sub: '.pdf',
@@ -2034,6 +2085,34 @@ export function Home({
         ai: false,
         tip: t('pdfToolsCardSub'),
         action: () => window.aiOfficePdfToolsHome.open(),
+      },
+      // decision 0093: the PhotoCraft and VectorCraft web apps in tabs, with an AI assistant
+      {
+        key: 'photo',
+        icon: (
+          <span className="quick-folder" aria-hidden="true">
+            <GraphicsIcon kind="photo" />
+          </span>
+        ),
+        title: t('newPhoto'),
+        ai: true,
+        // the app it is built on, under what it does (the original names stay)
+        sub: 'PhotoCraft',
+        tip: t('hpPhotoTip') as string | undefined,
+        action: () => window.aiOffice.newPhoto(newFileOpts),
+      },
+      {
+        key: 'illust',
+        icon: (
+          <span className="quick-folder" aria-hidden="true">
+            <GraphicsIcon kind="illust" />
+          </span>
+        ),
+        title: t('newIllust'),
+        ai: true,
+        sub: 'VectorCraft',
+        tip: t('hpIllustTip') as string | undefined,
+        action: () => window.aiOffice.newIllust(newFileOpts),
       },
       {
         key: 'open',

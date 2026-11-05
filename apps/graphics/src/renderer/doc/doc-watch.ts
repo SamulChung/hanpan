@@ -4,11 +4,17 @@
  */
 import type { DocInfo, GraphicsAdapter } from '../adapters'
 
+export interface DocWatch {
+  stop(): void
+  /** Report the state again at the next look, changed or not: a save has reset the tab's mark. */
+  resync(): void
+}
+
 export function watchDoc(
   adapter: Pick<GraphicsAdapter, 'docInfo'>,
   onChange: (info: DocInfo) => void,
   intervalMs = 1000,
-): () => void {
+): DocWatch {
   let stopped = false
   let asking = false
   let last: DocInfo | null = null
@@ -35,8 +41,14 @@ export function watchDoc(
   }
   void tick()
   const timer = setInterval(() => void tick(), intervalMs)
-  return () => {
-    stopped = true
-    clearInterval(timer)
+  return {
+    stop() {
+      stopped = true
+      clearInterval(timer)
+    },
+    resync() {
+      last = null
+      void tick()
+    },
   }
 }

@@ -7,7 +7,7 @@ import type { Lang } from '@genoffice/i18n'
 import { createAdapter, type GraphicsAdapter } from './adapters'
 import { watchCaptures, type CaptureWatch } from './doc/capture-watch'
 import { createDirtyState, type DirtyState } from './doc/dirty-state'
-import { watchDoc } from './doc/doc-watch'
+import { watchDoc, type DocWatch } from './doc/doc-watch'
 import { openPending } from './doc/open-flow'
 import { runSave, type SaveNoticeKey } from './doc/save-flow'
 import { copyBytes } from './frame/bytes'
@@ -46,6 +46,7 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
     createDirtyState((dirty) => window.graphicsApi.setDirty(dirty)),
   )
   const capturesRef = useRef<CaptureWatch | null>(null)
+  const docWatchRef = useRef<DocWatch | null>(null)
   const titleRef = useRef<string | null>(null)
   const hostOps = useRef(0)
   const aiBusy = useRef(false)
@@ -69,6 +70,8 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
       },
     })
     await capturesRef.current?.noteHostSave()
+    // the save set the tab's mark; the app's own mark may have moved on meanwhile
+    docWatchRef.current?.resync()
     return ok
   }
 
@@ -98,9 +101,12 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [kind, probeWeb, attempt])
 
+  // the frame stands while the app loads and runs; a change between the two must not unwire it
+  const frameOn = status === 'loading' || status === 'ready'
+
   // the app's API is up: wire it
   useEffect(() => {
-    if (status !== 'loading' || !frameRef.current) return
+    if (!frameOn || !frameRef.current) return
     let live = true
     const stops: (() => void)[] = []
     void (async () => {
@@ -132,17 +138,17 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
         })
         capturesRef.current = captures
         stops.push(() => captures.stop())
-        stops.push(
-          watchDoc(
-            adapter,
-            (info) => {
-              titleRef.current = info.title
-              dirtyRef.current.fromApp(info.hasDocument && info.dirty)
-              captures.noteDoc(info)
-            },
-            pollMs,
-          ),
+        const docWatch = watchDoc(
+          adapter,
+          (info) => {
+            titleRef.current = info.title
+            dirtyRef.current.fromApp(info.hasDocument && info.dirty)
+            captures.noteDoc(info)
+          },
+          pollMs,
         )
+        docWatchRef.current = docWatch
+        stops.push(() => docWatch.stop())
         setStatus('ready')
       } catch {
         if (live) setStatus('failed')
@@ -154,7 +160,7 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
     }
     // save/exportBytes read refs only
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status === 'loading', kind, pollMs])
+  }, [frameOn, kind, pollMs, attempt])
 
   // Hanpan's menus and the close question
   useEffect(() => {
@@ -196,11 +202,10 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [kind])
 
-  const showFrame = status === 'loading' || status === 'ready'
   return (
     <div className="gx-app" data-kind={kind} data-status={status}>
       <div className="gx-stage">
-        {showFrame && (
+        {frameOn && (
           <iframe
             ref={frameRef}
             className="gx-frame"

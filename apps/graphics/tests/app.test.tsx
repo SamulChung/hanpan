@@ -135,6 +135,20 @@ describe('the host page', () => {
     expect(frame()).toBeNull()
   })
 
+  it('keeps following the document after it is ready', async () => {
+    const { api } = fakeApi()
+    await mount('illust')
+    await until(() => frame() !== null)
+    const page = readyPage().withDocument('Untitled-1', false)
+    ;(frame()!.contentWindow as unknown as Record<string, unknown>).vectorcraft = page
+    await until(() => !host.textContent!.includes('앱을 불러오는 중'))
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 100))
+    })
+    page.edit('Rectangle')
+    await until(() => api.setDirty.mock.calls.some(([d]) => d === true))
+  })
+
   it('answers a close-save request with the save result', async () => {
     const { api, listeners } = fakeApi()
     await mount('illust')

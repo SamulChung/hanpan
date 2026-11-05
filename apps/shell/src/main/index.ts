@@ -59,6 +59,10 @@ import menuHwpIcon1x from './assets/menu-hwp.png?asset'
 import menuHwpIcon2x from './assets/menu-hwp@2x.png?asset'
 import menuEpubIcon1x from './assets/menu-epub.png?asset'
 import menuEpubIcon2x from './assets/menu-epub@2x.png?asset'
+import menuPhotoIcon1x from './assets/menu-photo.png?asset'
+import menuPhotoIcon2x from './assets/menu-photo@2x.png?asset'
+import menuIllustIcon1x from './assets/menu-illust.png?asset'
+import menuIllustIcon2x from './assets/menu-illust@2x.png?asset'
 import menuHomeIcon1x from './assets/menu-home.png?asset'
 import menuHomeIcon2x from './assets/menu-home@2x.png?asset'
 import { gonguImageSearch, testGonguKey } from '@genoffice/ai-search'
@@ -341,6 +345,15 @@ import {
   setEpubFileSavedHook,
 } from '../../../epub/src/main/epub-main'
 import { epubReadText, epubSaveToPath } from '../../../epub/src/main/mcp-queries'
+import {
+  configureGraphicsRuntime,
+  graphicsFileRenamed,
+  requestGraphicsSave,
+  sendGraphicsMenuCommand,
+  setGraphicsFileSavedHook,
+} from '../../../graphics/src/main/graphics-main'
+import { OPEN_EXTS } from '../../../graphics/src/shared/kinds'
+import { graphicsResponseHeaders } from './graphics-headers'
 import type { EpubMenuCommand } from '../../../epub/src/shared/ipc'
 import { migrateJobRecords } from './pdf-structure/job-migration'
 import type {
@@ -405,6 +418,8 @@ import {
   MINDMAP_RE,
   HWP_RE,
   EPUB_RE,
+  PHOTO_RE,
+  ILLUST_RE,
   PDF_RE,
   PPTX_RE,
   TEXT_RE,
@@ -645,6 +660,9 @@ const HWP_OUT = app.isPackaged
 const EPUB_OUT = app.isPackaged
   ? join(process.resourcesPath, 'modules', 'epub')
   : join(APPS_ROOT, 'epub', 'out')
+const GRAPHICS_OUT = app.isPackaged
+  ? join(process.resourcesPath, 'modules', 'graphics')
+  : join(APPS_ROOT, 'graphics', 'out')
 const SIDECAR_BIN = app.isPackaged
   ? join(process.resourcesPath, 'native', SIDECAR_EXE)
   : join(APPS_ROOT, 'sheets', 'native', 'xlsx-engine', 'target', 'release', SIDECAR_EXE)
@@ -745,6 +763,15 @@ configureEpubRuntime({
   migrateJobRecords,
   // a result book is never written over a file open in any tab or window
   isPathOpenInTab: (path) => isPathOpenInAnyTab(path),
+})
+// AI Photo and AI Illustration (decision 0093): the web apps in the graphics editor's tabs
+configureGraphicsRuntime({
+  preloadPath: join(GRAPHICS_OUT, 'preload', 'index.js'),
+  rendererUrl: process.env.GRAPHICS_RENDERER_URL,
+  rendererFile: join(GRAPHICS_OUT, 'renderer', 'index.html'),
+  openFileDialog: () => void openFileViaDialog(),
+  goHome: () => tabManager?.openHomeTab(),
+  newDocument: (kind) => (kind === 'photo' ? newPhotoTab() : newIllustTab()),
 })
 // privileged-scheme registration is only legal before app ready, and only once
 // per process: the html module's call carries the book's asset scheme along
@@ -1067,6 +1094,13 @@ const tMain = createI18n({
     filterMindmap: '思维导图 (XMind 文件)',
     filterHwp: 'HWP 文档 (HWP, HWPX)',
     filterEpub: '电子书 (EPUB)',
+    menuNewPhoto: 'AI 照片',
+    menuNewIllust: 'AI 插画',
+    untitledPhoto: '未命名照片',
+    untitledIllust: '未命名插画',
+    filterPhoto: '照片和图片 (PSD, PNG, JPG…)',
+    filterIllust: '插画 (SVG, .ai, VectorCraft)',
+    menuExportImage: '导出为图片…',
     menuFind: '查找…',
     menuReplace: '替换…',
     menuTranslateBook: '翻译图书…',
@@ -1213,6 +1247,13 @@ const tMain = createI18n({
     filterMindmap: 'Mind Maps (XMind files)',
     filterHwp: 'HWP Documents (HWP, HWPX)',
     filterEpub: 'E-books (EPUB)',
+    menuNewPhoto: 'AI Photo',
+    menuNewIllust: 'AI Illustration',
+    untitledPhoto: 'Untitled Photo',
+    untitledIllust: 'Untitled Illustration',
+    filterPhoto: 'Photos and images (PSD, PNG, JPG…)',
+    filterIllust: 'Illustrations (SVG, .ai, VectorCraft)',
+    menuExportImage: 'Export as Image…',
     menuFind: 'Find…',
     menuReplace: 'Replace…',
     menuTranslateBook: 'Translate Book…',
@@ -1367,6 +1408,13 @@ const tMain = createI18n({
     filterMindmap: 'Sơ đồ tư duy (tệp XMind)',
     filterHwp: 'Tài liệu HWP (HWP, HWPX)',
     filterEpub: 'Sách điện tử (EPUB)',
+    menuNewPhoto: 'Ảnh AI',
+    menuNewIllust: 'Minh họa AI',
+    untitledPhoto: 'Ảnh chưa có tiêu đề',
+    untitledIllust: 'Minh họa chưa có tiêu đề',
+    filterPhoto: 'Ảnh và hình (PSD, PNG, JPG…)',
+    filterIllust: 'Minh họa (SVG, .ai, VectorCraft)',
+    menuExportImage: 'Xuất thành ảnh…',
     menuFind: 'Tìm…',
     menuReplace: 'Thay thế…',
     menuTranslateBook: 'Dịch sách…',
@@ -1522,6 +1570,13 @@ const tMain = createI18n({
     filterMindmap: 'マインドマップ (XMind ファイル)',
     filterHwp: 'HWP ドキュメント (HWP, HWPX)',
     filterEpub: '電子書籍 (EPUB)',
+    menuNewPhoto: 'AI フォト',
+    menuNewIllust: 'AI イラスト',
+    untitledPhoto: '無題の写真',
+    untitledIllust: '無題のイラスト',
+    filterPhoto: '写真と画像 (PSD, PNG, JPG…)',
+    filterIllust: 'イラスト (SVG, .ai, VectorCraft)',
+    menuExportImage: '画像として書き出し…',
     menuFind: '検索…',
     menuReplace: '置換…',
     menuTranslateBook: '本を翻訳…',
@@ -1678,6 +1733,13 @@ const tMain = createI18n({
     filterMindmap: '마인드맵 (XMind 파일)',
     filterHwp: '한글 문서 (HWP, HWPX)',
     filterEpub: '전자책 (EPUB)',
+    menuNewPhoto: 'AI 포토',
+    menuNewIllust: 'AI 일러스트',
+    untitledPhoto: '제목 없는 사진',
+    untitledIllust: '제목 없는 일러스트',
+    filterPhoto: '사진·이미지 (PSD, PNG, JPG…)',
+    filterIllust: '일러스트 (SVG, .ai, VectorCraft)',
+    menuExportImage: '그림으로 내보내기…',
     menuFind: '찾기…',
     menuReplace: '바꾸기…',
     menuTranslateBook: '책 번역…',
@@ -1832,6 +1894,13 @@ const tMain = createI18n({
     filterMindmap: 'Cartes mentales (fichiers XMind)',
     filterHwp: 'Documents HWP (HWP, HWPX)',
     filterEpub: 'Livres numériques (EPUB)',
+    menuNewPhoto: 'Photo IA',
+    menuNewIllust: 'Illustration IA',
+    untitledPhoto: 'Photo sans titre',
+    untitledIllust: 'Illustration sans titre',
+    filterPhoto: 'Photos et images (PSD, PNG, JPG…)',
+    filterIllust: 'Dessins vectoriels (SVG, .ai, VectorCraft)',
+    menuExportImage: 'Exporter en image…',
     menuFind: 'Rechercher…',
     menuReplace: 'Remplacer…',
     menuTranslateBook: 'Traduire le livre…',
@@ -1989,6 +2058,13 @@ const tMain = createI18n({
     filterMindmap: 'Mindmaps (XMind-Dateien)',
     filterHwp: 'HWP-Dokumente (HWP, HWPX)',
     filterEpub: 'E-Books (EPUB)',
+    menuNewPhoto: 'KI-Foto',
+    menuNewIllust: 'KI-Illustration',
+    untitledPhoto: 'Unbenanntes Foto',
+    untitledIllust: 'Unbenannte Illustration',
+    filterPhoto: 'Fotos und Bilder (PSD, PNG, JPG…)',
+    filterIllust: 'Illustrationen (SVG, .ai, VectorCraft)',
+    menuExportImage: 'Als Bild exportieren…',
     menuFind: 'Suchen…',
     menuReplace: 'Ersetzen…',
     menuTranslateBook: 'Buch übersetzen…',
@@ -2146,6 +2222,13 @@ const tMain = createI18n({
     filterMindmap: 'Mapas mentales (archivos XMind)',
     filterHwp: 'Documentos HWP (HWP, HWPX)',
     filterEpub: 'Libros electrónicos (EPUB)',
+    menuNewPhoto: 'Foto IA',
+    menuNewIllust: 'Ilustración IA',
+    untitledPhoto: 'Foto sin título',
+    untitledIllust: 'Ilustración sin título',
+    filterPhoto: 'Fotos e imágenes (PSD, PNG, JPG…)',
+    filterIllust: 'Ilustraciones (SVG, .ai, VectorCraft)',
+    menuExportImage: 'Exportar como imagen…',
     menuFind: 'Buscar…',
     menuReplace: 'Reemplazar…',
     menuTranslateBook: 'Traducir libro…',
@@ -2302,6 +2385,13 @@ const tMain = createI18n({
     filterMindmap: 'แผนที่ความคิด (ไฟล์ XMind)',
     filterHwp: 'เอกสาร HWP (HWP, HWPX)',
     filterEpub: 'หนังสืออิเล็กทรอนิกส์ (EPUB)',
+    menuNewPhoto: 'ภาพถ่าย AI',
+    menuNewIllust: 'ภาพประกอบ AI',
+    untitledPhoto: 'ภาพถ่ายไม่มีชื่อ',
+    untitledIllust: 'ภาพประกอบไม่มีชื่อ',
+    filterPhoto: 'ภาพถ่ายและรูปภาพ (PSD, PNG, JPG…)',
+    filterIllust: 'ภาพประกอบ (SVG, .ai, VectorCraft)',
+    menuExportImage: 'ส่งออกเป็นรูปภาพ…',
     menuFind: 'ค้นหา…',
     menuReplace: 'แทนที่…',
     menuTranslateBook: 'แปลหนังสือ…',
@@ -2454,6 +2544,13 @@ const tMain = createI18n({
     filterMindmap: 'Peta pikiran (file XMind)',
     filterHwp: 'Dokumen HWP (HWP, HWPX)',
     filterEpub: 'Buku elektronik (EPUB)',
+    menuNewPhoto: 'Foto AI',
+    menuNewIllust: 'Ilustrasi AI',
+    untitledPhoto: 'Foto tanpa judul',
+    untitledIllust: 'Ilustrasi tanpa judul',
+    filterPhoto: 'Foto dan gambar (PSD, PNG, JPG…)',
+    filterIllust: 'Ilustrasi (SVG, .ai, VectorCraft)',
+    menuExportImage: 'Ekspor sebagai gambar…',
     menuFind: 'Cari…',
     menuReplace: 'Ganti…',
     menuTranslateBook: 'Terjemahkan buku…',
@@ -2610,6 +2707,13 @@ const tMain = createI18n({
     filterMindmap: 'Интеллект-карты (файлы XMind)',
     filterHwp: 'Документы HWP (HWP, HWPX)',
     filterEpub: 'Электронные книги (EPUB)',
+    menuNewPhoto: 'ИИ-фото',
+    menuNewIllust: 'ИИ-иллюстрация',
+    untitledPhoto: 'Фото без названия',
+    untitledIllust: 'Иллюстрация без названия',
+    filterPhoto: 'Фото и изображения (PSD, PNG, JPG…)',
+    filterIllust: 'Иллюстрации (SVG, .ai, VectorCraft)',
+    menuExportImage: 'Экспорт в изображение…',
     menuFind: 'Найти…',
     menuReplace: 'Заменить…',
     menuTranslateBook: 'Перевести книгу…',
@@ -2765,6 +2869,13 @@ const tMain = createI18n({
     filterMindmap: 'خرائط ذهنية (ملفات XMind)',
     filterHwp: 'مستندات HWP (HWP, HWPX)',
     filterEpub: 'كتب إلكترونية (EPUB)',
+    menuNewPhoto: 'صور بالذكاء الاصطناعي',
+    menuNewIllust: 'رسوم بالذكاء الاصطناعي',
+    untitledPhoto: 'صورة بلا عنوان',
+    untitledIllust: 'رسم بلا عنوان',
+    filterPhoto: 'صور ورسوم (PSD, PNG, JPG…)',
+    filterIllust: 'رسوم توضيحية (SVG, .ai, VectorCraft)',
+    menuExportImage: 'تصدير كصورة…',
     menuFind: 'بحث…',
     menuReplace: 'استبدال…',
     menuTranslateBook: 'ترجمة الكتاب…',
@@ -2917,6 +3028,13 @@ const tMain = createI18n({
     filterMindmap: 'Mapas mentais (arquivos XMind)',
     filterHwp: 'Documentos HWP (HWP, HWPX)',
     filterEpub: 'Livros digitais (EPUB)',
+    menuNewPhoto: 'Foto IA',
+    menuNewIllust: 'Ilustração IA',
+    untitledPhoto: 'Foto sem título',
+    untitledIllust: 'Ilustração sem título',
+    filterPhoto: 'Fotos e imagens (PSD, PNG, JPG…)',
+    filterIllust: 'Ilustrações (SVG, .ai, VectorCraft)',
+    menuExportImage: 'Exportar como imagem…',
     menuFind: 'Localizar…',
     menuReplace: 'Substituir…',
     menuTranslateBook: 'Traduzir livro…',
@@ -3073,6 +3191,13 @@ const tMain = createI18n({
     filterMindmap: 'Mappe mentali (file XMind)',
     filterHwp: 'Documenti HWP (HWP, HWPX)',
     filterEpub: 'Libri digitali (EPUB)',
+    menuNewPhoto: 'Foto IA',
+    menuNewIllust: 'Illustrazione IA',
+    untitledPhoto: 'Foto senza titolo',
+    untitledIllust: 'Illustrazione senza titolo',
+    filterPhoto: 'Foto e immagini (PSD, PNG, JPG…)',
+    filterIllust: 'Illustrazioni (SVG, .ai, VectorCraft)',
+    menuExportImage: 'Esporta come immagine…',
     menuFind: 'Trova…',
     menuReplace: 'Sostituisci…',
     menuTranslateBook: 'Traduci libro…',
@@ -3229,6 +3354,13 @@ const tMain = createI18n({
     filterMindmap: 'Mapy myśli (pliki XMind)',
     filterHwp: 'Dokumenty HWP (HWP, HWPX)',
     filterEpub: 'E-booki (EPUB)',
+    menuNewPhoto: 'Zdjęcia AI',
+    menuNewIllust: 'Ilustracje AI',
+    untitledPhoto: 'Zdjęcie bez tytułu',
+    untitledIllust: 'Ilustracja bez tytułu',
+    filterPhoto: 'Zdjęcia i obrazy (PSD, PNG, JPG…)',
+    filterIllust: 'Ilustracje (SVG, .ai, VectorCraft)',
+    menuExportImage: 'Eksportuj jako obraz…',
     menuFind: 'Znajdź…',
     menuReplace: 'Zamień…',
     menuTranslateBook: 'Przetłumacz książkę…',
@@ -3384,6 +3516,13 @@ const tMain = createI18n({
     filterMindmap: 'Myšlenkové mapy (soubory XMind)',
     filterHwp: 'Dokumenty HWP (HWP, HWPX)',
     filterEpub: 'E-knihy (EPUB)',
+    menuNewPhoto: 'Fotky AI',
+    menuNewIllust: 'Ilustrace AI',
+    untitledPhoto: 'Fotka bez názvu',
+    untitledIllust: 'Ilustrace bez názvu',
+    filterPhoto: 'Fotky a obrázky (PSD, PNG, JPG…)',
+    filterIllust: 'Ilustrace (SVG, .ai, VectorCraft)',
+    menuExportImage: 'Exportovat jako obrázek…',
     menuFind: 'Najít…',
     menuReplace: 'Nahradit…',
     menuTranslateBook: 'Přeložit knihu…',
@@ -3538,6 +3677,13 @@ const tMain = createI18n({
     filterMindmap: 'Mindmaps (XMind-bestanden)',
     filterHwp: 'HWP-documenten (HWP, HWPX)',
     filterEpub: 'E-boeken (EPUB)',
+    menuNewPhoto: 'AI-foto',
+    menuNewIllust: 'AI-illustratie',
+    untitledPhoto: 'Naamloze foto',
+    untitledIllust: 'Naamloze illustratie',
+    filterPhoto: 'Foto’s en afbeeldingen (PSD, PNG, JPG…)',
+    filterIllust: 'Illustraties (SVG, .ai, VectorCraft)',
+    menuExportImage: 'Exporteren als afbeelding…',
     menuFind: 'Zoeken…',
     menuReplace: 'Vervangen…',
     menuTranslateBook: 'Boek vertalen…',
@@ -3695,6 +3841,13 @@ const tMain = createI18n({
     filterMindmap: 'Peta minda (fail XMind)',
     filterHwp: 'Dokumen HWP (HWP, HWPX)',
     filterEpub: 'Buku elektronik (EPUB)',
+    menuNewPhoto: 'Foto AI',
+    menuNewIllust: 'Ilustrasi AI',
+    untitledPhoto: 'Foto tanpa tajuk',
+    untitledIllust: 'Ilustrasi tanpa tajuk',
+    filterPhoto: 'Foto dan imej (PSD, PNG, JPG…)',
+    filterIllust: 'Ilustrasi (SVG, .ai, VectorCraft)',
+    menuExportImage: 'Eksport sebagai imej…',
     menuFind: 'Cari…',
     menuReplace: 'Ganti…',
     menuTranslateBook: 'Terjemah buku…',
@@ -3849,6 +4002,13 @@ const tMain = createI18n({
     filterMindmap: 'מפות חשיבה (קובצי XMind)',
     filterHwp: 'מסמכי HWP (HWP, HWPX)',
     filterEpub: 'ספרים אלקטרוניים (EPUB)',
+    menuNewPhoto: 'תמונות AI',
+    menuNewIllust: 'איורי AI',
+    untitledPhoto: 'תמונה ללא שם',
+    untitledIllust: 'איור ללא שם',
+    filterPhoto: 'תמונות ותצלומים (PSD, PNG, JPG…)',
+    filterIllust: 'איורים (SVG, .ai, VectorCraft)',
+    menuExportImage: 'ייצוא כתמונה…',
     menuFind: 'חיפוש…',
     menuReplace: 'החלפה…',
     menuTranslateBook: 'תרגום הספר…',
@@ -4002,6 +4162,13 @@ const tMain = createI18n({
     filterMindmap: 'माइंड मैप (XMind फ़ाइलें)',
     filterHwp: 'HWP दस्तावेज़ (HWP, HWPX)',
     filterEpub: 'ई-बुक (EPUB)',
+    menuNewPhoto: 'AI फ़ोटो',
+    menuNewIllust: 'AI चित्रण',
+    untitledPhoto: 'बिना शीर्षक फ़ोटो',
+    untitledIllust: 'बिना शीर्षक चित्रण',
+    filterPhoto: 'फ़ोटो और चित्र (PSD, PNG, JPG…)',
+    filterIllust: 'चित्रण (SVG, .ai, VectorCraft)',
+    menuExportImage: 'चित्र के रूप में निर्यात करें…',
     menuFind: 'खोजें…',
     menuReplace: 'बदलें…',
     menuTranslateBook: 'पुस्तक का अनुवाद करें…',
@@ -4157,6 +4324,13 @@ const tMain = createI18n({
     filterMindmap: '心智圖 (XMind 檔案)',
     filterHwp: 'HWP 文件 (HWP, HWPX)',
     filterEpub: '電子書 (EPUB)',
+    menuNewPhoto: 'AI 相片',
+    menuNewIllust: 'AI 插畫',
+    untitledPhoto: '未命名相片',
+    untitledIllust: '未命名插畫',
+    filterPhoto: '相片和圖片 (PSD, PNG, JPG…)',
+    filterIllust: '插畫 (SVG, .ai, VectorCraft)',
+    menuExportImage: '匯出為圖片…',
     menuFind: '尋找…',
     menuReplace: '取代…',
     menuTranslateBook: '翻譯書籍…',
@@ -4363,6 +4537,8 @@ function afterFileMoved(oldPath: string, newPath: string): void {
     else if (t.kind === 'mindmap') mindmapFileRenamed(t.webContents, oldPath, newPath)
     else if (t.kind === 'hwp') hwpFileRenamed(t.webContents, oldPath, newPath)
     else if (t.kind === 'epub') epubFileRenamed(t.webContents, oldPath, newPath)
+    else if (t.kind === 'photo' || t.kind === 'illust')
+      graphicsFileRenamed(t.webContents, oldPath, newPath)
     else if (t.kind === 'pdf') pdfFileRenamed(t.webContents, oldPath, newPath)
   }
 }
@@ -4441,6 +4617,8 @@ const SEARCH_EXT_FAMILY: Record<string, readonly string[]> = {
   md: ['md', 'markdown', 'txt', 'json'],
   html: ['html', 'htm'],
   hwp: ['hwp', 'hwpx'],
+  photo: OPEN_EXTS.photo,
+  illust: OPEN_EXTS.illust,
 }
 
 /** one recursive watcher per tree root; follows the save-folder setting and the added folders */
@@ -4584,6 +4762,10 @@ function applyMenuFor(kind: TabKind): void {
       break
     case 'epub':
       buildEpubMenu()
+      break
+    case 'photo':
+    case 'illust':
+      buildGraphicsMenu(kind)
       break
     default:
       buildHomeMenu()
@@ -4822,7 +5004,11 @@ function createShellWindow(): void {
                   ? tm('untitledMindmap')
                   : kind === 'hwp'
                     ? tm('untitledHwp')
-                    : tm('untitledSheet'),
+                    : kind === 'photo'
+                      ? tm('untitledPhoto')
+                      : kind === 'illust'
+                        ? tm('untitledIllust')
+                        : tm('untitledSheet'),
     // the tab strip is interface chrome, so its height follows the scale
     () => currentUiScale,
     // every split change: remember it, re-role the pane views, tell the strip
@@ -5019,6 +5205,14 @@ function createShellWindow(): void {
     detachedSetFileFor(wc.id, path)
     recordRecentFile(path)
   })
+  // a picture's or an illustration's first save or Save As lands on a new path
+  setGraphicsFileSavedHook((wc, path) => {
+    manager.setTabFileFor(wc.id, path)
+    detachedSetFileFor(wc.id, path)
+    recordRecentFile(path)
+    noteDocumentSaved(wc, path)
+    applyPendingDir(wc.id, path)
+  })
   setHtmlProvisionalTitleHook((wc, title) => {
     manager.setTabTitleFor(wc.id, title)
     detachedSetTitleFor(wc.id, title)
@@ -5141,6 +5335,8 @@ const OPEN_DIALOG_EXTENSIONS = [
   'hwp',
   'hwpx',
   'epub',
+  ...OPEN_EXTS.photo,
+  ...OPEN_EXTS.illust,
 ]
 
 function notifyUnsupportedFile(filePath: string): void {
@@ -5284,6 +5480,20 @@ function routeDocumentPath(filePath: string): boolean {
     const existing = tabManager.findEpubTabByPath(filePath)
     if (existing) tabManager.activateTab(existing)
     else tabManager.openEpubTab(filePath)
+    return true
+  }
+  if (PHOTO_RE.test(filePath)) {
+    recordRecentFile(filePath)
+    const existing = tabManager.findPhotoTabByPath(filePath)
+    if (existing) tabManager.activateTab(existing)
+    else tabManager.openPhotoTab(filePath)
+    return true
+  }
+  if (ILLUST_RE.test(filePath)) {
+    recordRecentFile(filePath)
+    const existing = tabManager.findIllustTabByPath(filePath)
+    if (existing) tabManager.activateTab(existing)
+    else tabManager.openIllustTab(filePath)
     return true
   }
   notifyUnsupportedFile(filePath)
@@ -5493,6 +5703,22 @@ function newMindmapTab(): void {
 function newHwpTab(): void {
   try {
     bindPendingDir('hwp', tabManager?.openHwpTab())
+  } catch (err) {
+    surfaceNewTabError(err)
+  }
+}
+
+function newPhotoTab(): void {
+  try {
+    bindPendingDir('photo', tabManager?.openPhotoTab())
+  } catch (err) {
+    surfaceNewTabError(err)
+  }
+}
+
+function newIllustTab(): void {
+  try {
+    bindPendingDir('illust', tabManager?.openIllustTab())
   } catch (err) {
     surfaceNewTabError(err)
   }
@@ -5773,6 +5999,8 @@ function registerHomeIpc(): void {
         { name: tm('filterMindmap'), extensions: ['xmind'] },
         { name: tm('filterHwp'), extensions: ['hwp', 'hwpx'] },
         { name: tm('filterEpub'), extensions: ['epub'] },
+        { name: tm('filterPhoto'), extensions: [...OPEN_EXTS.photo] },
+        { name: tm('filterIllust'), extensions: [...OPEN_EXTS.illust] },
       ],
       properties: ['openFile', 'multiSelections'],
     })
@@ -5812,6 +6040,16 @@ function registerHomeIpc(): void {
   ipcMain.handle(HOME_CHANNELS.newHwp, (_event, opts?: NewFileOpts) => {
     rememberPendingDir('hwp', opts)
     newHwpTab()
+  })
+
+  ipcMain.handle(HOME_CHANNELS.newPhoto, (_event, opts?: NewFileOpts) => {
+    rememberPendingDir('photo', opts)
+    newPhotoTab()
+  })
+
+  ipcMain.handle(HOME_CHANNELS.newIllust, (_event, opts?: NewFileOpts) => {
+    rememberPendingDir('illust', opts)
+    newIllustTab()
   })
 
   ipcMain.handle(HOME_CHANNELS.newPdf, (_event, opts?: NewFileOpts) => {
@@ -6380,6 +6618,8 @@ interface MenuIconSet {
   mindmap: NativeImage
   hwp: NativeImage
   epub: NativeImage
+  photo: NativeImage
+  illust: NativeImage
   home: NativeImage
 }
 let menuIconCache: MenuIconSet | null = null
@@ -6394,6 +6634,8 @@ function menuIcons(): MenuIconSet {
     mindmap: loadMenuIcon(menuMindmapIcon1x, menuMindmapIcon2x),
     hwp: loadMenuIcon(menuHwpIcon1x, menuHwpIcon2x),
     epub: loadMenuIcon(menuEpubIcon1x, menuEpubIcon2x),
+    photo: loadMenuIcon(menuPhotoIcon1x, menuPhotoIcon2x),
+    illust: loadMenuIcon(menuIllustIcon1x, menuIllustIcon2x),
     home: loadMenuIcon(menuHomeIcon1x, menuHomeIcon2x),
   }
   return menuIconCache
@@ -6410,6 +6652,8 @@ const TAB_MENU_ICON: Record<TabKind, keyof MenuIconSet> = {
   mindmap: 'mindmap',
   hwp: 'hwp',
   epub: 'epub',
+  photo: 'photo',
+  illust: 'illust',
   help: 'home',
 }
 
@@ -6877,6 +7121,12 @@ function activeHwpTarget() {
 function activeEpubTarget() {
   return activeEditorTarget('epub', () => tabManager?.activeEpubTab())
 }
+/** the focused detached graphics window, else the active graphics tab */
+function activeGraphicsTarget() {
+  const detached = focusedDetachedTab()
+  if (detached?.kind === 'photo' || detached?.kind === 'illust') return detached
+  return tabManager?.activeGraphicsTab()
+}
 
 /** whether a tab or a detached window of any editor has this file open */
 function isPathOpenInAnyTab(path: string): boolean {
@@ -7198,6 +7448,16 @@ function registerTabsIpc(): void {
           ]
         : []),
       {
+        label: tm('menuNewPhoto'),
+        icon: menuIcons().photo,
+        click: () => newPhotoTab(),
+      },
+      {
+        label: tm('menuNewIllust'),
+        icon: menuIcons().illust,
+        click: () => newIllustTab(),
+      },
+      {
         label: tm('menuNewPdf'),
         icon: menuIcons().pdf,
         click: () => void newPdfTab(),
@@ -7248,6 +7508,8 @@ function buildHomeMenu(): void {
         { label: tm('menuNewHtml'), click: () => newHtmlTab() },
         { label: tm('menuNewMindmap'), click: () => newMindmapTab() },
         ...(koreanDocsOn() ? [{ label: tm('menuNewHwp'), click: () => newHwpTab() }] : []),
+        { label: tm('menuNewPhoto'), click: () => newPhotoTab() },
+        { label: tm('menuNewIllust'), click: () => newIllustTab() },
         { label: tm('menuNewPdf'), click: () => void newPdfTab() },
         { type: 'separator' },
         {
@@ -7649,6 +7911,100 @@ function buildEpubMenu(): void {
         { type: 'separator' },
         { role: 'togglefullscreen', label: labels.fullscreen },
       ],
+    },
+    windowMenuTemplate(process.platform, appMenuLabels(currentLang())),
+    {
+      role: 'help',
+      label: tm('menuHelp'),
+      submenu: [
+        { label: tm('thirdPartyNotices'), click: () => void openThirdPartyNotices() },
+        { type: 'separator' },
+        ...helpCheckUpdatesItems(appMenuLabels(currentLang())),
+        aboutMenuItem(appMenuLabels(currentLang())),
+      ],
+    },
+  ]
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template))
+}
+
+// ---- graphics menu: AI Photo and AI Illustration (decision 0093) ----
+function buildGraphicsMenu(kind: 'photo' | 'illust'): void {
+  const isMac = process.platform === 'darwin'
+  const labels = appMenuLabels(currentLang())
+  // Undo and redo go to the web app's own history. The app takes the keys
+  // itself; the shortcut is shown but not registered, or one press would run twice.
+  const appKey = (label: string, accelerator: string, command: 'undo' | 'redo') => ({
+    label,
+    accelerator,
+    registerAccelerator: false,
+    click: () => {
+      const tab = activeGraphicsTarget()
+      if (tab) sendGraphicsMenuCommand(tab.webContents, command)
+    },
+  })
+  const template: MenuItemConstructorOptions[] = [
+    ...(isMac ? [{ role: 'appMenu' as const }] : []),
+    {
+      label: tm('menuFile'),
+      submenu: [
+        {
+          label: tm(kind === 'photo' ? 'menuNewPhoto' : 'menuNewIllust'),
+          accelerator: 'CmdOrCtrl+N',
+          click: () => (kind === 'photo' ? newPhotoTab() : newIllustTab()),
+        },
+        {
+          label: tm('menuOpen'),
+          accelerator: 'CmdOrCtrl+O',
+          click: () => void openFileViaDialog(),
+        },
+        { type: 'separator' },
+        {
+          label: tm('backToHome'),
+          accelerator: 'Shift+CmdOrCtrl+H',
+          click: () => tabManager?.openHomeTab(),
+        },
+        { type: 'separator' },
+        {
+          label: tm('menuSave'),
+          accelerator: 'CmdOrCtrl+S',
+          click: () => {
+            const tab = activeGraphicsTarget()
+            if (tab) void requestGraphicsSave(tab.webContents, 'save')
+          },
+        },
+        {
+          label: tm('menuSaveAs'),
+          accelerator: 'CmdOrCtrl+Shift+S',
+          click: () => {
+            const tab = activeGraphicsTarget()
+            if (tab) void requestGraphicsSave(tab.webContents, 'saveAs')
+          },
+        },
+        {
+          label: tm('menuExportImage'),
+          click: () => {
+            const tab = activeGraphicsTarget()
+            if (tab) sendGraphicsMenuCommand(tab.webContents, 'export')
+          },
+        },
+        { type: 'separator' },
+        {
+          label: tm('menuClose'),
+          accelerator: 'CmdOrCtrl+W',
+          click: () => closeFocusedEditor(),
+        },
+      ],
+    },
+    {
+      label: labels.edit,
+      submenu: [
+        appKey(labels.undo, 'CmdOrCtrl+Z', 'undo'),
+        appKey(labels.redo, isMac ? 'Shift+Cmd+Z' : 'Ctrl+Y', 'redo'),
+      ],
+    },
+    {
+      label: labels.view,
+      submenu: [{ role: 'togglefullscreen', label: labels.fullscreen }],
     },
     windowMenuTemplate(process.platform, appMenuLabels(currentLang())),
     {
@@ -8765,19 +9121,25 @@ app.whenReady().then(async () => {
   setTimeout(() => ensureFileIndexer()?.refresh(), 4000)
   // Hanpan: a local AI server on this PC becomes the default AI (once, only while the choice is "auto")
   hanpan.adoptLocalAi()
-  installRendererProtocol({
-    docs: join(DOCS_OUT, 'renderer'),
-    sheets: join(SHEETS_OUT, 'renderer'),
-    slides: join(SLIDES_OUT, 'renderer'),
-    pdf: join(PDF_OUT, 'renderer'),
-    markdown: join(MARKDOWN_OUT, 'renderer'),
-    html: join(HTML_OUT, 'renderer'),
-    mindmap: join(MINDMAP_OUT, 'renderer'),
-    hwp: join(HWP_OUT, 'renderer'),
-    epub: join(EPUB_OUT, 'renderer'),
-    // the manual shares the shell's own renderer bundle (help mode)
-    help: join(__dirname, '../renderer'),
-  })
+  installRendererProtocol(
+    {
+      docs: join(DOCS_OUT, 'renderer'),
+      sheets: join(SHEETS_OUT, 'renderer'),
+      slides: join(SLIDES_OUT, 'renderer'),
+      pdf: join(PDF_OUT, 'renderer'),
+      markdown: join(MARKDOWN_OUT, 'renderer'),
+      html: join(HTML_OUT, 'renderer'),
+      mindmap: join(MINDMAP_OUT, 'renderer'),
+      hwp: join(HWP_OUT, 'renderer'),
+      epub: join(EPUB_OUT, 'renderer'),
+      photo: join(GRAPHICS_OUT, 'renderer'),
+      illust: join(GRAPHICS_OUT, 'renderer'),
+      // the manual shares the shell's own renderer bundle (help mode)
+      help: join(__dirname, '../renderer'),
+    },
+    // only Hanpan's host page may frame the graphics web apps (decision 0093)
+    { headers: graphicsResponseHeaders },
+  )
   // the open books' pictures, styles and fonts (only entries of a book a tab has open)
   registerEpubAssetProtocol()
   if (headlessArgv.kind !== 'none') {

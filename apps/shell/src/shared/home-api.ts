@@ -279,6 +279,10 @@ export interface HomeApi {
   newMindmap(opts?: NewFileOpts): Promise<void>
   /** open a blank HWP editor tab; the file is named at its first save */
   newHwp(opts?: NewFileOpts): Promise<void>
+  /** open an AI Photo tab at the app's start screen (decision 0093) */
+  newPhoto(opts?: NewFileOpts): Promise<void>
+  /** open an AI Illustration tab at the app's start screen */
+  newIllust(opts?: NewFileOpts): Promise<void>
   /** create a blank single-page PDF in the default save folder and open it */
   newPdf(opts?: NewFileOpts): Promise<void>
   /** drop entries from the recent list (does not touch the files) */
@@ -573,6 +577,8 @@ export const HOME_CHANNELS = {
   newHtml: 'home:new-html',
   newMindmap: 'home:new-mindmap',
   newHwp: 'home:new-hwp',
+  newPhoto: 'home:new-photo',
+  newIllust: 'home:new-illust',
   newPdf: 'home:new-pdf',
   removeRecent: 'home:remove-recent',
   revealPath: 'home:reveal-path',

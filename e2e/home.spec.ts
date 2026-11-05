@@ -24,6 +24,8 @@ test.describe('home screen', () => {
         'html',
         'pdf',
         'pdf-tools',
+        'photo',
+        'illust',
         'open',
       ])
       await expect(page.locator('.quick-card[data-new="xmind"]')).toContainText('Mind Map')

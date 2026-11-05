@@ -43,6 +43,8 @@ const DOCUMENT_KINDS: readonly DocumentTabKind[] = [
   'mindmap',
   'hwp',
   'epub',
+  'photo',
+  'illust',
 ]
 
 /** the same shape the recovery store accepts for an untitled copy */

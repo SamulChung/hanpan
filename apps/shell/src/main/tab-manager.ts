@@ -43,6 +43,11 @@ import {
 } from '../../../mindmap/src/main/mindmap-main'
 import { createEpubView, epubIsDirty, requestEpubClose } from '../../../epub/src/main/epub-main'
 import {
+  createGraphicsView,
+  graphicsIsDirty,
+  requestGraphicsClose,
+} from '../../../graphics/src/main/graphics-main'
+import {
   createPdfView,
   clearPdfDirty,
   markPdfUntitledCopy,
@@ -516,6 +521,9 @@ export class TabManager {
         return mindmapIsDirty(wc.id)
       case 'epub':
         return epubIsDirty(wc.id)
+      case 'photo':
+      case 'illust':
+        return graphicsIsDirty(wc.id)
       default:
         return false
     }
@@ -691,6 +699,37 @@ export class TabManager {
       kind: 'mindmap',
       view,
       title: openPath ? basename(openPath) : this.untitled('mindmap', 'Mind Map'),
+      filePath: openPath,
+    })
+    this.activateTab(id)
+    return id
+  }
+
+  /** AI Photo (decision 0093): a picture, or the app's start screen for a new one */
+  openPhotoTab(openPath?: string): string {
+    return this.addGraphicsTab('photo', openPath)
+  }
+
+  /** AI Illustration (decision 0093): an illustration, or the app's start screen for a new one */
+  openIllustTab(openPath?: string): string {
+    return this.addGraphicsTab('illust', openPath)
+  }
+
+  // not named open…Tab: the kind-coverage test calls every open…Tab with a path
+  private addGraphicsTab(kind: 'photo' | 'illust', openPath?: string): string {
+    const view = createGraphicsView(kind, openPath)
+    const id = `t${this.nextId++}`
+    this.shellWindow.contentView.addChildView(view)
+    view.setVisible(false)
+    this.trackHtmlFullScreen(view)
+    this.trackPaneFocus(view)
+    this.tabs.push({
+      id,
+      kind,
+      view,
+      title: openPath
+        ? basename(openPath)
+        : this.untitled(kind, kind === 'photo' ? 'AI Photo' : 'AI Illustration'),
       filePath: openPath,
     })
     this.activateTab(id)
@@ -1392,6 +1431,10 @@ export class TabManager {
         return this.openHwpTab(path)
       case 'epub':
         return path ? this.openEpubTab(path) : null
+      // two copies of the web app cannot share one document
+      case 'photo':
+      case 'illust':
+        return null
       default:
         return null
     }
@@ -1571,6 +1614,18 @@ export class TabManager {
       .map((t) => ({ id: t.id, webContents: t.view!.webContents }))
   }
 
+  /** AI Photo and AI Illustration tabs with unsaved changes (shell-close guard) */
+  dirtyGraphicsTabs(): Array<{ id: string; webContents: WebContents }> {
+    return this.tabs
+      .filter(
+        (t) =>
+          (t.kind === 'photo' || t.kind === 'illust') &&
+          t.view &&
+          graphicsIsDirty(t.view.webContents.id),
+      )
+      .map((t) => ({ id: t.id, webContents: t.view!.webContents }))
+  }
+
   /** slides tabs whose main-process session has unsaved edits (shell-close guard) */
   dirtySlidesTabs(): Array<{ id: string; webContents: WebContents }> {
     return this.tabs
@@ -1629,6 +1684,9 @@ export class TabManager {
     }
     if (!closeGuard && tab.kind === 'epub' && tab.view) {
       if (epubIsDirty(tab.view.webContents.id)) closeGuard = requestEpubClose
+    }
+    if (!closeGuard && (tab.kind === 'photo' || tab.kind === 'illust') && tab.view) {
+      if (graphicsIsDirty(tab.view.webContents.id)) closeGuard = requestGraphicsClose
     }
     // docs dirty state lives in the renderer and needs an async query; skip the guard when clean (avoids a flash activation)
     if (!closeGuard && tab.kind === 'docs' && tab.view) {
@@ -1899,6 +1957,24 @@ export class TabManager {
       : undefined
   }
 
+  findPhotoTabByPath(path?: string): string | undefined {
+    return this.findTabOfKindByPath('photo', path)
+  }
+
+  findIllustTabByPath(path?: string): string | undefined {
+    return this.findTabOfKindByPath('illust', path)
+  }
+
+  /** the active tab's graphics view, if the active tab is AI Photo or AI Illustration (its menu target) */
+  activeGraphicsTab():
+    | { id: string; kind: 'photo' | 'illust'; webContents: WebContents; filePath?: string }
+    | undefined {
+    const tab = this.tabs.find((t) => t.id === this.activeId)
+    return (tab?.kind === 'photo' || tab?.kind === 'illust') && tab.view
+      ? { id: tab.id, kind: tab.kind, webContents: tab.view.webContents, filePath: tab.filePath }
+      : undefined
+  }
+
   findHwpTabByPath(path?: string): string | undefined {
     return this.findTabOfKindByPath('hwp', path)
   }
@@ -1979,6 +2055,9 @@ export function createPlainEditorView(kind: DocumentTabKind, filePath?: string):
     case 'epub':
       if (!filePath) throw new Error('an EPUB tab needs its file')
       return createEpubView(filePath)
+    case 'photo':
+    case 'illust':
+      return createGraphicsView(kind, filePath)
   }
 }
 

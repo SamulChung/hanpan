@@ -29,6 +29,8 @@ const FAMILY_BY_KIND: Record<Exclude<TabKind, 'home' | 'help'>, EditorFamily> = 
   mindmap: 'xmind',
   hwp: 'hwp',
   epub: 'epub',
+  photo: 'photo',
+  illust: 'illust',
 }
 
 /** families whose live content can be read back over MCP */

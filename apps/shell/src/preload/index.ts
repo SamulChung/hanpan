@@ -260,6 +260,12 @@ const homeApi: HomeApi = {
   async newHwp(opts) {
     await ipcRenderer.invoke(HOME_CHANNELS.newHwp, opts)
   },
+  async newPhoto(opts) {
+    await ipcRenderer.invoke(HOME_CHANNELS.newPhoto, opts)
+  },
+  async newIllust(opts) {
+    await ipcRenderer.invoke(HOME_CHANNELS.newIllust, opts)
+  },
   async newPdf(opts) {
     await ipcRenderer.invoke(HOME_CHANNELS.newPdf, opts)
   },

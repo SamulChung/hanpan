@@ -54,7 +54,7 @@ describe('watchDoc', () => {
       return inspect()
     }
     const seen: unknown[] = []
-    const stop = watchDoc(createAdapter('illust', page), (info) => seen.push(info), 100)
+    const { stop } = watchDoc(createAdapter('illust', page), (info) => seen.push(info), 100)
     await vi.advanceTimersByTimeAsync(500)
     expect(page.inspects).toBe(0) // the first inspect is still waiting
     slow = false
@@ -67,6 +67,18 @@ describe('watchDoc', () => {
       { hasDocument: true, dirty: false, title: 'a.svg' },
       { hasDocument: true, dirty: true, title: 'a.svg' },
     ])
+  })
+
+  it('resync reports the state again even when it did not change (a save cleared the tab in between)', async () => {
+    vi.useFakeTimers()
+    const page = new FakePage().withDocument('a.svg', true)
+    const seen: boolean[] = []
+    const watch = watchDoc(createAdapter('illust', page), (info) => seen.push(info.dirty), 100)
+    await vi.advanceTimersByTimeAsync(150)
+    watch.resync()
+    await vi.advanceTimersByTimeAsync(150)
+    watch.stop()
+    expect(seen).toEqual([true, true])
   })
 })
 

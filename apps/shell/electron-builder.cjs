@@ -199,6 +199,31 @@ function assertUniversalSidecar() {
   }
 }
 
+/**
+ * AI Photo and AI Illustration (decision 0093): both web builds must be in the
+ * graphics renderer output, and a release build may carry only the pinned ones
+ * (tools/fetch-graphics-web.mjs stamps a local copy `local <dir>`).
+ */
+function assertGraphicsWebBuilt(env = process.env) {
+  const strict = ['CI', 'IEUM_RELEASE'].some(
+    (name) => !['', '0', 'false'].includes((env[name] ?? '').toLowerCase()),
+  )
+  for (const kind of ['photo', 'illust']) {
+    const page = join(__dirname, '../graphics/out/renderer/web', kind, 'index.html')
+    if (!existsSync(page)) {
+      throw new Error(
+        `graphics web ${kind} is missing from ../graphics/out (run npm run build -w @genoffice/graphics)`,
+      )
+    }
+    if (!strict) continue
+    const stamp = join(__dirname, '../graphics/public/web', kind, '.pin')
+    const pin = existsSync(stamp) ? readFileSync(stamp, 'utf8').trim() : ''
+    if (!pin || pin.startsWith('local ')) {
+      throw new Error(`graphics web ${kind} is not the pinned release build: ${pin || 'no .pin'}`)
+    }
+  }
+}
+
 function assertModuleTreesPresent() {
   for (const rel of [
     '../docs/out',
@@ -210,6 +235,7 @@ function assertModuleTreesPresent() {
     '../mindmap/out',
     '../hwp/out',
     '../epub/out',
+    '../graphics/out',
     '../../packages/cli/dist/genoffice.cjs',
     '../../packages/cli/dist/node_modules/jsdom',
   ]) {
@@ -568,6 +594,10 @@ const config = {
       from: '../epub/out',
       to: 'modules/epub',
     },
+    {
+      from: '../graphics/out',
+      to: 'modules/graphics',
+    },
     // PDF text editing engines: the bundled main resolves these under
     // Resources/wasm when node_modules is absent (apps/pdf/src/main/wasm-path.ts)
     {
@@ -857,6 +887,7 @@ const config = {
     assertExtraResourceSources()
     ensureThirdPartyNotices()
     assertModuleTreesPresent()
+    assertGraphicsWebBuilt()
     assertPdfStructureProcessBuilt()
     ensureCliBundleCarriesAppVersion()
     if (context.electronPlatformName === 'darwin' && includeMacX64) {
