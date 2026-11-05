@@ -9,7 +9,12 @@ test.describe('home screen', () => {
       // Hanpan: the start board, then the mind map and the documents it feeds, then the rest
       await expect(page.locator('[data-hanpan="start-board"]')).toBeVisible()
       const order = await page.locator('.quick-card').evaluateAll((cards) => cards.map((c) => c.getAttribute('data-new')))
-      expect(order).toEqual(['xmind', 'hwp', 'pptx', 'templates', 'docx', 'xlsx', 'design', 'md', 'md-convert', 'html', 'pdf', 'pdf-tools', 'open'])
+      // the ArtCraft cards (decision 0090) appear only on Windows with the programs fetched,
+      // right after the PDF tools
+      const artcraft = ['photocraft', 'vectorcraft']
+      expect(order.filter((key) => !artcraft.includes(key ?? ''))).toEqual(['xmind', 'hwp', 'pptx', 'templates', 'docx', 'xlsx', 'design', 'md', 'md-convert', 'html', 'pdf', 'pdf-tools', 'open'])
+      const present = order.filter((key) => artcraft.includes(key ?? ''))
+      expect(order.slice(order.indexOf('pdf-tools') + 1, order.indexOf('open'))).toEqual(present)
       await expect(page.locator('.quick-card[data-new="xmind"]')).toContainText('Mind Map')
       await expect(page.locator('.quick-card[data-new="docx"]')).toContainText('AI Docs')
       // the agent is not a document to make: it sits in the sidebar, under Ask AI
