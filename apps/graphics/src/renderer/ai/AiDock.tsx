@@ -21,6 +21,7 @@ import '@genoffice/ui/ai-panel-prefs.css'
 import './ai-panel.css'
 import { useI18n } from '../i18n/locale'
 import { GraphicsAiPanel, type GraphicsAiPanelProps } from './AiPanel'
+import { graphicsApiOrNull } from '../bridge'
 
 /** Remembers whether the panel was open, per app, like the other editors (`<app>.showAi`). */
 const OPEN_KEY: Record<GraphicsAiPanelProps['kind'], string> = {
@@ -38,7 +39,7 @@ export function GraphicsAiDock(props: GraphicsAiDockProps): ReactElement {
 
   // the shell's AI panel preferences (text size): read once, then followed
   useEffect(() => {
-    const api = window.graphicsApi
+    const api = graphicsApiOrNull()
     void api
       ?.getAiPanelPrefs?.()
       .then(applyAiPanelPrefs)

@@ -57,6 +57,7 @@ import { createUndoTracker, undoRun, type RunUndo, type UndoTracker } from './un
 import sendEnterOn from './assets/send-enter-on.png'
 import sendEnterOff from './assets/send-enter-off.png'
 import sendStop from './assets/send-stop.png'
+import { graphicsApi, graphicsApiOrNull } from '../bridge'
 
 const TOOL_OUTPUT_MAX_CHARS = 2000
 
@@ -79,14 +80,16 @@ function toolLabel(name: string, summary: string): string {
 
 const MODEL_BRIDGE: AiModelPickerBridge = {
   getSettings: () =>
-    window.graphicsApi?.getAiSettings?.() ??
+    graphicsApiOrNull()?.getAiSettings?.() ??
     Promise.reject(new Error('the AI settings cannot be read')),
   setSettings: (settings) =>
-    window.graphicsApi?.setAiSettings?.(settings) ??
+    graphicsApiOrNull()?.setAiSettings?.(settings) ??
     Promise.reject(new Error('the AI settings cannot be saved')),
-  onSettingsChanged: (handler) => window.graphicsApi?.onAiSettingsChanged?.(handler) ?? (() => {}),
+  onSettingsChanged: (handler) => graphicsApiOrNull()?.onAiSettingsChanged?.(handler) ?? (() => {}),
   openModelSettings: () =>
-    window.graphicsApi?.openAiModelSettings?.().catch(() => {}) ?? Promise.resolve(),
+    graphicsApiOrNull()
+      ?.openAiModelSettings?.()
+      .catch(() => {}) ?? Promise.resolve(),
 }
 
 interface ToolActivity {
@@ -139,7 +142,7 @@ export function GraphicsAiPanel(props: GraphicsAiPanelProps): ReactElement {
   useEffect(() => {
     let alive = true
     const refresh = () => {
-      const read = window.graphicsApi?.getAiSettings?.()
+      const read = graphicsApiOrNull()?.getAiSettings?.()
       if (!read) return
       read
         .then((next) => {
@@ -150,7 +153,7 @@ export function GraphicsAiPanel(props: GraphicsAiPanelProps): ReactElement {
         })
     }
     refresh()
-    const off = window.graphicsApi?.onAiSettingsChanged?.(refresh)
+    const off = graphicsApiOrNull()?.onAiSettingsChanged?.(refresh)
     window.addEventListener('focus', refresh)
     return () => {
       alive = false
@@ -269,7 +272,7 @@ export function GraphicsAiPanel(props: GraphicsAiPanelProps): ReactElement {
             return trackerRef.current!
           },
           context: () => contextRef.current,
-          exportFile: (request) => window.graphicsApi.exportFile(request),
+          exportFile: (request) => graphicsApi().exportFile(request),
         }),
       ]),
       systemSuffix: () => aiLangDirective(langRef.current),
@@ -400,7 +403,7 @@ export function GraphicsAiPanel(props: GraphicsAiPanelProps): ReactElement {
     const seq = ++sendSeqRef.current
     void (async () => {
       try {
-        const settings = await window.graphicsApi.getAiSettings()
+        const settings = await graphicsApi().getAiSettings()
         if (!settings) throw new Error(tGlobal('aiUnknownError'))
         settingsRef.current = settings
         contextRef.current = await app.contextSummary().catch(() => '')

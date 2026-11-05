@@ -24,6 +24,7 @@ import { useI18n, type StringKey } from './i18n/locale'
 import { APP_GLOBAL, appLanguage, extOf } from '../shared/kinds'
 import type { GraphicsKind } from '../shared/kinds'
 import type { ExportFormat, SaveMode } from '../shared/ipc'
+import { graphicsApi } from './bridge'
 
 type Status = 'checking' | 'loading' | 'ready' | 'failed' | 'notInstalled'
 
@@ -54,9 +55,7 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
   const lockRef = useRef<HTMLDivElement | null>(null)
   const frameRef = useRef<HTMLIFrameElement | null>(null)
   const adapterRef = useRef<GraphicsAdapter | null>(null)
-  const dirtyRef = useRef<DirtyState>(
-    createDirtyState((dirty) => window.graphicsApi.setDirty(dirty)),
-  )
+  const dirtyRef = useRef<DirtyState>(createDirtyState((dirty) => graphicsApi().setDirty(dirty)))
   const capturesRef = useRef<CaptureWatch | null>(null)
   const docWatchRef = useRef<DocWatch | null>(null)
   const titleRef = useRef<string | null>(null)
@@ -91,7 +90,7 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
   const runQuick = async (id: QuickActionId): Promise<void> => {
     const adapter = adapterRef.current
     if (!adapter || appLocks.current > 0) return
-    const api = window.graphicsApi
+    const api = graphicsApi()
     const result = await runQuickAction(id, {
       adapter,
       pickImage: () => api.pickImage(),
@@ -125,7 +124,7 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
     let savedName: string | null = null
     const ok = await runSave(mode, {
       adapter,
-      api: window.graphicsApi,
+      api: graphicsApi(),
       dirty: dirtyRef.current,
       notify,
       hostOp: {
@@ -143,7 +142,7 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
   }
 
   const exportBytes = async (bytes: Uint8Array, name: string, format: ExportFormat) => {
-    const result = await window.graphicsApi.exportFile({ bytes, defaultName: name, format })
+    const result = await graphicsApi().exportFile({ bytes, defaultName: name, format })
     if (!result.ok) notify('saveFailed')
   }
 
@@ -192,8 +191,8 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
         setAiAdapter(adapter)
         const opened = await openPending(
           adapter,
-          () => window.graphicsApi.consumeOpen(),
-          (path) => window.graphicsApi.confirmOpened(path),
+          () => graphicsApi().consumeOpen(),
+          (path) => graphicsApi().confirmOpened(path),
         )
         if (!live) return
         if (opened === 'failed') notify('openFailed')
@@ -244,7 +243,7 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
 
   // Hanpan's menus and the close question
   useEffect(() => {
-    const api = window.graphicsApi
+    const api = graphicsApi()
     const offs = [
       api.onSaveRequest((mode) => {
         void save(mode).then((ok) => api.sendSaveRequestAck(ok))

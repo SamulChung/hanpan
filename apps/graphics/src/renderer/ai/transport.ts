@@ -9,6 +9,7 @@ import type { Lang } from '@genoffice/i18n'
 import { localContextLimit } from '@genoffice/ai-provider/browser'
 import { aiContextConfirmText, aiRunErrorText } from '@genoffice/ui'
 import { t } from '../i18n/locale'
+import { graphicsApi } from '../bridge'
 
 /** What the panel learns from a turn besides its text; every writer shares the one transport, so all of them report here */
 export interface ElectronTransportHooks {
@@ -22,15 +23,15 @@ export interface ElectronTransportHooks {
   onInputTruncated(): void
 }
 
-/** The shared IPC transport wired to the graphics preload bridge (window.graphicsApi). */
+/** The shared IPC transport wired to the graphics preload bridge (renderer/bridge.ts). */
 export function createElectronTransport(
   getSettings: () => AiSettings,
   hooks: ElectronTransportHooks,
 ): AgentTransport {
   return createIpcTransport<AiSettings>({
-    onStream: (listener) => window.graphicsApi.onAiStream(listener),
-    start: (request) => window.graphicsApi.aiStream(request),
-    cancel: (requestId) => void window.graphicsApi.aiStreamCancel(requestId),
+    onStream: (listener) => graphicsApi().onAiStream(listener),
+    start: (request) => graphicsApi().aiStream(request),
+    cancel: (requestId) => void graphicsApi().aiStreamCancel(requestId),
     getSettings,
     unknownErrorText: () => t('aiUnknownError'),
     timeoutErrorText: () => t('aiTimeoutError'),

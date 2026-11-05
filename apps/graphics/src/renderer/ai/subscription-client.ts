@@ -18,6 +18,7 @@ import type {
 import type { GraphicsApi } from '../../shared/ipc'
 import type { GraphicsSubscriptionApi } from '../../shared/subscription-api'
 import { checkingSubscriptionStatuses } from '../../shared/subscription-api'
+import { graphicsApiOrNull } from '../bridge'
 
 export interface SubscriptionConnection {
   readonly statuses: SubscriptionStatusMap
@@ -37,7 +38,7 @@ export interface SubscriptionConnection {
 
 /** a preload from an older build exposes no subscription API */
 function subscriptionApi(): GraphicsSubscriptionApi | undefined {
-  return (window.graphicsApi as Partial<GraphicsApi> | undefined)?.subscription
+  return (graphicsApiOrNull() as Partial<GraphicsApi> | null)?.subscription
 }
 
 /** the answer of an API call, or null when there is no API, no handler, or the call failed */

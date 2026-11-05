@@ -65,6 +65,17 @@ test.describe('AI Illustration tab', () => {
           timeout: 60_000,
         })
         .toBeGreaterThan(1000)
+      // the app in the frame cannot reach the host's bridge: none on the window, and the
+      // one-time hand-over was already taken by the host page (docs/security.md)
+      const reach = await tab.evaluate(() => {
+        const frame = document.querySelector('iframe') as HTMLIFrameElement
+        const parent = frame.contentWindow!.parent as unknown as {
+          graphicsApi?: unknown
+          graphicsBridge?: { take(): unknown }
+        }
+        return { api: typeof parent.graphicsApi, take: parent.graphicsBridge?.take() ?? null }
+      })
+      expect(reach).toEqual({ api: 'undefined', take: null })
       // the AI panel docks beside the app (its composer is there; nothing is sent)
       await expect(tab.locator('.ai-dock .ai-composer textarea')).toBeVisible({ timeout: 10_000 })
 

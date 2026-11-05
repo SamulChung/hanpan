@@ -108,7 +108,17 @@ const api: GraphicsApi = {
   onAiStream: (handler) => listen<[AiStreamChunk]>(AI_CHANNELS.streamChunk, handler),
 }
 
-contextBridge.exposeInMainWorld('graphicsApi', api)
+// The web app in the page's same-origin frame can reach `parent`: the API is
+// handed over once, to the host page at start-up (renderer/bridge.ts), and is
+// not left on the window (docs/security.md, "AI 포토·AI 일러스트")
+let handed: GraphicsApi | null = api
+contextBridge.exposeInMainWorld('graphicsBridge', {
+  take: (): GraphicsApi | null => {
+    const taken = handed
+    handed = null
+    return taken
+  },
+})
 // the AI's outbound guard (decision 0062): the graphics tools reach no address, the guard stays uniform
 contextBridge.exposeInMainWorld('aiOfficeOutbound', outboundBridge())
 // The shell's split panes: this view's pane role, and its way to ask for focus

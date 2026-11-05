@@ -8,8 +8,12 @@ import type { UiTheme } from '../shared/ipc'
 import '@genoffice/ui/tokens.css'
 import '@genoffice/ui/screentip.css'
 import './styles.css'
+import { graphicsApi, takeGraphicsApi } from './bridge'
 
 installScreenTips()
+
+// before the app's frame exists: the frame's own take then gets nothing
+if (!takeGraphicsApi()) throw new Error('the graphics bridge is missing or was already taken')
 
 function applyTheme(theme: UiTheme): void {
   if (theme === 'system') document.documentElement.removeAttribute('data-theme')
@@ -27,13 +31,17 @@ async function probeWeb(): Promise<boolean> {
 
 void (async () => {
   const [lang, theme] = await Promise.all([
-    window.graphicsApi.getLanguage().catch(() => 'en' as Lang),
-    window.graphicsApi.getTheme().catch(() => 'system' as const),
+    graphicsApi()
+      .getLanguage()
+      .catch(() => 'en' as Lang),
+    graphicsApi()
+      .getTheme()
+      .catch(() => 'system' as const),
   ])
   document.documentElement.lang = htmlLang(lang)
   document.documentElement.dir = htmlDir(lang)
   applyTheme(theme)
-  window.graphicsApi.onThemeChanged(applyTheme)
+  graphicsApi().onThemeChanged(applyTheme)
   createRoot(document.getElementById('root')!).render(
     <LocaleProvider initial={lang}>
       <App kind={kind} lang={lang} probeWeb={probeWeb} />

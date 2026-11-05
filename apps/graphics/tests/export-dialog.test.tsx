@@ -4,6 +4,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import { ExportDialog } from '../src/renderer/quick/ExportDialog'
 import { QuickBar } from '../src/renderer/quick/QuickBar'
 import { LocaleProvider } from '../src/renderer/i18n/locale'
+import { installGraphicsApi } from '../src/renderer/bridge'
 
 ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
 
@@ -15,11 +16,11 @@ afterEach(async () => {
   root = null
   host?.remove()
   host = null
-  delete (window as { graphicsApi?: unknown }).graphicsApi
+  installGraphicsApi(null)
 })
 
 async function render(node: React.ReactNode): Promise<HTMLElement> {
-  ;(window as { graphicsApi?: unknown }).graphicsApi = { onLanguageChanged: () => () => {} }
+  installGraphicsApi({ onLanguageChanged: () => () => {} } as never)
   host = document.createElement('div')
   document.body.appendChild(host)
   root = createRoot(host)

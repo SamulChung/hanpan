@@ -17,6 +17,7 @@ import { resolveCustomEndpoints, type AiSettings } from '@genoffice/ai-provider/
 import { GraphicsAiPanel } from '../src/renderer/ai/AiPanel'
 import { LocaleProvider } from '../src/renderer/i18n/locale'
 import type { GraphicsAdapter } from '../src/renderer/adapters'
+import { installGraphicsApi } from '../src/renderer/bridge'
 
 ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
 
@@ -28,7 +29,7 @@ afterEach(async () => {
   root = null
   host?.remove()
   host = null
-  delete (window as { graphicsApi?: unknown }).graphicsApi
+  installGraphicsApi(null)
 })
 
 const vision = (): AiSettings => {
@@ -139,11 +140,11 @@ async function mount(opts: { settings: AiSettings; turns: Turn[] }) {
   const unlock = vi.fn()
   const lockFrame = vi.fn(() => unlock)
   const onBusyChange = vi.fn()
-  ;(window as { graphicsApi?: unknown }).graphicsApi = {
+  installGraphicsApi({
     getAiSettings: vi.fn(async () => opts.settings),
     onLanguageChanged: () => () => {},
     exportFile: vi.fn(),
-  }
+  } as never)
   host = document.createElement('div')
   document.body.appendChild(host)
   root = createRoot(host)

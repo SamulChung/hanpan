@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { createI18n, htmlDir, htmlLang, type Lang, type Params } from '@genoffice/i18n'
 import { strings } from './strings'
+import { graphicsApiOrNull } from '../bridge'
 
 const translate = createI18n(strings)
 
@@ -22,7 +23,7 @@ export function LocaleProvider({ initial, children }: { initial: Lang; children:
   moduleLang = lang
   useEffect(
     () =>
-      window.graphicsApi.onLanguageChanged((next) => {
+      graphicsApiOrNull()?.onLanguageChanged((next) => {
         document.documentElement.lang = htmlLang(next)
         document.documentElement.dir = htmlDir(next)
         setLang(next)

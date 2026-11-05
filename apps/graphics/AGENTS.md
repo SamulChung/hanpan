@@ -24,7 +24,8 @@ AI 포토(탭 종류 `photo`, PhotoCraft 웹판)와 AI 일러스트(탭 종류 `
 
 ## 항상 지켜야 하는 것
 
-- 디스크에 쓰는 길은 `commit-save`와 `export-file`뿐이고, 둘 다 이 뒷단이 고른 경로에만 쓴다. 화면이 보낸 경로를 믿지 않는다. 같은 출처 iframe의 웹판도 `parent.graphicsApi`에 닿기 때문이다(`docs/security.md`의 "AI 포토·AI 일러스트").
+- 디스크에 쓰는 길은 `commit-save`와 `export-file`뿐이고, 둘 다 이 뒷단이 고른 경로에만 쓴다. 화면이 보낸 경로를 믿지 않는다. 같은 출처 iframe의 웹판은 `parent`에 닿으므로 다리를 완전히 숨길 수는 없다(`docs/security.md`의 "AI 포토·AI 일러스트").
+- 다리는 창에 두지 않는다. preload는 `graphicsBridge.take()`로 한 번만 넘기고, 호스트는 `main.tsx`에서 틀을 만들기 전에 받아 `src/renderer/bridge.ts`의 모듈 안에만 둔다. 화면 코드는 `graphicsApi()`·`graphicsApiOrNull()`로 쓰고, `window`에 다리를 다시 올리지 않는다. 시험은 `installGraphicsApi(가짜)`를 쓴다.
 - 보기는 `backgroundThrottling: false`다. 웹판은 애니메이션 프레임에서 페이지 API에 답하므로, 숨긴 탭에서 AI 실행이나 닫을 때의 저장이 멈추지 않게 한다.
 - 운영체제 파일 연결을 하지 않는다. 그래픽 확장자를 `LAUNCHABLE_EXTS`·`fileAssociations`에 넣지 않는다.
 - AI 실행과 빠른 작업은 입력 잠금(`lockApp`) 안에서 돈다. 그동안 가로챈 파일은 저장으로도 내보내기로도 쓰지 않는다.

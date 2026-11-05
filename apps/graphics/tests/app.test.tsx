@@ -5,6 +5,7 @@ import App from '../src/renderer/App'
 import { LocaleProvider } from '../src/renderer/i18n/locale'
 import type { GraphicsApi } from '../src/shared/ipc'
 import { FakePage } from './helpers/fake-page'
+import { installGraphicsApi } from '../src/renderer/bridge'
 
 ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
 
@@ -38,7 +39,7 @@ function fakeApi() {
     pickImage: vi.fn(),
     onMenuCommand: on('menu'),
   }
-  window.graphicsApi = api as unknown as GraphicsApi
+  installGraphicsApi(api as unknown as GraphicsApi)
   return { api, listeners }
 }
 
