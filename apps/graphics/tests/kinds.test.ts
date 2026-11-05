@@ -20,6 +20,25 @@ describe('graphicsKindForPath', () => {
     expect(graphicsKindForPath('/p/psd')).toBeUndefined()
   })
 
+  it('lists only the formats the pinned web builds open (checked 2026-11-05: AVIF does not)', () => {
+    expect([...OPEN_EXTS.photo]).toEqual([
+      'psd',
+      'psb',
+      'png',
+      'jpg',
+      'jpeg',
+      'webp',
+      'gif',
+      'bmp',
+      'tif',
+      'tiff',
+      'heic',
+      'heif',
+    ])
+    expect([...OPEN_EXTS.illust]).toEqual(['svg', 'svgz', 'ai', 'vectorcraft'])
+    expect(graphicsKindForPath('/p/f.avif')).toBeUndefined()
+  })
+
   it('never opens the same extension in both tabs', () => {
     const both = OPEN_EXTS.photo.filter((ext) => OPEN_EXTS.illust.includes(ext))
     expect(both).toEqual([])

@@ -238,7 +238,7 @@
 - `open_documents`의 목록에 EPUB 탭이 `kind: "epub"`, `type: "e-book"`으로 나온다(떼어 낸 창도 같다). `read`의 `content`는 spine 순서로 이은 책 글이고(제목은 `#`), 저장하지 않은 편집이 들어 있다. `close`의 저장은 편집기의 저장과 같은 규칙을 지나고, 바꾼 것이 없으면 파일을 쓰지 않는다. 책을 만들거나 고치는 도구는 없다.
 - `get_app_info`의 `families`에 `{ family: "epub", label: "e-book", editor: { open: ["epub"], save: ["epub"], export: [] } }`가 있다.
 - `open_documents`의 목록에 AI 포토·AI 일러스트 탭(결정 0093)이 `kind: "photo"`, `type: "photo (AI Photo)"`와 `kind: "illust"`, `type: "illustration (AI Illustration)"`로 나온다(떼어 낸 창도 같다). `read`와 `save`는 거절한다. 거절 글에는 `is a picture in an AI Photo or AI Illustration tab`이 들어 있다. 바꾼 것이 있는 탭의 `close`는 `unsaved: "discard"`일 때만 닫는다. 그림을 읽거나 고치는 도구는 없다.
-- `get_app_info`의 `families`에 `{ family: "photo", label: "photo (AI Photo)", editor: { open: ["psd", "psb", "png", "jpg", "jpeg", "webp", "gif", "bmp", "tif", "tiff", "heic", "heif", "avif"], save: ["psd", "png", "jpg", "jpeg", "webp", "tif", "tiff"], export: ["png", "jpg"] } }`와 `{ family: "illust", label: "illustration (AI Illustration)", editor: { open: ["svg", "svgz", "ai", "vectorcraft"], save: ["vectorcraft", "svg", "svgz", "ai"], export: ["png", "svg"] } }`가 있다. `mcp` 항목은 없다.
+- `get_app_info`의 `families`에 `{ family: "photo", label: "photo (AI Photo)", editor: { open: ["psd", "psb", "png", "jpg", "jpeg", "webp", "gif", "bmp", "tif", "tiff", "heic", "heif"], save: ["psd", "png", "jpg", "jpeg", "webp", "tif", "tiff"], export: ["png", "jpg"] } }`와 `{ family: "illust", label: "illustration (AI Illustration)", editor: { open: ["svg", "svgz", "ai", "vectorcraft"], save: ["vectorcraft", "svg", "svgz", "ai"], export: ["png", "svg"] } }`가 있다. `mcp` 항목은 없다.
 
 ## 에이전트 스킬
 

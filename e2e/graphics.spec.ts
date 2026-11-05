@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import type { ElectronApplication, Page } from '@playwright/test'
-import { existsSync, statSync } from 'node:fs'
+import { existsSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -189,6 +189,137 @@ test.describe('AI Illustration tab', () => {
       await expect(tab.locator('.gx-notice')).not.toContainText('could not')
     } finally {
       await closeAndSaveVideo(launched, 'graphics-quick')
+    }
+  })
+})
+
+const PHOTO_WEB = join(
+  __dirname,
+  '..',
+  'apps',
+  'graphics',
+  'out',
+  'renderer',
+  'web',
+  'photo',
+  'index.html',
+)
+
+/** Runs `script` against `window.photocraft` in the tab's frame; returns its result. */
+function inPhoto<T>(page: Page, script: string): Promise<T> {
+  return page.evaluate(async (body) => {
+    const frame = document.querySelector('iframe') as HTMLIFrameElement | null
+    const pc = (frame?.contentWindow as unknown as { photocraft?: unknown } | null)?.photocraft
+    if (!pc) throw new Error('no photocraft API yet')
+    return (await new Function('pc', `return (async () => { ${body} })()`)(pc)) as T
+  }, script)
+}
+
+/** a 64 × 48 PNG with a red square, written by the page's own canvas */
+async function writeSamplePng(page: Page, path: string): Promise<void> {
+  const b64 = await page.evaluate(async () => {
+    const c = new OffscreenCanvas(64, 48)
+    const g = c.getContext('2d')!
+    g.fillStyle = '#ffffff'
+    g.fillRect(0, 0, 64, 48)
+    g.fillStyle = '#c0304a'
+    g.fillRect(16, 12, 32, 24)
+    const bytes = new Uint8Array(await (await c.convertToBlob({ type: 'image/png' })).arrayBuffer())
+    let s = ''
+    for (const x of bytes) s += String.fromCharCode(x)
+    return btoa(s)
+  })
+  writeFileSync(path, Buffer.from(b64, 'base64'))
+}
+
+test.describe('AI Photo tab', () => {
+  test.skip(!existsSync(PHOTO_WEB), 'no photo web build in apps/graphics/out')
+
+  test('opens a PNG, keeps the app own open and close off, saves in place and closes clean', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'graphics-photo-e2e-'))
+    const png = join(dir, 'sample.png')
+    // a first launch only to draw the sample with a canvas
+    {
+      const first = await launchShell({ onboardingSeen: true, videoDir: 'graphics-photo-sample' })
+      await writeSamplePng(first.page, png)
+      await closeAndSaveVideo(first, 'graphics-photo-sample')
+    }
+    const before = readFileSync(png)
+    // pictures have no OS file association: they open from inside Hanpan (Home's open path)
+    const launched = await launchShell({ onboardingSeen: true, videoDir: 'graphics-photo' })
+    const { app, page } = launched
+    try {
+      await page.evaluate(
+        (p) =>
+          (
+            window as unknown as { aiOffice: { openPath(p: string): Promise<void> } }
+          ).aiOffice.openPath(p),
+        png,
+      )
+      const tab = await waitForPageWithUrl(app, '://photo/')
+      await expect
+        .poll(
+          () =>
+            inPhoto<number>(tab, 'return (await pc.inspect()).session.documents.length').catch(
+              () => 0,
+            ),
+          { timeout: 60_000 },
+        )
+        .toBe(1)
+      // embedded: the app's own Open and Close are off; Hanpan opens and closes
+      const enabled = await inPhoto<Record<string, boolean>>(
+        tab,
+        "const c = await pc.commands(); return Object.fromEntries(['file.openAs', 'file.close', 'file.closeAll'].map((id) => [id, c.find((x) => x.id === id)?.enabled]))",
+      )
+      // PhotoCraft's File › Open is UI-only (not in commands()); plan A's smoke checks the menu
+      expect(enabled).toEqual({ 'file.openAs': false, 'file.close': false, 'file.closeAll': false })
+      await expect(tab.locator('.ai-dock .ai-composer textarea')).toBeVisible({ timeout: 10_000 })
+
+      // an edit, then Ctrl+S: written in place as PNG (one pixel layer)
+      await inPhoto(
+        tab,
+        "await pc.execute('image.adjustments.hueSaturation', { hue: 120 }); return 1",
+      )
+      await page.waitForTimeout(1500) // the host's state poll sees the change
+      await app.evaluate(({ webContents }) => {
+        const wc = webContents.getAllWebContents().find((w) => w.getURL().includes('://photo/'))
+        wc?.focus()
+        wc?.sendInputEvent({ type: 'keyDown', keyCode: 'S', modifiers: ['control'] })
+        wc?.sendInputEvent({ type: 'keyUp', keyCode: 'S', modifiers: ['control'] })
+      })
+      await expect.poll(() => !readFileSync(png).equals(before), { timeout: 30_000 }).toBe(true)
+      expect(readFileSync(png).subarray(0, 4).toString('hex')).toBe('89504e47')
+
+      // the PNG save leaves PhotoCraft's own mark on; the tab still reads clean: no close question
+      await page.waitForTimeout(2500)
+      await app.evaluate(({ dialog }) => {
+        const scope = globalThis as { closePrompts?: number }
+        scope.closePrompts = 0
+        dialog.showMessageBox = (async () => {
+          scope.closePrompts = (scope.closePrompts ?? 0) + 1
+          return { response: 2, checkboxChecked: false }
+        }) as typeof dialog.showMessageBox
+      })
+      const view = await tabsView(app)
+      await view.evaluate(async () => {
+        const api = (window as unknown as { aiOfficeTabs: TabsApi }).aiOfficeTabs
+        const t = (await api.list()).find((x) => x.kind === 'photo')
+        if (t) await api.close(t.id)
+      })
+      await expect
+        .poll(() =>
+          view.evaluate(async () =>
+            (await (window as unknown as { aiOfficeTabs: TabsApi }).aiOfficeTabs.list()).some(
+              (x) => x.kind === 'photo',
+            ),
+          ),
+        )
+        .toBe(false)
+      expect(
+        await app.evaluate(() => (globalThis as { closePrompts?: number }).closePrompts ?? 0),
+      ).toBe(0)
+    } finally {
+      await closeAndSaveVideo(launched, 'graphics-photo')
     }
   })
 })

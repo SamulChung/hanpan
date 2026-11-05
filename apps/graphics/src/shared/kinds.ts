@@ -16,21 +16,7 @@ export const APP_GLOBAL: Record<GraphicsKind, 'photocraft' | 'vectorcraft'> = {
 
 /** Extensions each tab opens; pdf stays with the PDF editor. */
 export const OPEN_EXTS: Record<GraphicsKind, readonly string[]> = {
-  photo: [
-    'psd',
-    'psb',
-    'png',
-    'jpg',
-    'jpeg',
-    'webp',
-    'gif',
-    'bmp',
-    'tif',
-    'tiff',
-    'heic',
-    'heif',
-    'avif',
-  ],
+  photo: ['psd', 'psb', 'png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp', 'tif', 'tiff', 'heic', 'heif'],
   illust: ['svg', 'svgz', 'ai', 'vectorcraft'],
 }
 
@@ -55,7 +41,6 @@ export const LAYERLESS_EXTS: readonly string[] = [
   'tiff',
   'heic',
   'heif',
-  'avif',
 ]
 
 export const EXPORT_FORMATS: Record<GraphicsKind, readonly ('png' | 'jpg' | 'svg')[]> = {

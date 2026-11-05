@@ -4,6 +4,7 @@ import photoCommands from './fixtures/photocraft-0.20.2-h1-commands.json'
 import { createAdapter } from '../src/renderer/adapters'
 import { createGraphicsSkill } from '../src/renderer/ai/graphics-skill'
 import { isBlockedCommand } from '../src/renderer/ai/blocked-commands'
+import { guideNames, loadGuides } from '../src/renderer/ai/guides'
 import { createUndoTracker } from '../src/renderer/ai/undo-tracker'
 import type { AppCommand } from '../src/renderer/frame/page-api'
 import type { ExportRequest } from '../src/shared/ipc'
@@ -281,5 +282,25 @@ describe('the blocked commands, checked against the PhotoCraft 0.20.2-h1 command
     )
     expect(editing.length).toBeGreaterThan(300)
     for (const c of editing) expect(isBlockedCommand(c.id), c.id).toBe(false)
+  })
+})
+
+describe('the photo guides', () => {
+  const PHOTO_IDS = new Set((photoCommands as { id: string }[]).map((c) => c.id))
+
+  it('cover background, adjust, text, crop-resize and export', () => {
+    expect(guideNames('photo')).toEqual(['background', 'adjust', 'text', 'crop-resize', 'export'])
+  })
+
+  it('name only commands PhotoCraft 0.20.2-h1 has and the assistant may run', () => {
+    const loaded = loadGuides('photo', guideNames('photo'))
+    expect(loaded.ok).toBe(true)
+    const text = loaded.ok ? loaded.content : ''
+    const ids = [...text.matchAll(/`([a-z]+(?:\.[a-zA-Z]+)+)`/g)].map((m) => m[1]!)
+    expect(ids.length).toBeGreaterThan(15)
+    for (const id of ids) {
+      expect(PHOTO_IDS.has(id), id).toBe(true)
+      expect(isBlockedCommand(id), id).toBe(false)
+    }
   })
 })

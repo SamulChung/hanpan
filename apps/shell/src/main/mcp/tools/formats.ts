@@ -159,7 +159,6 @@ export const FORMAT_FAMILIES: readonly FormatFamily[] = [
       'tiff',
       'heic',
       'heif',
-      'avif',
     ],
     editorSave: ['psd', 'png', 'jpg', 'jpeg', 'webp', 'tif', 'tiff'],
     editorExport: ['png', 'jpg'],

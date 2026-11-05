@@ -13,9 +13,13 @@ export async function openPending(
   const pending = await consume()
   if (!pending) return 'none'
   try {
-    const queued = await adapter.api.openFile(pending.name, copyBytes(pending.bytes))
-    if (queued === false) return 'failed'
     const started = Date.now()
+    // PhotoCraft's API is up before its first frame and refuses an open until then:
+    // offer the file again until the time limit
+    while ((await adapter.api.openFile(pending.name, copyBytes(pending.bytes))) === false) {
+      if (Date.now() - started >= timeoutMs) return 'failed'
+      await new Promise((resolve) => setTimeout(resolve, 250))
+    }
     while (Date.now() - started < timeoutMs) {
       if ((await adapter.docInfo()).hasDocument) {
         confirm(pending.path)

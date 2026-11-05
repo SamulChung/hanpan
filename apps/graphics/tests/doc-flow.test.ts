@@ -375,9 +375,28 @@ describe('openPending', () => {
       createAdapter('illust', page),
       async () => ({ name: 'bad.ai', path: '/x/bad.ai', bytes: new Uint8Array([1]) }),
       confirm,
+      300,
     )
     expect(result).toBe('failed')
     expect(confirm).not.toHaveBeenCalled()
+  })
+
+  it('offers the file again while the app is still starting (PhotoCraft refuses an open before its first frame)', async () => {
+    const page = new FakePage()
+    const realOpen = page.openFile.bind(page)
+    let refusals = 3
+    page.openFile = (name, bytes) =>
+      refusals-- > 0 ? Promise.resolve(false) : realOpen(name, bytes)
+    const confirm = vi.fn()
+    const result = await openPending(
+      createAdapter('illust', page),
+      async () => ({ name: 'cat.png', path: '/x/cat.png', bytes: new Uint8Array([1]) }),
+      confirm,
+      5_000,
+    )
+    expect(result).toBe('opened')
+    expect(page.opened).toHaveLength(1)
+    expect(confirm).toHaveBeenCalledWith('/x/cat.png')
   })
 
   it('hands the file to the app and waits for the document', async () => {
