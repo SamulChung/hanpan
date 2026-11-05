@@ -31,7 +31,6 @@ import type { MenuItemConstructorOptions, NativeImage, WebContents } from 'elect
 import { atomicWriteFile } from './atomic-write'
 import { setupHanpan } from './hanpan/setup'
 import { configureDesignWindow, openDesignWithOutline } from './hanpan/design-window'
-import { artcraftInUse, registerArtcraftIpc, type ArtcraftHost } from './hanpan/artcraft'
 import { tabStripOverlay } from './title-bar-overlay'
 import { shellWindowBackground } from './window-background'
 import { installPointerSize } from './pointer-size'
@@ -874,16 +873,6 @@ function readStoredAiSettings(): AiSettings {
 }
 
 let uiLang: Lang | null = null
-
-/** Hanpan: where this run finds the bundled ArtCraft apps (decision 0090) */
-function artcraftHost(): ArtcraftHost {
-  return {
-    platform: process.platform,
-    isPackaged: app.isPackaged,
-    resourcesPath: process.resourcesPath,
-    appPath: app.getAppPath(),
-  }
-}
 
 /** Hanpan: whether the Korean document features are on (decision 0091): the switch, else a Korean UI */
 function koreanDocsOn(): boolean {
@@ -8976,8 +8965,6 @@ app.whenReady().then(async () => {
     title: (lang) => `${lang === 'ko' ? '디자인' : 'Design'} - ${productName(lang as never)}`,
     gonguKey: () => readStoredAiSettings().gongu?.apiKey ?? '',
   })
-  // Hanpan: Home's PhotoCraft and VectorCraft cards (decision 0090)
-  registerArtcraftIpc({ parentWindow: () => shellWindow, host: artcraftHost() })
   configurePdfToolsWindow({
     parentWindow: () => shellWindow,
     lang: () => currentLang(),
@@ -9215,16 +9202,7 @@ app.whenReady().then(async () => {
   installDocumentLinkMenuItems()
   installDockMenu()
   setUpdateCheckInvoker(() => void checkForUpdatesNow())
-  initAutoUpdater(
-    () => shellWindow,
-    currentUpdateChannel(),
-    autoUpdateCheckEnabled,
-    () =>
-      // Hanpan: the installer replaces the bundled ArtCraft apps, so they must be closed (decision 0090)
-      artcraftInUse(artcraftHost()).map((name) =>
-        name === 'photocraft' ? 'PhotoCraft' : 'VectorCraft',
-      ),
-  )
+  initAutoUpdater(() => shellWindow, currentUpdateChannel(), autoUpdateCheckEnabled)
   // crash record on this PC (crash-log.jsonl in userData) and, outside
   // headless runs, a prompt when the renderer of an open document dies
   const crashMemory = () =>

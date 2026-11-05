@@ -520,32 +520,6 @@ describe('initAutoUpdater', () => {
     expect(quitAndInstall).not.toHaveBeenCalled()
   })
 
-  it('does not restart to install while a bundled app that the installer replaces is open', async () => {
-    const { initAutoUpdater } = await loadUpdater()
-    const blockers = vi.fn(() => ['PhotoCraft'])
-    initAutoUpdater(
-      () => null,
-      'stable',
-      () => true,
-      blockers,
-    )
-    updaterState.listeners.get('update-available')!({ version: '0.2.0' })
-    lastShownActions().onDownload()
-    updaterState.listeners.get('update-downloaded')!({ version: '0.2.0' })
-    lastShownActions().onInstall()
-    vi.advanceTimersByTime(0)
-    expect(appQuit).not.toHaveBeenCalled()
-    expect(closeUpdateWindow).not.toHaveBeenCalled()
-    expect(showMessageBox).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.stringContaining('PhotoCraft') }),
-    )
-    // closed now: the same button installs
-    blockers.mockReturnValue([])
-    lastShownActions().onInstall()
-    vi.advanceTimersByTime(0)
-    expect(appQuit).toHaveBeenCalledTimes(1)
-  })
-
   it('says before the restart that the installer window shows and the app comes back', async () => {
     const { initAutoUpdater } = await loadUpdater()
     initAutoUpdater(() => null)

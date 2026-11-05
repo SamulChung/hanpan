@@ -9,8 +9,6 @@ import { KbAskPanel } from './KbAskPanel'
 import { TemplatePicker } from './hanpan/TemplatePicker'
 import { StartBoard } from './hanpan/StartBoard'
 import { MarkdownConverter, type MarkdownConverterApi } from './hanpan/MarkdownConverter'
-import { ArtcraftIcon } from './hanpan/ArtcraftIcon'
-import type { ArtcraftApp } from '../../shared/artcraft-api'
 import './hanpan/hanpan.css'
 import iconDocx from './assets/file-docx.svg'
 import iconXlsx from './assets/file-xlsx.svg'
@@ -1919,26 +1917,6 @@ export function Home({
     hp?.mdFolder && hp.mdPickFile && hp.mdPickFolder && hp.mdConvert && hp.mdShowFolder
       ? (hp as MarkdownConverterApi)
       : null
-  // Hanpan: the ArtCraft apps the install carries (decision 0090), asked once
-  const [artcraftApps, setArtcraftApps] = useState<ArtcraftApp[]>([])
-  const [artcraftFailed, setArtcraftFailed] = useState(false)
-  useEffect(() => {
-    let live = true
-    window.hanpanApi
-      ?.artcraftAvailable?.()
-      .then((apps) => {
-        if (live) setArtcraftApps(apps)
-      })
-      .catch(() => {})
-    return () => {
-      live = false
-    }
-  }, [])
-  const openArtcraft = async (app: ArtcraftApp) => {
-    setArtcraftFailed(false)
-    const result = await window.hanpanApi?.openArtcraft?.(app).catch(() => null)
-    if (!result?.ok) setArtcraftFailed(true)
-  }
 
   /**
    * Hanpan's order: the mind map first (every document starts there), then the
@@ -2057,20 +2035,6 @@ export function Home({
         tip: t('pdfToolsCardSub'),
         action: () => window.aiOfficePdfToolsHome.open(),
       },
-      ...artcraftApps.map((app) => ({
-        key: app,
-        icon: (
-          <span className="quick-folder" aria-hidden="true">
-            <ArtcraftIcon app={app} />
-          </span>
-        ),
-        title: t(app === 'photocraft' ? 'hpPhotoCraft' : 'hpVectorCraft'),
-        ai: false,
-        // the app's own name, under what it does (spec 6: the original names stay)
-        sub: app === 'photocraft' ? 'PhotoCraft' : 'VectorCraft',
-        tip: t('hpArtcraftTip') as string | undefined,
-        action: () => openArtcraft(app),
-      })),
       {
         key: 'open',
         icon: (
@@ -2137,11 +2101,6 @@ export function Home({
             </button>
           ))}
         </div>
-        {artcraftFailed && (
-          <p className="hp-artcraft-failed" role="alert">
-            {t('hpArtcraftFailed')}
-          </p>
-        )}
         {templatesOpen && <TemplatePicker onClose={() => setTemplatesOpen(false)} />}
         {converterOpen && converterApi && (
           <MarkdownConverter api={converterApi} onClose={() => setConverterOpen(false)} />

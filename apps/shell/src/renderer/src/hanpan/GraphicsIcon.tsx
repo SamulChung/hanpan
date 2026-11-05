@@ -1,11 +1,9 @@
-import type { ArtcraftApp } from '../../../shared/artcraft-api'
-
 /**
- * Home's line icons for the ArtCraft apps: a brush for PhotoCraft (photo
- * editing), a pen nib for VectorCraft (illustration). Drawn in currentColor, so
- * the card's theme token colors them.
+ * Line icons for the AI Photo and AI Illustration tabs: a brush for photos, a
+ * pen nib for illustrations. Drawn in currentColor, so the theme token of the
+ * place they sit in colors them.
  */
-export function ArtcraftIcon({ app }: { app: ArtcraftApp }) {
+export function GraphicsIcon({ kind }: { kind: 'photo' | 'illust' }) {
   return (
     <svg
       width="16"
@@ -19,7 +17,7 @@ export function ArtcraftIcon({ app }: { app: ArtcraftApp }) {
       aria-hidden="true"
       focusable="false"
     >
-      {app === 'photocraft' ? (
+      {kind === 'photo' ? (
         <>
           <path d="M20.6 3.4c.8.8.8 2 0 2.8L14 12.8 11.2 10l6.6-6.6c.8-.8 2-.8 2.8 0z" />
           <path d="M11.2 10c-2.9-.3-5.2 1.6-5.2 4.6 0 1.9-.7 3.6-2.5 5 4.3.9 8.6-.4 10-3.4.6-1.2.7-2.3.5-3.4" />

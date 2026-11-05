@@ -1,5 +1,7 @@
 # 0090 한판은 PhotoCraft·VectorCraft를 공식 portable zip 그대로 Windows 설치판에 담고, 따로 실행한다
 
+> **대체됨 → [0093](0093-hanpan-graphics-web-tabs.md)** (2026-11-06). 설치형 앱은 설치판에서 빠졌고, 웹판을 한판 탭으로 연다. 아래는 그때의 기록이다.
+
 ## 맥락
 
 회사는 사진·일러스트를 편집하는 앱을 따로 사지 않고 한판과 함께 쓰게 하려 한다. ArtCraft 팀(github.com/storytold)이 Rust로 만든 PhotoCraft와 VectorCraft는 MIT OR Apache-2.0이고, 릴리스마다 Windows용 portable zip을 낸다. 두 앱은 거의 매일 새 버전이 나온다. 설계는 `docs/superpowers/specs/2026-11-04-hanpan-vn-securitykey-design.md` 6장에 있다.

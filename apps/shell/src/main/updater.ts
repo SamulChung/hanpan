@@ -84,8 +84,6 @@ const tUpd = createI18n({
     updVisibleInstall:
       '重启后将显示安装进度窗口。如果 Windows 请求管理员授权，请选择“是”。安装完成后，应用和之前打开的文档会重新打开。',
     updRestartNote: '重启后将显示安装进度窗口。安装完成后，应用和之前打开的文档会重新打开。',
-    /** {apps}: the bundled programs (PhotoCraft, VectorCraft) the installer must replace */
-    updCloseApps: '请先关闭 {apps}，然后再安装。更新无法替换正在打开的应用。',
   },
   en: {
     updTitle: 'Software Update',
@@ -114,8 +112,6 @@ const tUpd = createI18n({
       'After the restart an installer window shows the progress. If Windows asks for administrator approval, choose Yes. When it finishes, the app and the documents you had open come back.',
     updRestartNote:
       'After the restart an installer window shows the progress. When it finishes, the app and the documents you had open come back.',
-    updCloseApps:
-      'Close {apps}, then install again. The update cannot replace an app that is open.',
   },
   vi: {
     updTitle: 'Cập nhật phần mềm',
@@ -144,8 +140,6 @@ const tUpd = createI18n({
       'Sau khi khởi động lại, một cửa sổ sẽ hiển thị tiến trình cài đặt. Nếu Windows yêu cầu quyền quản trị viên, hãy chọn Có. Khi hoàn tất, ứng dụng và các tài liệu bạn đang mở sẽ được mở lại.',
     updRestartNote:
       'Sau khi khởi động lại, một cửa sổ sẽ hiển thị tiến trình cài đặt. Khi hoàn tất, ứng dụng và các tài liệu bạn đang mở sẽ được mở lại.',
-    updCloseApps:
-      'Hãy đóng {apps} rồi cài đặt lại. Bản cập nhật không thể thay thế ứng dụng đang mở.',
   },
   ja: {
     updTitle: 'ソフトウェアアップデート',
@@ -174,8 +168,6 @@ const tUpd = createI18n({
       '再起動するとインストールの進行状況を示すウィンドウが表示されます。Windows が管理者の承認を求めたら「はい」を選んでください。完了すると、アプリと開いていた文書が再び開きます。',
     updRestartNote:
       '再起動するとインストールの進行状況を示すウィンドウが表示されます。完了すると、アプリと開いていた文書が再び開きます。',
-    updCloseApps:
-      '{apps} を閉じてから、もう一度インストールしてください。開いているアプリは更新で置き換えられません。',
   },
   ko: {
     updTitle: '소프트웨어 업데이트',
@@ -204,8 +196,6 @@ const tUpd = createI18n({
       "다시 시작하면 설치 진행 창이 뜹니다. 관리자 승인을 묻는 창이 나오면 '예'를 눌러 주세요. 설치가 끝나면 앱과 열려 있던 문서가 다시 열립니다.",
     updRestartNote:
       '다시 시작하면 설치 진행 창이 뜹니다. 설치가 끝나면 앱과 열려 있던 문서가 다시 열립니다.',
-    updCloseApps:
-      '{apps} 창을 먼저 닫고 다시 설치하세요. 열려 있는 앱은 업데이트로 바꿀 수 없습니다.',
   },
   fr: {
     updTitle: 'Mise à jour logicielle',
@@ -235,8 +225,6 @@ const tUpd = createI18n({
       "Après le redémarrage, une fenêtre affiche la progression de l'installation. Si Windows demande l'autorisation d'un administrateur, choisissez Oui. Une fois l'installation terminée, l'application et les documents ouverts reviennent.",
     updRestartNote:
       "Après le redémarrage, une fenêtre affiche la progression de l'installation. Une fois l'installation terminée, l'application et les documents ouverts reviennent.",
-    updCloseApps:
-      'Fermez {apps}, puis relancez l’installation. La mise à jour ne peut pas remplacer une application ouverte.',
   },
   de: {
     updTitle: 'Softwareaktualisierung',
@@ -267,8 +255,6 @@ const tUpd = createI18n({
       'Nach dem Neustart zeigt ein Fenster den Installationsfortschritt. Wenn Windows nach Administratorrechten fragt, wählen Sie „Ja“. Danach öffnen sich die App und Ihre geöffneten Dokumente wieder.',
     updRestartNote:
       'Nach dem Neustart zeigt ein Fenster den Installationsfortschritt. Danach öffnen sich die App und Ihre geöffneten Dokumente wieder.',
-    updCloseApps:
-      'Schließen Sie {apps} und installieren Sie dann erneut. Das Update kann keine geöffnete App ersetzen.',
   },
   es: {
     updTitle: 'Actualización de software',
@@ -297,8 +283,6 @@ const tUpd = createI18n({
       'Tras el reinicio, una ventana muestra el progreso de la instalación. Si Windows pide la aprobación de un administrador, elija Sí. Al terminar, la aplicación y los documentos que tenía abiertos vuelven a abrirse.',
     updRestartNote:
       'Tras el reinicio, una ventana muestra el progreso de la instalación. Al terminar, la aplicación y los documentos que tenía abiertos vuelven a abrirse.',
-    updCloseApps:
-      'Cierra {apps} y vuelve a instalar. La actualización no puede reemplazar una aplicación abierta.',
   },
   th: {
     updTitle: 'อัปเดตซอฟต์แวร์',
@@ -326,7 +310,6 @@ const tUpd = createI18n({
       'หลังรีสตาร์ท จะมีหน้าต่างแสดงความคืบหน้าการติดตั้ง หาก Windows ขอการอนุมัติจากผู้ดูแลระบบ ให้เลือก ใช่ เมื่อติดตั้งเสร็จ แอปและเอกสารที่เปิดไว้จะเปิดขึ้นอีกครั้ง',
     updRestartNote:
       'หลังรีสตาร์ท จะมีหน้าต่างแสดงความคืบหน้าการติดตั้ง เมื่อติดตั้งเสร็จ แอปและเอกสารที่เปิดไว้จะเปิดขึ้นอีกครั้ง',
-    updCloseApps: 'ปิด {apps} ก่อน แล้วติดตั้งอีกครั้ง การอัปเดตไม่สามารถแทนที่แอปที่เปิดอยู่ได้',
   },
   id: {
     updTitle: 'Pembaruan Perangkat Lunak',
@@ -355,8 +338,6 @@ const tUpd = createI18n({
       'Setelah dimulai ulang, sebuah jendela menampilkan kemajuan pemasangan. Jika Windows meminta persetujuan administrator, pilih Ya. Setelah selesai, aplikasi dan dokumen yang tadi terbuka akan dibuka kembali.',
     updRestartNote:
       'Setelah dimulai ulang, sebuah jendela menampilkan kemajuan pemasangan. Setelah selesai, aplikasi dan dokumen yang tadi terbuka akan dibuka kembali.',
-    updCloseApps:
-      'Tutup {apps}, lalu instal lagi. Pembaruan tidak dapat mengganti aplikasi yang sedang terbuka.',
   },
   ru: {
     updTitle: 'Обновление программы',
@@ -385,8 +366,6 @@ const tUpd = createI18n({
       'После перезапуска откроется окно с ходом установки. Если Windows запросит разрешение администратора, выберите «Да». По завершении приложение и открытые документы откроются снова.',
     updRestartNote:
       'После перезапуска откроется окно с ходом установки. По завершении приложение и открытые документы откроются снова.',
-    updCloseApps:
-      'Закройте {apps} и повторите установку. Обновление не может заменить открытое приложение.',
   },
   ar: {
     updTitle: 'تحديث البرنامج',
@@ -412,7 +391,6 @@ const tUpd = createI18n({
       'بعد إعادة التشغيل تظهر نافذة تعرض تقدم التثبيت. إذا طلب Windows موافقة المسؤول، فاختر نعم. عند الانتهاء يُعاد فتح التطبيق والمستندات التي كانت مفتوحة.',
     updRestartNote:
       'بعد إعادة التشغيل تظهر نافذة تعرض تقدم التثبيت. عند الانتهاء يُعاد فتح التطبيق والمستندات التي كانت مفتوحة.',
-    updCloseApps: 'أغلق {apps} ثم ثبّت مرة أخرى. لا يمكن للتحديث استبدال تطبيق مفتوح.',
   },
   pt: {
     updTitle: 'Atualização de Software',
@@ -441,8 +419,6 @@ const tUpd = createI18n({
       'Após reiniciar, uma janela mostra o progresso da instalação. Se o Windows pedir aprovação de administrador, escolha Sim. Ao terminar, o aplicativo e os documentos que estavam abertos são reabertos.',
     updRestartNote:
       'Após reiniciar, uma janela mostra o progresso da instalação. Ao terminar, o aplicativo e os documentos que estavam abertos são reabertos.',
-    updCloseApps:
-      'Feche {apps} e instale novamente. A atualização não pode substituir um app aberto.',
   },
   it: {
     updTitle: 'Aggiornamento software',
@@ -471,8 +447,6 @@ const tUpd = createI18n({
       "Dopo il riavvio una finestra mostra l'avanzamento dell'installazione. Se Windows chiede l'approvazione di un amministratore, scegli Sì. Al termine l'app e i documenti aperti si riaprono.",
     updRestartNote:
       "Dopo il riavvio una finestra mostra l'avanzamento dell'installazione. Al termine l'app e i documenti aperti si riaprono.",
-    updCloseApps:
-      'Chiudi {apps} e ripeti l’installazione. L’aggiornamento non può sostituire un’app aperta.',
   },
   pl: {
     updTitle: 'Aktualizacja oprogramowania',
@@ -501,8 +475,6 @@ const tUpd = createI18n({
       'Po ponownym uruchomieniu okno pokaże postęp instalacji. Jeśli system Windows poprosi o zgodę administratora, wybierz Tak. Po zakończeniu aplikacja i otwarte dokumenty otworzą się ponownie.',
     updRestartNote:
       'Po ponownym uruchomieniu okno pokaże postęp instalacji. Po zakończeniu aplikacja i otwarte dokumenty otworzą się ponownie.',
-    updCloseApps:
-      'Zamknij {apps}, a następnie zainstaluj ponownie. Aktualizacja nie może zastąpić otwartej aplikacji.',
   },
   cs: {
     updTitle: 'Aktualizace softwaru',
@@ -531,8 +503,6 @@ const tUpd = createI18n({
       'Po restartu se zobrazí okno s průběhem instalace. Pokud Windows požádá o souhlas správce, zvolte Ano. Po dokončení se aplikace a otevřené dokumenty znovu otevřou.',
     updRestartNote:
       'Po restartu se zobrazí okno s průběhem instalace. Po dokončení se aplikace a otevřené dokumenty znovu otevřou.',
-    updCloseApps:
-      'Zavřete {apps} a pak instalaci zopakujte. Aktualizace nemůže nahradit otevřenou aplikaci.',
   },
   nl: {
     updTitle: 'Software-update',
@@ -562,8 +532,6 @@ const tUpd = createI18n({
       'Na het herstarten toont een venster de voortgang van de installatie. Als Windows om toestemming van een beheerder vraagt, kiest u Ja. Daarna worden de app en uw geopende documenten weer geopend.',
     updRestartNote:
       'Na het herstarten toont een venster de voortgang van de installatie. Daarna worden de app en uw geopende documenten weer geopend.',
-    updCloseApps:
-      'Sluit {apps} en installeer daarna opnieuw. De update kan geen geopende app vervangen.',
   },
   ms: {
     updTitle: 'Kemas Kini Perisian',
@@ -592,8 +560,6 @@ const tUpd = createI18n({
       'Selepas dimulakan semula, satu tetingkap menunjukkan kemajuan pemasangan. Jika Windows meminta kelulusan pentadbir, pilih Ya. Apabila selesai, aplikasi dan dokumen yang dibuka tadi akan dibuka semula.',
     updRestartNote:
       'Selepas dimulakan semula, satu tetingkap menunjukkan kemajuan pemasangan. Apabila selesai, aplikasi dan dokumen yang dibuka tadi akan dibuka semula.',
-    updCloseApps:
-      'Tutup {apps}, kemudian pasang semula. Kemas kini tidak boleh menggantikan aplikasi yang sedang dibuka.',
   },
   he: {
     updTitle: 'עדכון תוכנה',
@@ -619,7 +585,6 @@ const tUpd = createI18n({
       'לאחר ההפעלה מחדש יופיע חלון שמציג את התקדמות ההתקנה. אם Windows מבקש אישור מנהל, בחרו "כן". בסיום, האפליקציה והמסמכים שהיו פתוחים ייפתחו שוב.',
     updRestartNote:
       'לאחר ההפעלה מחדש יופיע חלון שמציג את התקדמות ההתקנה. בסיום, האפליקציה והמסמכים שהיו פתוחים ייפתחו שוב.',
-    updCloseApps: 'סגרו את {apps} ואז התקינו שוב. העדכון לא יכול להחליף אפליקציה פתוחה.',
   },
   hi: {
     updTitle: 'सॉफ़्टवेयर अपडेट',
@@ -648,8 +613,6 @@ const tUpd = createI18n({
       'पुनरारंभ के बाद एक विंडो इंस्टॉलेशन की प्रगति दिखाएगी। अगर Windows व्यवस्थापक की अनुमति माँगे, तो हाँ चुनें। पूरा होने पर ऐप और खुले हुए दस्तावेज़ फिर से खुल जाएँगे।',
     updRestartNote:
       'पुनरारंभ के बाद एक विंडो इंस्टॉलेशन की प्रगति दिखाएगी। पूरा होने पर ऐप और खुले हुए दस्तावेज़ फिर से खुल जाएँगे।',
-    updCloseApps:
-      'पहले {apps} बंद करें, फिर दोबारा इंस्टॉल करें। खुले ऐप को अपडेट से बदला नहीं जा सकता।',
   },
   'zh-TW': {
     updTitle: '軟體更新',
@@ -674,7 +637,6 @@ const tUpd = createI18n({
       '重新啟動後將顯示安裝進度視窗。如果 Windows 要求系統管理員授權，請選擇「是」。安裝完成後，應用程式和先前開啟的文件會重新開啟。',
     updRestartNote:
       '重新啟動後將顯示安裝進度視窗。安裝完成後，應用程式和先前開啟的文件會重新開啟。',
-    updCloseApps: '請先關閉 {apps}，然後再安裝。更新無法取代開啟中的應用程式。',
   },
 })
 
@@ -884,11 +846,6 @@ export function initAutoUpdater(
   initialChannel: UpdateChannel = 'stable',
   /** Settings › "Check for updates automatically"; read at every background check (genoffice#2127) */
   autoCheckEnabled: () => boolean = () => true,
-  /**
-   * Hanpan: names of bundled programs that are open now; the installer cannot
-   * replace their files, so "Restart & Install" waits until they are closed
-   */
-  installBlockers: () => string[] = () => [],
 ): void {
   if (started) return
   started = true
@@ -1084,17 +1041,6 @@ export function initAutoUpdater(
       })
     },
     onInstall: () => {
-      if (latestSeenVersion !== null && phase === 'downloaded') {
-        const open = installBlockers()
-        if (open.length > 0) {
-          log('install waits for', open.join(', '), 'to close')
-          void dialog.showMessageBox({
-            type: 'info',
-            message: tUpd(getUiLang(), 'updCloseApps', { apps: open.join(', ') }),
-          })
-          return
-        }
-      }
       closeUpdateWindow()
       if (latestSeenVersion === null || phase !== 'downloaded') return
       log('restart requested to install', latestSeenVersion)

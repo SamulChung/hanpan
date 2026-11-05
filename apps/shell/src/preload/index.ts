@@ -61,7 +61,6 @@ import type { GenerateHomeApi } from '../shared/generate-api'
 import { GENERATE_HOME_CHANNELS } from '../shared/generate-home-channels'
 import type { PdfToolsHomeApi } from '../shared/pdf-tools-api'
 import { PDF_TOOLS_HOME_CHANNELS } from '../shared/pdf-tools-home-channels'
-import { ARTCRAFT_CHANNELS } from '../shared/artcraft-api'
 import { AGENT_HOME_OPEN_CHANNEL } from '../shared/agent-home-channel'
 import {
   QUICK_LOOK_HOME_CHANNELS,
@@ -857,8 +856,6 @@ contextBridge.exposeInMainWorld('hanpanApi', {
   mdPickFolder: () => ipcRenderer.invoke('hanpan:md-pick-folder'),
   mdConvert: (request: unknown) => ipcRenderer.invoke('hanpan:md-convert', request),
   mdShowFolder: () => ipcRenderer.invoke('hanpan:md-show-folder'),
-  artcraftAvailable: () => ipcRenderer.invoke(ARTCRAFT_CHANNELS.available),
-  openArtcraft: (app: string) => ipcRenderer.invoke(ARTCRAFT_CHANNELS.open, app),
 })
 // Home's entry point into the agent window (decision 0032); the window has its own preload
 contextBridge.exposeInMainWorld('aiOfficeAgent', {
