@@ -523,7 +523,12 @@ describe('initAutoUpdater', () => {
   it('does not restart to install while a bundled app that the installer replaces is open', async () => {
     const { initAutoUpdater } = await loadUpdater()
     const blockers = vi.fn(() => ['PhotoCraft'])
-    initAutoUpdater(() => null, 'stable', () => true, blockers)
+    initAutoUpdater(
+      () => null,
+      'stable',
+      () => true,
+      blockers,
+    )
     updaterState.listeners.get('update-available')!({ version: '0.2.0' })
     lastShownActions().onDownload()
     updaterState.listeners.get('update-downloaded')!({ version: '0.2.0' })
@@ -994,9 +999,7 @@ describe('manual download fallback', () => {
     actions.onOpenDownload()
     expect(openExternal).toHaveBeenCalledTimes(1)
     expect(openExternal).toHaveBeenCalledWith(GITHUB_LATEST_RELEASE_URL)
-    expect(GITHUB_LATEST_RELEASE_URL).toBe(
-      'https://github.com/SamulChung/hanpan/releases/latest',
-    )
+    expect(GITHUB_LATEST_RELEASE_URL).toBe('https://github.com/SamulChung/hanpan/releases/latest')
   })
 
   it('never follows a download URL supplied by the update metadata', async () => {

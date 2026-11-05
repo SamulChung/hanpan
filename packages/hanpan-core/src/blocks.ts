@@ -20,7 +20,13 @@ export type DocBlock =
    * Prose under an item: `note` from the map note, `body` from the AI's flesh-out
    * or the user's typing. `depth` is the owning item's depth.
    */
-  | { kind: 'para'; depth: number; text: string; role: 'note' | 'body' | 'lead'; key?: string | undefined }
+  | {
+      kind: 'para'
+      depth: number
+      text: string
+      role: 'note' | 'body' | 'lead'
+      key?: string | undefined
+    }
   /** a reference line (※ ...) */
   | { kind: 'reference'; depth: number; text: string; key?: string | undefined }
   | { kind: 'image'; depth: number; image: PanImage; key?: string | undefined }
@@ -45,8 +51,12 @@ export interface BlockOptions {
 function noteBlocks(node: PanNode, depth: number): DocBlock[] {
   if (!node.note) return []
   const out: DocBlock[] = []
-  for (const line of node.note.split('\n').map((l) => l.trim()).filter(Boolean)) {
-    if (line.startsWith('※')) out.push({ kind: 'reference', depth, text: line.replace(/^※\s*/, ''), key: node.key })
+  for (const line of node.note
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)) {
+    if (line.startsWith('※'))
+      out.push({ kind: 'reference', depth, text: line.replace(/^※\s*/, ''), key: node.key })
     else out.push({ kind: 'para', depth, text: line, role: 'note', key: node.key })
   }
   return out
@@ -56,10 +66,15 @@ export function outlineToBlocks(outline: PanOutline, options: BlockOptions): Doc
   const includeNotes = options.includeNotes ?? true
   const includeBodies = options.includeBodies ?? true
   const blocks: DocBlock[] = [{ kind: 'title', text: outline.title, key: outline.rootKey }]
-  const metaParts = [options.date, options.department].filter((s): s is string => !!s && s.trim() !== '')
+  const metaParts = [options.date, options.department].filter(
+    (s): s is string => !!s && s.trim() !== '',
+  )
   if (metaParts.length) blocks.push({ kind: 'meta', text: metaParts.join('  ') })
   if (includeNotes && outline.note) {
-    for (const line of outline.note.split('\n').map((l) => l.trim()).filter(Boolean)) {
+    for (const line of outline.note
+      .split('\n')
+      .map((l) => l.trim())
+      .filter(Boolean)) {
       blocks.push({ kind: 'para', depth: 0, text: line, role: 'lead', key: outline.rootKey })
     }
   }
@@ -78,12 +93,16 @@ export function outlineToBlocks(outline: PanOutline, options: BlockOptions): Doc
       }
       const ownDepth = chapters ? Math.max(0, depth - 1) : depth
       if (includeBodies && node.body) {
-        for (const line of node.body.split('\n').map((l) => l.trim()).filter(Boolean)) {
+        for (const line of node.body
+          .split('\n')
+          .map((l) => l.trim())
+          .filter(Boolean)) {
           blocks.push({ kind: 'para', depth: ownDepth, text: line, role: 'body', key: node.key })
         }
       }
       if (includeNotes) blocks.push(...noteBlocks(node, ownDepth))
-      if (node.image) blocks.push({ kind: 'image', depth: ownDepth, image: node.image, key: node.key })
+      if (node.image)
+        blocks.push({ kind: 'image', depth: ownDepth, image: node.image, key: node.key })
       visit(node.children, depth + 1)
     })
   }

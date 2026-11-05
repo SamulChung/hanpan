@@ -56,7 +56,14 @@ export const REPORT_THEME: DocTheme = {
 
 export const GONGMUN_THEME: DocTheme = {
   id: 'gongmun',
-  title: { font: '맑은 고딕', size: 16, bold: true, align: 'center', spacingAfter: 6, lineSpacing: 130 },
+  title: {
+    font: '맑은 고딕',
+    size: 16,
+    bold: true,
+    align: 'center',
+    spacingAfter: 6,
+    lineSpacing: 130,
+  },
   meta: { font: '맑은 고딕', size: 11.5, align: 'right', spacingAfter: 10, lineSpacing: 130 },
   chapter: { font: '맑은 고딕', size: 13, bold: true, spacingBefore: 10, lineSpacing: 130 },
   items: [{ font: '맑은 고딕', size: 11.5, spacingBefore: 4, lineSpacing: 130 }],
@@ -69,7 +76,14 @@ export const GONGMUN_THEME: DocTheme = {
 /** A plain look for fonts every PC has (함초롬, shipped with Hancom Office and many viewers). */
 export const PLAIN_THEME: DocTheme = {
   id: 'plain',
-  title: { font: '함초롬돋움', size: 20, bold: true, align: 'center', spacingAfter: 6, lineSpacing: 160 },
+  title: {
+    font: '함초롬돋움',
+    size: 20,
+    bold: true,
+    align: 'center',
+    spacingAfter: 6,
+    lineSpacing: 160,
+  },
   meta: { font: '함초롬바탕', size: 11, align: 'right', spacingAfter: 10, lineSpacing: 160 },
   chapter: { font: '함초롬돋움', size: 15, bold: true, spacingBefore: 14, lineSpacing: 160 },
   items: [
@@ -89,7 +103,14 @@ export const PLAIN_THEME: DocTheme = {
  */
 export const BASIC_THEME: DocTheme = {
   id: 'basic',
-  title: { font: 'Arial', size: 18, bold: true, align: 'center', spacingAfter: 6, lineSpacing: 140 },
+  title: {
+    font: 'Arial',
+    size: 18,
+    bold: true,
+    align: 'center',
+    spacingAfter: 6,
+    lineSpacing: 140,
+  },
   meta: { font: 'Arial', size: 10.5, align: 'right', spacingAfter: 10, lineSpacing: 140 },
   chapter: { font: 'Arial', size: 14, bold: true, spacingBefore: 12, lineSpacing: 140 },
   items: [
