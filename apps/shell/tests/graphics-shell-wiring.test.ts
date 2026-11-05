@@ -98,10 +98,12 @@ describe('the graphics editor runtime and hosts', () => {
     )
   })
 
-  it('serves both hosts from the graphics renderer with the frame header', () => {
+  it('serves the host pages and the web apps on separate origins, each its own files only', () => {
     expect(main).toContain("photo: join(GRAPHICS_OUT, 'renderer'),")
     expect(main).toContain("illust: join(GRAPHICS_OUT, 'renderer'),")
-    expect(main).toContain('{ headers: graphicsResponseHeaders },')
+    expect(main).toContain("'photo-app': join(GRAPHICS_OUT, 'renderer'),")
+    expect(main).toContain("'illust-app': join(GRAPHICS_OUT, 'renderer'),")
+    expect(main).toContain('{ headers: graphicsResponseHeaders, allow: graphicsRequestAllowed },')
   })
 })
 

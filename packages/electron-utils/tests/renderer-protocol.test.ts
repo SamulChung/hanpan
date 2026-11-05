@@ -55,4 +55,15 @@ describe('installRendererProtocol', () => {
     expect(response.headers.get('content-security-policy')).toBeNull()
     expect(response.status).toBe(200)
   })
+
+  it('answers 404 for a file the allow option refuses, without reading it', async () => {
+    const root = rendererRoot()
+    const allow = vi.fn((host: string) => host !== 'illust')
+    installRendererProtocol({ illust: root, 'illust-app': root }, { allow })
+    const refused = await handler!(new Request('genoffice-app://illust/web/index.html'))
+    expect(refused.status).toBe(404)
+    const served = await handler!(new Request('genoffice-app://illust-app/web/index.html'))
+    expect(served.status).toBe(200)
+    expect(allow).toHaveBeenCalledWith('illust', join(root, 'web', 'index.html'))
+  })
 })

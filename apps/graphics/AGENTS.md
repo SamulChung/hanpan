@@ -24,7 +24,8 @@ AI 포토(탭 종류 `photo`, PhotoCraft 웹판)와 AI 일러스트(탭 종류 `
 
 ## 항상 지켜야 하는 것
 
-- 디스크에 쓰는 길은 `commit-save`와 `export-file`뿐이고, 둘 다 이 뒷단이 고른 경로에만 쓴다. 화면이 보낸 경로를 믿지 않는다. 같은 출처 iframe의 웹판은 `parent`에 닿으므로 다리를 완전히 숨길 수는 없다(`docs/security.md`의 "AI 포토·AI 일러스트").
+- 디스크에 쓰는 길은 `commit-save`와 `export-file`뿐이고, 둘 다 이 뒷단이 고른 경로에만 쓴다. 화면이 보낸 경로를 믿지 않는다. 웹판은 다른 출처(`<앱>-app`)에서 돌아 호스트에 닿지 못하지만, 경로는 언제나 main이 정한다(`docs/security.md`의 "AI 포토·AI 일러스트").
+- 웹판은 `genoffice-app://<앱>-app/`의 틀에서 돈다. 호스트는 `connectPageApi`로 메시지만 주고받고, 틀 안의 중계(`frame/frame-agent.ts`)가 페이지 API와 입력 잠금을 맡는다. preload는 웹판 틀에서는 저장소 준비와 중계 심기만 한다. 웹판 틀에 다리를 내놓지 않는다.
 - 다리는 창에 두지 않는다. preload는 `graphicsBridge.take()`로 한 번만 넘기고, 호스트는 `main.tsx`에서 틀을 만들기 전에 받아 `src/renderer/bridge.ts`의 모듈 안에만 둔다. 화면 코드는 `graphicsApi()`·`graphicsApiOrNull()`로 쓰고, `window`에 다리를 다시 올리지 않는다. 시험은 `installGraphicsApi(가짜)`를 쓴다.
 - 보기는 `backgroundThrottling: false`다. 웹판은 애니메이션 프레임에서 페이지 API에 답하므로, 숨긴 탭에서 AI 실행이나 닫을 때의 저장이 멈추지 않게 한다.
 - 운영체제 파일 연결을 하지 않는다. 그래픽 확장자를 `LAUNCHABLE_EXTS`·`fileAssociations`에 넣지 않는다.

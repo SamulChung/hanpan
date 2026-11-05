@@ -23,8 +23,13 @@ function applyTheme(theme: UiTheme): void {
 const requested = new URLSearchParams(location.search).get('kind')
 const kind: GraphicsKind = GRAPHICS_KINDS.find((k) => k === requested) ?? 'illust'
 
-/** The web build is there when its page is the app's own (a dev server answers unknown paths with this page). */
+/**
+ * The web build is there when its page is the app's own. In the app, main reads
+ * it (the host page's origin does not serve the app); the dev server answers
+ * unknown paths with the host page, hence the marker.
+ */
 async function probeWeb(): Promise<boolean> {
+  if (location.protocol === 'genoffice-app:') return graphicsApi().webPresent()
   const response = await fetch(`./web/${kind}/index.html`)
   return response.ok && (await response.text()).includes(`${APP_GLOBAL[kind]}_`)
 }

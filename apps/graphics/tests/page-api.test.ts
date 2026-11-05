@@ -1,32 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { appFrameUrl, waitForPageApi, withTimeout } from '../src/renderer/frame/page-api'
+import { appFrameUrl, withTimeout } from '../src/renderer/frame/page-api'
 import { copyBytes, base64ToBytes, bytesToBase64 } from '../src/renderer/frame/bytes'
 
 afterEach(() => vi.useRealTimers())
-
-function frameWith(win: Record<string, unknown>): HTMLIFrameElement {
-  return { contentWindow: win } as unknown as HTMLIFrameElement
-}
-
-describe('waitForPageApi', () => {
-  it('resolves once the global appears', async () => {
-    vi.useFakeTimers()
-    const win: Record<string, unknown> = {}
-    const ready = waitForPageApi(frameWith(win), 'vectorcraft', 5000)
-    await vi.advanceTimersByTimeAsync(600)
-    win.vectorcraft = { execute: () => {} }
-    await vi.advanceTimersByTimeAsync(400)
-    await expect(ready).resolves.toBe(win.vectorcraft)
-  })
-
-  it('rejects after the timeout', async () => {
-    vi.useFakeTimers()
-    const ready = waitForPageApi(frameWith({}), 'photocraft', 1000)
-    const check = expect(ready).rejects.toThrow(/photocraft/)
-    await vi.advanceTimersByTimeAsync(1200)
-    await check
-  })
-})
 
 describe('withTimeout', () => {
   it('rejects with the label when the call takes too long', async () => {
@@ -42,6 +18,16 @@ describe('the frame address', () => {
   it('opens the app in embedded mode with its language', () => {
     expect(appFrameUrl('illust', 'ko')).toBe('./web/illust/index.html?embedded=hanpan&lang=ko')
     expect(appFrameUrl('photo', 'zh')).toBe('./web/photo/index.html?embedded=hanpan&lang=en')
+  })
+
+  it('in the installed app the web build runs on its own origin, apart from the host page', () => {
+    const packaged = { protocol: 'genoffice-app:' }
+    expect(appFrameUrl('photo', 'ko', packaged)).toBe(
+      'genoffice-app://photo-app/web/photo/index.html?embedded=hanpan&lang=ko',
+    )
+    expect(appFrameUrl('illust', 'ko', packaged)).toBe(
+      'genoffice-app://illust-app/web/illust/index.html?embedded=hanpan&lang=ko',
+    )
   })
 })
 

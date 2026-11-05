@@ -14,6 +14,7 @@ export type { SaveMode } from './save-target'
 
 export const GRAPHICS_CHANNELS = {
   consumeOpen: 'graphics:consume-open',
+  webPresent: 'graphics:web-present',
   openConfirmed: 'graphics:open-confirmed',
   dirtyChanged: 'graphics:dirty-changed',
   saveRequest: 'graphics:save-request',
@@ -96,6 +97,8 @@ export interface GraphicsApi {
   getTheme(): Promise<UiTheme>
   onThemeChanged(handler: (theme: UiTheme) => void): () => void
   consumeOpen(): Promise<PendingOpen | null>
+  /** the app's web build is installed (main reads it beside the renderer) */
+  webPresent(): Promise<boolean>
   /** the app opened the handed file: only then does it become the tab's save target */
   confirmOpened(path: string): void
   setDirty(dirty: boolean): void

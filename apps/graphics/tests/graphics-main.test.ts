@@ -3,7 +3,7 @@
  * The main side: the view it makes, what it hands the page on open, where a
  * save may write, the close question and the keys it takes from the page.
  */
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -136,6 +136,8 @@ describe('the view', () => {
         nodeIntegration: false,
         sandbox: true,
         backgroundThrottling: false,
+        // the preload runs in the web app's frame too: there it only installs the agent
+        nodeIntegrationInSubFrames: true,
       },
     })
     expect(loaded.at(-1)).toBe('genoffice-app://illust/index.html?kind=illust')
@@ -386,6 +388,28 @@ describe('saving', () => {
     const picked = await call<{ name: string; bytes: Uint8Array }>(GRAPHICS_CHANNELS.pickImage, wc)
     expect(picked.name).toBe('dot.png')
     expect(Buffer.from(picked.bytes).toString()).toBe('img')
+  })
+})
+
+describe('the web build', () => {
+  it('is present when its page beside the renderer is the app own page', async () => {
+    const renderer = join(dir, 'renderer')
+    mkdirSync(join(renderer, 'web', 'photo'), { recursive: true })
+    writeFileSync(join(renderer, 'web', 'photo', 'index.html'), '<canvas id="photocraft_canvas">')
+    writeFileSync(join(renderer, 'index.html'), '<html>')
+    configureGraphicsRuntime({ preloadPath: '/pre.js', rendererFile: join(renderer, 'index.html') })
+    const wc = viewFor('photo')
+    expect(await call(GRAPHICS_CHANNELS.webPresent, wc)).toBe(true)
+    const other = viewFor('illust')
+    expect(await call(GRAPHICS_CHANNELS.webPresent, other)).toBe(false)
+  })
+
+  it('every page of the tab gets the preload, so the app frame gets the agent (and nothing else)', () => {
+    viewFor('photo')
+    const prefs = (viewOptions.at(-1) as { webPreferences: Record<string, unknown> }).webPreferences
+    expect(prefs.nodeIntegrationInSubFrames).toBe(true)
+    expect(prefs.sandbox).toBe(true)
+    expect(prefs.contextIsolation).toBe(true)
   })
 })
 

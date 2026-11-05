@@ -18,10 +18,9 @@ import { openPending } from './doc/open-flow'
 import { runSave, type SaveNoticeKey } from './doc/save-flow'
 import { singleFlight } from './doc/single-flight'
 import { copyBytes } from './frame/bytes'
-import { appFrameUrl, waitForPageApi } from './frame/page-api'
-import { clearIllustRecovery, seedPhotoPreferences } from './frame/storage-prep'
+import { appFrameUrl, connectPageApi, type GraphicsPageApi } from './frame/page-api'
 import { useI18n, type StringKey } from './i18n/locale'
-import { APP_GLOBAL, appLanguage, extOf } from '../shared/kinds'
+import { extOf } from '../shared/kinds'
 import type { GraphicsKind } from '../shared/kinds'
 import type { ExportFormat, SaveMode } from '../shared/ipc'
 import { graphicsApi } from './bridge'
@@ -35,9 +34,17 @@ export interface AppProps {
   probeWeb: () => Promise<boolean>
   /** How often the document state is asked for. */
   pollMs?: number
+  /** tests only: how the host reaches the app in the frame (the app runs on its own origin) */
+  connect?: (frame: HTMLIFrameElement) => Promise<GraphicsPageApi>
 }
 
-export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
+export default function App({
+  kind,
+  lang,
+  probeWeb,
+  pollMs = 1000,
+  connect = (frame) => connectPageApi(frame),
+}: AppProps) {
   const { t } = useI18n()
   const [status, setStatus] = useState<Status>('checking')
   const [notice, setNotice] = useState<{ id: number; text: string } | null>(null)
@@ -152,7 +159,7 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
     if (!result.ok) notify('saveFailed')
   }
 
-  // the web build is there, the app's storage is prepared, then the frame
+  // the web build is there, then the frame (the frame's preload prepares the app's storage)
   useEffect(() => {
     let live = true
     void (async () => {
@@ -162,15 +169,11 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
         setStatus('notInstalled')
         return
       }
-      if (kind === 'photo') seedPhotoPreferences(localStorage, appLanguage(kind, lang))
-      else clearIllustRecovery(localStorage)
       setStatus('loading')
     })()
     return () => {
       live = false
     }
-    // the language is read once: the app takes it at start-up
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [kind, probeWeb, attempt])
 
   // the frame stands while the app loads and runs; a change between the two must not unwire it
@@ -183,7 +186,7 @@ export default function App({ kind, lang, probeWeb, pollMs = 1000 }: AppProps) {
     const stops: (() => void)[] = []
     void (async () => {
       try {
-        const api = await waitForPageApi(frameRef.current!, APP_GLOBAL[kind])
+        const api = await connect(frameRef.current!)
         if (!live) return
         let adapter: GraphicsAdapter
         try {

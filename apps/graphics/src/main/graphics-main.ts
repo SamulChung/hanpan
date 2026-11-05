@@ -52,7 +52,7 @@ import type {
   PickedImage,
   SaveMode,
 } from '../shared/ipc'
-import { WRITABLE_EXTS, extOf, graphicsKindForPath } from '../shared/kinds'
+import { APP_GLOBAL, WRITABLE_EXTS, extOf, graphicsKindForPath } from '../shared/kinds'
 import type { GraphicsKind } from '../shared/kinds'
 import { decideSaveTarget } from '../shared/save-target'
 
@@ -321,6 +321,15 @@ function registerGraphicsIpc(): void {
   if (ipcRegistered) return
   ipcRegistered = true
 
+  // the web build beside the built renderer: its page carries the app's own marker
+  ipcMain.handle(GRAPHICS_CHANNELS.webPresent, async (e): Promise<boolean> => {
+    const kind = kindByWc.get(e.sender.id)
+    if (!kind || !runtime.rendererFile) return false
+    const page = join(dirname(runtime.rendererFile), 'web', kind, 'index.html')
+    const text = await readFile(page, 'utf8').catch(() => '')
+    return text.includes(`${APP_GLOBAL[kind]}_`)
+  })
+
   ipcMain.handle(GRAPHICS_CHANNELS.consumeOpen, async (e): Promise<PendingOpen | null> => {
     const path = pendingOpenByWc.get(e.sender.id)
     if (!path) return null
@@ -546,6 +555,8 @@ const VIEW_PREFERENCES = {
   nodeIntegration: false,
   sandbox: true,
   backgroundThrottling: false,
+  // the preload runs in the web app's frame too: there it only prepares storage and the agent
+  nodeIntegrationInSubFrames: true,
 } as const
 
 /** A graphics tab for the shell. `openPath` null or left out: the app's start screen, a new document. */

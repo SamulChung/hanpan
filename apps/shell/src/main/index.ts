@@ -353,7 +353,7 @@ import {
   setGraphicsFileSavedHook,
 } from '../../../graphics/src/main/graphics-main'
 import { OPEN_EXTS } from '../../../graphics/src/shared/kinds'
-import { graphicsResponseHeaders } from './graphics-headers'
+import { graphicsRequestAllowed, graphicsResponseHeaders } from './graphics-headers'
 import type { EpubMenuCommand } from '../../../epub/src/shared/ipc'
 import { migrateJobRecords } from './pdf-structure/job-migration'
 import type {
@@ -9134,11 +9134,14 @@ app.whenReady().then(async () => {
       epub: join(EPUB_OUT, 'renderer'),
       photo: join(GRAPHICS_OUT, 'renderer'),
       illust: join(GRAPHICS_OUT, 'renderer'),
+      // the graphics web apps on their own origins, apart from the host pages (decision 0093)
+      'photo-app': join(GRAPHICS_OUT, 'renderer'),
+      'illust-app': join(GRAPHICS_OUT, 'renderer'),
       // the manual shares the shell's own renderer bundle (help mode)
       help: join(__dirname, '../renderer'),
     },
-    // only Hanpan's host page may frame the graphics web apps (decision 0093)
-    { headers: graphicsResponseHeaders },
+    // only a web app's own host page may frame it, and each origin serves its own files only
+    { headers: graphicsResponseHeaders, allow: graphicsRequestAllowed },
   )
   // the open books' pictures, styles and fonts (only entries of a book a tab has open)
   registerEpubAssetProtocol()

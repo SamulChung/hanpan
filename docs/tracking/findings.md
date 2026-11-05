@@ -1,11 +1,5 @@
 # 풀리지 않은 문제
 
-## AI 포토·AI 일러스트: 틀 안의 웹판을 다른 출처로 떼어 내지 않았다
-
-- **증상.** 웹판은 호스트 페이지와 같은 출처(`genoffice-app://photo|illust/`)의 iframe에서 돈다. 2026-11-05 사용자 결정(안 A)으로 다리를 창에 두지 않고 호스트가 시작할 때 한 번만 받아 가게 했다(`graphicsBridge.take()`, `apps/graphics/src/renderer/bridge.ts`). 그래도 같은 출처 코드는 호스트 페이지의 DOM과 React 내부를 거쳐 다리를 쥔 함수(저장, AI 설정·요청)에 닿을 수 있고, 창에 남은 공용 다리(`aiOfficeOutbound`, 분할 창, 끌어다 놓기 열기)도 부를 수 있다.
-- **왜 중요한가.** 웹판 빌드에 나쁜 코드가 들어오면 사용자가 고르지 않은 요금 경로로 설정을 바꾸거나 구독 한도를 쓸 수 있다. 디스크 쓰기는 main이 경로를 정하므로 막혀 있다. 지금은 "체크섬으로 고정한 우리 빌드만 싣는다"는 전제가 막는다.
-- **왜 지금 못 푸나.** 완전 격리(안 B)는 웹판을 다른 출처로 띄우고 페이지 API를 main의 `frame.executeJavaScript`로 불러야 해서 하루이틀이 들고, 11/13 시연 일정과 겹친다. 사용자가 시연 뒤 후속으로 정했다. 할 때 `apps/graphics/src/renderer/frame/page-api.ts`, `ai/input-lock.ts`(틀 창에 직접 붙는 잠금), `frame/storage-prep.ts`(틀 출처의 저장소)를 함께 옮긴다.
-
 ## AI 포토: 캔버스 그림을 보낼 때 앱 상태 줄에 "Saved …"가 뜬다
 
 - **증상.** AI 포토가 AI에 캔버스 그림을 보내거나 사본을 내보낼 때, 앱 상태 줄에 "Saved .hanpan-export-….png"가 잠깐 뜬다. 문서도 디스크도 바뀌지 않는다.

@@ -4,6 +4,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import App from '../src/renderer/App'
 import { LocaleProvider } from '../src/renderer/i18n/locale'
 import type { GraphicsApi } from '../src/shared/ipc'
+import type { GraphicsPageApi } from '../src/renderer/frame/page-api'
 import { FakePage } from './helpers/fake-page'
 import { installGraphicsApi } from '../src/renderer/bridge'
 
@@ -43,6 +44,24 @@ function fakeApi() {
   return { api, listeners }
 }
 
+/**
+ * The tests put the fake app straight on the frame's window (jsdom's
+ * postMessage carries no source); the installed app reaches it through the
+ * frame agent (tests/frame-agent.test.ts, e2e).
+ */
+function sameWindowApi(kind: 'photo' | 'illust') {
+  const global = kind === 'photo' ? 'photocraft' : 'vectorcraft'
+  return (frame: HTMLIFrameElement): Promise<GraphicsPageApi> =>
+    new Promise((resolve) => {
+      const look = () => {
+        const api = (frame.contentWindow as unknown as Record<string, unknown> | null)?.[global]
+        if (api) resolve(api as GraphicsPageApi)
+        else setTimeout(look, 20)
+      }
+      look()
+    })
+}
+
 async function mount(kind: 'photo' | 'illust', probe = async () => true): Promise<void> {
   host = document.createElement('div')
   document.body.appendChild(host)
@@ -50,7 +69,7 @@ async function mount(kind: 'photo' | 'illust', probe = async () => true): Promis
   await act(async () => {
     root!.render(
       <LocaleProvider initial="ko">
-        <App kind={kind} lang="ko" probeWeb={probe} pollMs={20} />
+        <App kind={kind} lang="ko" probeWeb={probe} pollMs={20} connect={sameWindowApi(kind)} />
       </LocaleProvider>,
     )
   })
@@ -98,36 +117,6 @@ describe('the host page', () => {
     ;(frame()!.contentWindow as unknown as Record<string, unknown>).vectorcraft = page
     await until(() => !host.textContent!.includes('앱을 불러오는 중'))
     expect(page.capturing).toBe(true)
-  })
-
-  it('seeds the PhotoCraft language before the frame exists', async () => {
-    fakeApi()
-    const framesAtSeed: number[] = []
-    const setItem = Storage.prototype.setItem
-    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (
-      this: Storage,
-      key: string,
-      value: string,
-    ) {
-      if (key === 'photocraft.preferences')
-        framesAtSeed.push(document.querySelectorAll('iframe').length)
-      setItem.call(this, key, value)
-    })
-    await mount('photo')
-    await until(() => frame() !== null)
-    spy.mockRestore()
-    expect(framesAtSeed).toEqual([0])
-    expect(JSON.parse(localStorage.getItem('photocraft.preferences')!).interface.language).toBe(
-      'ko',
-    )
-  })
-
-  it('clears VectorCraft recovery copies before the frame loads', async () => {
-    fakeApi()
-    localStorage.setItem('vectorcraft-recovery/9/a.vectorcraft', 'x')
-    await mount('illust')
-    await until(() => frame() !== null)
-    expect(localStorage.getItem('vectorcraft-recovery/9/a.vectorcraft')).toBeNull()
   })
 
   it('says the app is missing when the web build is not there', async () => {

@@ -3,7 +3,7 @@
  * (see ../shared/ipc). The web app runs in a same-origin iframe and can reach this
  * through `parent`; main therefore decides every path itself (docs/security.md).
  */
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer, webFrame } from 'electron'
 import { SPLIT_PANE_BRIDGE_KEY, splitPaneBridge } from '@genoffice/electron-utils/split-pane-bridge'
 import { installDropOpenBridge } from '@genoffice/electron-utils/drop-open'
 import { outboundBridge } from '@genoffice/electron-utils/outbound-bridge'
@@ -20,6 +20,9 @@ import {
   subscriptionStatusMapOf,
 } from '../shared/subscription-api'
 import type { GraphicsSubscriptionApi } from '../shared/subscription-api'
+import { APP_GLOBAL, type GraphicsKind } from '../shared/kinds'
+import { installFrameAgent } from '../renderer/frame/frame-agent'
+import { clearIllustRecovery, seedPhotoPreferences } from '../renderer/frame/storage-prep'
 
 /** Subscribes to a channel the main process sends on; returns the way to stop. */
 function listen<Args extends unknown[]>(
@@ -82,6 +85,7 @@ const api: GraphicsApi = {
   getTheme: () => ipcRenderer.invoke(APP_CHANNELS.getTheme),
   onThemeChanged: (handler) => listen<[UiTheme]>(APP_CHANNELS.themeChanged, handler),
   consumeOpen: () => ipcRenderer.invoke(GRAPHICS_CHANNELS.consumeOpen),
+  webPresent: () => ipcRenderer.invoke(GRAPHICS_CHANNELS.webPresent),
   confirmOpened: (path) => ipcRenderer.send(GRAPHICS_CHANNELS.openConfirmed, path),
   setDirty: (dirty) => ipcRenderer.send(GRAPHICS_CHANNELS.dirtyChanged, dirty),
   onSaveRequest: (handler) => listen<[SaveMode]>(GRAPHICS_CHANNELS.saveRequest, handler),
@@ -108,20 +112,52 @@ const api: GraphicsApi = {
   onAiStream: (handler) => listen<[AiStreamChunk]>(AI_CHANNELS.streamChunk, handler),
 }
 
-// The web app in the page's same-origin frame can reach `parent`: the API is
-// handed over once, to the host page at start-up (renderer/bridge.ts), and is
-// not left on the window (docs/security.md, "AI 포토·AI 일러스트")
-let handed: GraphicsApi | null = api
-contextBridge.exposeInMainWorld('graphicsBridge', {
-  take: (): GraphicsApi | null => {
-    const taken = handed
-    handed = null
-    return taken
-  },
-})
-// the AI's outbound guard (decision 0062): the graphics tools reach no address, the guard stays uniform
-contextBridge.exposeInMainWorld('aiOfficeOutbound', outboundBridge())
-// The shell's split panes: this view's pane role, and its way to ask for focus
-contextBridge.exposeInMainWorld(SPLIT_PANE_BRIDGE_KEY, splitPaneBridge(ipcRenderer))
-// open documents dragged from the OS onto this tab's own controls as a new shell tab
-installDropOpenBridge()
+function exposeHostBridges(): void {
+  // Handed over once, to the host page at start-up (renderer/bridge.ts), and not left on
+  // the window: even a frame on the host's own origin could not take it later
+  let handed: GraphicsApi | null = api
+  contextBridge.exposeInMainWorld('graphicsBridge', {
+    take: (): GraphicsApi | null => {
+      const taken = handed
+      handed = null
+      return taken
+    },
+  })
+  // the AI's outbound guard (decision 0062): the graphics tools reach no address, the guard stays uniform
+  contextBridge.exposeInMainWorld('aiOfficeOutbound', outboundBridge())
+  // The shell's split panes: this view's pane role, and its way to ask for focus
+  contextBridge.exposeInMainWorld(SPLIT_PANE_BRIDGE_KEY, splitPaneBridge(ipcRenderer))
+  // open documents dragged from the OS onto this tab's own controls as a new shell tab
+  installDropOpenBridge()
+}
+
+/**
+ * The web app's own frame (decision 0093, option B): it runs on its own origin
+ * and gets none of the host's bridges. Before the app's scripts run, its
+ * storage is prepared (PhotoCraft's language, no VectorCraft recovery copies)
+ * and the frame agent is put in the frame's own world: the agent is the only
+ * way the host page reaches the app, by messages.
+ */
+function prepareAppFrame(): void {
+  const match = /^\/web\/(photo|illust)\/index\.html$/.exec(location.pathname)
+  if (!match) return
+  const kind = match[1] as GraphicsKind
+  const lang = new URLSearchParams(location.search).get('lang') ?? 'en'
+  try {
+    if (kind === 'photo') seedPhotoPreferences(localStorage, lang)
+    else clearIllustRecovery(localStorage)
+  } catch {
+    // storage refused: the app starts with its own defaults
+  }
+  // the host page is `<kind>` when the app is `<kind>-app`; the dev server serves both on one origin
+  const host = location.hostname.endsWith('-app')
+    ? `${location.protocol}//${location.hostname.slice(0, -'-app'.length)}`
+    : location.origin
+  const source = `(${installFrameAgent.toString()})(window, ${JSON.stringify(APP_GLOBAL[kind])}, ${JSON.stringify(host)})`
+  void webFrame.executeJavaScript(source).catch(() => {})
+}
+
+// One preload for every frame of the tab (nodeIntegrationInSubFrames): the host page
+// is the top frame; the web app is a frame inside it
+if ((process as { isMainFrame?: boolean }).isMainFrame === false) prepareAppFrame()
+else exposeHostBridges()

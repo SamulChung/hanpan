@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import type { ElectronApplication, Page } from '@playwright/test'
+import type { ElectronApplication, Frame, Page } from '@playwright/test'
 import { existsSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -42,10 +42,16 @@ async function tabsView(app: ElectronApplication): Promise<Page> {
 }
 
 /** Runs `script` against `window.vectorcraft` in the tab's frame; returns its result. */
-function inApp<T>(page: Page, script: string): Promise<T> {
-  return page.evaluate(async (body) => {
-    const frame = document.querySelector('iframe') as HTMLIFrameElement | null
-    const vc = (frame?.contentWindow as unknown as { vectorcraft?: unknown } | null)?.vectorcraft
+/** The web app's own frame: on its own origin, so it is driven from inside, not from the host page. */
+function appFrame(page: Page, kind: 'photo' | 'illust'): Frame {
+  const frame = page.frames().find((f) => f.url().includes(`/web/${kind}/index.html`))
+  if (!frame) throw new Error(`no ${kind} app frame yet`)
+  return frame
+}
+
+async function inApp<T>(page: Page, script: string): Promise<T> {
+  return appFrame(page, 'illust').evaluate(async (body) => {
+    const vc = (window as unknown as { vectorcraft?: unknown }).vectorcraft
     if (!vc) throw new Error('no vectorcraft API yet')
     return (await new Function('vc', `return (async () => { ${body} })()`)(vc)) as T
   }, script)
@@ -67,15 +73,33 @@ test.describe('AI Illustration tab', () => {
         .toBeGreaterThan(1000)
       // the app in the frame cannot reach the host's bridge: none on the window, and the
       // one-time hand-over was already taken by the host page (docs/security.md)
-      const reach = await tab.evaluate(() => {
-        const frame = document.querySelector('iframe') as HTMLIFrameElement
-        const parent = frame.contentWindow!.parent as unknown as {
-          graphicsApi?: unknown
-          graphicsBridge?: { take(): unknown }
+      // the app runs on its own origin (option B): nothing of the host page is reachable from it,
+      // and the frame gets no bridge of its own
+      const reach = await appFrame(tab, 'illust').evaluate(() => {
+        const origin = location.origin
+        let parentReadable = true
+        try {
+          void (window.parent as unknown as { document: Document }).document.title
+        } catch {
+          parentReadable = false
         }
-        return { api: typeof parent.graphicsApi, take: parent.graphicsBridge?.take() ?? null }
+        const own = window as unknown as Record<string, unknown>
+        return {
+          origin,
+          parentReadable,
+          bridges: ['graphicsBridge', 'graphicsApi', 'aiOfficeOutbound'].filter((k) => k in own),
+        }
       })
-      expect(reach).toEqual({ api: 'undefined', take: null })
+      expect(reach).toEqual({
+        origin: 'genoffice-app://illust-app',
+        parentReadable: false,
+        bridges: [],
+      })
+      expect(await tab.evaluate(() => location.origin)).toBe('genoffice-app://illust')
+      // and the host origin does not serve the web app (it would share the host's origin)
+      expect(await tab.evaluate(async () => (await fetch('./web/illust/index.html')).status)).toBe(
+        404,
+      )
       // the AI panel docks beside the app (its composer is there; nothing is sent)
       await expect(tab.locator('.ai-dock .ai-composer textarea')).toBeVisible({ timeout: 10_000 })
 
@@ -206,10 +230,9 @@ const PHOTO_WEB = join(
 )
 
 /** Runs `script` against `window.photocraft` in the tab's frame; returns its result. */
-function inPhoto<T>(page: Page, script: string): Promise<T> {
-  return page.evaluate(async (body) => {
-    const frame = document.querySelector('iframe') as HTMLIFrameElement | null
-    const pc = (frame?.contentWindow as unknown as { photocraft?: unknown } | null)?.photocraft
+async function inPhoto<T>(page: Page, script: string): Promise<T> {
+  return appFrame(page, 'photo').evaluate(async (body) => {
+    const pc = (window as unknown as { photocraft?: unknown }).photocraft
     if (!pc) throw new Error('no photocraft API yet')
     return (await new Function('pc', `return (async () => { ${body} })()`)(pc)) as T
   }, script)

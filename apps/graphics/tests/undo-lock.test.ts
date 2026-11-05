@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createUndoTracker, undoRun } from '../src/renderer/ai/undo-tracker'
 import { lockFrameInput } from '../src/renderer/ai/input-lock'
+import { installFrameAgent, type AgentLink } from '../src/renderer/frame/frame-agent'
+import type { HostLink } from '../src/renderer/frame/page-api'
 
 function historyAdapter(start: number) {
   let length = start
@@ -79,21 +81,26 @@ describe('undoRun', () => {
 })
 
 describe('lockFrameInput', () => {
-  function frameAndOverlay() {
+  /** the frame's agent behind a direct link (jsdom's postMessage carries no source) */
+  function frameWithAgent() {
     const frame = document.createElement('iframe')
     document.body.appendChild(frame)
     const overlay = document.createElement('div')
     document.body.appendChild(overlay)
-    return { frame, overlay }
+    const toAgent: ((d: unknown) => void)[] = []
+    const host: HostLink = { listen: () => {}, post: (m) => toAgent.forEach((h) => h(m)) }
+    const agent: AgentLink = { listen: (h) => void toAgent.push(h), post: () => {} }
+    installFrameAgent(frame.contentWindow!, 'vectorcraft', '*', agent)
+    return { frame, overlay, host }
   }
 
   it('blocks keys and pointer events inside the frame until unlocked', () => {
-    const { frame, overlay } = frameAndOverlay()
+    const { frame, overlay, host } = frameWithAgent()
     const appSaw = vi.fn()
     const doc = frame.contentDocument!
     doc.body.addEventListener('keydown', appSaw)
     doc.body.addEventListener('pointerdown', appSaw)
-    const unlock = lockFrameInput(frame, overlay)
+    const unlock = lockFrameInput(frame, overlay, host)
     expect(overlay.dataset.locked).toBe('true')
     const key = new KeyboardEvent('keydown', { key: 'Delete', bubbles: true, cancelable: true })
     doc.body.dispatchEvent(key)

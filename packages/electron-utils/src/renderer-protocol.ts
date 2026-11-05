@@ -17,6 +17,8 @@ export function registerRendererScheme(): void {
 export interface RendererProtocolOptions {
   /** Extra response headers for a file of a host, e.g. a frame-ancestors policy; none when undefined. */
   headers?: (host: string, file: string) => Record<string, string> | undefined
+  /** Whether a host may serve a file; a refused one is a 404 (e.g. an app kept to its own origin). */
+  allow?: (host: string, file: string) => boolean
 }
 
 /** After app ready: serve each module's built renderer directory. */
@@ -28,6 +30,9 @@ export function installRendererProtocol(
   protocol.handle(RENDERER_SCHEME, async (request) => {
     const file = resolveRendererFile(table, request.url)
     if (!file) return new Response(null, { status: 404 })
+    if (options.allow && !options.allow(new URL(request.url).hostname, file)) {
+      return new Response(null, { status: 404 })
+    }
     const response = await net
       .fetch(pathToFileURL(file).toString())
       .catch(() => new Response(null, { status: 404 }))
