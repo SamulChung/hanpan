@@ -7,14 +7,16 @@
  * - `request('app.save', {path})` is File › Save: PSD is a real save (the
  *   document turns clean and takes the name), a flat format (PNG, JPEG, …) is
  *   written as a copy and leaves the document's name and changed mark alone.
- *   `file.saveACopy` is not available on the web.
+ * - `request('app.exportImage', {format, maxSide?})` (h2) gives the composited
+ *   picture without writing a file or touching the document; copies and the
+ *   AI's canvas picture come from it.
  * - The history is `document.history` (one entry per step); `edit.undo` throws
  *   when there is nothing left to undo.
  */
 import { LAYERLESS_EXTS } from '../../shared/kinds'
-import { copyBytes, downscalePng } from '../frame/bytes'
+import { base64ToBytes, copyBytes } from '../frame/bytes'
 import type { GraphicsPageApi } from '../frame/page-api'
-import { HOST_EXPORT_PREFIX, type DocInfo, type GraphicsAdapter } from './types'
+import type { DocInfo, GraphicsAdapter } from './types'
 
 const SUMMARY_MAX = 2000
 const SUMMARY_LAYERS = 40
@@ -95,7 +97,6 @@ function layerLine(layer: PhotoLayer): string {
 export function createPhotoAdapter(api: GraphicsPageApi): GraphicsAdapter {
   /** a flat save leaves the app's mark on: the tab reads clean while the revision stays */
   let flatSave: { appName: string; revision: number; fileName: string } | null = null
-  let exportCount = 0
 
   async function inspect(): Promise<PhotoInspect> {
     return asInspect(await api.inspect())
@@ -107,10 +108,16 @@ export function createPhotoAdapter(api: GraphicsPageApi): GraphicsAdapter {
     return copyBytes(await api.readFile(written))
   }
 
+  /** The composited picture (h2's `app.exportImage`): no file, no save, no status line. */
+  async function exportImage(params: Record<string, unknown>): Promise<Uint8Array> {
+    const answer = (await api.request('app.exportImage', params)) as { dataBase64?: unknown } | null
+    if (typeof answer?.dataBase64 !== 'string') throw new Error('app.exportImage: no picture')
+    return base64ToBytes(answer.dataBase64)
+  }
+
   async function exportBytes(format: 'png' | 'jpg' | 'svg'): Promise<Uint8Array> {
     if (format === 'svg') throw new Error('AI Photo exports PNG or JPEG, not SVG')
-    exportCount += 1
-    return writeThroughSave(`${HOST_EXPORT_PREFIX}${Date.now()}-${exportCount}.${format}`)
+    return exportImage({ format: format === 'jpg' ? 'jpeg' : 'png' })
   }
 
   function info(ui: PhotoInspect): DocInfo {
@@ -183,7 +190,7 @@ export function createPhotoAdapter(api: GraphicsPageApi): GraphicsAdapter {
     },
     async snapshotPng(maxSide) {
       if (!info(await inspect()).hasDocument) return null
-      return downscalePng(await exportBytes('png'), maxSide)
+      return exportImage({ format: 'png', maxSide })
     },
     async contextSummary() {
       const ui = await inspect()

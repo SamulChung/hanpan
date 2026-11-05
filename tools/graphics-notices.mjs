@@ -14,22 +14,33 @@ const KINDS = ['photo', 'illust']
 const sub = (title) => `\n${'-'.repeat(72)}\n${title}\n${'-'.repeat(72)}\n`
 const hr = (title) => `\n${'='.repeat(72)}\n${title}\n${'='.repeat(72)}\n`
 
-/** The notice files of one web build: the top-level ones by name, then everything under licenses/. */
+/** licence and font texts anywhere below the top: LICENSE*, OFL*, NOTICE*, COPYING* */
+const DEEP_NOTICE_FILE = /^(LICENSE|OFL|NOTICE|COPYING)([-._][\w.-]*)?$/i
+
+/**
+ * The notice files of one web build: the top-level ones by name, then everything
+ * under licenses/, then licence and font texts deeper in the site (assets/,
+ * fonts/, docs/brand/, crates/), each group by path.
+ */
 export function graphicsNoticeFiles(dir) {
   const top = readdirSync(dir, { withFileTypes: true })
     .filter((e) => e.isFile() && TOP_NOTICE_FILE.test(e.name))
     .map((e) => e.name)
     .sort()
   const nested = []
-  const walk = (rel) => {
+  const deep = []
+  const walk = (rel, into, pick) => {
     for (const e of readdirSync(join(dir, rel), { withFileTypes: true })) {
-      const child = `${rel}/${e.name}`
-      if (e.isDirectory()) walk(child)
-      else if (e.isFile()) nested.push(child)
+      const child = rel ? `${rel}/${e.name}` : e.name
+      if (e.isDirectory()) {
+        if (!rel && e.name === 'licenses' && into === deep) continue
+        walk(child, into, pick)
+      } else if (e.isFile() && rel && pick(e.name)) into.push(child)
     }
   }
-  if (existsSync(join(dir, 'licenses'))) walk('licenses')
-  return [...top, ...nested.sort()]
+  if (existsSync(join(dir, 'licenses'))) walk('licenses', nested, () => true)
+  walk('', deep, (name) => DEEP_NOTICE_FILE.test(name))
+  return [...top, ...nested.sort(), ...deep.sort()]
 }
 
 /**

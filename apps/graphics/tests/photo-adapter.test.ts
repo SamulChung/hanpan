@@ -9,7 +9,6 @@
  */
 import { describe, expect, it } from 'vitest'
 import { createAdapter } from '../src/renderer/adapters'
-import { HOST_EXPORT_PREFIX } from '../src/renderer/adapters/types'
 import type { GraphicsPageApi } from '../src/renderer/frame/page-api'
 
 interface Layer {
@@ -64,6 +63,17 @@ class FakePhotoPage {
     return {
       async request(method: string, params: Record<string, unknown> = {}) {
         page.requests.push([method, params])
+        if (method === 'app.exportImage') {
+          // h2: the composited image, no file, no save, no status line
+          if (!page.doc) throw new Error('no document')
+          const fmt = String(params.format ?? 'png')
+          return {
+            dataBase64: btoa(fmt === 'jpeg' ? 'JPG' : 'PNG'),
+            width: 400,
+            height: 300,
+            format: fmt,
+          }
+        }
         if (method !== 'app.save') throw new Error(`unknown method ${method}`)
         const path = String(params.path)
         if (!page.doc) throw new Error('no document')
@@ -178,18 +188,24 @@ describe('the PhotoCraft adapter', () => {
     expect(await adapter.docInfo()).toEqual({ hasDocument: true, dirty: true, title: 'photo.png' })
   })
 
-  it('exportBytes writes a host-named copy and leaves the document as it was', async () => {
+  it('exportBytes asks for the composited image: no file is written, nothing is saved', async () => {
     const page = new FakePhotoPage().open()
     page.edit('Fill')
     const adapter = photo(page)
-    const png = await adapter.exportBytes('png')
-    expect(png.length).toBeGreaterThan(0)
-    const [, params] = page.requests[0]!
-    expect(String(params.path)).toMatch(new RegExp(`^${HOST_EXPORT_PREFIX}.+\\.png$`))
+    expect(new TextDecoder().decode(await adapter.exportBytes('png'))).toBe('PNG')
+    expect(page.requests[0]).toEqual(['app.exportImage', { format: 'png' }])
+    expect(new TextDecoder().decode(await adapter.exportBytes('jpg'))).toBe('JPG')
+    expect(page.requests[1]![1]).toMatchObject({ format: 'jpeg' })
+    expect(page.captured.size).toBe(0)
     expect(await adapter.docInfo()).toEqual({ hasDocument: true, dirty: true, title: 'Untitled' })
-    await adapter.exportBytes('jpg')
-    expect(String(page.requests[1]![1].path)).toMatch(/\.jpg$/)
     await expect(adapter.exportBytes('svg')).rejects.toThrow(/SVG/)
+  })
+
+  it('the canvas picture for the AI comes scaled down by the app itself', async () => {
+    const page = new FakePhotoPage().open()
+    await photo(page).snapshotPng(1024)
+    expect(page.requests[0]).toEqual(['app.exportImage', { format: 'png', maxSide: 1024 }])
+    expect(page.captured.size).toBe(0)
   })
 
   it('isLayered: more than one layer, a type layer, a mask or a non-pixel layer', async () => {

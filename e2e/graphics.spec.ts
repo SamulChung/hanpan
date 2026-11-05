@@ -313,6 +313,25 @@ test.describe('AI Photo tab', () => {
       await expect.poll(() => !readFileSync(png).equals(before), { timeout: 30_000 }).toBe(true)
       expect(readFileSync(png).subarray(0, 4).toString('hex')).toBe('89504e47')
 
+      // Export at size: the dialog, then the save dialog; the copy comes from app.exportImage,
+      // so no file is written inside the app and the document is left as it is
+      const copy = join(dir, 'copy.png')
+      await app.evaluate(({ dialog }, p) => {
+        dialog.showSaveDialog = (async () => ({
+          canceled: false,
+          filePath: p,
+        })) as typeof dialog.showSaveDialog
+      }, copy)
+      await tab.locator('[data-quick="exportAtSize"]').click()
+      await tab.locator('[data-action="export-ok"]').click()
+      await expect
+        .poll(() => (existsSync(copy) ? statSync(copy).size : 0), { timeout: 20_000 })
+        .toBeGreaterThan(100)
+      expect(readFileSync(copy).subarray(0, 4).toString('hex')).toBe('89504e47')
+      expect(
+        await inPhoto<string[]>(tab, 'return (await pc.files()).map((f) => f.path)'),
+      ).not.toContainEqual(expect.stringContaining('.hanpan-export'))
+
       // the PNG save leaves PhotoCraft's own mark on; the tab still reads clean: no close question
       await page.waitForTimeout(2500)
       await app.evaluate(({ dialog }) => {

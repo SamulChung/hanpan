@@ -58,6 +58,30 @@ describe('graphics notices', () => {
     ])
   })
 
+  it('also carries licence and font texts deeper in the site (h2 layout)', () => {
+    const dir = tree({
+      'index.html': 'x',
+      'LICENSE-MIT': 'mit',
+      'licenses/zlib.txt': 'zlib',
+      'assets/icons/LICENSE-lucide.txt': 'lucide',
+      'assets/fonts/OFL-Inter.txt': 'inter',
+      'fonts/abc123/OFL.txt': 'font',
+      'docs/brand/LICENSE-brand.txt': 'brand',
+      'crates/tiny-skia/LICENSE-BSD': 'bsd',
+      'assets/app.js': 'code',
+      'docs/guide.md': 'not a licence',
+    })
+    expect(graphicsNoticeFiles(dir)).toEqual([
+      'LICENSE-MIT',
+      'licenses/zlib.txt',
+      'assets/fonts/OFL-Inter.txt',
+      'assets/icons/LICENSE-lucide.txt',
+      'crates/tiny-skia/LICENSE-BSD',
+      'docs/brand/LICENSE-brand.txt',
+      'fonts/abc123/OFL.txt',
+    ])
+  })
+
   it('gaps an app whose web build is missing', () => {
     const webRoot = tree({ 'illust/index.html': 'x', 'illust/LICENSE-MIT': 'mit' })
     const gap = vi.fn()
