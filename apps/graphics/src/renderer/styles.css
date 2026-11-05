@@ -1,0 +1,49 @@
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--surface);
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+}
+
+.gx-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.gx-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.gx-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.gx-cover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.gx-notice {
+  padding: 6px 12px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-subtle);
+  font-size: 12.5px;
+}

@@ -31,7 +31,7 @@ export const APP_CHANNELS = {
   themeChanged: 'app:theme-changed',
 } as const
 
-export type UiTheme = 'light' | 'dark'
+export type UiTheme = 'light' | 'dark' | 'system'
 
 export interface BeginSaveRequest {
   mode: SaveMode
