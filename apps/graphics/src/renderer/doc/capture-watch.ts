@@ -6,6 +6,7 @@
  * reaches the disk is only what the person chose.
  */
 import type { DocInfo, GraphicsAdapter } from '../adapters'
+import { HOST_EXPORT_PREFIX } from '../adapters/types'
 
 export interface CaptureWatchDeps {
   adapter: Pick<GraphicsAdapter, 'api'>
@@ -56,6 +57,8 @@ export function watchCaptures(deps: CaptureWatchDeps): CaptureWatch {
         const known = seen.get(path)
         seen.set(path, size)
         if (quiet || known === size || path === docTitle || ownNames.has(path)) continue
+        // a copy the host had the app write (the AI's canvas picture, an export)
+        if (path.split(/[\\/]/).pop()!.startsWith(HOST_EXPORT_PREFIX)) continue
         deps.onAppExport(path)
       }
       primed = true

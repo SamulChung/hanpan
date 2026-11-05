@@ -5,6 +5,12 @@
 import type { GraphicsKind } from '../../shared/kinds'
 import type { GraphicsPageApi } from '../frame/page-api'
 
+/**
+ * Files the host page has an app write for itself (a picture copy for the AI or
+ * an export). The capture watch never reads them as the app's own export.
+ */
+export const HOST_EXPORT_PREFIX = '.hanpan-export-'
+
 export interface DocInfo {
   hasDocument: boolean
   dirty: boolean

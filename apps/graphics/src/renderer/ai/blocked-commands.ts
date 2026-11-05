@@ -1,7 +1,7 @@
 /**
  * Commands the AI may not run (design 6-4). Saving, opening and exporting go
  * through Hanpan's own save flow and `export_file`; the undo history is the
- * panel's (one [Undo] per request); links, updates, preferences, plug-ins,
+ * panel's (one [Undo] per request; the app's history panel and purges too); links, updates, preferences, plug-ins,
  * scripts and the app's windows are outside the document. Prefix match.
  */
 export const BLOCKED_PREFIXES: readonly string[] = [
@@ -13,7 +13,9 @@ export const BLOCKED_PREFIXES: readonly string[] = [
   'edit.undo',
   'edit.redo',
   'edit.clearHistory',
-  'history.newDocument',
+  // the app's own history panel (PhotoCraft): stepping or clearing it breaks the one-step undo
+  'history.',
+  'edit.purge',
   'image.duplicate',
   'document.open',
   'document.close',
@@ -21,6 +23,9 @@ export const BLOCKED_PREFIXES: readonly string[] = [
   'document.save',
   'document.export',
   'document.serialize',
+  'document.recent',
+  'document.presets.save',
+  'document.presets.delete',
   'docInfo.save',
   'plugin.',
   'plugins.',
@@ -41,6 +46,7 @@ export const BLOCKED_PREFIXES: readonly string[] = [
   'shortcutSet.',
   'window.',
   'ui.',
+  'updates.',
 ]
 
 export function isBlockedCommand(id: string): boolean {

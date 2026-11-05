@@ -139,8 +139,9 @@ describe('the illustration adapter', () => {
   })
 })
 
-describe('the photo adapter before the release', () => {
-  it('is not connected yet', () => {
-    expect(() => createAdapter('photo', new FakePage())).toThrow(/not connected yet/)
+describe('createAdapter', () => {
+  it('gives each app its own adapter', () => {
+    expect(createAdapter('photo', new FakePage()).kind).toBe('photo')
+    expect(createAdapter('illust', new FakePage()).kind).toBe('illust')
   })
 })

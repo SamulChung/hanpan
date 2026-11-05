@@ -1,1 +1,16 @@
-{}
+{
+  "photo": {
+    "repo": "tenaico/hanpan-graphics",
+    "tag": "photo-v0.20.2-h1",
+    "asset": "hanpan-photo-web-0.20.2-h1.zip",
+    "size": 14794148,
+    "sha256": "d29a59ee6c339a54a850ffa932205bf446003521825aec1be5edce3b44137424"
+  },
+  "illust": {
+    "repo": "tenaico/hanpan-graphics",
+    "tag": "illust-v0.21.0-h1",
+    "asset": "hanpan-illust-web-0.21.0-h1.zip",
+    "size": 33799848,
+    "sha256": "d22cd98e8208810b356ea943a701ff17e792a29004846c5b9c79973e7da6d7b2"
+  }
+}

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import commandsFixture from './fixtures/vectorcraft-0.21.0-commands.json'
+import photoCommands from './fixtures/photocraft-0.20.2-h1-commands.json'
 import { createAdapter } from '../src/renderer/adapters'
 import { createGraphicsSkill } from '../src/renderer/ai/graphics-skill'
 import { isBlockedCommand } from '../src/renderer/ai/blocked-commands'
@@ -247,6 +248,38 @@ describe('the blocked commands, checked against the real command list', () => {
   it('shape., object., text., path., select. and paint. commands stay available', () => {
     const editing = FIXTURE.filter((c) => /^(shape|object|text|path|select|paint)\./.test(c.id))
     expect(editing.length).toBeGreaterThan(200)
+    for (const c of editing) expect(isBlockedCommand(c.id), c.id).toBe(false)
+  })
+})
+
+describe('the blocked commands, checked against the PhotoCraft 0.20.2-h1 command list', () => {
+  const PHOTO = photoCommands as { id: string }[]
+
+  it('the history, purges, files, updates and recent documents stay with the person', () => {
+    const risky = PHOTO.filter((c) =>
+      /^(file|app|help|prefs|plugin|history|updates|actions)\.|^edit\.purge|^document\.(recent|presets\.(save|delete))/.test(
+        c.id,
+      ),
+    )
+    expect(risky.length).toBeGreaterThan(100)
+    for (const c of risky) expect(isBlockedCommand(c.id), c.id).toBe(true)
+  })
+
+  it('the picture commands the quick actions and the AI use stay available', () => {
+    for (const id of [
+      'layer.removeBackground',
+      'image.autoTone',
+      'type.create',
+      'select.subject',
+      'image.canvasSize',
+      'layer.new.layer',
+    ])
+      expect(isBlockedCommand(id), id).toBe(false)
+    // image.duplicate opens a new document: blocked with the files
+    const editing = PHOTO.filter(
+      (c) => /^(layer|image|filter|select|type|paint)\./.test(c.id) && c.id !== 'image.duplicate',
+    )
+    expect(editing.length).toBeGreaterThan(300)
     for (const c of editing) expect(isBlockedCommand(c.id), c.id).toBe(false)
   })
 })

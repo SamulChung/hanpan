@@ -7,6 +7,7 @@ import type { SaveDeps } from '../src/renderer/doc/save-flow'
 import { watchCaptures } from '../src/renderer/doc/capture-watch'
 import { openPending } from '../src/renderer/doc/open-flow'
 import { FakePage } from './helpers/fake-page'
+import { HOST_EXPORT_PREFIX } from '../src/renderer/adapters'
 
 afterEach(() => vi.useRealTimers())
 
@@ -292,6 +293,17 @@ describe('watchCaptures', () => {
     await vi.advanceTimersByTimeAsync(150)
     expect(onAppExport).toHaveBeenCalledTimes(1)
     expect(onAppExport).toHaveBeenCalledWith('logo-web.png')
+    watcher.stop()
+  })
+
+  it('a copy the host had the app write for itself is never read as an export', async () => {
+    vi.useFakeTimers()
+    const { watcher, onAppExport, page } = setup()
+    watcher.noteDoc({ hasDocument: true, dirty: false, title: 'logo.svg' })
+    await vi.advanceTimersByTimeAsync(150)
+    page.captured.set(`${HOST_EXPORT_PREFIX}1-1.png`, new Uint8Array([1, 2, 3]))
+    await vi.advanceTimersByTimeAsync(150)
+    expect(onAppExport).not.toHaveBeenCalled()
     watcher.stop()
   })
 
