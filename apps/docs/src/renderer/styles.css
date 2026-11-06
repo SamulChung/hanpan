@@ -9264,7 +9264,9 @@ body.docs-crop-active
   gap: 5px;
   height: 24px;
   padding: 0 10px;
-  flex-shrink: 0;
+  /* the model chip keeps its name readable; this pill gives way first */
+  flex-shrink: 1;
+  min-width: 0;
   border: 1px solid var(--color-border-default);
   border-radius: var(--radius-30);
   background: none;
@@ -9273,6 +9275,18 @@ body.docs-crop-active
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
+}
+
+.ai-track-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-panel .ai-model-chip {
+  flex-shrink: 0;
+  max-width: 160px;
 }
 
 .ai-track-btn:hover {
