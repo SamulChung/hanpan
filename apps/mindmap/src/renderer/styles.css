@@ -1727,3 +1727,20 @@ textarea.mm-field {
   pointer-events: none;
   box-shadow: var(--shadow-modal-strong);
 }
+
+/* the presentation: how to step through it, quietly at the foot of the screen */
+.mm-present-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  z-index: 5;
+  transform: translateX(-50%);
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--color-bg-overlay);
+  color: var(--text-primary);
+  font-size: 13px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0.85;
+}

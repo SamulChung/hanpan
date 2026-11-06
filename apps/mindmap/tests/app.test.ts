@@ -15,6 +15,7 @@ import {
   type XmindTopic,
 } from '@genoffice/xmind-engine'
 import App from '../src/renderer/App'
+import { MapController } from '../src/renderer/map/controller'
 import { LocaleProvider } from '../src/renderer/i18n/locale'
 import type {
   MindmapApi,
@@ -772,6 +773,33 @@ describe('presentation mode', () => {
     })
     await settle()
     expect(app().classList.contains('mm-presenting')).toBe(false)
+  })
+
+  it('steps through the main branches with the arrow keys, Space and a click, and says how', async () => {
+    const step = vi.spyOn(MapController.prototype, 'presentStep')
+    await openWith(plainSheet())
+    const key = async (name: string): Promise<void> => {
+      await act(async () => {
+        window.dispatchEvent(new KeyboardEvent('keydown', { key: name, bubbles: true, cancelable: true }))
+      })
+      await settle()
+    }
+    await key('F5')
+    expect(container.querySelector('[data-hint="present"]')!.textContent).toBe(
+      '→ or Space: next branch · ←: back · Esc: end',
+    )
+    step.mockClear()
+    await key('ArrowRight')
+    await key(' ')
+    await key('ArrowLeft')
+    await act(async () => {
+      container.querySelector<HTMLElement>('.mm-card')!.click()
+    })
+    await settle()
+    expect(step.mock.calls.map((call) => call[0])).toEqual([1, 2, 1, 2])
+    await key('Escape')
+    expect(container.querySelector('[data-hint="present"]')).toBeNull()
+    step.mockRestore()
   })
 
   it('F5 while presenting returns to the editor', async () => {

@@ -74,6 +74,19 @@ const AUTO_SAVE_INTERVAL_MS = 30_000
 const LABEL_SEPARATORS = /[,\uFF0C\u3001]/
 const TOAST_MS = 4000
 
+/** The keys that step a presentation: forward or back by one main topic. */
+const PRESENT_KEYS: Readonly<Record<string, number>> = {
+  ArrowRight: 1,
+  ArrowDown: 1,
+  ' ': 1,
+  PageDown: 1,
+  Enter: 1,
+  ArrowLeft: -1,
+  ArrowUp: -1,
+  PageUp: -1,
+  Backspace: -1,
+}
+
 const HIDDEN_PARTS_KEY = 'mindmapapp.hiddenParts'
 
 function rememberedHiddenParts(): HiddenPart[] {
@@ -599,10 +612,26 @@ export default function App() {
 
   // ---- presentation (F5): the map alone, no ribbon or sheet tabs ----
 
+  /** Where the presentation is: 0 is the whole map, n the n-th main topic. */
+  const presentAt = useRef(0)
   const fitPresented = useCallback(() => {
     // the fullscreen bounds arrive after the event, so fit once the view has resized
-    window.setTimeout(() => activeController()?.zoomFit(), 80)
+    presentAt.current = 0
+    window.setTimeout(() => activeController()?.presentStep(0), 80)
   }, [activeController])
+
+  /** The next or the previous step of the presentation, kept within the map's main topics. */
+  const presentMove = useCallback(
+    (by: number) => {
+      const controller = activeController()
+      if (!controller) return
+      const next = Math.max(0, Math.min(controller.presentSteps, presentAt.current + by))
+      if (next === presentAt.current) return
+      presentAt.current = next
+      controller.presentStep(next)
+    },
+    [activeController],
+  )
 
   const exitPresent = useCallback(() => {
     setPresenting(false)
@@ -622,6 +651,16 @@ export default function App() {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
       if (status !== 'ready') return
+      if (presenting && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        const by = PRESENT_KEYS[event.key]
+        if (by !== undefined) {
+          // the map's own keys (move the selection, open the edit box) wait until the show is over
+          event.preventDefault()
+          event.stopPropagation()
+          presentMove(by)
+          return
+        }
+      }
       const action = presentationKeyOf(event, presenting)
       if (!action) return
       // F5 and Ctrl/Cmd/Shift+F5 both start the map's show; it has one view.
@@ -634,7 +673,7 @@ export default function App() {
     }
     window.addEventListener('keydown', onKeyDown, true)
     return () => window.removeEventListener('keydown', onKeyDown, true)
-  }, [status, presenting, enterPresent, exitPresent])
+  }, [status, presenting, enterPresent, exitPresent, presentMove])
 
   useEffect(() => {
     const onFullScreenChange = (): void => {
@@ -1258,7 +1297,23 @@ export default function App() {
 
       <main className="mm-stage">
         {/* the theme panel and the AI panel dock at this element's end side, one open at a time */}
-        <div className="mm-card" aria-label={t('appName')} onClickCapture={onMapClick}>
+        <div
+          className="mm-card"
+          aria-label={t('appName')}
+          onClickCapture={(event) => {
+            if (presenting) {
+              event.stopPropagation()
+              presentMove(1)
+              return
+            }
+            onMapClick(event)
+          }}
+        >
+          {presenting && (
+            <div className="mm-present-hint" data-hint="present" role="note">
+              {t('presentHint')}
+            </div>
+          )}
           {startHint && !presenting && (
             <div className="mm-start-hint" data-hint="new-map" role="note">
               {t('newMapHint')}

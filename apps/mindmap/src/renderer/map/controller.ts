@@ -143,6 +143,8 @@ export interface TopicInfo {
 const ZOOM_MIN = 0.2
 const ZOOM_MAX = 3
 const ZOOM_STEP = 0.1
+/** How much of the screen a presented map or branch may take. */
+const PRESENT_FILL = 0.9
 /** How long the map is left alone before a change nobody reported is looked for. */
 const QUIET_SYNC_DELAY_MS = 300
 /** Room kept between a topic brought into view and the edge of the map, in screen pixels. */
@@ -1091,6 +1093,49 @@ export class MapController {
 
   zoomFit(): void {
     this.mind.scaleFit()
+  }
+
+  /** How many steps a presentation of this sheet has after the whole map: one per main topic. */
+  get presentSteps(): number {
+    return this.mind.nodeData.children?.length ?? 0
+  }
+
+  /**
+   * One step of a presentation. Step 0 is the whole map, made as large as the
+   * screen allows (the library's fit only ever makes a map smaller, so on a
+   * large screen the map stood small in the middle). Step n is the n-th main
+   * topic with everything under it, made as large as the screen allows and
+   * brought to the middle.
+   */
+  presentStep(step: number): void {
+    const mind = this.mind
+    mind.scaleFit()
+    const view = mind.container
+    const fill = (width: number, height: number): number =>
+      Math.min(
+        ZOOM_MAX,
+        PRESENT_FILL * Math.min(view.clientWidth / width, view.clientHeight / height),
+      )
+    if (step <= 0 || view.clientWidth === 0) {
+      const whole = mind.nodes
+      if (whole.offsetWidth === 0 || whole.offsetHeight === 0) return
+      const scale = fill(whole.offsetWidth, whole.offsetHeight)
+      if (scale > mind.scaleVal) mind.scale(scale)
+      return
+    }
+    const main = mind.nodeData.children?.[step - 1]
+    const branch = main ? this.#element(main.id)?.closest('me-wrapper') : null
+    if (!branch) return
+    const before = branch.getBoundingClientRect()
+    if (before.width === 0 || before.height === 0) return
+    // the rectangle is on screen, at the scale the map has now
+    mind.scale(Math.max(ZOOM_MIN, fill(before.width / mind.scaleVal, before.height / mind.scaleVal)))
+    const at = branch.getBoundingClientRect()
+    const box = view.getBoundingClientRect()
+    mind.move(
+      box.left + box.width / 2 - (at.left + at.width / 2),
+      box.top + box.height / 2 - (at.top + at.height / 2),
+    )
   }
 
   /** The texts changed (another language): new topics, new summaries and the context menu follow. */
