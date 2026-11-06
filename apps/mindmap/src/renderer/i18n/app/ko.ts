@@ -275,4 +275,8 @@ export const ko = {
   mmCreditConditions: '「{topic}」의 그림 「{title}」: 이용 조건이 있습니다({license}).',
   mmCreditGo: '가기',
   tbSendToLabel: '한판으로 보내기',
+  fileMenu: '파일',
+  fileOpen: '열기…',
+  fileSave: '저장',
+  filePrint: '인쇄…',
 } satisfies Record<keyof typeof zh, string>

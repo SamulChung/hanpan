@@ -143,6 +143,8 @@ export const APP_CHANNELS = {
   aiPanelPrefsChanged: 'app:ai-panel-prefs-changed',
   chromePressed: 'app:chrome-pressed',
   openSourcePath: 'home:open-path',
+  /** the shell's open dialog (the one Home's Open uses); the picked files open in tabs */
+  openFileDialog: 'home:browse',
   /** Hanpan: the stored Korean document features switch (true, false, or null when never set) */
   getKoreanDocFeatures: 'app:get-korean-doc-features',
   koreanDocFeaturesChanged: 'app:korean-doc-features-changed',
@@ -445,6 +447,8 @@ export interface MindmapAiApi {
   setProvisionalTitle(title: string): void
   /** open any shell-routed document path (a citation in an AI answer) */
   openSourcePath(path: string): Promise<void>
+  /** the File menu's Open: the shell's open dialog (rejects in standalone) */
+  openFileDialog(): Promise<void>
   getAiPanelPrefs(): Promise<AiPanelPrefs>
   setAiPanelPrefs(patch: Partial<AiPanelPrefs>): Promise<AiPanelPrefs>
   onAiPanelPrefsChanged(handler: (prefs: AiPanelPrefs) => void): () => void

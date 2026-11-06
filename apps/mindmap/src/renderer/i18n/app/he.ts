@@ -272,4 +272,8 @@ export const he = {
   mmCreditConditions: 'התמונה „{title}“ בנושא „{topic}“: יש לה תנאי שימוש ({license}).',
   mmCreditGo: 'מעבר',
   tbSendToLabel: 'שליחה למסמך',
+  fileMenu: 'קובץ',
+  fileOpen: 'פתיחה…',
+  fileSave: 'שמירה',
+  filePrint: 'הדפסה…',
 } satisfies Record<keyof typeof zh, string>

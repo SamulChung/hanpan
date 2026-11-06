@@ -306,6 +306,33 @@ html.genoffice-popover-open .ribbon-tabs {
   background: var(--surface);
 }
 
+/* the on-screen File menu (components/FileMenu.tsx), first in the tab row */
+.mm-file-menu {
+  display: inline-flex;
+  align-self: stretch;
+  -webkit-app-region: no-drag;
+}
+
+.mm-file-pop {
+  min-width: 200px;
+}
+
+.mm-file-item {
+  font-size: 13px;
+  padding: 6px 10px;
+}
+
+.mm-file-item:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.mm-file-sep {
+  height: 1px;
+  margin: 3px 4px;
+  background: var(--border);
+}
+
 /* Hanpan: "send to a document" is the map's main action, so it carries its name */
 .hp-send-button {
   display: inline-flex;

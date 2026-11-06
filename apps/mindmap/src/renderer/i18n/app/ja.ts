@@ -277,4 +277,8 @@ export const ja = {
   mmCreditConditions: '「{topic}」の画像「{title}」：利用条件があります（{license}）。',
   mmCreditGo: '移動',
   tbSendToLabel: '文書へ送る',
+  fileMenu: 'ファイル',
+  fileOpen: '開く…',
+  fileSave: '保存',
+  filePrint: '印刷…',
 } satisfies Record<keyof typeof zh, string>

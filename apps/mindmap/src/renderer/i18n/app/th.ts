@@ -275,4 +275,8 @@ export const th = {
   mmCreditConditions: 'ภาพ “{title}” ในหัวข้อ “{topic}”: มีเงื่อนไขการใช้ ({license})',
   mmCreditGo: 'ไปที่ภาพ',
   tbSendToLabel: 'ส่งไปยังเอกสาร',
+  fileMenu: 'ไฟล์',
+  fileOpen: 'เปิด…',
+  fileSave: 'บันทึก',
+  filePrint: 'พิมพ์…',
 } satisfies Record<keyof typeof zh, string>

@@ -282,4 +282,8 @@ export const de = {
   mmCreditConditions: 'Bild „{title}“ bei „{topic}“: hat Nutzungsbedingungen ({license}).',
   mmCreditGo: 'Anzeigen',
   tbSendToLabel: 'Send to a document',
+  fileMenu: 'Datei',
+  fileOpen: 'Öffnen…',
+  fileSave: 'Speichern',
+  filePrint: 'Drucken…',
 } satisfies Record<keyof typeof zh, string>

@@ -279,4 +279,8 @@ export const vi = {
   mmCreditConditions: 'Ảnh “{title}” ở “{topic}”: có điều kiện sử dụng ({license}).',
   mmCreditGo: 'Đi tới',
   tbSendToLabel: 'Gửi sang tài liệu',
+  fileMenu: 'Tệp',
+  fileOpen: 'Mở…',
+  fileSave: 'Lưu',
+  filePrint: 'In…',
 } satisfies Record<keyof typeof zh, string>

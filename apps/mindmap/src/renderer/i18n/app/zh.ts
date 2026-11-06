@@ -269,4 +269,8 @@ export const zh = {
   mmCreditConditions: '「{topic}」的图片「{title}」：有使用条件（{license}）。',
   mmCreditGo: '前往',
   tbSendToLabel: '发送到文档',
+  fileMenu: '文件',
+  fileOpen: '打开…',
+  fileSave: '保存',
+  filePrint: '打印…',
 }

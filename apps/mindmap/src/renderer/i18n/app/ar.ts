@@ -274,4 +274,8 @@ export const ar = {
   mmCreditConditions: 'الصورة «{title}» على «{topic}»: لها شروط استخدام ({license}).',
   mmCreditGo: 'انتقال',
   tbSendToLabel: 'إرسال إلى مستند',
+  fileMenu: 'ملف',
+  fileOpen: 'فتح…',
+  fileSave: 'حفظ',
+  filePrint: 'طباعة…',
 } satisfies Record<keyof typeof zh, string>

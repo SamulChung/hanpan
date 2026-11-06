@@ -281,4 +281,8 @@ export const nl = {
   mmCreditConditions: 'Afbeelding ‘{title}’ bij ‘{topic}’: heeft gebruiksvoorwaarden ({license}).',
   mmCreditGo: 'Ga naar',
   tbSendToLabel: 'Send to a document',
+  fileMenu: 'Bestand',
+  fileOpen: 'Openen…',
+  fileSave: 'Opslaan',
+  filePrint: 'Afdrukken…',
 } satisfies Record<keyof typeof zh, string>

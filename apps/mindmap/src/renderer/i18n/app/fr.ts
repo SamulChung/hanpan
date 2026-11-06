@@ -282,4 +282,8 @@ export const fr = {
     'Image « {title} » sur « {topic} » : soumise à des conditions d’utilisation ({license}).',
   mmCreditGo: 'Aller',
   tbSendToLabel: 'Send to a document',
+  fileMenu: 'Fichier',
+  fileOpen: 'Ouvrir…',
+  fileSave: 'Enregistrer',
+  filePrint: 'Imprimer…',
 } satisfies Record<keyof typeof zh, string>

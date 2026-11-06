@@ -279,4 +279,8 @@ export const pt = {
   mmCreditConditions: 'Imagem “{title}” em “{topic}”: tem condições de uso ({license}).',
   mmCreditGo: 'Ir',
   tbSendToLabel: 'Send to a document',
+  fileMenu: 'Arquivo',
+  fileOpen: 'Abrir…',
+  fileSave: 'Salvar',
+  filePrint: 'Imprimir…',
 } satisfies Record<keyof typeof zh, string>

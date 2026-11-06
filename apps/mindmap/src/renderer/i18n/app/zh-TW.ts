@@ -272,4 +272,8 @@ export const zhTW = {
   mmCreditConditions: '「{topic}」的圖片「{title}」：有使用條件（{license}）。',
   mmCreditGo: '前往',
   tbSendToLabel: '傳送到文件',
+  fileMenu: '檔案',
+  fileOpen: '開啟…',
+  fileSave: '儲存',
+  filePrint: '列印…',
 } satisfies Record<keyof typeof zh, string>

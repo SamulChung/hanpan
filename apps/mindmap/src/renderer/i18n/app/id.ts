@@ -280,4 +280,8 @@ export const id = {
   mmCreditConditions: 'Gambar “{title}” pada “{topic}”: memiliki syarat penggunaan ({license}).',
   mmCreditGo: 'Buka',
   tbSendToLabel: 'Send to a document',
+  fileMenu: 'File',
+  fileOpen: 'Buka…',
+  fileSave: 'Simpan',
+  filePrint: 'Cetak…',
 } satisfies Record<keyof typeof zh, string>

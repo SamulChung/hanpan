@@ -278,4 +278,8 @@ export const ms = {
   mmCreditConditions: 'Gambar “{title}” pada “{topic}”: mempunyai syarat penggunaan ({license}).',
   mmCreditGo: 'Pergi',
   tbSendToLabel: 'Send to a document',
+  fileMenu: 'Fail',
+  fileOpen: 'Buka…',
+  fileSave: 'Simpan',
+  filePrint: 'Cetak…',
 } satisfies Record<keyof typeof zh, string>
