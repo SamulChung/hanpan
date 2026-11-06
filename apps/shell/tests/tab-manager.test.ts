@@ -210,6 +210,16 @@ vi.mock('../../epub/src/main/epub-main', () => ({
   requestEpubClose: (...args: unknown[]) => requestEpubClose(...(args as [])),
 }))
 
+const createGraphicsView = vi.fn(() => makeFakeView())
+const graphicsIsDirty = vi.fn(() => false)
+const requestGraphicsClose = vi.fn(() => Promise.resolve(true))
+
+vi.mock('../../graphics/src/main/graphics-main', () => ({
+  createGraphicsView: (...args: unknown[]) => createGraphicsView(...(args as [])),
+  graphicsIsDirty: (...args: unknown[]) => graphicsIsDirty(...(args as [])),
+  requestGraphicsClose: (...args: unknown[]) => requestGraphicsClose(...(args as [])),
+}))
+
 import { helpTopicParam, helpViewUrl, TabManager } from '../src/main/tab-manager'
 import type { TabKind } from '../src/shared/tabs-api'
 
@@ -407,6 +417,36 @@ describe('opening tabs', () => {
     expect(manager.activeEpubTab()).toMatchObject({ id, filePath: '/tmp/novel.epub' })
     manager.openSlidesTab()
     expect(manager.activeEpubTab()).toBeUndefined()
+  })
+
+  it('opens photo and illustration tabs, with or without a file', () => {
+    const photo = manager.openPhotoTab('/tmp/cat.png')
+    expect(createGraphicsView).toHaveBeenLastCalledWith('photo', '/tmp/cat.png')
+    expect(manager.list().find((t) => t.id === photo)).toMatchObject({
+      kind: 'photo',
+      title: 'cat.png',
+      filePath: '/tmp/cat.png',
+      active: true,
+    })
+    expect(applyMenuFor).toHaveBeenLastCalledWith('photo')
+    expect(manager.findPhotoTabByPath('/tmp/cat.png')).toBe(photo)
+    expect(manager.activeGraphicsTab()).toMatchObject({ id: photo, kind: 'photo' })
+
+    const illust = manager.openIllustTab()
+    expect(createGraphicsView).toHaveBeenLastCalledWith('illust', undefined)
+    expect(manager.list().find((t) => t.id === illust)).toMatchObject({ kind: 'illust' })
+    expect(manager.findIllustTabByPath('/tmp/cat.png')).toBeUndefined()
+    manager.openSlidesTab()
+    expect(manager.activeGraphicsTab()).toBeUndefined()
+  })
+
+  it('lists changed graphics tabs for the close guard', () => {
+    manager.openIllustTab('/tmp/a.svg')
+    const view = lastCreatedView(createGraphicsView)
+    graphicsIsDirty.mockImplementation((id: number) => id === view.webContents.id)
+    expect(manager.dirtyGraphicsTabs().map((t) => t.webContents)).toEqual([view.webContents])
+    graphicsIsDirty.mockReset()
+    graphicsIsDirty.mockReturnValue(false)
   })
 
   it('titles an untitled mind map with the name the shell supplies for that kind', () => {
@@ -1001,6 +1041,24 @@ describe('file path bookkeeping', () => {
         return lastCreatedView(createEpubView)
       },
     },
+    {
+      kind: 'photo',
+      file: '/tmp/one.psd',
+      renamed: '/tmp/two.psd',
+      open: () => {
+        manager.openPhotoTab('/tmp/one.psd')
+        return lastCreatedView(createGraphicsView)
+      },
+    },
+    {
+      kind: 'illust',
+      file: '/tmp/one.svg',
+      renamed: '/tmp/two.svg',
+      open: () => {
+        manager.openIllustTab('/tmp/one.svg')
+        return lastCreatedView(createGraphicsView)
+      },
+    },
   ]
 
   it.each(RENAMABLE)('a rename reports the $kind view', (c) => {
@@ -1309,12 +1367,7 @@ describe('detach / attach (Open in New Window, tear-off, dock)', () => {
     const record = manager.detachTab(manager.openPdfTab('/tmp/scan.pdf'))!
     manager.openDocsTab('/tmp/b.docx')
     manager.attachTab(record)
-    expect(manager.list().map((t) => t.title)).toEqual([
-      'Hanpan',
-      'a.docx',
-      'b.docx',
-      'scan.pdf',
-    ])
+    expect(manager.list().map((t) => t.title)).toEqual(['Hanpan', 'a.docx', 'b.docx', 'scan.pdf'])
   })
 
   it('installs the HTML-fullscreen listeners once per view across detach and re-attach', () => {

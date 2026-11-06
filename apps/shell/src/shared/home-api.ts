@@ -279,6 +279,10 @@ export interface HomeApi {
   newMindmap(opts?: NewFileOpts): Promise<void>
   /** open a blank HWP editor tab; the file is named at its first save */
   newHwp(opts?: NewFileOpts): Promise<void>
+  /** open an AI Photo tab at the app's start screen (decision 0093) */
+  newPhoto(opts?: NewFileOpts): Promise<void>
+  /** open an AI Illustration tab at the app's start screen */
+  newIllust(opts?: NewFileOpts): Promise<void>
   /** create a blank single-page PDF in the default save folder and open it */
   newPdf(opts?: NewFileOpts): Promise<void>
   /** drop entries from the recent list (does not touch the files) */
@@ -353,6 +357,11 @@ export interface HomeApi {
   getAutoSaveDefault(): Promise<AutoSaveDefault>
   /** persist the AutoSave default; broadcasts 'app:auto-save-default-changed' to all web contents */
   setAutoSaveDefault(on: boolean): Promise<void>
+  /** Hanpan: the Korean document features switch, null until set (decision 0091) */
+  getKoreanDocFeatures?(): Promise<boolean | null>
+  /** persist the switch; broadcasts 'app:korean-doc-features-changed' to all web contents */
+  setKoreanDocFeatures?(on: boolean): Promise<void>
+  onKoreanDocFeaturesChanged?(handler: (stored: boolean | null) => void): () => void
   /** current local MCP server state (running/enabled/port/url) */
   getMcpStatus(): Promise<McpStatus>
   /** enable/disable the MCP server and/or change its port/background/logging; applies and persists, returns the new state */
@@ -568,6 +577,8 @@ export const HOME_CHANNELS = {
   newHtml: 'home:new-html',
   newMindmap: 'home:new-mindmap',
   newHwp: 'home:new-hwp',
+  newPhoto: 'home:new-photo',
+  newIllust: 'home:new-illust',
   newPdf: 'home:new-pdf',
   removeRecent: 'home:remove-recent',
   revealPath: 'home:reveal-path',
@@ -601,6 +612,8 @@ export const HOME_CHANNELS = {
   setDocumentTheme: 'home:set-document-theme',
   getAutoSaveDefault: 'home:get-auto-save-default',
   setAutoSaveDefault: 'home:set-auto-save-default',
+  getKoreanDocFeatures: 'home:get-korean-doc-features',
+  setKoreanDocFeatures: 'home:set-korean-doc-features',
   getMcpStatus: 'home:get-mcp-status',
   setMcpSettings: 'home:set-mcp-settings',
   getMcpLogs: 'home:get-mcp-logs',

@@ -143,6 +143,9 @@ export const APP_CHANNELS = {
   aiPanelPrefsChanged: 'app:ai-panel-prefs-changed',
   chromePressed: 'app:chrome-pressed',
   openSourcePath: 'home:open-path',
+  /** Hanpan: the stored Korean document features switch (true, false, or null when never set) */
+  getKoreanDocFeatures: 'app:get-korean-doc-features',
+  koreanDocFeaturesChanged: 'app:korean-doc-features-changed',
 } as const
 
 /** The shared AI channels, registered once for the whole app by the docs main. Pass-through only. T12 */
@@ -528,6 +531,9 @@ export interface MindmapSendApi {
   sendToDesign?(outline: string): void
   syncCheck?(request: SyncCheckRequest): Promise<SyncCheckResult>
   syncFinish?(request: SyncFinishRequest): Promise<SyncFinishResult>
+  /** the stored Korean document features switch (decision 0091): null when never set */
+  getKoreanDocFeatures?(): Promise<boolean | null>
+  onKoreanDocFeaturesChanged?(handler: (stored: boolean | null) => void): () => void
 }
 
 /** API exposed by preload to the renderer (window.mindmapApi) */

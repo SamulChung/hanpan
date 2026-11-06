@@ -1,7 +1,8 @@
 import { MCP_SERVER_NAME, mcpLaunch, SKILL_NAME, type McpLaunch } from '@genoffice/cli/mcp-launch'
 import { PRODUCT_REPO_SLUG } from '@genoffice/i18n'
 import { useCallback, useEffect, useState } from 'react'
-import type { TFunc } from './locale'
+import { useKoreanDocFeatures } from '@genoffice/ui'
+import { useI18n, type TFunc } from './locale'
 import { McpServerSection } from './McpServerSection'
 import { DriveSettingsCard } from './DriveSettingsCard'
 import { GonguSettingsCard } from './GonguSettingsCard'
@@ -64,6 +65,8 @@ export function IntegrationsPane({
   t: TFunc
   onStatus?: (s: IntegrationsStatus) => void
 }) {
+  // Hanpan: the Gongu key belongs to the Korean document features (decision 0091)
+  const koreanDocs = useKoreanDocFeatures(useI18n().lang)
   const [status, setStatus] = useState<IntegrationsStatus | null>(null)
   const [pending, setPending] = useState<Pending | null>(null)
   const [busy, setBusy] = useState(false)
@@ -200,7 +203,7 @@ export function IntegrationsPane({
 
       <DriveSettingsCard />
 
-      <GonguSettingsCard />
+      {koreanDocs && <GonguSettingsCard />}
 
       <section className="set-intg-hero">
         <div className="set-intg-hero-title">{t('intgHeroTitle')}</div>

@@ -15,6 +15,8 @@ import iconHtml from './assets/file-html.svg'
 import iconMindmap from './assets/file-mindmap.svg'
 import iconHwp from './assets/file-hwp.svg'
 import iconEpub from './assets/file-epub.svg'
+import iconPhoto from './assets/file-photo.svg'
+import iconIllust from './assets/file-illust.svg'
 
 declare global {
   interface Window {
@@ -86,6 +88,8 @@ const KIND_ICON: Record<TabSummary['kind'], ReactElement> = {
   mindmap: <FileKindIcon src={iconMindmap} />,
   hwp: <FileKindIcon src={iconHwp} />,
   epub: <FileKindIcon src={iconEpub} />,
+  photo: <FileKindIcon src={iconPhoto} />,
+  illust: <FileKindIcon src={iconIllust} />,
   help: <HelpIcon />,
 }
 

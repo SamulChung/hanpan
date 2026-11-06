@@ -1,0 +1,26 @@
+import type { zh } from './zh'
+
+export const ko = {
+  loading: '앱을 불러오는 중…',
+  failed: '앱을 띄우지 못했습니다.',
+  retry: '다시 시도',
+  notInstalled: '이 설치본에는 이 앱이 들어 있지 않습니다.',
+  saveFailed: '저장하지 못했습니다. 문서는 저장 안 됨으로 남습니다.',
+  layeredSaveNotice: '레이어와 편집 정보를 지키려고 PSD로 저장합니다.',
+  openFailed: '파일을 열지 못했습니다. 앱에서 다시 열어 주세요.',
+  quickRemoveBackground: '배경 지우기',
+  quickAutoTone: '자동 보정',
+  quickExportAtSize: '크기 맞춰 내보내기',
+  quickTraceImage: '그림 따라 그리기',
+  quickCenter: '가운데 정렬',
+  quickExportPngSvg: 'PNG·SVG 내보내기',
+  quickDone: '했습니다.',
+  quickRefused: '앱이 지금 이 일을 하지 못했습니다:',
+  quickExported: '사본을 저장했습니다.',
+  exportDialogTitle: '내보내기',
+  exportFormat: '형식',
+  exportWidth: '너비(px)',
+  exportHeight: '높이(px)',
+  exportConfirm: '내보내기',
+  exportCancel: '취소',
+} satisfies Record<keyof typeof zh, string>

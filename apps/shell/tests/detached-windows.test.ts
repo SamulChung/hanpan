@@ -131,6 +131,11 @@ vi.mock('../../epub/src/main/epub-main', () => ({
   epubIsDirty: vi.fn(() => false),
   requestEpubClose: vi.fn(() => Promise.resolve(true)),
 }))
+vi.mock('../../graphics/src/main/graphics-main', () => ({
+  createGraphicsView: vi.fn(),
+  graphicsIsDirty: () => false,
+  requestGraphicsClose: vi.fn(() => Promise.resolve(true)),
+}))
 
 vi.mock('../src/main/tab-manager', () => ({
   canonicalPath: (p: string) => p.toLowerCase(),

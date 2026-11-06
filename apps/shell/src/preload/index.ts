@@ -260,6 +260,12 @@ const homeApi: HomeApi = {
   async newHwp(opts) {
     await ipcRenderer.invoke(HOME_CHANNELS.newHwp, opts)
   },
+  async newPhoto(opts) {
+    await ipcRenderer.invoke(HOME_CHANNELS.newPhoto, opts)
+  },
+  async newIllust(opts) {
+    await ipcRenderer.invoke(HOME_CHANNELS.newIllust, opts)
+  },
   async newPdf(opts) {
     await ipcRenderer.invoke(HOME_CHANNELS.newPdf, opts)
   },
@@ -417,6 +423,20 @@ const homeApi: HomeApi = {
   async setAutoSaveDefault(on) {
     if (typeof on !== 'boolean') throw new Error('Invalid AutoSave default.')
     await ipcRenderer.invoke(HOME_CHANNELS.setAutoSaveDefault, on)
+  },
+  async getKoreanDocFeatures() {
+    const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.getKoreanDocFeatures)
+    return typeof result === 'boolean' ? result : null
+  },
+  async setKoreanDocFeatures(on) {
+    if (typeof on !== 'boolean') throw new Error('Invalid Korean document features switch.')
+    await ipcRenderer.invoke(HOME_CHANNELS.setKoreanDocFeatures, on)
+  },
+  onKoreanDocFeaturesChanged(handler) {
+    const listener = (_event: Electron.IpcRendererEvent, stored: unknown) =>
+      handler(typeof stored === 'boolean' ? stored : null)
+    ipcRenderer.on('app:korean-doc-features-changed', listener)
+    return () => ipcRenderer.removeListener('app:korean-doc-features-changed', listener)
   },
   async getMcpStatus() {
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.getMcpStatus)

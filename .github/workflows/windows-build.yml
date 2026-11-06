@@ -108,7 +108,9 @@ jobs:
             "$dir/resources/native/xlsx-sidecar.exe" \
             "$dir/resources/ocr/win-ocr.exe" \
             "$dir/resources/cli/genoffice.cjs" \
-            "$dir/resources/cli/ieumoffice.cmd"; do
+            "$dir/resources/cli/ieumoffice.cmd" \
+            "$dir/resources/modules/graphics/renderer/web/photo/index.html" \
+            "$dir/resources/modules/graphics/renderer/web/illust/index.html"; do
             test -f "$bin" || { echo "missing: $bin"; exit 1; }
           done
           version=$(node -p "require('./apps/shell/package.json').version")

@@ -1,0 +1,26 @@
+import type { zh } from './zh'
+
+export const cs = {
+  loading: 'Načítání aplikace…',
+  failed: 'Aplikaci se nepodařilo spustit.',
+  retry: 'Zkusit znovu',
+  notInstalled: 'Tato instalace tuto aplikaci neobsahuje.',
+  saveFailed: 'Uložení se nezdařilo. Dokument zůstává neuložený.',
+  layeredSaveNotice: 'Ukládá se jako PSD, aby zůstaly vrstvy a data úprav.',
+  openFailed: 'Soubor se nepodařilo otevřít. Otevřete ho znovu v aplikaci.',
+  quickRemoveBackground: 'Odstranit pozadí',
+  quickAutoTone: 'Automatický tón',
+  quickExportAtSize: 'Exportovat ve velikosti',
+  quickTraceImage: 'Vektorizovat obrázek',
+  quickCenter: 'Vystředit na kreslicí plátno',
+  quickExportPngSvg: 'Exportovat PNG nebo SVG',
+  quickDone: 'Hotovo.',
+  quickRefused: 'Aplikace to teď nemohla provést:',
+  quickExported: 'Kopie uložena.',
+  exportDialogTitle: 'Export',
+  exportFormat: 'Formát',
+  exportWidth: 'Šířka (px)',
+  exportHeight: 'Výška (px)',
+  exportConfirm: 'Exportovat',
+  exportCancel: 'Zrušit',
+} satisfies Record<keyof typeof zh, string>

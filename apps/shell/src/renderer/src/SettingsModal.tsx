@@ -10,10 +10,11 @@ import {
   aiPanelFontPx,
   aiPanelStartOf,
   aiPanelStartPatch,
+  applyKoreanDocFeatures,
   clampAiCustomFontSize,
 } from '@genoffice/ui'
 import type { AiFontSize, AiPanelPrefs, AiPanelSide, AiPanelStart } from '@genoffice/ui'
-import { PRODUCT_CONTACT_EMAIL, PRODUCT_REPO_SLUG } from '@genoffice/i18n'
+import { PRODUCT_CONTACT_EMAIL, PRODUCT_REPO_SLUG, koreanDocFeaturesOn } from '@genoffice/i18n'
 import type { Lang } from '@genoffice/i18n'
 import type {
   AuthorNameSetting,
@@ -1640,6 +1641,9 @@ export function SettingsModal({
   const [docTheme, setDocTheme] = useState<DocTheme>('follow')
   const [saveDir, setSaveDir] = useState('')
   const [autoSaveOn, setAutoSaveOn] = useState(false)
+  // Hanpan: the Korean document features switch as stored (null: the UI language decides)
+  const [koreanDocsStored, setKoreanDocsStored] = useState<boolean | null>(null)
+  const koreanDocsOn = koreanDocFeaturesOn(koreanDocsStored, lang)
   const [autoUpdateCheckOn, setAutoUpdateCheckOn] = useState(true)
   const [defaultApp, setDefaultApp] = useState<DefaultAppStatus | null>(null)
   const [defaultAppBusy, setDefaultAppBusy] = useState(false)
@@ -1665,6 +1669,9 @@ export function SettingsModal({
     })
     void window.aiOffice.getAutoSaveDefault?.().then((v) => {
       if (alive) setAutoSaveOn(v.on)
+    })
+    void window.aiOffice.getKoreanDocFeatures?.().then((v) => {
+      if (alive) setKoreanDocsStored(v)
     })
     void window.aiOffice.getDefaultAppStatus?.().then((st) => {
       if (alive) setDefaultApp(st)
@@ -1855,6 +1862,26 @@ export function SettingsModal({
                     ariaLabel={t('language')}
                     options={LANG_OPTIONS.map((opt) => ({ value: opt.value, label: opt.label }))}
                     onPick={(v) => setLang(v as typeof lang)}
+                  />
+                </div>
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <div className="set-field-stack">
+                      <div className="set-field-label">{t('setKoreanDocs')}</div>
+                      <div className="set-field-desc">{t('setKoreanDocsDesc')}</div>
+                    </div>
+                  </div>
+                  <button
+                    className="set-switch"
+                    role="switch"
+                    aria-checked={koreanDocsOn}
+                    aria-label={t('setKoreanDocs')}
+                    onClick={() => {
+                      const next = !koreanDocsOn
+                      setKoreanDocsStored(next)
+                      applyKoreanDocFeatures(next)
+                      void window.aiOffice.setKoreanDocFeatures?.(next).catch(() => {})
+                    }}
                   />
                 </div>
                 <div className="set-field">

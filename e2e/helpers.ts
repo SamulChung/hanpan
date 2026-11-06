@@ -72,6 +72,9 @@ export async function launchShell(options: LaunchOptions): Promise<LaunchedApp> 
     await writeFile(
       join(userDataDir, 'app-settings.json'),
       JSON.stringify({
+        // Hanpan: the specs drive the Korean cards (HWP, templates, design) on an English UI,
+        // so the Korean document features switch starts on (decision 0091); a spec can pass false
+        koreanDocFeatures: true,
         ...(options.onboardingSeen ? { onboardingSeen: true } : {}),
         ...options.settings,
       }),

@@ -1,0 +1,26 @@
+import type { zh } from './zh'
+
+export const ja = {
+  loading: 'アプリを読み込んでいます…',
+  failed: 'アプリを起動できませんでした。',
+  retry: '再試行',
+  notInstalled: 'このインストールにはこのアプリが含まれていません。',
+  saveFailed: '保存できませんでした。ドキュメントは未保存のままです。',
+  layeredSaveNotice: 'レイヤーと編集情報を残すため、PSD で保存します。',
+  openFailed: 'ファイルを開けませんでした。アプリからもう一度開いてください。',
+  quickRemoveBackground: '背景を削除',
+  quickAutoTone: '自動補正',
+  quickExportAtSize: 'サイズを指定して書き出し',
+  quickTraceImage: '画像をトレース',
+  quickCenter: 'アートボードの中央に配置',
+  quickExportPngSvg: 'PNG・SVG で書き出し',
+  quickDone: '完了しました。',
+  quickRefused: 'アプリは今これを実行できませんでした：',
+  quickExported: 'コピーを保存しました。',
+  exportDialogTitle: '書き出し',
+  exportFormat: '形式',
+  exportWidth: '幅（px）',
+  exportHeight: '高さ（px）',
+  exportConfirm: '書き出す',
+  exportCancel: 'キャンセル',
+} satisfies Record<keyof typeof zh, string>

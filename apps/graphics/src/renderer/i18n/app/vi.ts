@@ -1,0 +1,26 @@
+import type { zh } from './zh'
+
+export const vi = {
+  loading: 'Đang tải ứng dụng…',
+  failed: 'Không thể khởi động ứng dụng.',
+  retry: 'Thử lại',
+  notInstalled: 'Bản cài đặt này không có ứng dụng này.',
+  saveFailed: 'Không lưu được. Tài liệu vẫn được đánh dấu là chưa lưu.',
+  layeredSaveNotice: 'Lưu dưới dạng PSD để giữ các lớp và dữ liệu chỉnh sửa.',
+  openFailed: 'Không mở được tệp. Hãy mở lại từ ứng dụng.',
+  quickRemoveBackground: 'Xóa nền',
+  quickAutoTone: 'Tự động chỉnh tông',
+  quickExportAtSize: 'Xuất theo kích thước',
+  quickTraceImage: 'Đồ lại hình ảnh',
+  quickCenter: 'Căn giữa trên bảng vẽ',
+  quickExportPngSvg: 'Xuất PNG hoặc SVG',
+  quickDone: 'Xong.',
+  quickRefused: 'Ứng dụng không thể làm việc này lúc này:',
+  quickExported: 'Đã lưu bản sao.',
+  exportDialogTitle: 'Xuất',
+  exportFormat: 'Định dạng',
+  exportWidth: 'Rộng (px)',
+  exportHeight: 'Cao (px)',
+  exportConfirm: 'Xuất',
+  exportCancel: 'Hủy',
+} satisfies Record<keyof typeof zh, string>

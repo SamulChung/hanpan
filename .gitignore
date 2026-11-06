@@ -32,6 +32,10 @@ electron-builder.env
 # Playwright artifacts
 /test-results/
 
+# AI Photo / AI Illustration web builds fetched by tools/fetch-graphics-web.mjs (decision 0093)
+/apps/graphics/public/web/
+/vendor/graphics-web/
+
 .cursor/rules/git-remote.mdc
 __pycache__/
 /notes/

@@ -4,7 +4,12 @@ import JSZip from 'jszip'
 import { describe, expect, it } from 'vitest'
 import { createBlankPptx, openPptx, savePptx } from '@genoffice/pptx-engine'
 import { runTxn, type Op } from '@genoffice/pptx-ops'
-import { outlineFromIndentedText, outlineToSlides, SLIDE_STYLES, styledDeckOps } from '@genoffice/hanpan-core'
+import {
+  outlineFromIndentedText,
+  outlineToSlides,
+  SLIDE_STYLES,
+  styledDeckOps,
+} from '@genoffice/hanpan-core'
 
 const MAP = `2026년 AI 연수 계획
   추진 배경
@@ -34,7 +39,8 @@ async function build(ops: Op[]): Promise<Uint8Array> {
   const opened = await openPptx(await createBlankPptx())
   for (const op of ops) {
     const result = runTxn(opened, { ops: [op], isolation: 'atomic' })
-    if (!result.applied) throw new Error(`${op.op}: ${result.failures?.[0]?.error ?? 'not applied'}`)
+    if (!result.applied)
+      throw new Error(`${op.op}: ${result.failures?.[0]?.error ?? 'not applied'}`)
   }
   return savePptx(opened)
 }
@@ -50,7 +56,9 @@ describe('Hanpan slide styles', () => {
         writeFileSync(join(PREVIEW_DIR, `${style.id}.pptx`), bytes)
       }
       const zip = await JSZip.loadAsync(bytes)
-      const slideFiles = Object.keys(zip.files).filter((f) => /^ppt\/slides\/slide\d+\.xml$/.test(f))
+      const slideFiles = Object.keys(zip.files).filter((f) =>
+        /^ppt\/slides\/slide\d+\.xml$/.test(f),
+      )
       // cover, contents (where the style has one), one slide per branch, closing
       expect(slideFiles.length).toBeGreaterThanOrEqual(slides.length + 1)
       expect(slideFiles.length).toBeLessThanOrEqual(slides.length + 2)

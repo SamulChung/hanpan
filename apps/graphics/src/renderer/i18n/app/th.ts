@@ -1,0 +1,26 @@
+import type { zh } from './zh'
+
+export const th = {
+  loading: 'กำลังโหลดแอป…',
+  failed: 'ไม่สามารถเริ่มแอปได้',
+  retry: 'ลองอีกครั้ง',
+  notInstalled: 'การติดตั้งนี้ไม่มีแอปนี้',
+  saveFailed: 'บันทึกไม่ได้ เอกสารยังคงเป็นยังไม่ได้บันทึก',
+  layeredSaveNotice: 'บันทึกเป็น PSD เพื่อเก็บเลเยอร์และข้อมูลการแก้ไขไว้',
+  openFailed: 'เปิดไฟล์ไม่ได้ โปรดเปิดอีกครั้งจากแอป',
+  quickRemoveBackground: 'ลบพื้นหลัง',
+  quickAutoTone: 'ปรับโทนอัตโนมัติ',
+  quickExportAtSize: 'ส่งออกตามขนาด',
+  quickTraceImage: 'แปลงภาพเป็นเส้น',
+  quickCenter: 'จัดกึ่งกลางอาร์ตบอร์ด',
+  quickExportPngSvg: 'ส่งออก PNG หรือ SVG',
+  quickDone: 'เสร็จแล้ว',
+  quickRefused: 'แอปทำสิ่งนี้ไม่ได้ในตอนนี้:',
+  quickExported: 'บันทึกสำเนาแล้ว',
+  exportDialogTitle: 'ส่งออก',
+  exportFormat: 'รูปแบบ',
+  exportWidth: 'กว้าง (px)',
+  exportHeight: 'สูง (px)',
+  exportConfirm: 'ส่งออก',
+  exportCancel: 'ยกเลิก',
+} satisfies Record<keyof typeof zh, string>

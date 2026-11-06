@@ -295,7 +295,6 @@
 
 .hp-flow-lines {
   width: 64px;
-  height: 166px;
   fill: none;
   stroke: var(--hp-board-line);
   stroke-width: 2;
@@ -849,4 +848,20 @@
 .hp-guide:focus-visible {
   outline: 2px solid var(--hp-chalk);
   outline-offset: 2px;
+}
+
+/* Hanpan Home: a compact card with a second line (the app a card is built on) */
+.hp-compact-text {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.hp-compact-sub {
+  overflow: hidden;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

@@ -237,6 +237,8 @@
 - `get_app_info`의 `families`에 `{ family: "xmind", label: "mind map", editor: { open: ["xmind"], save: ["xmind"], export: ["png", "pdf", "md"] } }`가 있다. `mcp` 항목은 없다.
 - `open_documents`의 목록에 EPUB 탭이 `kind: "epub"`, `type: "e-book"`으로 나온다(떼어 낸 창도 같다). `read`의 `content`는 spine 순서로 이은 책 글이고(제목은 `#`), 저장하지 않은 편집이 들어 있다. `close`의 저장은 편집기의 저장과 같은 규칙을 지나고, 바꾼 것이 없으면 파일을 쓰지 않는다. 책을 만들거나 고치는 도구는 없다.
 - `get_app_info`의 `families`에 `{ family: "epub", label: "e-book", editor: { open: ["epub"], save: ["epub"], export: [] } }`가 있다.
+- `open_documents`의 목록에 AI 포토·AI 일러스트 탭(결정 0093)이 `kind: "photo"`, `type: "photo (AI Photo)"`와 `kind: "illust"`, `type: "illustration (AI Illustration)"`로 나온다(떼어 낸 창도 같다). `read`와 `save`는 거절한다. 거절 글에는 `is a picture in an AI Photo or AI Illustration tab`이 들어 있다. 바꾼 것이 있는 탭의 `close`는 `unsaved: "discard"`일 때만 닫는다. 그림을 읽거나 고치는 도구는 없다.
+- `get_app_info`의 `families`에 `{ family: "photo", label: "photo (AI Photo)", editor: { open: ["psd", "psb", "png", "jpg", "jpeg", "webp", "gif", "bmp", "tif", "tiff", "heic", "heif"], save: ["psd", "png", "jpg", "jpeg", "webp", "tif", "tiff"], export: ["png", "jpg"] } }`와 `{ family: "illust", label: "illustration (AI Illustration)", editor: { open: ["svg", "svgz", "ai", "vectorcraft"], save: ["vectorcraft", "svg", "svgz", "ai"], export: ["png", "svg"] } }`가 있다. `mcp` 항목은 없다.
 
 ## 에이전트 스킬
 
@@ -287,6 +289,7 @@ metadata:
 | `skills.hiddenBuiltins` | 숨긴 기본 스킬 이름 목록                                                                       | 없음                   |
 | `agentSkillNoticeSeen`  | 참/거짓. 에이전트 창의 스킬 안내를 봤는지                                                      | 없음                   |
 | `agentProjectPrefs`     | 프로젝트 폴더 절대 경로 → `{ codexWebSearch: 'cached' \| 'live' \| 'disabled', codexNetwork }` | 없음(`cached`, 거짓)   |
+| `koreanDocFeatures`     | 참/거짓. 한국 문서 기능(한글·공문·양식·디자인·공유마당)을 보일지                               | 없음(ko만 켜짐)        |
 
 - 식별자는 `〈출처〉:〈이름〉`, 플러그인은 `plugin:〈플러그인〉:〈이름〉`이다. 출처 값은 `builtin`(기본), `app`(`~/.ieumoffice/skills`, 깃허브 포함), `user`(`~/.claude/skills`), `plugin`(설치된 Claude 플러그인), `codex`(`~/.agents/skills`)다. 저장되는 값이라 바꾸지 않는다. 프로젝트 스킬(`project`)은 저장하지 않는다.
 - 알 수 없는 값은 무시하고 처음 상태로 읽는다. 처음 상태는 `builtin`·`app`이 켜짐·스스로 쓰기, `user`·`plugin`·`codex`가 꺼짐이다.

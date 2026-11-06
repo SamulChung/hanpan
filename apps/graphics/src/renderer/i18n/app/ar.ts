@@ -1,0 +1,26 @@
+import type { zh } from './zh'
+
+export const ar = {
+  loading: 'جارٍ تحميل التطبيق…',
+  failed: 'تعذّر تشغيل التطبيق.',
+  retry: 'إعادة المحاولة',
+  notInstalled: 'لا يتضمن هذا التثبيت هذا التطبيق.',
+  saveFailed: 'تعذّر الحفظ. يبقى المستند غير محفوظ.',
+  layeredSaveNotice: 'يُحفظ بصيغة PSD للإبقاء على الطبقات وبيانات التحرير.',
+  openFailed: 'تعذّر فتح الملف. افتحه مرة أخرى من التطبيق.',
+  quickRemoveBackground: 'إزالة الخلفية',
+  quickAutoTone: 'تدرج تلقائي',
+  quickExportAtSize: 'تصدير بحجم محدد',
+  quickTraceImage: 'تتبع الصورة',
+  quickCenter: 'توسيط على لوح الرسم',
+  quickExportPngSvg: 'تصدير PNG أو SVG',
+  quickDone: 'تم.',
+  quickRefused: 'تعذّر على التطبيق فعل ذلك الآن:',
+  quickExported: 'تم حفظ النسخة.',
+  exportDialogTitle: 'تصدير',
+  exportFormat: 'الصيغة',
+  exportWidth: 'العرض (px)',
+  exportHeight: 'الارتفاع (px)',
+  exportConfirm: 'تصدير',
+  exportCancel: 'إلغاء',
+} satisfies Record<keyof typeof zh, string>

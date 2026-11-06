@@ -32,7 +32,7 @@ export type SendResult = { ok: true; title: string } | { ok: false; error: strin
 const MAX_NODES = 5000
 const MAX_TEXT = 20_000
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024
-const STYLES: readonly MarkerStyle[] = ['report', 'chapter-report', 'gongmun']
+const STYLES: readonly MarkerStyle[] = ['report', 'chapter-report', 'gongmun', 'outline']
 const TARGETS: readonly SendTarget[] = ['hwp', 'slides', 'docx']
 
 function text(value: unknown, what: string, optional = false): string | undefined {

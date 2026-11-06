@@ -1,6 +1,7 @@
 import { statSync } from 'node:fs'
 import { basename, extname } from 'node:path'
 import type { RecentEntry, RecentPage, RecentQuery } from '../shared/home-api'
+import { OPEN_EXTS } from '../../../graphics/src/shared/kinds'
 
 const RECENT_PAGE_DEFAULT = 50
 const RECENT_PAGE_MAX = 200
@@ -83,6 +84,8 @@ export const EXT_FAMILY: Record<string, readonly string[]> = {
   md: ['md', 'markdown', 'txt', 'json'],
   html: ['html', 'htm'],
   hwp: ['hwp', 'hwpx'],
+  photo: OPEN_EXTS.photo,
+  illust: OPEN_EXTS.illust,
 }
 
 /** Family-aware extension match for sidebar filters (recents and starred share it). */

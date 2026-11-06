@@ -146,6 +146,7 @@ export type {
   AiLocalTestResult,
 } from './local-test'
 export { getProviderAdapter, modelLacksVision } from './registry'
+export { settingsSupportVision } from './vision-support'
 export {
   FREE_AI_IPC_CHANNELS,
   FREE_AI_KEY_PAGES,

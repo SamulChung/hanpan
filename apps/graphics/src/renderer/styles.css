@@ -1,0 +1,146 @@
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--surface);
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+}
+
+.gx-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* the app on the left, the AI dock on the right */
+.gx-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.gx-stage {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* over the frame only while the AI works (input-lock.ts sets data-locked) */
+.gx-lock {
+  position: absolute;
+  inset: 0;
+  display: none;
+  cursor: progress;
+}
+
+.gx-lock[data-locked='true'] {
+  display: block;
+}
+
+.gx-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.gx-cover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.gx-notice {
+  padding: 6px 12px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-subtle);
+  font-size: 12.5px;
+}
+
+/* the quick-action buttons above the app */
+.gx-quick {
+  display: flex;
+  gap: 6px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-subtle);
+}
+
+.gx-quick-btn {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-8, 8px);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.gx-quick-btn:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+.gx-quick-btn:disabled {
+  color: var(--text-muted);
+  cursor: default;
+}
+
+/* the export dialog */
+.gx-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-overlay);
+}
+
+.gx-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 280px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-8, 8px);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.gx-dialog-title {
+  margin: 0 0 4px;
+  font-size: 15px;
+}
+
+.gx-dialog-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.gx-dialog-row input,
+.gx-dialog-row select {
+  width: 120px;
+  font: inherit;
+}
+
+.gx-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}

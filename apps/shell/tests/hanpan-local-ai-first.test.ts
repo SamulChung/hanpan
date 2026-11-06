@@ -3,7 +3,12 @@ import { defaultAiSettings, type AiSettings } from '@genoffice/ai-provider'
 import { adoptLocalAiOnce, type LocalAiFirstDeps } from '../src/main/hanpan/local-ai-first'
 
 const choice = {
-  server: { kind: 'ollama' as const, name: 'Ollama', baseUrl: 'http://127.0.0.1:11434/v1', models: ['llama3.2', 'exaone3.5:7.8b'] },
+  server: {
+    kind: 'ollama' as const,
+    name: 'Ollama',
+    baseUrl: 'http://127.0.0.1:11434/v1',
+    models: ['llama3.2', 'exaone3.5:7.8b'],
+  },
   model: 'exaone3.5:7.8b',
 }
 
@@ -31,7 +36,11 @@ describe('local AI first', () => {
     expect(await adoptLocalAiOnce(h.deps)).toBe('adopted')
     expect(h.settings().provider).toBe('custom')
     const endpoint = h.settings().customEndpoints?.find((e) => e.kind === 'local')
-    expect(endpoint).toMatchObject({ baseUrl: 'http://127.0.0.1:11434/v1', model: 'exaone3.5:7.8b', name: 'Ollama (내 PC)' })
+    expect(endpoint).toMatchObject({
+      baseUrl: 'http://127.0.0.1:11434/v1',
+      model: 'exaone3.5:7.8b',
+      name: 'Ollama (내 PC)',
+    })
     expect(h.mark()).toBe('adopted')
     // once only: a later start never touches the settings again
     expect(await adoptLocalAiOnce(h.deps)).toBe('settled-before')

@@ -1,0 +1,26 @@
+import type { zh } from './zh'
+
+export const ru = {
+  loading: 'Загрузка приложения…',
+  failed: 'Не удалось запустить приложение.',
+  retry: 'Повторить',
+  notInstalled: 'Эта установка не содержит это приложение.',
+  saveFailed: 'Не удалось сохранить. Документ остаётся несохранённым.',
+  layeredSaveNotice: 'Сохраняется в PSD, чтобы не потерять слои и данные правки.',
+  openFailed: 'Не удалось открыть файл. Откройте его снова в приложении.',
+  quickRemoveBackground: 'Удалить фон',
+  quickAutoTone: 'Автотон',
+  quickExportAtSize: 'Экспорт с размером',
+  quickTraceImage: 'Трассировать изображение',
+  quickCenter: 'По центру монтажной области',
+  quickExportPngSvg: 'Экспорт в PNG или SVG',
+  quickDone: 'Готово.',
+  quickRefused: 'Приложение сейчас не может это сделать:',
+  quickExported: 'Копия сохранена.',
+  exportDialogTitle: 'Экспорт',
+  exportFormat: 'Формат',
+  exportWidth: 'Ширина (px)',
+  exportHeight: 'Высота (px)',
+  exportConfirm: 'Экспортировать',
+  exportCancel: 'Отмена',
+} satisfies Record<keyof typeof zh, string>

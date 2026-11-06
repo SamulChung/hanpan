@@ -204,6 +204,7 @@ export {
   useAiSidebarEnabled,
   aiPanelWidthAtPointer,
 } from './ai-panel-prefs-store'
+export { applyKoreanDocFeatures, useKoreanDocFeatures } from './korean-doc-features-store'
 export {
   SPLIT_PANE_BRIDGE_KEY,
   effectiveAiPanelOpen,

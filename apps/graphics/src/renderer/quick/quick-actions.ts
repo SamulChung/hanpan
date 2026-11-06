@@ -1,0 +1,154 @@
+/**
+ * Three buttons per app that do a common job without the AI (design 6-5).
+ * Each runs the app's own commands inside the input lock, like an AI run, so
+ * the app's history holds the action's edits only and its own Undo takes
+ * them back.
+ */
+import type { GraphicsAdapter } from '../adapters'
+import type { ExportRequest, ExportResult, PickedImage } from '../../shared/ipc'
+import type { GraphicsKind } from '../../shared/kinds'
+import type { StringKey } from '../i18n/locale'
+import type { PixelSize } from './resize'
+
+export const QUICK_ACTIONS = {
+  photo: ['removeBackground', 'autoTone', 'exportAtSize'],
+  illust: ['traceImage', 'centerOnArtboard', 'exportPngSvg'],
+} as const
+
+export type QuickActionId = (typeof QUICK_ACTIONS)[GraphicsKind][number]
+
+export type ExportFormatChoice = 'png' | 'jpg' | 'svg'
+
+export interface ExportChoice {
+  format: ExportFormatChoice
+  /** a raster size other than the picture's own */
+  width?: number
+  height?: number
+}
+
+export interface QuickDeps {
+  adapter: Pick<GraphicsAdapter, 'api' | 'placeImage' | 'exportBytes' | 'docInfo'>
+  pickImage(): Promise<PickedImage | null>
+  exportFile(request: ExportRequest): Promise<ExportResult>
+  /** the export dialog: null when the person canceled */
+  askExport(kind: GraphicsKind, size: PixelSize): Promise<ExportChoice | null>
+  /** locks the person's input to the app; returns the unlock */
+  lock(): () => void
+  measure(bytes: Uint8Array): Promise<PixelSize>
+  resize(
+    bytes: Uint8Array,
+    width: number,
+    height: number,
+    format: 'png' | 'jpg',
+  ): Promise<Uint8Array>
+}
+
+/** what the bar says afterwards; null when there is nothing to say (canceled) */
+export interface QuickResult {
+  ok: boolean
+  messageKey: StringKey | null
+  detail?: string
+}
+
+const DONE: QuickResult = { ok: true, messageKey: 'quickDone' }
+const CANCELED: QuickResult = { ok: true, messageKey: null }
+
+function errorText(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
+}
+
+function record(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
+}
+
+async function selection(deps: QuickDeps): Promise<number[]> {
+  const doc = record(await deps.adapter.api.execute('document.inspect', { ids: [] }))
+  return Array.isArray(doc.selection) ? (doc.selection as number[]) : []
+}
+
+/** A placed picture is selected: VectorCraft 0.21.0's document.node answers `kind: {type: 'image', …}`. */
+async function selectedImage(deps: QuickDeps): Promise<boolean> {
+  const selected = await selection(deps)
+  if (selected.length !== 1) return false
+  const node = record(await deps.adapter.api.execute('document.node', { id: selected[0] }))
+  return record(node.kind).type === 'image'
+}
+
+function baseName(title: string | null): string {
+  return (title ?? 'export').replace(/\.[^.]+$/, '') || 'export'
+}
+
+async function exportWithDialog(kind: GraphicsKind, deps: QuickDeps): Promise<QuickResult> {
+  const raster = await deps.adapter.exportBytes('png')
+  const size = await deps.measure(raster)
+  const choice = await deps.askExport(kind, size)
+  if (!choice) return CANCELED
+  let bytes: Uint8Array
+  if (choice.format === 'svg') {
+    bytes = await deps.adapter.exportBytes('svg')
+  } else if (
+    choice.format === 'jpg' ||
+    (choice.width !== undefined && choice.width !== size.width) ||
+    (choice.height !== undefined && choice.height !== size.height)
+  ) {
+    bytes = await deps.resize(
+      raster,
+      choice.width ?? size.width,
+      choice.height ?? size.height,
+      choice.format,
+    )
+  } else {
+    bytes = raster
+  }
+  const title = (await deps.adapter.docInfo()).title
+  const result = await deps.exportFile({
+    bytes,
+    defaultName: `${baseName(title)}.${choice.format}`,
+    format: choice.format,
+  })
+  if (!result.ok) return { ok: false, messageKey: 'quickRefused', detail: result.error }
+  if ('canceled' in result) return CANCELED
+  return { ok: true, messageKey: 'quickExported' }
+}
+
+async function run(id: QuickActionId, deps: QuickDeps): Promise<QuickResult> {
+  const execute = (command: string, params: object = {}) =>
+    deps.adapter.api.execute(command, params)
+  switch (id) {
+    case 'removeBackground':
+      await execute('layer.removeBackground')
+      return DONE
+    case 'autoTone':
+      await execute('image.autoTone')
+      return DONE
+    case 'exportAtSize':
+      return exportWithDialog('photo', deps)
+    case 'exportPngSvg':
+      return exportWithDialog('illust', deps)
+    case 'traceImage': {
+      if (!(await selectedImage(deps))) {
+        const picked = await deps.pickImage()
+        if (!picked) return CANCELED
+        // the placed picture is left selected: the trace takes it
+        await deps.adapter.placeImage(picked.name, picked.bytes)
+      }
+      await execute('imageTrace.makeAndExpand')
+      return DONE
+    }
+    case 'centerOnArtboard':
+      if ((await selection(deps)).length === 0) await execute('select.all')
+      await execute('object.align', { horizontal: 'center', vertical: 'center', to: 'artboard' })
+      return DONE
+  }
+}
+
+export async function runQuickAction(id: QuickActionId, deps: QuickDeps): Promise<QuickResult> {
+  const unlock = deps.lock()
+  try {
+    return await run(id, deps)
+  } catch (error) {
+    return { ok: false, messageKey: 'quickRefused', detail: errorText(error) }
+  } finally {
+    unlock()
+  }
+}

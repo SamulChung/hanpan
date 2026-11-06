@@ -1,0 +1,26 @@
+import type { zh } from './zh'
+
+export const ms = {
+  loading: 'Memuatkan aplikasi…',
+  failed: 'Aplikasi tidak dapat dimulakan.',
+  retry: 'Cuba lagi',
+  notInstalled: 'Pemasangan ini tidak termasuk aplikasi ini.',
+  saveFailed: 'Tidak dapat menyimpan. Dokumen kekal bertanda belum disimpan.',
+  layeredSaveNotice: 'Disimpan sebagai PSD untuk mengekalkan lapisan dan data suntingan.',
+  openFailed: 'Fail tidak dapat dibuka. Buka semula dari aplikasi.',
+  quickRemoveBackground: 'Buang latar belakang',
+  quickAutoTone: 'Ton automatik',
+  quickExportAtSize: 'Eksport mengikut saiz',
+  quickTraceImage: 'Surih imej',
+  quickCenter: 'Tengahkan pada papan seni',
+  quickExportPngSvg: 'Eksport PNG atau SVG',
+  quickDone: 'Selesai.',
+  quickRefused: 'Aplikasi tidak dapat melakukannya sekarang:',
+  quickExported: 'Salinan disimpan.',
+  exportDialogTitle: 'Eksport',
+  exportFormat: 'Format',
+  exportWidth: 'Lebar (px)',
+  exportHeight: 'Tinggi (px)',
+  exportConfirm: 'Eksport',
+  exportCancel: 'Batal',
+} satisfies Record<keyof typeof zh, string>

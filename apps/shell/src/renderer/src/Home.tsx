@@ -19,6 +19,9 @@ import iconHtml from './assets/file-html.svg'
 import iconMindmap from './assets/file-mindmap.svg'
 import iconHwp from './assets/file-hwp.svg'
 import iconEpub from './assets/file-epub.svg'
+import iconPhoto from './assets/file-photo.svg'
+import iconIllust from './assets/file-illust.svg'
+import { GraphicsIcon } from './hanpan/GraphicsIcon'
 import { placeFolderMenu } from './folder-menu-position'
 import type {
   FolderEntry,
@@ -39,6 +42,7 @@ import {
   aiSubscriptionProviderName,
   aiSubscriptionText,
   useDismissablePopover,
+  useKoreanDocFeatures,
 } from '@genoffice/ui'
 import type { AiSettings } from '@genoffice/ai-provider/browser'
 import { productName } from '@genoffice/i18n'
@@ -107,13 +111,30 @@ const FILE_ICONS: Record<string, string> = {
   hwp: iconHwp,
   hwpx: iconHwp,
   epub: iconEpub,
+  // AI Photo and AI Illustration (decision 0093)
+  psd: iconPhoto,
+  psb: iconPhoto,
+  png: iconPhoto,
+  jpg: iconPhoto,
+  jpeg: iconPhoto,
+  webp: iconPhoto,
+  gif: iconPhoto,
+  bmp: iconPhoto,
+  tif: iconPhoto,
+  tiff: iconPhoto,
+  heic: iconPhoto,
+  heif: iconPhoto,
+  svg: iconIllust,
+  svgz: iconIllust,
+  ai: iconIllust,
+  vectorcraft: iconIllust,
 }
 
 /* Formats the open-local card advertises. Too long for the card at any window
    width, so it ellipsizes and a hover ScreenTip carries the full list. Keep in
    sync with the main-process open-dialog filter (OPEN_DIALOG_EXTENSIONS). */
 const OPEN_LOCAL_EXTENSIONS =
-  '.docx / .odt / .xlsx / .xlsm / .xls / .csv / .tsv / .pptx / .pdf / .md / .html / .xmind / .hwp / .hwpx / .epub'
+  '.docx / .odt / .xlsx / .xlsm / .xls / .csv / .tsv / .pptx / .pdf / .md / .html / .xmind / .hwp / .hwpx / .epub / .psd / .png / .jpg / .webp / .svg / .ai'
 
 /** drag payload of home file/folder rows (JSON array of absolute paths) */
 const DRAG_PATHS_MIME = 'application/x-genoffice-paths'
@@ -308,6 +329,8 @@ const FILTERS: { key: string; label: StringKey }[] = [
   { key: 'xmind', label: 'filterMindmap' },
   { key: 'hwp', label: 'filterHwp' },
   { key: 'epub', label: 'filterEpub' },
+  { key: 'photo', label: 'filterPhoto' },
+  { key: 'illust', label: 'filterIllust' },
 ]
 
 /** sidebar filter keys that stand for a family of extensions (mirrors recent-files.ts) */
@@ -318,6 +341,8 @@ const FILTER_FAMILY: Record<string, readonly string[]> = {
   md: ['md', 'markdown', 'txt', 'json'],
   html: ['html', 'htm'],
   hwp: ['hwp', 'hwpx'],
+  photo: ['psd', 'psb', 'png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp', 'tif', 'tiff', 'heic', 'heif'],
+  illust: ['svg', 'svgz', 'ai', 'vectorcraft'],
 }
 
 function matchesFilter(entry: RecentEntry, filter: string): boolean {
@@ -1073,6 +1098,8 @@ export function Home({
 }) {
   const i18n = useI18n()
   const { t, lang } = i18n
+  // Hanpan: the HWP, templates and design cards follow the Korean document features switch (decision 0091)
+  const koreanDocs = useKoreanDocFeatures(lang)
   // ── Paged list state (rows loaded for the current view + filter) ──
   const [entries, setEntries] = useState<RecentEntry[]>([])
   /** total count under the current view + filter (not just the loaded rows) */
@@ -1899,6 +1926,18 @@ export function Home({
       action: () => window.aiOffice.newHwp(newFileOpts),
     },
     {
+      ext: 'psd',
+      title: t('newPhoto'),
+      sub: '.psd',
+      action: () => window.aiOffice.newPhoto(newFileOpts),
+    },
+    {
+      ext: 'vectorcraft',
+      title: t('newIllust'),
+      sub: '.vectorcraft',
+      action: () => window.aiOffice.newIllust(newFileOpts),
+    },
+    {
       ext: 'pdf',
       title: t('newPdf'),
       sub: '.pdf',
@@ -1911,7 +1950,9 @@ export function Home({
   const [converterOpen, setConverterOpen] = useState(false)
   const hp = window.hanpanApi
   const converterApi: MarkdownConverterApi | null =
-    hp?.mdFolder && hp.mdPickFile && hp.mdPickFolder && hp.mdConvert && hp.mdShowFolder ? (hp as MarkdownConverterApi) : null
+    hp?.mdFolder && hp.mdPickFile && hp.mdPickFolder && hp.mdConvert && hp.mdShowFolder
+      ? (hp as MarkdownConverterApi)
+      : null
 
   /**
    * Hanpan's order: the mind map first (every document starts there), then the
@@ -1922,26 +1963,154 @@ export function Home({
   function renderQuickCards() {
     const made = (ext: string) => NEW_ITEMS.find((item) => item.ext === ext)!
     const primary = [
-      { key: 'xmind', badge: <FileBadge ext="xmind" size={34} />, title: made('xmind').title, sub: t('hpCardMapSub'), ai: true, start: true, action: made('xmind').action },
-      { key: 'hwp', badge: <FileBadge ext="hwp" size={34} />, title: made('hwp').title, sub: t('hpCardHwpSub'), ai: true, action: made('hwp').action },
-      { key: 'pptx', badge: <FileBadge ext="pptx" size={34} />, title: made('pptx').title, sub: t('hpCardPptSub'), ai: true, action: made('pptx').action },
-      ...(window.hanpanApi
-        ? [{ key: 'templates', badge: <FileBadge ext="hwp" size={34} />, title: t('hpTemplatesCard'), sub: t('hpTemplatesCardSub'), ai: false, action: () => setTemplatesOpen(true) }]
+      {
+        key: 'xmind',
+        badge: <FileBadge ext="xmind" size={34} />,
+        title: made('xmind').title,
+        sub: t('hpCardMapSub'),
+        ai: true,
+        start: true,
+        action: made('xmind').action,
+      },
+      ...(koreanDocs
+        ? [
+            {
+              key: 'hwp',
+              badge: <FileBadge ext="hwp" size={34} />,
+              title: made('hwp').title,
+              sub: t('hpCardHwpSub'),
+              ai: true,
+              action: made('hwp').action,
+            },
+          ]
+        : []),
+      {
+        key: 'pptx',
+        badge: <FileBadge ext="pptx" size={34} />,
+        title: made('pptx').title,
+        sub: t('hpCardPptSub'),
+        ai: true,
+        action: made('pptx').action,
+      },
+      ...(window.hanpanApi && koreanDocs
+        ? [
+            {
+              key: 'templates',
+              badge: <FileBadge ext="hwp" size={34} />,
+              title: t('hpTemplatesCard'),
+              sub: t('hpTemplatesCardSub'),
+              ai: false,
+              action: () => setTemplatesOpen(true),
+            },
+          ]
         : []),
     ]
     const secondary = [
-      ...['docx', 'xlsx'].map((ext) => ({ key: ext, icon: <FileBadge ext={ext} size={24} />, title: made(ext).title, ai: true, tip: undefined as string | undefined, action: made(ext).action })),
-      ...(window.hanpanApi?.openDesign
-        ? [{ key: 'design', icon: <span className="quick-folder hp-design-badge" aria-hidden="true">✦</span>, title: t('hpDesignCard'), ai: false, tip: t('hpDesignCardSub'), action: () => window.hanpanApi?.openDesign?.() }]
+      ...['docx', 'xlsx'].map((ext) => ({
+        key: ext,
+        icon: <FileBadge ext={ext} size={24} />,
+        title: made(ext).title,
+        ai: true,
+        tip: undefined as string | undefined,
+        action: made(ext).action,
+      })),
+      ...(window.hanpanApi?.openDesign && koreanDocs
+        ? [
+            {
+              key: 'design',
+              icon: (
+                <span className="quick-folder hp-design-badge" aria-hidden="true">
+                  ✦
+                </span>
+              ),
+              title: t('hpDesignCard'),
+              ai: false,
+              tip: t('hpDesignCardSub'),
+              action: () => window.hanpanApi?.openDesign?.(),
+            },
+          ]
         : []),
-      { key: 'md', icon: <FileBadge ext="md" size={24} />, title: made('md').title, ai: true, tip: undefined as string | undefined, action: made('md').action },
+      {
+        key: 'md',
+        icon: <FileBadge ext="md" size={24} />,
+        title: made('md').title,
+        ai: true,
+        tip: undefined as string | undefined,
+        action: made('md').action,
+      },
       ...(converterApi
-        ? [{ key: 'md-convert', icon: <span className="quick-folder hp-conv-badge" aria-hidden="true">⇄</span>, title: t('hpConvCard'), ai: false, tip: t('hpConvCardSub'), action: () => setConverterOpen(true) }]
+        ? [
+            {
+              key: 'md-convert',
+              icon: (
+                <span className="quick-folder hp-conv-badge" aria-hidden="true">
+                  ⇄
+                </span>
+              ),
+              title: t('hpConvCard'),
+              ai: false,
+              tip: t('hpConvCardSub'),
+              action: () => setConverterOpen(true),
+            },
+          ]
         : []),
-      ...['html', 'pdf'].map((ext) => ({ key: ext, icon: <FileBadge ext={ext} size={24} />, title: made(ext).title, ai: true, tip: undefined as string | undefined, action: made(ext).action })),
+      ...['html', 'pdf'].map((ext) => ({
+        key: ext,
+        icon: <FileBadge ext={ext} size={24} />,
+        title: made(ext).title,
+        ai: true,
+        tip: undefined as string | undefined,
+        action: made(ext).action,
+      })),
       // decision 0030: PDF tasks without AI, in their own window
-      { key: 'pdf-tools', icon: <FileBadge ext="pdf" size={24} />, title: t('pdfToolsCard'), ai: false, tip: t('pdfToolsCardSub'), action: () => window.aiOfficePdfToolsHome.open() },
-      { key: 'open', icon: <span className="quick-folder"><FolderIcon size={16} /></span>, title: t('openLocal'), ai: false, tip: OPEN_LOCAL_EXTENSIONS, action: () => window.aiOffice.browse() },
+      {
+        key: 'pdf-tools',
+        icon: <FileBadge ext="pdf" size={24} />,
+        title: t('pdfToolsCard'),
+        ai: false,
+        tip: t('pdfToolsCardSub'),
+        action: () => window.aiOfficePdfToolsHome.open(),
+      },
+      // decision 0093: the PhotoCraft and VectorCraft web apps in tabs, with an AI assistant
+      {
+        key: 'photo',
+        icon: (
+          <span className="quick-folder" aria-hidden="true">
+            <GraphicsIcon kind="photo" />
+          </span>
+        ),
+        title: t('newPhoto'),
+        ai: true,
+        // the app it is built on, under what it does (the original names stay)
+        sub: 'PhotoCraft',
+        tip: t('hpPhotoTip') as string | undefined,
+        action: () => window.aiOffice.newPhoto(newFileOpts),
+      },
+      {
+        key: 'illust',
+        icon: (
+          <span className="quick-folder" aria-hidden="true">
+            <GraphicsIcon kind="illust" />
+          </span>
+        ),
+        title: t('newIllust'),
+        ai: true,
+        sub: 'VectorCraft',
+        tip: t('hpIllustTip') as string | undefined,
+        action: () => window.aiOffice.newIllust(newFileOpts),
+      },
+      {
+        key: 'open',
+        icon: (
+          <span className="quick-folder">
+            <FolderIcon size={16} />
+          </span>
+        ),
+        title: t('openLocal'),
+        ai: false,
+        tip: OPEN_LOCAL_EXTENSIONS,
+        action: () => window.aiOffice.browse(),
+      },
     ]
     return (
       <div className="hp-cards">
@@ -1949,7 +2118,9 @@ export function Home({
           {primary.map((card) => (
             <button
               key={card.key}
-              className={card.start ? 'quick-card hp-primary-card is-start' : 'quick-card hp-primary-card'}
+              className={
+                card.start ? 'quick-card hp-primary-card is-start' : 'quick-card hp-primary-card'
+              }
               data-new={card.key}
               data-hanpan={card.key === 'templates' ? 'templates' : undefined}
               onClick={() => void card.action()}
@@ -1975,18 +2146,29 @@ export function Home({
               key={card.key}
               className="quick-card hp-compact"
               data-new={card.key}
-              data-hanpan={card.key === 'design' || card.key === 'md-convert' ? card.key : undefined}
+              data-hanpan={
+                card.key === 'design' || card.key === 'md-convert' ? card.key : undefined
+              }
               data-tip={card.tip}
               onClick={() => void card.action()}
             >
               {card.icon}
-              <span className="quick-title">{card.title}</span>
+              {(card as { sub?: string }).sub ? (
+                <span className="hp-compact-text">
+                  <span className="quick-title">{card.title}</span>
+                  <span className="hp-compact-sub">{(card as { sub?: string }).sub}</span>
+                </span>
+              ) : (
+                <span className="quick-title">{card.title}</span>
+              )}
               {card.ai && <span className="ai-chip">AI</span>}
             </button>
           ))}
         </div>
         {templatesOpen && <TemplatePicker onClose={() => setTemplatesOpen(false)} />}
-        {converterOpen && converterApi && <MarkdownConverter api={converterApi} onClose={() => setConverterOpen(false)} />}
+        {converterOpen && converterApi && (
+          <MarkdownConverter api={converterApi} onClose={() => setConverterOpen(false)} />
+        )}
       </div>
     )
   }
@@ -3129,7 +3311,11 @@ export function Home({
       <main className="content">
         <section className="quick-start" aria-label={t('secQuickStart')}>
           {window.hanpanApi?.newMap ? (
-            <StartBoard greeting={greeting.trim()} t={(key) => t(key as Parameters<typeof t>[0])} />
+            <StartBoard
+              greeting={greeting.trim()}
+              t={(key) => t(key as Parameters<typeof t>[0])}
+              korean={koreanDocs}
+            />
           ) : (
             <div className="home-hero">
               <h1 className="hero-title">

@@ -2,9 +2,11 @@
  * Hanpan: the toolbar's "send to a document" button, a menu of the three
  * targets (HWP report, PowerPoint, Word report). Built like the export menu:
  * the shared popover, Escape closes it, pressing it keeps the map's keyboard.
+ * With the Korean document features off (decision 0091) only PowerPoint and
+ * Word stay: the HWP report, design board, sync and picture credits go.
  */
 import { useEffect, useRef, useState } from 'react'
-import { useDismissablePopover } from '@genoffice/ui'
+import { useDismissablePopover, useKoreanDocFeatures } from '@genoffice/ui'
 import type { SendTarget } from '@genoffice/hanpan-core/renderer'
 import { useI18n } from '../i18n/locale'
 
@@ -40,7 +42,9 @@ export function SendMenu(p: {
   onDesign?(): void
   onCredits?(): void
 }) {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
+  const korean = useKoreanDocFeatures(lang)
+  const items = korean ? ITEMS : ITEMS.filter((item) => item.target !== 'hwp')
   const [open, setOpen] = useState(false)
   const wrap = useRef<HTMLSpanElement>(null)
   useDismissablePopover(open, () => setOpen(false), { inside: () => [wrap.current] })
@@ -72,7 +76,7 @@ export function SendMenu(p: {
       </button>
       {open && (
         <div className="gs-dd-pop" role="menu" aria-label={t('tbSendTo')}>
-          {ITEMS.map((item) => (
+          {items.map((item) => (
             <button
               key={item.target}
               type="button"
@@ -88,7 +92,7 @@ export function SendMenu(p: {
               {t(item.label)}
             </button>
           ))}
-          {p.onDesign && (
+          {korean && p.onDesign && (
             <button
               type="button"
               role="menuitem"
@@ -103,7 +107,7 @@ export function SendMenu(p: {
               {t('sendDesign')}
             </button>
           )}
-          {p.onSync && (
+          {korean && p.onSync && (
             <button
               type="button"
               role="menuitem"
@@ -118,7 +122,7 @@ export function SendMenu(p: {
               {t('sendSync')}
             </button>
           )}
-          {p.onCredits && (
+          {korean && p.onCredits && (
             <button
               type="button"
               role="menuitem"
