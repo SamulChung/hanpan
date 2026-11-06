@@ -460,6 +460,46 @@ describe('opening tabs', () => {
     expect(named.list().find((t) => t.id === id)?.title).toBe('untitled:mindmap')
   })
 
+  it('renames still-untitled tabs into the new UI language; saved files keep their names', () => {
+    const names: Record<string, Record<string, string>> = {
+      ko: { hwp: '제목 없는 한글 문서', docs: '제목 없는 문서' },
+      vi: { hwp: 'HWP chưa có tiêu đề', docs: 'Tài liệu chưa có tiêu đề' },
+    }
+    let lang = 'ko'
+    const named = new TabManager(
+      shellWindow as never,
+      () => onChanged(),
+      (kind) => applyMenuFor(kind),
+      (kind) => names[lang]![kind] ?? `untitled:${kind}`,
+    )
+    const hwp = named.openHwpTab()
+    const docs1 = named.openDocsTab()
+    const docs2 = named.openDocsTab()
+    const saved = named.openHwpTab('/tmp/보고서.hwp')
+    // an untitled document that named itself keeps that name
+    const self = named.openDocsTab()
+    named.setTabTitleFor(lastCreatedView(createDocsView).webContents.id, '회의 메모')
+    onChanged.mockClear()
+
+    lang = 'vi'
+    named.retitleUntitled((kind) => names.ko![kind] ?? `untitled:${kind}`)
+
+    const title = (id: string) => named.list().find((t) => t.id === id)?.title
+    expect(title(hwp)).toBe('HWP chưa có tiêu đề')
+    // "제목 없는 문서 2" is the strip numbering a repeated title, so both follow
+    expect(title(docs1)).toBe('Tài liệu chưa có tiêu đề')
+    expect(title(docs2)).toBe('Tài liệu chưa có tiêu đề')
+    expect(title(saved)).toBe('보고서.hwp')
+    expect(title(self)).toBe('회의 메모')
+    expect(title('home')).toBe('Hanpan')
+    expect(onChanged).toHaveBeenCalledTimes(1)
+
+    // nothing left to rename: no change is announced
+    onChanged.mockClear()
+    named.retitleUntitled((kind) => names.ko![kind] ?? `untitled:${kind}`)
+    expect(onChanged).not.toHaveBeenCalled()
+  })
+
   it('assigns unique, monotonic tab ids', () => {
     const a = manager.openDocsTab()
     const b = manager.openSheetsTab()

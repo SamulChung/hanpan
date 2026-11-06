@@ -1581,6 +1581,23 @@ export class TabManager {
     this.onChanged()
   }
 
+  /**
+   * The UI language changed: a tab that still has no file and still carries the untitled name
+   * of the language it left (`previous`) takes the name of the new one. Saved files and
+   * untitled documents that named themselves keep their names.
+   */
+  retitleUntitled(previous: (kind: TabKind) => string): void {
+    let changed = false
+    for (const tab of this.tabs) {
+      if (tab.kind === 'home' || tab.filePath || tab.title !== previous(tab.kind)) continue
+      const next = this.untitled(tab.kind, tab.title)
+      if (next === tab.title) continue
+      tab.title = next
+      changed = true
+    }
+    if (changed) this.onChanged()
+  }
+
   /** an untitled document named itself before its first save (html: from the first AI request) */
   setTabTitleFor(webContentsId: number, title: string): void {
     const tab = this.tabs.find((t) => t.view?.webContents.id === webContentsId)

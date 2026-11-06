@@ -248,49 +248,90 @@ describe('studio text with no catalog key', () => {
     )
   })
 
-  // The studio still writes Korean straight into these dialogs. A file that is not listed, or
-  // more Korean in a listed one (an rhwp upgrade, a patch), fails here so it gets keys first.
-  const KNOWN_HARDCODED_KOREAN: Record<string, number> = {
-    'bookmark-dialog.ts': 2,
-    'cell-border-bg-dialog.ts': 8,
-    'chart-data-dialog.ts': 10,
-    'char-shape-dialog.ts': 9,
-    'compare-dialog.ts': 47,
-    'compare-result-window.ts': 26,
-    'dialog-apply.ts': 2,
-    'equation-editor-dialog.ts': 3,
-    'equation-props-dialog.ts': 9,
-    'field-insert-dialog.ts': 2,
-    'font-set-edit-dialog.ts': 3,
-    'formula-dialog.ts': 22,
-    'history-dialog.ts': 46,
-    'hml-import-warning-message.ts': 4,
-    'hml-save-format-message.ts': 3,
-    'hyperlink-dialog.ts': 4,
-    'numbering-dialog.ts': 3,
-    'options-dialog.ts': 6,
-    'page-border-dialog.ts': 19,
-    'style-dialog.ts': 9,
-    'style-edit-dialog.ts': 6,
-    'table-cell-props-dialog.ts': 9,
-    'table-row-column-dialog.ts': 6,
-    // font family names, which stay as they are
-    'toolbar.ts': 9,
+  it('keeps every placeholder of the Korean text in each language', () => {
+    const holes = (text: string) => [...text.matchAll(/\{(\w+)\}|\$\d/g)].map((m) => m[0]).sort()
+    for (const locale of ['en', ...Object.keys(EXTRA_LOCALES)]) {
+      const words = (APP_STRINGS as Record<string, Record<string, string>>)[locale]
+      for (const [key, text] of Object.entries(APP_STRINGS.ko)) {
+        expect(holes(words[key] ?? ''), `${locale} ${key}`).toEqual(holes(text))
+      }
+    }
+  })
+
+  // Korean that stays in the studio UI source after the patches: data the code compares or
+  // writes into a document, not interface text. Each entry says why. Console output is not
+  // counted (developer logs, never shown).
+  const DIFF_ENGINE_DATA = {
+    '(없음)':
+      "the diff engine's empty-value marker in its summaries, compared before a value is shown",
+    '텍스트 변경': 'a diff item title the diff engine writes, matched to pick the summary',
+    '속성 변경': 'a diff item title the diff engine writes, matched to pick the summary',
+  }
+  const FONT_NAME = 'a font family name'
+  const LOGGED_ERROR = 'an internal error, caught and written to the console only'
+  const DATA_NOT_TEXT: Record<string, Record<string, string>> = {
+    'compare-dialog.ts': DIFF_ENGINE_DATA,
+    'history-dialog.ts': DIFF_ENGINE_DATA,
+    'compare-result-window.ts': { '(없음)': DIFF_ENGINE_DATA['(없음)'] },
+    'font-set-edit-dialog.ts': { 함초롬바탕: FONT_NAME },
+    'numbering-dialog.ts': {
+      '제^1장': 'the Korean outline preset, whose sample label is Korean in every language',
+      '제^2절': 'the Korean outline preset, whose sample label is Korean in every language',
+      가나다라마바사아자차카타파하: 'the Hangul numbering glyphs a number format draws',
+    },
+    'toolbar.ts': {
+      함초롬바탕: FONT_NAME,
+      함초롬돋움: FONT_NAME,
+      '맑은 고딕': FONT_NAME,
+      나눔고딕: FONT_NAME,
+      바탕: FONT_NAME,
+      돋움: FONT_NAME,
+      궁서: FONT_NAME,
+    },
+    'style-dialog.ts': { '[StyleDialog] 스타일 삭제 실패': LOGGED_ERROR },
+    'style-edit-dialog.ts': {
+      '[StyleEditDialog] 생성한 스타일의 모양 적용 실패': LOGGED_ERROR,
+      '[StyleEditDialog] 스타일 모양 적용 실패': LOGGED_ERROR,
+    },
   }
 
-  it.skipIf(!fetched)('finds Korean written into the studio UI only where it is known', () => {
-    const ui = join(studio, 'src', 'ui')
-    const found: Record<string, number> = {}
-    for (const name of readdirSync(ui)) {
-      if (!name.endsWith('.ts')) continue
-      const n = koreanLiterals(patched(`src/ui/${name}`)).length
-      if (n) found[name] = n
+  /** Korean literals the user can see: console output and comments left out. */
+  const shownKorean = (code: string) =>
+    koreanLiterals(
+      code
+        .split(/\r?\n/)
+        .filter((l) => !/\bconsole\.(log|warn|error|info|debug)\(/.test(l))
+        .join('\n'),
+    )
+
+  const uiFiles = () =>
+    fetched ? readdirSync(join(studio, 'src', 'ui')).filter((name) => name.endsWith('.ts')) : []
+
+  it.skipIf(!fetched)('writes no Korean into the studio UI outside the catalogs', () => {
+    const left: string[] = []
+    for (const name of uiFiles()) {
+      for (const text of shownKorean(patched(`src/ui/${name}`))) {
+        if (!DATA_NOT_TEXT[name]?.[text]) left.push(`${name}: ${text}`)
+      }
     }
-    for (const [name, n] of Object.entries(found)) {
-      expect(n, `${name}: Korean written into the UI; give it keys`).toBeLessThanOrEqual(
-        KNOWN_HARDCODED_KOREAN[name] ?? 0,
-      )
+    expect(left, 'Korean written into the UI; give it keys (APP_STRINGS)').toEqual([])
+  })
+
+  it.skipIf(!fetched)('lists only data that is still there', () => {
+    for (const [name, allowed] of Object.entries(DATA_NOT_TEXT)) {
+      const found = new Set(shownKorean(patched(`src/ui/${name}`)))
+      for (const text of Object.keys(allowed))
+        expect(found.has(text), `${name}: ${text}`).toBe(true)
     }
-    expect(found['page-setup-dialog.ts']).toBeUndefined()
+  })
+
+  it.skipIf(!fetched)('asks only for app keys that every language has', () => {
+    const used = new Set<string>()
+    for (const name of uiFiles()) {
+      const code = patched(`src/ui/${name}`)
+      for (const m of code.matchAll(/\b(?:i18nText|t)\('(hanpan\.[^']+)'/g)) used.add(m[1])
+    }
+    expect(used.size).toBeGreaterThan(150)
+    for (const key of used) expect(APP_STRINGS.ko, key).toHaveProperty([key])
   })
 })
