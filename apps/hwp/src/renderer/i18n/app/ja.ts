@@ -260,4 +260,11 @@ export const ja = {
   hpTaskGenerate: '生成',
   hpTaskExplain: '説明',
   untitledHwp: '無題の HWP',
+  savedNotice: 'Saved: {name}',
+  exportedPdf: 'Exported as PDF: {name}',
+  exportedDocx: 'Exported as a Word document: {name}',
+  exportedPng: 'Saved {count} page pictures.',
+  noticeOpen: 'Open',
+  noticeOpenFolder: 'Show in folder',
+  hpResultOf: '{tool} の結果',
 } satisfies Record<keyof typeof zh, string>

@@ -265,4 +265,11 @@ export const pl = {
   hpTaskGenerate: 'Generowanie',
   hpTaskExplain: 'Wyjaśnienie',
   untitledHwp: 'HWP bez tytułu',
+  savedNotice: 'Saved: {name}',
+  exportedPdf: 'Exported as PDF: {name}',
+  exportedDocx: 'Exported as a Word document: {name}',
+  exportedPng: 'Saved {count} page pictures.',
+  noticeOpen: 'Open',
+  noticeOpenFolder: 'Show in folder',
+  hpResultOf: 'Wynik: {tool}',
 } satisfies Record<keyof typeof zh, string>

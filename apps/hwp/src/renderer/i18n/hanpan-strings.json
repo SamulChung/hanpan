@@ -964,5 +964,28 @@
     "hi": "व्याख्या",
     "zh-TW": "說明",
     "vi": "Giải thích"
+  },
+  "hpResultOf": {
+    "ko": "{tool} 결과",
+    "en": "{tool}: result",
+    "zh": "{tool} 结果",
+    "zh-TW": "{tool} 結果",
+    "ja": "{tool} の結果",
+    "fr": "Résultat : {tool}",
+    "de": "Ergebnis: {tool}",
+    "es": "Resultado: {tool}",
+    "th": "ผลลัพธ์: {tool}",
+    "id": "Hasil: {tool}",
+    "ru": "Результат: {tool}",
+    "ar": "النتيجة: {tool}",
+    "pt": "Resultado: {tool}",
+    "it": "Risultato: {tool}",
+    "pl": "Wynik: {tool}",
+    "cs": "Výsledek: {tool}",
+    "nl": "Resultaat: {tool}",
+    "ms": "Keputusan: {tool}",
+    "he": "תוצאה: {tool}",
+    "hi": "परिणाम: {tool}",
+    "vi": "Kết quả: {tool}"
   }
 }

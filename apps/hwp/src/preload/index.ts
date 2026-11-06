@@ -131,6 +131,8 @@ const api: HwpApi = {
   printPages: (job) => ipcRenderer.invoke(HWP_CHANNELS.printPages, job),
   exportDocx: (html) => ipcRenderer.invoke(HWP_CHANNELS.exportDocx, html),
   savePngs: (request) => ipcRenderer.invoke(HWP_CHANNELS.savePngs, request),
+  revealOutput: (path, how) => ipcRenderer.invoke(HWP_CHANNELS.revealOutput, path, how),
+  openLicenses: () => ipcRenderer.send(HWP_CHANNELS.openLicenses),
   onCloseSaveRequest: (handler) => {
     const listener = () => handler()
     ipcRenderer.on(HWP_CHANNELS.closeSaveRequest, listener)

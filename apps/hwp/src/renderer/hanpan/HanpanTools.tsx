@@ -42,12 +42,32 @@ function ToolLabel(p: { name: string; desc: string }) {
   )
 }
 
+/**
+ * A tool's result, right under the tool, titled with its name (0.17 UI/UX review v2 #22: the
+ * 공문 점검 result landed at the bottom of the menu without a title).
+ */
+function ToolResult(p: { title: string; lines: string[] }) {
+  return (
+    <div className="hp-tools-result" role="status">
+      <strong className="hp-tools-result-title">{p.title}</strong>
+      <ul>
+        {p.lines.map((line, i) => (
+          <li key={i}>{line}</li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 export function HanpanTools(p: { bridge?: AgentBridge }) {
   const { t, lang } = useI18n()
   const korean = useKoreanDocFeatures(lang)
   const [open, setOpen] = useState(false)
   const [busy, setBusy] = useState(false)
-  const [result, setResult] = useState<string[] | null>(null)
+  /** the last tool's result; one at a time, so two results never mix */
+  const [result, setResult] = useState<{ tool: string; lines: string[] } | null>(null)
+  /** bumped when a tool here runs: the picture-credit check drops its own result */
+  const [creditClear, setCreditClear] = useState(0)
   const [promptOpen, setPromptOpen] = useState(false)
   const [axes, setAxes] = useState<{
     role: string
@@ -96,18 +116,21 @@ export function HanpanTools(p: { bridge?: AgentBridge }) {
   if (!korean || !window.hwpApi.hanpanTool) return null
 
   const run = async (request: HanpanToolRequest) => {
+    const tool = request.tool
+    const show = (lines: string[]) => setResult({ tool, lines })
     setBusy(true)
     setResult(null)
+    setCreditClear((n) => n + 1)
     const answer: HanpanToolResult = await window.hwpApi.hanpanTool!(request).catch(
       (e: unknown) => ({ ok: false as const, error: String(e) }),
     )
     setBusy(false)
     if (!answer.ok) {
-      setResult([t('hpFailed', { error: answer.error })])
+      show([t('hpFailed', { error: answer.error })])
       return
     }
     if (answer.findings) {
-      setResult(
+      show(
         answer.findings.length
           ? answer.findings.map(
               (f) =>
@@ -116,13 +139,26 @@ export function HanpanTools(p: { bridge?: AgentBridge }) {
           : [t('hpCheckOk')],
       )
     } else if (answer.counts) {
-      setResult([t('hpReviewDone', answer.counts)])
+      show([t('hpReviewDone', answer.counts)])
     } else {
-      setResult([answer.changed ? t('hpChanged', { n: answer.changed }) : t('hpNoChange')])
+      show([answer.changed ? t('hpChanged', { n: answer.changed }) : t('hpNoChange')])
     }
   }
 
   const prompt = composePrompt({ ...axes, task: axes.task || undefined })
+
+  const NAMES: Record<string, StringKey> = {
+    tidy: 'hpTidy',
+    check: 'hpCheck',
+    tone: 'hpTone',
+    review: 'hpReview',
+    prompt: 'hpPrompt',
+  }
+  /** the result of `tool`, where it belongs: right under that tool */
+  const resultOf = (tool: string) =>
+    result?.tool === tool && (
+      <ToolResult title={t('hpResultOf', { tool: t(NAMES[tool]!) })} lines={result.lines} />
+    )
 
   return (
     <div className="hp-tools" ref={wrap}>
@@ -148,6 +184,7 @@ export function HanpanTools(p: { bridge?: AgentBridge }) {
           >
             <ToolLabel name={t('hpTidy')} desc={t('hpTidyDesc')} />
           </button>
+          {resultOf('tidy')}
           <button
             type="button"
             disabled={busy}
@@ -157,6 +194,7 @@ export function HanpanTools(p: { bridge?: AgentBridge }) {
           >
             <ToolLabel name={t('hpCheck')} desc={t('hpCheckDesc')} />
           </button>
+          {resultOf('check')}
           <div className="hp-tools-row">
             <span title={t('hpToneDesc')}>
               <ToolLabel name={t('hpTone')} desc={t('hpToneDesc')} />
@@ -173,6 +211,7 @@ export function HanpanTools(p: { bridge?: AgentBridge }) {
               </button>
             ))}
           </div>
+          {resultOf('tone')}
           <button
             type="button"
             disabled={busy}
@@ -182,7 +221,15 @@ export function HanpanTools(p: { bridge?: AgentBridge }) {
           >
             <ToolLabel name={t('hpReview')} desc={t('hpReviewDesc')} />
           </button>
-          {p.bridge && <CreditCheck bridge={p.bridge} disabled={busy} />}
+          {resultOf('review')}
+          {p.bridge && (
+            <CreditCheck
+              bridge={p.bridge}
+              disabled={busy}
+              clear={creditClear}
+              onRun={() => setResult(null)}
+            />
+          )}
           <button
             type="button"
             data-tool="prompt"
@@ -242,20 +289,16 @@ export function HanpanTools(p: { bridge?: AgentBridge }) {
                 type="button"
                 disabled={!prompt}
                 onClick={() =>
-                  void navigator.clipboard.writeText(prompt).then(() => setResult([t('hpCopied')]))
+                  void navigator.clipboard
+                    .writeText(prompt)
+                    .then(() => setResult({ tool: 'prompt', lines: [t('hpCopied')] }))
                 }
               >
                 {t('hpCopy')}
               </button>
             </div>
           )}
-          {result && (
-            <ul className="hp-tools-result" role="status">
-              {result.map((line, i) => (
-                <li key={i}>{line}</li>
-              ))}
-            </ul>
-          )}
+          {resultOf('prompt')}
         </div>
       )}
     </div>

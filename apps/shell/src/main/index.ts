@@ -782,6 +782,7 @@ configureHwpRuntime({
   openFileDialog: () => void openFileViaDialog(),
   goHome: () => tabManager?.openHomeTab(),
   newDocument: () => newHwpTab(),
+  openLicenseNotices: () => void openThirdPartyNotices(),
 })
 configureEpubRuntime({
   preloadPath: join(EPUB_OUT, 'preload', 'index.js'),

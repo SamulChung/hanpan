@@ -502,6 +502,9 @@ export declare function documentHtml(doc: never): string
 /** The event those items fire on the editor's window; `detail` is the AgentFileCommand. */
 export declare const FILE_COMMAND_EVENT: 'ieum:file-command'
 
+/** The event the About box's licence button fires on the editor's window. */
+export declare const OPEN_LICENSES_EVENT: 'ieum:open-licenses'
+
 /** The parts of the editor toolbar's style list (a select element) syncStyleList uses. */
 export interface StyleListElement {
   readonly options: ArrayLike<{ value: string; textContent: string | null }>

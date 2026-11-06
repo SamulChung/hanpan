@@ -17,6 +17,7 @@ import { createAgentBridge } from './ai/agent-bridge'
 import {
   DIRTY_EVENT,
   FILE_COMMAND_EVENT,
+  OPEN_LICENSES_EVENT,
   MEMO_NOT_COPIED_EVENT,
   MEMO_REMOVED_EVENT,
 } from '../../studio-plugin/agent-plugin.mjs'
@@ -28,6 +29,7 @@ import { openDocumentsDroppedOn } from './editor-drop'
 import { hwpPresentationKeyOf } from './presentation-keys'
 import { gatherPageJob, gatherPrintJob, rasterizePage } from './print-flow'
 import { PrintPreview } from './PrintPreview'
+import { exportNoticeOf, savedNoticeOf, type FileNotice } from './export-notice'
 import {
   RECOVERY_TICK_MS,
   createRecoveryCopier,
@@ -64,7 +66,17 @@ interface Notice {
   detail?: string
   /** an information that stays until dismissed, as errors do */
   sticky?: true
+  /** the file a save or an export wrote: the notice's buttons open it or show its folder */
+  file?: FileNotice
 }
+
+/** A notice about a file the tab wrote, with the buttons that reach it. */
+const fileNotice = (file: FileNotice): Notice => ({
+  tone: 'info',
+  key: file.key,
+  params: file.params,
+  file,
+})
 
 /**
  * How often the editor is asked whether the document has unsaved changes, besides being
@@ -457,7 +469,17 @@ export default function App() {
               ...(backup ? { detail: t('backupKept', backup) } : {}),
             })
           } else if (!automatic) {
-            setNotice(backup ? { tone: 'info', key: 'backupKept', params: backup } : null)
+            // a save the user asked for says so, with the way to its folder (0.17 UX v2 #7)
+            setNotice(
+              backup
+                ? {
+                    tone: 'info',
+                    key: 'backupKept',
+                    params: backup,
+                    file: savedNoticeOf(outcome.path),
+                  }
+                : fileNotice(savedNoticeOf(outcome.path)),
+            )
           }
           return true
         }
@@ -534,9 +556,13 @@ export default function App() {
     }
     frame.addEventListener(FILE_COMMAND_EVENT, onCommand)
     frame.addEventListener(MEMO_INSERT_EVENT, onMemoInsert)
+    // the About box's licence button (0.17 UI/UX review v2 #6)
+    const onLicenses = () => window.hwpApi.openLicenses()
+    frame.addEventListener(OPEN_LICENSES_EVENT, onLicenses)
     return () => {
       frame.removeEventListener(FILE_COMMAND_EVENT, onCommand)
       frame.removeEventListener(MEMO_INSERT_EVENT, onMemoInsert)
+      frame.removeEventListener(OPEN_LICENSES_EVENT, onLicenses)
     }
   }, [phase, agentBridge, t])
 
@@ -688,7 +714,14 @@ export default function App() {
               setNotice({ tone: 'info', key: 'docxPreparing', sticky: true })
               const { html } = await agentBridge.exportHtml()
               const result = await window.hwpApi.exportDocx(html)
-              setNotice(result.ok ? null : { tone: 'error', key: failed, detail: result.error })
+              const written = exportNoticeOf(mode, result, 0)
+              setNotice(
+                written
+                  ? fileNotice(written)
+                  : result.ok
+                    ? null
+                    : { tone: 'error', key: failed, detail: result.error },
+              )
               return
             }
             const job =
@@ -717,7 +750,15 @@ export default function App() {
                     pngs: await Promise.all(job.pages.map((_, index) => rasterizePage(job, index))),
                   })
                 : await window.hwpApi.printPages(job)
-            setNotice(result.ok ? null : { tone: 'error', key: failed, detail: result.error })
+            // the file stays where it was written; the notice offers it (0.17 UX v2 #8)
+            const written = exportNoticeOf(mode, result, job.pages.length)
+            setNotice(
+              written
+                ? fileNotice(written)
+                : result.ok
+                  ? null
+                  : { tone: 'error', key: failed, detail: result.error },
+            )
           } catch (error) {
             setNotice({ tone: 'error', key: failed, detail: detailOf(error) })
           } finally {
@@ -986,6 +1027,19 @@ export default function App() {
                 <span>{notice.text ?? (notice.key ? t(notice.key, notice.params) : '')}</span>
                 {notice.detail && <span className="hwp-notice-detail">{notice.detail}</span>}
               </div>
+              {notice.file?.actions.map((action) => (
+                <button
+                  key={action}
+                  type="button"
+                  className="hwp-notice-action"
+                  onClick={() => {
+                    const path = notice.file?.path
+                    if (path) void window.hwpApi.revealOutput(path, action)
+                  }}
+                >
+                  {t(action === 'open' ? 'noticeOpen' : 'noticeOpenFolder')}
+                </button>
+              ))}
               <button
                 type="button"
                 className="hwp-notice-close"

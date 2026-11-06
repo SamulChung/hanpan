@@ -23,6 +23,13 @@ export const HWP_CHANNELS = {
   savePngs: 'hwp:save-pngs',
   /** invoke(html) → PrintResult: the document's HTML written as a Word file (0.17) */
   exportDocx: 'hwp:export-docx',
+  /**
+   * invoke(path, 'open' | 'folder') → boolean: the export or save notice's buttons open a file
+   * this tab wrote in the app, or show it in its folder (0.17 UI/UX review v2)
+   */
+  revealOutput: 'hwp:reveal-output',
+  /** send(): the About box asks for the app's open-source licence list (0.17 UI/UX review v2) */
+  openLicenses: 'hwp:open-licenses',
   dirtyChanged: 'hwp:dirty-changed',
   closeSaveRequest: 'hwp:close-save-request',
   closeSaveResult: 'hwp:close-save-result',
@@ -358,6 +365,10 @@ export interface HwpApi {
   exportDocx(html: string): Promise<PrintResult>
   /** pictures of the pages, drawn here, written where the user picks */
   savePngs(request: PngExport): Promise<PrintResult>
+  /** open a file this tab saved or exported in the app ('open'), or show it in its folder */
+  revealOutput(path: string, how: 'open' | 'folder'): Promise<boolean>
+  /** the About box's licence button: the app's open-source licence list */
+  openLicenses(): void
   onCloseSaveRequest(handler: () => void): () => void
   sendCloseSaveResult(ok: boolean): void
   /** the memo editor opened or closed in this tab: main holds back save, close and quit */

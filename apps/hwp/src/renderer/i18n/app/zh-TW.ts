@@ -251,4 +251,11 @@ export const zhTW = {
   hpTaskGenerate: '生成',
   hpTaskExplain: '說明',
   untitledHwp: '未命名 HWP',
+  savedNotice: 'Saved: {name}',
+  exportedPdf: 'Exported as PDF: {name}',
+  exportedDocx: 'Exported as a Word document: {name}',
+  exportedPng: 'Saved {count} page pictures.',
+  noticeOpen: 'Open',
+  noticeOpenFolder: 'Show in folder',
+  hpResultOf: '{tool} 結果',
 } satisfies Record<keyof typeof zh, string>

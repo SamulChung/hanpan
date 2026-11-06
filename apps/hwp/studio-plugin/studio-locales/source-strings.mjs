@@ -38,7 +38,8 @@ export const SOURCE_STRINGS = {
     'Object Properties(P)...',
     'Thuộc tính đối tượng(P)...',
   ],
-  'hanpan.ctx.cellProps': ['셀 속성...', 'Cell Properties...', 'Thuộc tính ô...'],
+  // named as the Table menu names it (0.17 UI/UX review v2, hwp-design #24)
+  'hanpan.ctx.cellProps': ['표/셀 속성...', 'Table/Cell Properties...', 'Thuộc tính bảng/ô...'],
   'hanpan.ctx.borderEach': [
     '셀 테두리/배경 - 각 셀마다 적용(E)...',
     'Cell Borders/Shading - Each Cell(E)...',
@@ -449,7 +450,7 @@ export const SOURCE_STRINGS = {
   ],
 
   // history snapshots
-  'hanpan.history.snapshotLabel': ['스냅샷 {date}', 'Snapshot {date}', 'Ảnh chụp {date}'],
+  'hanpan.history.snapshotLabel': ['{date} 저장', 'Saved {date}', 'Lưu {date}'],
 
   // zoom
   'hanpan.zoom.enterCustom': [

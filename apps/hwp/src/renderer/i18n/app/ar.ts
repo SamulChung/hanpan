@@ -258,4 +258,11 @@ export const ar = {
   hpTaskGenerate: 'إنشاء',
   hpTaskExplain: 'شرح',
   untitledHwp: 'HWP بدون عنوان',
+  savedNotice: 'Saved: {name}',
+  exportedPdf: 'Exported as PDF: {name}',
+  exportedDocx: 'Exported as a Word document: {name}',
+  exportedPng: 'Saved {count} page pictures.',
+  noticeOpen: 'Open',
+  noticeOpenFolder: 'Show in folder',
+  hpResultOf: 'النتيجة: {tool}',
 } satisfies Record<keyof typeof zh, string>

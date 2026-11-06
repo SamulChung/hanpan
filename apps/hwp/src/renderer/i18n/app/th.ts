@@ -260,4 +260,11 @@ export const th = {
   hpTaskGenerate: 'สร้าง',
   hpTaskExplain: 'อธิบาย',
   untitledHwp: 'HWP ไม่มีชื่อ',
+  savedNotice: 'Saved: {name}',
+  exportedPdf: 'Exported as PDF: {name}',
+  exportedDocx: 'Exported as a Word document: {name}',
+  exportedPng: 'Saved {count} page pictures.',
+  noticeOpen: 'Open',
+  noticeOpenFolder: 'Show in folder',
+  hpResultOf: 'ผลลัพธ์: {tool}',
 } satisfies Record<keyof typeof zh, string>

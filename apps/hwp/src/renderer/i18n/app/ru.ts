@@ -266,4 +266,11 @@ export const ru = {
   hpTaskGenerate: 'Генерация',
   hpTaskExplain: 'Объяснение',
   untitledHwp: 'HWP без названия',
+  savedNotice: 'Saved: {name}',
+  exportedPdf: 'Exported as PDF: {name}',
+  exportedDocx: 'Exported as a Word document: {name}',
+  exportedPng: 'Saved {count} page pictures.',
+  noticeOpen: 'Open',
+  noticeOpenFolder: 'Show in folder',
+  hpResultOf: 'Результат: {tool}',
 } satisfies Record<keyof typeof zh, string>

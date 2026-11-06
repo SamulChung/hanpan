@@ -82,6 +82,8 @@ interface RuntimePaths {
   goHome?: () => void
   /** a new Hangul document in a tab (Hangul's Alt+N) */
   newDocument?: () => void
+  /** the app's open-source licence list; the editor's About box points there */
+  openLicenseNotices?: () => void
 }
 
 let runtime: RuntimePaths = { preloadPath: '' }
@@ -98,6 +100,14 @@ const openPathByWc = new Map<number, string>()
 const allowedByWc = new Map<number, Set<string>>()
 /** Current save target per view */
 const savePathByWc = new Map<number, string>()
+/** Files each view exported (PDF, Word, pictures): what its notice may open or show */
+const exportedByWc = new Map<number, Set<string>>()
+
+function noteExported(wcId: number, path: string): void {
+  const paths = exportedByWc.get(wcId) ?? new Set<string>()
+  paths.add(path)
+  exportedByWc.set(wcId, paths)
+}
 /**
  * Views opened on an untitled copy (a skill template's, spec 5.7): the copy is
  * read from its temp file like any open, but the view has no save target, so
@@ -591,11 +601,8 @@ function registerHwpIpc(): void {
       const target = /.pdf$/i.test(picked.filePath) ? picked.filePath : `${picked.filePath}.pdf`
       const pdf = await printJobToPdf(printJob, printWindow)
       await atomicWriteFile(target, pdf)
-      try {
-        if (!runtime.openGeneratedPath?.(target)) shell.showItemInFolder(target)
-      } catch (err) {
-        console.warn('[hwp] could not open the exported PDF:', err)
-      }
+      // the tab stays where it is; its notice offers to open the file (revealOutput)
+      noteExported(wcId, target)
       return { ok: true, path: target }
     } catch (err) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) }
@@ -652,11 +659,7 @@ function registerHwpIpc(): void {
     }
     for (let index = 0; index < targets.length; index++) {
       await atomicWriteFile(targets[index]!, Buffer.from(job.pngs[index]!))
-    }
-    try {
-      shell.showItemInFolder(targets[0]!)
-    } catch (err) {
-      console.warn('[hwp] could not show the exported pictures:', err)
+      noteExported(wcId, targets[index]!)
     }
     return { ok: true, path: targets[0]! }
   }
@@ -693,16 +696,33 @@ function registerHwpIpc(): void {
       const target = /\.docx$/i.test(picked.filePath) ? picked.filePath : `${picked.filePath}.docx`
       const docx = await htmlToDocx(html as string)
       await atomicWriteFile(target, Buffer.from(docx))
-      try {
-        if (!runtime.openGeneratedPath?.(target)) shell.showItemInFolder(target)
-      } catch (err) {
-        console.warn('[hwp] could not open the exported Word document:', err)
-      }
+      noteExported(wcId, target)
       return { ok: true, path: target }
     } catch (err) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) }
     } finally {
       printing.delete(wcId)
+    }
+  })
+
+  // the export and save notices' buttons: a file this tab wrote, opened in the app or shown in
+  // its folder; any other path is refused
+  ipcMain.on(HWP_CHANNELS.openLicenses, () => runtime.openLicenseNotices?.())
+
+  ipcMain.handle(HWP_CHANNELS.revealOutput, (e, path: unknown, how: unknown): boolean => {
+    const wcId = e.sender.id
+    if (typeof path !== 'string' || (how !== 'open' && how !== 'folder')) return false
+    const mine = exportedByWc.get(wcId)?.has(path) === true || savePathByWc.get(wcId) === path
+    if (!mine || !existsSync(path)) return false
+    try {
+      if (how === 'folder') {
+        shell.showItemInFolder(path)
+        return true
+      }
+      return runtime.openGeneratedPath?.(path) === true
+    } catch (err) {
+      console.warn('[hwp] could not show the written file:', err)
+      return false
     }
   })
 
@@ -1096,6 +1116,7 @@ function grantAndTrack(
     openPathByWc.delete(wcId)
     allowedByWc.delete(wcId)
     savePathByWc.delete(wcId)
+    exportedByWc.delete(wcId)
     untitledCopyByWc.delete(wcId)
     dirtyByWc.delete(wcId)
     memoModalByWc.delete(wcId)

@@ -123,6 +123,9 @@
  *   keys instead (APP_STRINGS in studio-plugin/studio-locales.mjs, registered with every
  *   language by studio-locale-register).
  *
+ * studio-format-caret and the other UX patches
+ *   Studio behaviour from the 0.17 UI/UX review v2, in a file of their own (studio-ux-patches.mjs).
+ *
  * studio-text-<file>
  *   The other dialogs that write Korean straight into their markup (문서 비교·이력, 수식, 차트
  *   데이터, 쪽 테두리 …) ask for app keys the same way; one patch per file, in
@@ -132,6 +135,7 @@
 
 import { HANCOM_KEYS_MODULE, studioCommandIds } from '../studio-plugin/hancom-keys.mjs'
 import { DIALOG_TEXT_PATCHES, STUDIO_LOCALES_MODULE } from './studio-dialog-text.mjs'
+import { UX_PATCHES } from './studio-ux-patches.mjs'
 
 /** Must equal RENDERER_SCHEME in packages/electron-utils/src/renderer-scheme.ts. */
 export const APP_SCHEME = 'genoffice-app'
@@ -153,6 +157,7 @@ export { STUDIO_LOCALES_MODULE }
 
 const PATCHES = {
   ...DIALOG_TEXT_PATCHES,
+  ...UX_PATCHES,
   'sdk-scheme': {
     file: /[\\/]@rhwp[\\/]editor[\\/]transport\.js$/,
     find: "if (targetUrl.protocol !== 'http:' && targetUrl.protocol !== 'https:') {",
@@ -1039,6 +1044,8 @@ export const STUDIO_PATCHES = /** @type {const} */ ([
   'studio-input-aria-label',
   // after studio-style-display-names, which also patches toolbar.ts
   ...Object.keys(DIALOG_TEXT_PATCHES),
+  // the 0.17 UI/UX review v2 fixes (studio-ux-patches.mjs)
+  ...Object.keys(UX_PATCHES),
 ])
 
 /** Whether a patch is written against this file. */
