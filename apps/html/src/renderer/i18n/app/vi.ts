@@ -201,7 +201,11 @@ export const vi = {
   presentFullscreen: 'Toàn màn hình',
   presentNewTab: 'Thẻ mới',
   emptyPageTitle: 'Trang web trống',
-  emptyPageBody: 'Mô tả trang bạn muốn trong ngăn AI, hoặc chèn khung cơ bản rồi chỉnh sửa.',
+  emptyPageBody:
+    'Mô tả trang bạn muốn trong ngăn AI, hoặc bắt đầu với tiêu đề và đoạn văn rồi chỉnh sửa.',
+  emptyPageStarter: 'Bắt đầu với tiêu đề',
+  starterHeading: 'Tiêu đề',
+  starterParagraph: 'Nhập nội dung tại đây.',
   emptyPageAskAi: 'Mô tả cho AI',
   emptyPageSource: 'Xem mã HTML',
 } satisfies Record<keyof typeof zh, string>

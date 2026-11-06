@@ -196,7 +196,10 @@ export const zh = {
   presentFullscreen: '全屏',
   presentNewTab: '新标签页',
   emptyPageTitle: '这是一个空白网页',
-  emptyPageBody: '在 AI 面板中描述想要的页面，或插入基本框架后直接编辑。',
+  emptyPageBody: '在 AI 面板中描述想要的页面，或先插入标题和段落再直接编辑。',
+  emptyPageStarter: '从标题和段落开始',
+  starterHeading: '标题',
+  starterParagraph: '在此输入内容。',
   emptyPageAskAi: '向 AI 描述',
   emptyPageSource: '查看 HTML 源码',
 }

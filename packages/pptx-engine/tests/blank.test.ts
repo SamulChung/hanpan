@@ -84,3 +84,22 @@ describe('createBlankPptx title slide (Hanpan 0.17 #17)', () => {
     expect(opened.deck.slides[0]!.elements.length).toBe(0)
   })
 })
+
+describe('createBlankPptx title slide text styles', () => {
+  it('the master carries PowerPoint-like title/body styles in the theme fonts', async () => {
+    const opened = await openPptx(await createBlankPptx({ titleSlide: true, lang: 'ko' }))
+    const master = opened.archive.readText('ppt/slideMasters/slideMaster1.xml')!
+    expect(master).toMatch(/<p:titleStyle><a:lvl1pPr[^>]*><a:defRPr sz="4400"[^>]*>.*\+mj-lt/)
+    expect(master).toMatch(/<p:bodyStyle><a:lvl1pPr[^>]*>.*<a:defRPr sz="2400"[^>]*>.*\+mn-lt/)
+  })
+})
+
+describe('createBlankPptx title slide typing defaults', () => {
+  it('the empty title carries a paragraph mark that resolves to the title style', async () => {
+    const opened = await openPptx(await createBlankPptx({ titleSlide: true, lang: 'ko' }))
+    const title = opened.deck.slides[0]!.elements[0] as any
+    const mark = title.text.paragraphs[0].runs[0]
+    expect(mark?.paraMark).toBe(true)
+    expect(mark.fontSize).toBe(60)
+  })
+})

@@ -18,3 +18,15 @@ describe('slides:new-blank', () => {
     expect(handler).toContain('createBlankPptx({ lang: getUiLang(), titleSlide: true })')
   })
 })
+
+describe('AI panel first view (0.17 review #17)', () => {
+  it('an empty chat opens at the top of the start gallery, not scrolled to its bottom', () => {
+    const panel = readFileSync(
+      join(dirname(fileURLToPath(import.meta.url)), '..', 'src/renderer/ai/AiPanel.tsx'),
+      'utf8',
+    )
+    expect(panel).toMatch(
+      /if \(stickToBottomRef\.current && chat\.length > 0\) \{\s*logRef\.current\?\.scrollTo/,
+    )
+  })
+})

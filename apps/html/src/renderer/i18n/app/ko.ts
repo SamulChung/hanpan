@@ -200,7 +200,11 @@ export const ko = {
   presentFullscreen: '전체 화면',
   presentNewTab: '새 탭',
   emptyPageTitle: '빈 웹 문서입니다',
-  emptyPageBody: '오른쪽 AI 도우미에 만들 페이지를 설명하거나, 기본 틀을 넣고 바로 고쳐 보세요.',
+  emptyPageBody:
+    '오른쪽 AI 도우미에 만들 페이지를 설명하거나, 제목과 문단을 넣고 바로 고쳐 보세요.',
+  emptyPageStarter: '제목과 문단으로 시작',
+  starterHeading: '제목',
+  starterParagraph: '여기에 내용을 적으세요.',
   emptyPageAskAi: 'AI 도우미에 설명하기',
   emptyPageSource: 'HTML 소스 보기',
 } satisfies Record<keyof typeof zh, string>

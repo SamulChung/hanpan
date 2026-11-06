@@ -4014,7 +4014,7 @@ html.genoffice-popover-open .ribbon-tabs {
 
 .empty-page-hint-card {
   pointer-events: auto;
-  max-width: 420px;
+  max-width: 480px;
   padding: 28px 32px;
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -4034,6 +4034,8 @@ html.genoffice-popover-open .ribbon-tabs {
   margin: 0 0 18px;
   font-size: 13px;
   line-height: 1.6;
+  text-wrap: balance;
+  word-break: keep-all;
   color: var(--text-dim, var(--text));
 }
 

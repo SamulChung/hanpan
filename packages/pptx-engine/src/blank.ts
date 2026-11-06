@@ -83,10 +83,20 @@ const MASTER1 =
   '<p:txStyles><p:titleStyle/><p:bodyStyle/><p:otherStyle/></p:txStyles>' +
   '</p:sldMaster>'
 
+// Title-slide decks get PowerPoint's master text styles (title 44pt in the major
+// theme font, body 24pt in the minor one), so typed titles look like titles
+const TITLE_TX_STYLES =
+  '<p:txStyles>' +
+  '<p:titleStyle><a:lvl1pPr algn="l"><a:defRPr sz="4400" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill>' +
+  '<a:latin typeface="+mj-lt"/><a:ea typeface="+mj-ea"/><a:cs typeface="+mj-cs"/></a:defRPr></a:lvl1pPr></p:titleStyle>' +
+  '<p:bodyStyle><a:lvl1pPr marL="0" indent="0"><a:buNone/><a:defRPr sz="2400" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill>' +
+  '<a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl1pPr></p:bodyStyle>' +
+  '<p:otherStyle/></p:txStyles>'
+
 const MASTER1_TITLE = MASTER1.replace(
   '</p:sldLayoutIdLst>',
   '<p:sldLayoutId id="2147483650" r:id="rId3"/></p:sldLayoutIdLst>',
-)
+).replace('<p:txStyles><p:titleStyle/><p:bodyStyle/><p:otherStyle/></p:txStyles>', TITLE_TX_STYLES)
 
 const MASTER1_RELS =
   XMLDECL +
@@ -175,7 +185,15 @@ const TITLE_LST =
   '<a:lstStyle><a:lvl1pPr algn="ctr"><a:defRPr sz="6000"><a:latin typeface="+mj-lt"/><a:ea typeface="+mj-ea"/></a:defRPr></a:lvl1pPr></a:lstStyle>'
 const SUBTITLE_LST =
   '<a:lstStyle><a:lvl1pPr marL="0" indent="0" algn="ctr"><a:buNone/><a:defRPr sz="2400"/></a:lvl1pPr></a:lstStyle>'
-const titleSp = (id: number, ph: 'ctrTitle' | 'subTitle', withGeometry: boolean): string => {
+// The paragraph mark carries lang like PowerPoint's own (an attribute-less
+// <a:endParaRPr/> is dropped by the parser, and typing into the empty title
+// would then start from the editor's fallback face instead of the title style)
+const titleSp = (
+  id: number,
+  ph: 'ctrTitle' | 'subTitle',
+  withGeometry: boolean,
+  endLang = 'en-US',
+): string => {
   const isTitle = ph === 'ctrTitle'
   const name = isTitle ? 'Title 1' : 'Subtitle 2'
   const xfrm = withGeometry ? (isTitle ? TITLE_XFRM : SUBTITLE_XFRM) : ''
@@ -185,7 +203,7 @@ const titleSp = (id: number, ph: 'ctrTitle' | 'subTitle', withGeometry: boolean)
     `<p:sp><p:nvSpPr><p:cNvPr id="${id}" name="${name}"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr>` +
     `<p:nvPr><p:ph type="${ph}"${idx}/></p:nvPr></p:nvSpPr>` +
     `<p:spPr>${xfrm}</p:spPr>` +
-    `<p:txBody><a:bodyPr${withGeometry ? anchor : ''}/>${withGeometry ? (isTitle ? TITLE_LST : SUBTITLE_LST) : '<a:lstStyle/>'}<a:p><a:endParaRPr/></a:p></p:txBody></p:sp>`
+    `<p:txBody><a:bodyPr${withGeometry ? anchor : ''}/>${withGeometry ? (isTitle ? TITLE_LST : SUBTITLE_LST) : '<a:lstStyle/>'}<a:p><a:endParaRPr lang="${endLang}"/></a:p></p:txBody></p:sp>`
   )
 }
 const spTreeWith = (shapes: string): string =>
@@ -197,11 +215,19 @@ const LAYOUT_TITLE =
   `<p:cSld name="Title Slide">${spTreeWith(titleSp(2, 'ctrTitle', true) + titleSp(3, 'subTitle', true))}</p:cSld>` +
   '<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sldLayout>'
 
-const TITLE_SLIDE_XML =
+const titleSlideXml = (endLang: string): string =>
   XMLDECL +
   `<p:sld xmlns:a="${NS_A}" xmlns:r="${NS_R}" xmlns:p="${NS_P}">` +
-  `<p:cSld>${spTreeWith(titleSp(2, 'ctrTitle', false) + titleSp(3, 'subTitle', false))}</p:cSld>` +
+  `<p:cSld>${spTreeWith(titleSp(2, 'ctrTitle', false, endLang) + titleSp(3, 'subTitle', false, endLang))}</p:cSld>` +
   '<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>'
+
+const LANG_TAG: Readonly<Record<string, string>> = {
+  ko: 'ko-KR',
+  vi: 'vi-VN',
+  ja: 'ja-JP',
+  zh: 'zh-CN',
+  'zh-TW': 'zh-TW',
+}
 
 export interface BlankPptxOptions {
   /** UI language: picks the theme's Latin faces (blankPptxThemeFontsFor) */
@@ -223,7 +249,10 @@ export async function createBlankPptx(options?: BlankPptxOptions): Promise<Uint8
   zip.file('_rels/.rels', ROOT_RELS)
   zip.file('ppt/presentation.xml', PRESENTATION)
   zip.file('ppt/_rels/presentation.xml.rels', PRESENTATION_RELS)
-  zip.file('ppt/slides/slide1.xml', titleSlide ? TITLE_SLIDE_XML : BLANK_SLIDE_XML)
+  zip.file(
+    'ppt/slides/slide1.xml',
+    titleSlide ? titleSlideXml(LANG_TAG[options?.lang ?? ''] ?? 'en-US') : BLANK_SLIDE_XML,
+  )
   zip.file(
     'ppt/slides/_rels/slide1.xml.rels',
     titleSlide ? SLIDE1_RELS.replace('slideLayout1.xml', 'slideLayout2.xml') : SLIDE1_RELS,
