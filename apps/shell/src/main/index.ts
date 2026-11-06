@@ -197,6 +197,7 @@ import {
   docsQueryDirty,
 } from '../../../docs/src/main/docs-main'
 import { blankXlsxBuffer } from '@genoffice/xlsx-gateway/gateway/csv-import'
+import { followUiLangForSpellcheck } from './hanpan/spellcheck-langs'
 import { blankPdfBuffer } from '../../../pdf/src/main/blank-pdf'
 import {
   applyMcpSettings,
@@ -9229,6 +9230,8 @@ app.whenReady().then(async () => {
   setTimeout(() => ensureFileIndexer()?.refresh(), 4000)
   // Hanpan: a local AI server on this PC becomes the default AI (once, only while the choice is "auto")
   hanpan.adoptLocalAi()
+  // Hanpan 0.17: spelling follows the UI language, not the OS alone
+  followUiLangForSpellcheck(session.defaultSession, currentLang())
   installRendererProtocol(
     {
       docs: join(DOCS_OUT, 'renderer'),
