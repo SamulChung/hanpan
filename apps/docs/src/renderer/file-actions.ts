@@ -108,7 +108,7 @@ import {
   setHangulSpaceWidening,
 } from './line-metrics'
 import { adoptEmbeddedFonts } from './embedded-fonts'
-import { defaultEastAsiaFontFor } from './font-list'
+import { blankDocxFontsFor } from './font-list'
 import { hasPrintableHeaderFooter } from './pagination'
 import { clearPrintZoom, setPrintZoom } from './print-zoom'
 import { collectPdfInternalLinks } from './pdf-internal-links'
@@ -648,7 +648,7 @@ async function systemLocale(): Promise<string> {
 
 async function blankDocxBytes(): Promise<Uint8Array> {
   return buildBlankDocx({
-    eastAsiaFont: defaultEastAsiaFontFor(getLang()),
+    ...blankDocxFontsFor(getLang()),
     paperSize: paperSizeForLocale(await systemLocale()),
   })
 }
