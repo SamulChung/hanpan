@@ -67,9 +67,11 @@ export function CreditCheck(p: { bridge: AgentBridge; disabled: boolean }) {
         type="button"
         disabled={busy || p.disabled}
         data-tool="credits"
+        title={t('hpCreditsDesc')}
         onClick={() => void run()}
       >
-        {t('hpCredits')}
+        <span className="hp-tools-name">{t('hpCredits')}</span>
+        <small className="hp-tools-desc">{t('hpCreditsDesc')}</small>
       </button>
       {failed && (
         <ul className="hp-tools-result" role="status">

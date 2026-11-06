@@ -21,7 +21,7 @@ import {
   MEMO_REMOVED_EVENT,
 } from '../../studio-plugin/agent-plugin.mjs'
 import blankHwpUrl from './assets/blank.hwp?url'
-import { useI18n, type StringKey } from './i18n/locale'
+import { t as tNow, useI18n, type StringKey } from './i18n/locale'
 import { MEMO_INSERT_EVENT, memoNoticeOf, type MemoNotice } from './MemoPanel'
 import { MemoSide, MemoToggle, memoPanelInitiallyOpen, rememberMemoPanelOpen } from './MemoSide'
 import { openDocumentsDroppedOn } from './editor-drop'
@@ -75,8 +75,6 @@ const AI_OPEN_KEY = 'hwpapp.showAi'
 const MEMO_TICK_MS = 500
 
 const fileNameOf = (path: string) => path.split(/[\\/]/).pop() ?? path
-/** the name the editor holds a new document under; the user names the file at its first save */
-const BLANK_NAME = 'blank.hwp'
 const detailOf = (error: unknown) => (error instanceof Error ? error.message : String(error))
 /**
  * The bridge gives up on a load after a minute, but the editor may still be
@@ -208,7 +206,7 @@ export default function App() {
           // a new document: the blank one bundled with the app, which has no file until
           // its first save (Save As)
           const blank = new Uint8Array(await (await fetch(blankHwpUrl)).arrayBuffer())
-          await editor.loadFile(blank, BLANK_NAME, { skipUnsavedGuard: true })
+          await editor.loadFile(blank, tNow('untitledHwp'), { skipUnsavedGuard: true })
           if (!disposed) setPhase('ready')
           return
         }
@@ -738,7 +736,7 @@ export default function App() {
       window.hwpApi.onHanpanReplace?.((bytes) => {
         const editor = editorRef.current
         if (!editor || phase !== 'ready') return
-        const name = filePath ? fileNameOf(filePath) : (copyNameRef.current ?? BLANK_NAME)
+        const name = filePath ? fileNameOf(filePath) : (copyNameRef.current ?? tNow('untitledHwp'))
         void editor
           .loadFile(bytes, name, { skipUnsavedGuard: true })
           .then(() => window.hwpApi.setDirty(true))
