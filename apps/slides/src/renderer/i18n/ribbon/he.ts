@@ -55,7 +55,8 @@ export const he = {
     'מברשת עיצוב (לחץ כדי להעתיק ולהחיל עיצוב; ⌘⇧C מעתיק עיצוב / ⌘⇧V מדביק עיצוב)',
   ribbonGroupSlides: 'שקופיות',
   ribbonNewSlide: 'שקופית חדשה',
-  ribbonNewSlideTip: 'New slide (Title and Content after a title slide, otherwise the current slide\'s layout)',
+  ribbonNewSlideTip:
+    "New slide (Title and Content after a title slide, otherwise the current slide's layout)",
   ribbonChooseLayout: 'בחירת פריסה',
   ribbonChooseLayoutNew: 'שקופית חדשה עם פריסה',
   ribbonChooseLayoutChange: 'שינוי פריסת השקופית הנוכחית',
@@ -768,5 +769,6 @@ export const he = {
   ribbonZoomSelectedSections: 'נבחרו {n} מקטעים',
   ribbonTabCollapseTip: 'Double-click to collapse the ribbon ({key})',
   ribbonAnimSelectFirst: 'First select the object to animate',
-  ribbonSpellCheckStarted: 'Spell check started in the AI pane. It reports "No errors found" or "N fixed" when done.',
+  ribbonSpellCheckStarted:
+    'Spell check started in the AI pane. It reports "No errors found" or "N fixed" when done.',
 } satisfies Record<keyof typeof zh, string>

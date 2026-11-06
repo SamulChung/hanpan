@@ -15,14 +15,20 @@ const A = appStrings as unknown as Record<string, Record<string, string>>
 
 describe('spell check feedback (#15)', () => {
   it('shows a notice right after starting the check', () => {
-    const click = ribbonSrc.slice(ribbonSrc.indexOf("onAiPreset(t('ribbonSpellCheckPrompt'))") - 200)
+    const click = ribbonSrc.slice(
+      ribbonSrc.indexOf("onAiPreset(t('ribbonSpellCheckPrompt'))") - 200,
+    )
     expect(click.slice(0, 400)).toMatch(/showToast\(t\('ribbonSpellCheckStarted'\)\)/)
     expect(R.ko!.ribbonSpellCheckStarted).toMatch(/AI 창/)
   })
   it('asks the AI to open its report with the count', () => {
     for (const lang of ['ko', 'en', 'vi']) {
       expect(R[lang]!.ribbonSpellCheckPrompt, lang).toMatch(
-        lang === 'ko' ? /틀린 곳 없음.*곳 고침/s : lang === 'en' ? /No errors found.*fixed/s : /Không có lỗi/,
+        lang === 'ko'
+          ? /틀린 곳 없음.*곳 고침/s
+          : lang === 'en'
+            ? /No errors found.*fixed/s
+            : /Không có lỗi/,
       )
     }
   })
@@ -33,8 +39,12 @@ describe('transition wording (#28)', () => {
     for (const lang of ['ko', 'en', 'vi']) {
       expect(A[lang]!.appStatusTransitionSet, lang).not.toMatch(/PowerPoint/)
       // the tip may name PowerPoint, but only next to the app's own show
-      expect(R[lang]!.ribbonTransApplyTip, lang).not.toMatch(/적용됨|takes effect in PowerPoint|có hiệu lực/)
-      expect(R[lang]!.ribbonTransApplyTip, lang).toMatch(/슬라이드 쇼와|slide show and|trình chiếu và/)
+      expect(R[lang]!.ribbonTransApplyTip, lang).not.toMatch(
+        /적용됨|takes effect in PowerPoint|có hiệu lực/,
+      )
+      expect(R[lang]!.ribbonTransApplyTip, lang).toMatch(
+        /슬라이드 쇼와|slide show and|trình chiếu và/,
+      )
     }
   })
 })

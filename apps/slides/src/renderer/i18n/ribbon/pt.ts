@@ -58,7 +58,8 @@ export const pt = {
     'Pincel de Formatação (clique para copiar e aplicar a formatação; ⌘⇧C copia o formato / ⌘⇧V cola o formato)',
   ribbonGroupSlides: 'Slides',
   ribbonNewSlide: 'Novo Slide',
-  ribbonNewSlideTip: 'New slide (Title and Content after a title slide, otherwise the current slide\'s layout)',
+  ribbonNewSlideTip:
+    "New slide (Title and Content after a title slide, otherwise the current slide's layout)",
   ribbonChooseLayout: 'Escolher Layout',
   ribbonChooseLayoutNew: 'Novo Slide com Layout',
   ribbonChooseLayoutChange: 'Alterar Layout do Slide Atual',
@@ -792,5 +793,6 @@ export const pt = {
   ribbonZoomSelectedSections: '{n} seções selecionadas',
   ribbonTabCollapseTip: 'Double-click to collapse the ribbon ({key})',
   ribbonAnimSelectFirst: 'First select the object to animate',
-  ribbonSpellCheckStarted: 'Spell check started in the AI pane. It reports "No errors found" or "N fixed" when done.',
+  ribbonSpellCheckStarted:
+    'Spell check started in the AI pane. It reports "No errors found" or "N fixed" when done.',
 } satisfies Record<keyof typeof zh, string>

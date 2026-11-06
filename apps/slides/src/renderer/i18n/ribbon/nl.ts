@@ -59,7 +59,8 @@ export const nl = {
     'Opmaak kopiëren/plakken (klik om opmaak te kopiëren en toe te passen; ⌘⇧C kopieert opmaak / ⌘⇧V plakt opmaak)',
   ribbonGroupSlides: "Dia's",
   ribbonNewSlide: 'Nieuwe dia',
-  ribbonNewSlideTip: 'New slide (Title and Content after a title slide, otherwise the current slide\'s layout)',
+  ribbonNewSlideTip:
+    "New slide (Title and Content after a title slide, otherwise the current slide's layout)",
   ribbonChooseLayout: 'Indeling kiezen',
   ribbonChooseLayoutNew: 'Nieuwe dia met indeling',
   ribbonChooseLayoutChange: 'Indeling van huidige dia wijzigen',
@@ -797,5 +798,6 @@ export const nl = {
   ribbonZoomSelectedSections: '{n} secties geselecteerd',
   ribbonTabCollapseTip: 'Double-click to collapse the ribbon ({key})',
   ribbonAnimSelectFirst: 'First select the object to animate',
-  ribbonSpellCheckStarted: 'Spell check started in the AI pane. It reports "No errors found" or "N fixed" when done.',
+  ribbonSpellCheckStarted:
+    'Spell check started in the AI pane. It reports "No errors found" or "N fixed" when done.',
 } satisfies Record<keyof typeof zh, string>

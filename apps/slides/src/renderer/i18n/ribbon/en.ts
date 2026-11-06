@@ -2,7 +2,8 @@ import type { zh } from './zh'
 
 export const en = {
   ribbonAiCreditNote: 'Uses AI and counts toward your AI usage',
-  ribbonAiRewriteConfirm: 'The AI will edit the slide text directly. This uses some of your AI subscription and may change a lot of text. Continue? (You won\'t be asked again.)',
+  ribbonAiRewriteConfirm:
+    "The AI will edit the slide text directly. This uses some of your AI subscription and may change a lot of text. Continue? (You won't be asked again.)",
   ribbonTabFile: 'File',
   ribbonTabHome: 'Home',
   ribbonTabInsert: 'Insert',
@@ -56,7 +57,8 @@ export const en = {
     'Format Painter (click to copy and apply formatting; ⌘⇧C copy format / ⌘⇧V paste format)',
   ribbonGroupSlides: 'Slides',
   ribbonNewSlide: 'New Slide',
-  ribbonNewSlideTip: 'New slide (Title and Content after a title slide, otherwise the current slide\'s layout)',
+  ribbonNewSlideTip:
+    "New slide (Title and Content after a title slide, otherwise the current slide's layout)",
   ribbonChooseLayout: 'Choose Layout',
   ribbonChooseLayoutNew: 'New Slide with Layout',
   ribbonChooseLayoutChange: 'Change Current Slide Layout',
@@ -315,7 +317,8 @@ export const en = {
   ribbonTransZoom: 'Zoom',
   ribbonTransRandom: 'Random',
   ribbonTransNoneTip: 'Remove the transition from the current slide',
-  ribbonTransApplyTip: 'Use the "{name}" transition on this slide (plays in the slide show and in PowerPoint)',
+  ribbonTransApplyTip:
+    'Use the "{name}" transition on this slide (plays in the slide show and in PowerPoint)',
   ribbonGroupTiming: 'Timing',
   ribbonTransApplyAllTip: "Apply this slide's transition to all slides",
   ribbonPreview: 'Preview',
@@ -399,7 +402,8 @@ export const en = {
   ribbonSpellCheck: 'Spelling',
   ribbonSpellCheckTip:
     'AI checks each slide for typos, grammar, and punctuation and fixes them directly',
-  ribbonSpellCheckPrompt: 'Check this presentation slide by slide for typos, grammar, and punctuation: fix issues directly with tools while keeping the layout and meaning unchanged. Start your report with one line: "No errors found" if nothing needed fixing, otherwise "N fixed" (N = the number of fixes); then briefly list the changes per slide, skipping slides with no issues.',
+  ribbonSpellCheckPrompt:
+    'Check this presentation slide by slide for typos, grammar, and punctuation: fix issues directly with tools while keeping the layout and meaning unchanged. Start your report with one line: "No errors found" if nothing needed fixing, otherwise "N fixed" (N = the number of fixes); then briefly list the changes per slide, skipping slides with no issues.',
   ribbonTranslate: 'Translate',
   ribbonTranslateTip:
     "AI translates the current slide's text into the chosen language (replaces the original)",
@@ -775,5 +779,6 @@ export const en = {
   ribbonZoomSelectedSections: '{n} sections selected',
   ribbonTabCollapseTip: 'Double-click to collapse the ribbon ({key})',
   ribbonAnimSelectFirst: 'First select the object to animate',
-  ribbonSpellCheckStarted: 'Spell check started in the AI pane. It reports "No errors found" or "N fixed" when done.',
+  ribbonSpellCheckStarted:
+    'Spell check started in the AI pane. It reports "No errors found" or "N fixed" when done.',
 } satisfies Record<keyof typeof zh, string>

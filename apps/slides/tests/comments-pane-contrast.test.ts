@@ -16,6 +16,8 @@ describe('comments pane hint contrast', () => {
     expect(rule).not.toMatch(/--border/)
   })
   it('the new-comment placeholder is a readable secondary text colour', () => {
-    expect(css).toMatch(/\.comment-new textarea::placeholder \{[^}]*color: var\(--text-secondary\);/s)
+    expect(css).toMatch(
+      /\.comment-new textarea::placeholder \{[^}]*color: var\(--text-secondary\);/s,
+    )
   })
 })

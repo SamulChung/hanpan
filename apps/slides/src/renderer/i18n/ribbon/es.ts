@@ -60,7 +60,8 @@ export const es = {
     'Copiar formato (haga clic para copiar y aplicar el formato; ⌘⇧C copiar formato / ⌘⇧V pegar formato)',
   ribbonGroupSlides: 'Diapositivas',
   ribbonNewSlide: 'Nueva diapositiva',
-  ribbonNewSlideTip: 'New slide (Title and Content after a title slide, otherwise the current slide\'s layout)',
+  ribbonNewSlideTip:
+    "New slide (Title and Content after a title slide, otherwise the current slide's layout)",
   ribbonChooseLayout: 'Elegir diseño',
   ribbonChooseLayoutNew: 'Nueva diapositiva con diseño',
   ribbonChooseLayoutChange: 'Cambiar diseño de la diapositiva actual',
@@ -802,5 +803,6 @@ export const es = {
   ribbonZoomSelectedSections: '{n} secciones seleccionadas',
   ribbonTabCollapseTip: 'Double-click to collapse the ribbon ({key})',
   ribbonAnimSelectFirst: 'First select the object to animate',
-  ribbonSpellCheckStarted: 'Spell check started in the AI pane. It reports "No errors found" or "N fixed" when done.',
+  ribbonSpellCheckStarted:
+    'Spell check started in the AI pane. It reports "No errors found" or "N fixed" when done.',
 } satisfies Record<keyof typeof zh, string>

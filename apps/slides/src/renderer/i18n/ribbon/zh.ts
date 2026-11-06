@@ -395,7 +395,8 @@ export const zh = {
   ribbonGroupProofing: '校对',
   ribbonSpellCheck: '拼写检查',
   ribbonSpellCheckTip: 'AI 逐页检查错别字、语法和标点并直接修正',
-  ribbonSpellCheckPrompt: '请逐页检查本演示文稿的错别字、语法和标点：有问题时直接用工具修改，保持版式和原意不变。报告第一行写“未发现错误”（没有修改时）或“已修正 N 处”（N 为修改数），然后简要列出每页的修改，没有问题的页跳过。',
+  ribbonSpellCheckPrompt:
+    '请逐页检查本演示文稿的错别字、语法和标点：有问题时直接用工具修改，保持版式和原意不变。报告第一行写“未发现错误”（没有修改时）或“已修正 N 处”（N 为修改数），然后简要列出每页的修改，没有问题的页跳过。',
   ribbonTranslate: '翻译',
   ribbonTranslateTip: 'AI 把当前页文本翻译成所选语言（直接替换原文）',
   ribbonTranslatePrompt:

@@ -12,7 +12,9 @@ const ribbon = read('src/renderer/components/Ribbon.tsx')
 
 describe('theme gallery', () => {
   it('marks the theme applied in this session', () => {
-    expect(ribbon).toMatch(/className=\{`theme-card\$\{appliedThemeId === tp\.id \? ' active' : ''\}`\}/)
+    expect(ribbon).toMatch(
+      /className=\{`theme-card\$\{appliedThemeId === tp\.id \? ' active' : ''\}`\}/,
+    )
     expect(ribbon).toMatch(/aria-pressed=\{appliedThemeId === tp\.id\}/)
     expect(css).toMatch(/\.theme-card\.active \{[^}]*border-color: var\(--accent\);/s)
   })

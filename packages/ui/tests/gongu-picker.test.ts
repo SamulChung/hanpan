@@ -209,7 +209,9 @@ describe('GonguPicker', () => {
   })
 
   it('shows no guidance (and no empty-result line) when a key is set', async () => {
-    const api = fakeApi({ gonguSearch: vi.fn(async () => ({ ok: true as const, works: [], total: null })) })
+    const api = fakeApi({
+      gonguSearch: vi.fn(async () => ({ ok: true as const, works: [], total: null })),
+    })
     await act(async () => {
       root.render(
         createElement(GonguPicker, { lang: 'ko', api, onInsert: vi.fn(), onClose: vi.fn() }),

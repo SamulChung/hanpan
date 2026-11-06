@@ -18,7 +18,9 @@ describe('slides ribbon tab press', () => {
     expect(src).toMatch(/onDoubleClick=\{collapse\.onTabsDoubleClick\}/)
   })
   it('a ˄ button collapses and a ˅ button shows the collapsed state', () => {
-    expect(src).toMatch(/<RibbonCollapseButton state=\{collapse\} label=\{t\('ribbonCollapse'\)\} \/>/)
+    expect(src).toMatch(
+      /<RibbonCollapseButton state=\{collapse\} label=\{t\('ribbonCollapse'\)\} \/>/,
+    )
     expect(src).toMatch(/<RibbonExpandButton state=\{collapse\} label=\{t\('ribbonExpand'\)\} \/>/)
   })
   it('the selected tab tip tells how to collapse', () => {

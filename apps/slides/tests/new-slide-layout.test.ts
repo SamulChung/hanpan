@@ -46,18 +46,26 @@ describe('newSlideLayoutPath', () => {
 describe('wiring', () => {
   it('the New Slide button asks main for a slide with placeholders', () => {
     const src = read('src/renderer/slide-actions.ts')
-    const fn = src.slice(src.indexOf('export async function addSlide('), src.indexOf('export async function addSlideAt('))
+    const fn = src.slice(
+      src.indexOf('export async function addSlide('),
+      src.indexOf('export async function addSlideAt('),
+    )
     expect(fn).toMatch(/withPlaceholders: true/)
   })
   it('main picks the layout with newSlideLayoutPath', () => {
     const src = read('src/main/slides-main.ts')
-    const handler = src.slice(src.indexOf("'slides:add-blank-slide'"), src.indexOf("'slides:add-slide-with-layout'"))
+    const handler = src.slice(
+      src.indexOf("'slides:add-blank-slide'"),
+      src.indexOf("'slides:add-slide-with-layout'"),
+    )
     expect(handler).toMatch(/newSlideLayoutPath\(/)
   })
   it('the layout menu hides the split button tips while open', () => {
     for (const f of ['RibbonHomeTab.tsx', 'RibbonInsertTab.tsx']) {
       const src = read(`src/renderer/components/${f}`)
-      expect(src, f).toMatch(/data-tip=\{layoutOpen \? undefined : platformShortcuts\(t\('ribbonNewSlideTip'\)\)\}/)
+      expect(src, f).toMatch(
+        /data-tip=\{layoutOpen \? undefined : platformShortcuts\(t\('ribbonNewSlideTip'\)\)\}/,
+      )
       expect(src, f).toMatch(/data-tip=\{layoutOpen \? undefined : t\('ribbonChooseLayoutNew'\)\}/)
     }
   })

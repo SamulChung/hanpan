@@ -57,7 +57,8 @@ export const cs = {
     'Kopírovat formát (kliknutím zkopírujete a použijete formátování; ⌘⇧C kopírovat formát / ⌘⇧V vložit formát)',
   ribbonGroupSlides: 'Snímky',
   ribbonNewSlide: 'Nový snímek',
-  ribbonNewSlideTip: 'New slide (Title and Content after a title slide, otherwise the current slide\'s layout)',
+  ribbonNewSlideTip:
+    "New slide (Title and Content after a title slide, otherwise the current slide's layout)",
   ribbonChooseLayout: 'Zvolit rozložení',
   ribbonChooseLayoutNew: 'Nový snímek s rozložením',
   ribbonChooseLayoutChange: 'Změnit rozložení aktuálního snímku',
@@ -784,5 +785,6 @@ export const cs = {
   ribbonZoomSelectedSections: 'Vybráno oddílů: {n}',
   ribbonTabCollapseTip: 'Double-click to collapse the ribbon ({key})',
   ribbonAnimSelectFirst: 'First select the object to animate',
-  ribbonSpellCheckStarted: 'Spell check started in the AI pane. It reports "No errors found" or "N fixed" when done.',
+  ribbonSpellCheckStarted:
+    'Spell check started in the AI pane. It reports "No errors found" or "N fixed" when done.',
 } satisfies Record<keyof typeof zh, string>

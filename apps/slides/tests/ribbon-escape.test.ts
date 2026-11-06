@@ -12,9 +12,14 @@ describe('리본 드롭다운 Esc', () => {
   it('every open ribbon popup (chart, SmartArt, zoom, translate …) closes on Esc', () => {
     const src = read('src/renderer/components/Ribbon.tsx')
     // one handler for the whole popup set, so a new dropdown cannot miss it
-    expect(src).toMatch(/useEscOverlay\(anyPanelOpen \|\| penFlyout != null, \(\) => closePanels\(\)\)/)
+    expect(src).toMatch(
+      /useEscOverlay\(anyPanelOpen \|\| penFlyout != null, \(\) => closePanels\(\)\)/,
+    )
     // the insert galleries (chart/SmartArt/zoom) and translate are part of that set
-    const any = src.slice(src.indexOf('const anyPanelOpen ='), src.indexOf('useDismissablePopover('))
+    const any = src.slice(
+      src.indexOf('const anyPanelOpen ='),
+      src.indexOf('useDismissablePopover('),
+    )
     expect(any).toContain('insertDrop != null')
     expect(any).toContain('translateOpen')
     expect(any).toContain('chartDrop != null')

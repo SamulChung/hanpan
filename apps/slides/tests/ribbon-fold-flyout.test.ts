@@ -22,27 +22,26 @@ describe('folded group flyout', () => {
 
   it('shows the hint above the effects when one is given', () => {
     const html = renderToStaticMarkup(
-      createElement(
-        Group,
-        {
-          label: '애니메이션',
-          collapse: {
-            collapsed: true,
-            open: true,
-            onToggle: () => {},
-            icon: null,
-            hint: '먼저 개체를 선택하세요',
-          },
-          children: createElement('button', null, 'x'),
+      createElement(Group, {
+        label: '애니메이션',
+        collapse: {
+          collapsed: true,
+          open: true,
+          onToggle: () => {},
+          icon: null,
+          hint: '먼저 개체를 선택하세요',
         },
-      ),
+        children: createElement('button', null, 'x'),
+      }),
     )
     expect(html).toMatch(/class="rb-collapse-hint"[^>]*>먼저 개체를 선택하세요</)
   })
 
   it('the animation and motion-path groups pass the hint while nothing is selected', () => {
     const src = read('src/renderer/components/Ribbon.tsx')
-    expect(src.match(/hint: hasSelection \? undefined : t\('ribbonAnimSelectFirst'\)/g)?.length).toBe(2)
+    expect(
+      src.match(/hint: hasSelection \? undefined : t\('ribbonAnimSelectFirst'\)/g)?.length,
+    ).toBe(2)
     const ko = (ribbonStrings as unknown as Record<string, Record<string, string>>).ko!
     expect(ko.ribbonAnimSelectFirst).toBe('먼저 애니메이션을 넣을 개체를 선택하세요')
   })
