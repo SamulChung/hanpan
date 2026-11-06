@@ -445,7 +445,7 @@ export function TabBar({ split }: TabBarProps) {
           <div className="tab-dock-indicator" style={{ left: dockX }} aria-hidden="true" />
         )}
         {tabs.map((tab, index) => {
-          const label = labels.get(tab.id) ?? { base: tab.title, tail: '' }
+          const label = labels.get(tab.id) ?? { base: tab.title, tail: '', ext: '' }
           // a tab that sits in a split pane keeps a marker: pane a on the
           // left of its plate, pane b on the right; the focus pane's tab is
           // still the one with the ordinary active plate
@@ -570,6 +570,7 @@ export function TabBar({ split }: TabBarProps) {
                     <>
                       <span className="tab-title-base">{label.base}</span>
                       {label.tail && <span className="tab-title-tail">{label.tail}</span>}
+                      {label.ext && <span className="tab-title-ext">{label.ext}</span>}
                     </>
                   )}
                 </span>

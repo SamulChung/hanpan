@@ -14,7 +14,7 @@ const tab = (id: string, title: string, extra: Partial<TabSummary> = {}): TabSum
   ...extra,
 })
 
-const text = (l: { base: string; tail: string }) => l.base + l.tail
+const text = (l: { base: string; tail: string; ext: string }) => l.base + l.tail + l.ext
 
 describe('tab labels', () => {
   it('numbers tabs that would read the same, keeping the number out of the ellipsis', () => {
@@ -24,13 +24,13 @@ describe('tab labels', () => {
       tab('c', '제목 없는 문서'),
       tab('d', '제목 없는 프레젠테이션', { kind: 'slides' }),
     ])
-    expect(labels.get('a')).toEqual({ base: '제목 없는 문서', tail: '' })
-    expect(labels.get('b')).toEqual({ base: '제목 없는 문서', tail: ' 2' })
-    expect(labels.get('c')).toEqual({ base: '제목 없는 문서', tail: ' 3' })
-    expect(labels.get('d')).toEqual({ base: '제목 없는 프레젠테이션', tail: '' })
+    expect(labels.get('a')).toEqual({ base: '제목 없는 문서', tail: '', ext: '' })
+    expect(labels.get('b')).toEqual({ base: '제목 없는 문서', tail: ' 2', ext: '' })
+    expect(labels.get('c')).toEqual({ base: '제목 없는 문서', tail: ' 3', ext: '' })
+    expect(labels.get('d')).toEqual({ base: '제목 없는 프레젠테이션', tail: '', ext: '' })
   })
 
-  it('keeps a number the name already has, with its extension, in the tail', () => {
+  it('keeps a number the name already has in the tail; its extension gives way first when narrow', () => {
     const labels = tabLabels([
       tab('s', '제목 없는 스프레드시트 2.xlsx', {
         kind: 'sheets',
@@ -38,8 +38,8 @@ describe('tab labels', () => {
       }),
       tab('p', 'PDF-3.pdf', { kind: 'pdf', filePath: 'C:\\Docs\\PDF-3.pdf' }),
     ])
-    expect(labels.get('s')).toEqual({ base: '제목 없는 스프레드시트', tail: ' 2.xlsx' })
-    expect(labels.get('p')).toEqual({ base: 'PDF', tail: '-3.pdf' })
+    expect(labels.get('s')).toEqual({ base: '제목 없는 스프레드시트', tail: ' 2', ext: '.xlsx' })
+    expect(labels.get('p')).toEqual({ base: 'PDF', tail: '-3', ext: '.pdf' })
   })
 
   it('shows a saved file by its file name, extension included, like every other saved tab', () => {
@@ -56,7 +56,7 @@ describe('tab labels', () => {
 
   it('leaves Home and a lone name alone', () => {
     const labels = tabLabels([tab('home', '한판', { kind: 'home' }), tab('a', '보고서')])
-    expect(labels.get('home')).toEqual({ base: '한판', tail: '' })
-    expect(labels.get('a')).toEqual({ base: '보고서', tail: '' })
+    expect(labels.get('home')).toEqual({ base: '한판', tail: '', ext: '' })
+    expect(labels.get('a')).toEqual({ base: '보고서', tail: '', ext: '' })
   })
 })
