@@ -857,6 +857,14 @@ contextBridge.exposeInMainWorld('hanpanApi', {
     ipcRenderer.invoke('hanpan:open-template', id, target),
   openDesign: () => ipcRenderer.invoke('hanpan:open-design'),
   newMap: (topic: string) => ipcRenderer.invoke('hanpan:new-map', topic),
+  // 내 양식: ids and names only; the main process picks every path
+  myForms: () => ipcRenderer.invoke('hanpan:my-forms'),
+  myFormSources: () => ipcRenderer.invoke('hanpan:my-forms-sources'),
+  saveMyForm: (tabId: string, name: string) =>
+    ipcRenderer.invoke('hanpan:my-forms-save', tabId, name),
+  importMyForm: () => ipcRenderer.invoke('hanpan:my-forms-import'),
+  openMyForm: (id: string) => ipcRenderer.invoke('hanpan:my-forms-open', id),
+  deleteMyForm: (id: string) => ipcRenderer.invoke('hanpan:my-forms-delete', id),
   mdFolder: () => ipcRenderer.invoke('hanpan:md-folder'),
   mdPickFile: () => ipcRenderer.invoke('hanpan:md-pick-file'),
   mdPickFolder: () => ipcRenderer.invoke('hanpan:md-pick-folder'),
