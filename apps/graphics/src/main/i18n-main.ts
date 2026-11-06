@@ -13,6 +13,7 @@ const tDlg = createI18n({
     filterImages: '图片',
     untitledFile: '未命名文档',
     closeUnsavedMsg: '此文档有未保存的更改。',
+    closeUnsavedNamedMsg: '“{name}”有未保存的更改。',
     closeUnsavedDetail: '关闭前是否保存？',
     btnSave: '保存',
     btnDontSave: '不保存',
@@ -28,6 +29,7 @@ const tDlg = createI18n({
     filterImages: 'Images',
     untitledFile: 'Untitled',
     closeUnsavedMsg: 'This document has unsaved changes.',
+    closeUnsavedNamedMsg: '“{name}” has unsaved changes.',
     closeUnsavedDetail: 'Do you want to save them before closing?',
     btnSave: 'Save',
     btnDontSave: "Don't Save",
@@ -43,6 +45,7 @@ const tDlg = createI18n({
     filterImages: 'Hình ảnh',
     untitledFile: 'Không có tiêu đề',
     closeUnsavedMsg: 'Tài liệu này có những thay đổi chưa được lưu.',
+    closeUnsavedNamedMsg: '“{name}” có thay đổi chưa được lưu.',
     closeUnsavedDetail: 'Bạn có muốn lưu các thay đổi trước khi đóng không?',
     btnSave: 'Lưu',
     btnDontSave: 'Không lưu',
@@ -58,6 +61,7 @@ const tDlg = createI18n({
     filterImages: '画像',
     untitledFile: '無題',
     closeUnsavedMsg: 'このドキュメントに未保存の変更があります。',
+    closeUnsavedNamedMsg: '「{name}」に未保存の変更があります。',
     closeUnsavedDetail: '閉じる前に保存しますか？',
     btnSave: '保存',
     btnDontSave: '保存しない',
@@ -73,6 +77,7 @@ const tDlg = createI18n({
     filterImages: '그림',
     untitledFile: '제목 없음',
     closeUnsavedMsg: '이 문서에 저장하지 않은 변경 사항이 있습니다.',
+    closeUnsavedNamedMsg: "'{name}'에 저장하지 않은 변경 사항이 있습니다.",
     closeUnsavedDetail: '닫기 전에 저장하시겠습니까?',
     btnSave: '저장',
     btnDontSave: '저장 안 함',
@@ -88,6 +93,7 @@ const tDlg = createI18n({
     filterImages: 'Fichiers image',
     untitledFile: 'Sans titre',
     closeUnsavedMsg: 'Ce document contient des modifications non enregistrées.',
+    closeUnsavedNamedMsg: '« {name} » contient des modifications non enregistrées.',
     closeUnsavedDetail: 'Voulez-vous les enregistrer avant de fermer ?',
     btnSave: 'Enregistrer',
     btnDontSave: 'Ne pas enregistrer',
@@ -103,6 +109,7 @@ const tDlg = createI18n({
     filterImages: 'Bilder',
     untitledFile: 'Unbenannt',
     closeUnsavedMsg: 'Dieses Dokument enthält ungespeicherte Änderungen.',
+    closeUnsavedNamedMsg: '„{name}“ enthält ungespeicherte Änderungen.',
     closeUnsavedDetail: 'Vor dem Schließen speichern?',
     btnSave: 'Speichern',
     btnDontSave: 'Nicht speichern',
@@ -118,6 +125,7 @@ const tDlg = createI18n({
     filterImages: 'Imágenes',
     untitledFile: 'Sin título',
     closeUnsavedMsg: 'Este documento tiene cambios sin guardar.',
+    closeUnsavedNamedMsg: '«{name}» tiene cambios sin guardar.',
     closeUnsavedDetail: '¿Quieres guardarlos antes de cerrar?',
     btnSave: 'Guardar',
     btnDontSave: 'No guardar',
@@ -133,6 +141,7 @@ const tDlg = createI18n({
     filterImages: 'รูปภาพ',
     untitledFile: 'ไม่มีชื่อ',
     closeUnsavedMsg: 'เอกสารนี้มีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก',
+    closeUnsavedNamedMsg: '“{name}” มีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก',
     closeUnsavedDetail: 'ต้องการบันทึกก่อนปิดหรือไม่?',
     btnSave: 'บันทึก',
     btnDontSave: 'ไม่บันทึก',
@@ -148,6 +157,7 @@ const tDlg = createI18n({
     filterImages: 'Gambar',
     untitledFile: 'Tanpa judul',
     closeUnsavedMsg: 'Dokumen ini memiliki perubahan yang belum disimpan.',
+    closeUnsavedNamedMsg: '“{name}” memiliki perubahan yang belum disimpan.',
     closeUnsavedDetail: 'Simpan sebelum menutup?',
     btnSave: 'Simpan',
     btnDontSave: 'Jangan Simpan',
@@ -163,6 +173,7 @@ const tDlg = createI18n({
     filterImages: 'Изображения',
     untitledFile: 'Без названия',
     closeUnsavedMsg: 'В этом документе есть несохранённые изменения.',
+    closeUnsavedNamedMsg: 'В «{name}» есть несохранённые изменения.',
     closeUnsavedDetail: 'Сохранить их перед закрытием?',
     btnSave: 'Сохранить',
     btnDontSave: 'Не сохранять',
@@ -178,6 +189,7 @@ const tDlg = createI18n({
     filterImages: 'صور',
     untitledFile: 'بدون عنوان',
     closeUnsavedMsg: 'يحتوي هذا المستند على تغييرات غير محفوظة.',
+    closeUnsavedNamedMsg: 'يحتوي "{name}" على تغييرات غير محفوظة.',
     closeUnsavedDetail: 'هل تريد حفظها قبل الإغلاق؟',
     btnSave: 'حفظ',
     btnDontSave: 'عدم الحفظ',
@@ -193,6 +205,7 @@ const tDlg = createI18n({
     filterImages: 'Imagens',
     untitledFile: 'Sem título',
     closeUnsavedMsg: 'Este documento tem alterações não salvas.',
+    closeUnsavedNamedMsg: '“{name}” tem alterações não salvas.',
     closeUnsavedDetail: 'Deseja salvá-las antes de fechar?',
     btnSave: 'Salvar',
     btnDontSave: 'Não Salvar',
@@ -208,6 +221,7 @@ const tDlg = createI18n({
     filterImages: 'Immagini',
     untitledFile: 'Senza titolo',
     closeUnsavedMsg: 'Questo documento contiene modifiche non salvate.',
+    closeUnsavedNamedMsg: '“{name}” contiene modifiche non salvate.',
     closeUnsavedDetail: 'Vuoi salvarle prima di chiudere?',
     btnSave: 'Salva',
     btnDontSave: 'Non salvare',
@@ -223,6 +237,7 @@ const tDlg = createI18n({
     filterImages: 'Obrazy',
     untitledFile: 'Bez tytułu',
     closeUnsavedMsg: 'Ten dokument ma niezapisane zmiany.',
+    closeUnsavedNamedMsg: '„{name}” zawiera niezapisane zmiany.',
     closeUnsavedDetail: 'Czy zapisać je przed zamknięciem?',
     btnSave: 'Zapisz',
     btnDontSave: 'Nie zapisuj',
@@ -238,6 +253,7 @@ const tDlg = createI18n({
     filterImages: 'Obrázky',
     untitledFile: 'Bez názvu',
     closeUnsavedMsg: 'Tento dokument obsahuje neuložené změny.',
+    closeUnsavedNamedMsg: '„{name}“ obsahuje neuložené změny.',
     closeUnsavedDetail: 'Chcete je před zavřením uložit?',
     btnSave: 'Uložit',
     btnDontSave: 'Neukládat',
@@ -253,6 +269,7 @@ const tDlg = createI18n({
     filterImages: 'Afbeeldingen',
     untitledFile: 'Naamloos',
     closeUnsavedMsg: 'Dit document bevat niet-opgeslagen wijzigingen.',
+    closeUnsavedNamedMsg: '“{name}” bevat niet-opgeslagen wijzigingen.',
     closeUnsavedDetail: 'Wilt u ze opslaan voordat u sluit?',
     btnSave: 'Opslaan',
     btnDontSave: 'Niet opslaan',
@@ -268,6 +285,7 @@ const tDlg = createI18n({
     filterImages: 'Imej',
     untitledFile: 'Tanpa tajuk',
     closeUnsavedMsg: 'Dokumen ini mempunyai perubahan yang belum disimpan.',
+    closeUnsavedNamedMsg: '“{name}” mempunyai perubahan yang belum disimpan.',
     closeUnsavedDetail: 'Simpan sebelum menutup?',
     btnSave: 'Simpan',
     btnDontSave: 'Jangan Simpan',
@@ -283,6 +301,7 @@ const tDlg = createI18n({
     filterImages: 'תמונות',
     untitledFile: 'ללא שם',
     closeUnsavedMsg: 'במסמך הזה יש שינויים שלא נשמרו.',
+    closeUnsavedNamedMsg: 'ב"{name}" יש שינויים שלא נשמרו.',
     closeUnsavedDetail: 'האם לשמור אותם לפני הסגירה?',
     btnSave: 'שמירה',
     btnDontSave: 'אל תשמור',
@@ -298,6 +317,7 @@ const tDlg = createI18n({
     filterImages: 'चित्र',
     untitledFile: 'शीर्षकहीन',
     closeUnsavedMsg: 'इस दस्तावेज़ में सहेजे नहीं गए परिवर्तन हैं।',
+    closeUnsavedNamedMsg: '“{name}” में सहेजे नहीं गए परिवर्तन हैं।',
     closeUnsavedDetail: 'क्या बंद करने से पहले उन्हें सहेजना चाहते हैं?',
     btnSave: 'सहेजें',
     btnDontSave: 'न सहेजें',
@@ -313,6 +333,7 @@ const tDlg = createI18n({
     filterImages: '圖片',
     untitledFile: '未命名文件',
     closeUnsavedMsg: '此文件有未儲存的變更。',
+    closeUnsavedNamedMsg: '「{name}」有未儲存的變更。',
     closeUnsavedDetail: '關閉前是否儲存？',
     btnSave: '儲存',
     btnDontSave: '不儲存',
@@ -330,6 +351,7 @@ type MainStringKey =
   | 'filterImages'
   | 'untitledFile'
   | 'closeUnsavedMsg'
+  | 'closeUnsavedNamedMsg'
   | 'closeUnsavedDetail'
   | 'btnSave'
   | 'btnDontSave'
@@ -341,4 +363,15 @@ type MainStringKey =
 /** A dialog text in the current interface language. */
 export function tm(key: MainStringKey): string {
   return tDlg(getUiLang(), key)
+}
+
+/**
+ * The close question's first line: the document by name ("'photo.jpg' has
+ * unsaved changes.") so a prompt that comes up while quitting says which tab
+ * it is about; the plain line when there is no name.
+ */
+export function closeUnsavedMessage(name: string | null | undefined): string {
+  const trimmed = name?.trim()
+  if (!trimmed) return tm('closeUnsavedMsg')
+  return tDlg(getUiLang(), 'closeUnsavedNamedMsg', { name: trimmed })
 }
