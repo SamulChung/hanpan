@@ -55,6 +55,7 @@ import { ProviderLogo } from './provider-logos'
 import { IntegrationsPane, skillUpdateDue } from './IntegrationsPane'
 import { AiSection, SubscriptionSummary } from './SettingsAiSection'
 import { QuickLookField } from './SettingsQuickLook'
+import { SHOW_ONBOARDING_EVENT } from './onboarding-steps'
 import { ResultStoreField } from './SettingsResultStore'
 import { useSubscriptionConnection } from './subscription-client'
 import { SkillsPane } from './skills/SkillsPane'
@@ -1863,6 +1864,21 @@ export function SettingsModal({
                     options={LANG_OPTIONS.map((opt) => ({ value: opt.value, label: opt.label }))}
                     onPick={(v) => setLang(v as typeof lang)}
                   />
+                </div>
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <label className="set-field-label">{t('setOnboardingAgain')}</label>
+                  </div>
+                  <button
+                    className="set-btn"
+                    data-onboarding-again=""
+                    onClick={() => {
+                      onClose()
+                      window.dispatchEvent(new Event(SHOW_ONBOARDING_EVENT))
+                    }}
+                  >
+                    {t('setOnboardingAgainOpen')}
+                  </button>
                 </div>
                 <div className="set-field">
                   <div className="set-field-text">

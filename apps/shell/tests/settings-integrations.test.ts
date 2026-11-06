@@ -282,3 +282,23 @@ describe('Settings → Integrations', () => {
     expect(onDue).toHaveBeenLastCalledWith(false)
   })
 })
+
+describe('Settings → General: the first-run guide again (0.17 review v2 #7)', () => {
+  it('closes Settings and asks the frame to show the guide', async () => {
+    const onClose = vi.fn()
+    const shown = vi.fn()
+    window.addEventListener('hanpan:show-onboarding', shown)
+    window.aiOfficeIntegrations = { status: async () => null } as unknown as IntegrationsApi
+    await act(async () => {
+      root.render(
+        createElement(LocaleProvider, { initial: 'en' }, createElement(SettingsModal, { onClose })),
+      )
+      await Promise.resolve()
+    })
+    await click(buttonWithText('General'))
+    await click(host.querySelector('[data-onboarding-again]'))
+    expect(onClose).toHaveBeenCalled()
+    expect(shown).toHaveBeenCalled()
+    window.removeEventListener('hanpan:show-onboarding', shown)
+  })
+})

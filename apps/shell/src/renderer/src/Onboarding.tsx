@@ -59,6 +59,8 @@ export function Onboarding({ onDone, connection }: OnboardingProps) {
   const { t, lang } = useI18n()
   const [index, setIndex] = useState(0)
   const [submitting, setSubmitting] = useState(false)
+  /** Esc asks once before the whole guide goes (0.17 리뷰 v2 shell #7) */
+  const [askSkip, setAskSkip] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
   const isLast = isLastOnboardingStep(index)
   // 0.17 리뷰 #4: the first run opens no notice above itself; the first-connection
@@ -118,7 +120,9 @@ export function Onboarding({ onDone, connection }: OnboardingProps) {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        finish()
+        // the first Esc asks; a second one (or "skip" in the bar) leaves the guide
+        if (askSkip || isLast) finish()
+        else setAskSkip(true)
         return
       }
       if (event.key === 'Tab') {
@@ -244,6 +248,17 @@ export function Onboarding({ onDone, connection }: OnboardingProps) {
           ))}
         </div>
 
+        {askSkip && (
+          <div className="onb-skip-ask" role="alert" data-onb-skip-ask="">
+            <span>{t('onbSkipAsk')}</span>
+            <button className="onb-back" onClick={() => setAskSkip(false)}>
+              {t('onbSkipKeep')}
+            </button>
+            <button className="onb-next" disabled={submitting} onClick={finish}>
+              {t('onbSkip')}
+            </button>
+          </div>
+        )}
         <div className="onb-footer">
           <div className="onb-dots">
             {ONBOARDING_STEPS.map((step, i) => (
@@ -257,9 +272,12 @@ export function Onboarding({ onDone, connection }: OnboardingProps) {
             ))}
           </div>
           <div className="onb-nav">
-            <button className="onb-skip" disabled={submitting} onClick={finish}>
-              {t('onbSkip')}
-            </button>
+            {/* the last step is the end already: "Start" is the only way on */}
+            {!isLast && (
+              <button className="onb-skip" disabled={submitting} onClick={finish}>
+                {t('onbSkip')}
+              </button>
+            )}
             {index > 0 && (
               <button
                 className="onb-back"

@@ -4,6 +4,7 @@ import type { SplitViewState } from '../../shared/split-view-api'
 import { useFirstConnectionNotice } from './FirstConnectionNotice'
 import { Home } from './Home'
 import { Onboarding } from './Onboarding'
+import { SHOW_ONBOARDING_EVENT } from './onboarding-steps'
 import {
   SPLIT_EVEN_RATIO,
   dividerRect,
@@ -181,6 +182,13 @@ export function AppFrame({ initialOnboardingSeen }: AppFrameProps) {
     }
     void window.aiOfficeTabs.list().then(applyTabs)
     return window.aiOfficeTabs.onChanged(applyTabs)
+  }, [])
+
+  // Settings → General can bring the guide back (0.17 리뷰 v2 shell #7)
+  useEffect(() => {
+    const show = () => setShowOnboarding(true)
+    window.addEventListener(SHOW_ONBOARDING_EVENT, show)
+    return () => window.removeEventListener(SHOW_ONBOARDING_EVENT, show)
   }, [])
 
   const finishOnboarding = async (): Promise<boolean> => {

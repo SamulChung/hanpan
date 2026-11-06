@@ -171,11 +171,33 @@ describe('Onboarding', () => {
     expect(onDone).toHaveBeenCalledTimes(1)
 
     await click('.onb-next')
+    // the first Esc asks; the second leaves (0.17 review v2 shell #7)
+    await act(async () => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+      await Promise.resolve()
+    })
+    expect(onDone).toHaveBeenCalledTimes(1)
+    expect(host.querySelector('[data-onb-skip-ask]')).not.toBeNull()
     await act(async () => {
       window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
       await Promise.resolve()
     })
     expect(onDone).toHaveBeenCalledTimes(2)
+  })
+
+  it('keeps going after Esc when "keep watching" is chosen, and drops Skip on the last step', async () => {
+    const onDone = vi.fn(async () => true)
+    renderOnboarding({ onDone })
+    await act(async () => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+      await Promise.resolve()
+    })
+    await click('[data-onb-skip-ask] .onb-back')
+    expect(host.querySelector('[data-onb-skip-ask]')).toBeNull()
+    expect(onDone).not.toHaveBeenCalled()
+    await click('.onb-next')
+    await click('.onb-next')
+    expect(host.querySelector('.onb-skip')).toBeNull()
   })
 
   it('asks which AI the user has on the connect step, then walks that one path on the live status', async () => {
