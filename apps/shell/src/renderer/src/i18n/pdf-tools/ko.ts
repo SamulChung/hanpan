@@ -8,7 +8,7 @@ export const ko = {
   toolRotate: '모두 회전',
   toolNup: '페이지 모아찍기',
   toolPageSize: '페이지 크기',
-  toolSplitPages: '페이지 분할',
+  toolSplitPages: '한 쪽을 여러 쪽으로',
   toolStamps: '워터마크 및 머리글/바닥글',
   toolCrop: '페이지 자르기',
   toolExportImages: '이미지 내보내기',

@@ -224,7 +224,7 @@ describe('the tab context menu', () => {
     const { items, actions: given } = menu(b, all)
     click(items.get('Move left'))
     click(items.get('Move right'))
-    click(items.get('Split side by side'))
+    click(items.get('Move to a new window, half the screen each'))
     click(items.get('Open in New Window'))
     expect(given.move).toHaveBeenNthCalledWith(1, 'b', 1)
     expect(given.move).toHaveBeenNthCalledWith(2, 'b', 3)
@@ -232,7 +232,7 @@ describe('the tab context menu', () => {
     expect(given.openInNewWindow).toHaveBeenCalledWith('b')
 
     const stuck = menu(b, all, { canDetach: false }).items
-    expect(enabled(stuck.get('Split side by side'))).toBe(false)
+    expect(enabled(stuck.get('Move to a new window, half the screen each'))).toBe(false)
     expect(enabled(stuck.get('Open in New Window'))).toBe(false)
   })
 

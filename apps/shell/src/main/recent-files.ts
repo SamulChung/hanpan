@@ -136,3 +136,31 @@ export function pageRecentPaths(
     totalAll: listed.length,
   }
 }
+
+/**
+ * Recent files whose name holds the query, as search hits (0.17 리뷰 v2 shell
+ * #16): the first search after launch runs while the index is still empty, and
+ * a file the person opened yesterday must not come back as "0 results".
+ * `exts` narrows to those extensions; paths in `already` are left out.
+ */
+export function recentNameHits(
+  paths: readonly string[],
+  q: string,
+  exts: readonly string[] | undefined,
+  starredPaths: ReadonlySet<string>,
+  already: ReadonlySet<string>,
+): Array<RecentEntry & { snippet: null; needles: string[] }> {
+  const needle = q.normalize('NFC').toLowerCase().trim()
+  if (!needle) return []
+  const wanted = paths.filter((p) => {
+    if (already.has(p) || isScratchDocument(p)) return false
+    const ext = extname(p).slice(1).toLowerCase()
+    if (exts && !exts.includes(ext)) return false
+    return basename(p).normalize('NFC').toLowerCase().includes(needle)
+  })
+  return statPathEntries(wanted.slice(0, 50), starredPaths).map((entry) => ({
+    ...entry,
+    snippet: null,
+    needles: [needle],
+  }))
+}

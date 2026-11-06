@@ -435,6 +435,8 @@ export function TabBar({ split }: TabBarProps) {
       <div
         className={`tab-strip ${dragVisual ? 'dragging' : ''} ${dockX !== null ? 'dock-target' : ''}`}
         ref={stripRef}
+        role="tablist"
+        aria-label={t('tabList')}
         // the strip, not the grabbed tab, owns the pointer capture: a torn-off
         // tab's element unmounts mid-gesture, and the moves must keep coming
         onPointerMove={handleDragMove}
@@ -472,6 +474,32 @@ export function TabBar({ split }: TabBarProps) {
             <div
               key={tab.id}
               className={`tab-item ${tab.kind === 'home' ? 'tab-home' : ''} ${tab.active ? 'active' : ''} ${dragVisual?.id === tab.id ? 'drag-source' : ''}${pane}${tab.dirty ? ' dirty' : ''}`}
+              // a tab list for the keyboard (0.17 리뷰 v2 shell #31): one Tab stop
+              // (the active tab), arrows between tabs, Enter/Space shows, Delete closes
+              role="tab"
+              aria-selected={tab.active}
+              tabIndex={tab.active ? 0 : -1}
+              onKeyDown={(event) => {
+                if (renaming?.id === tab.id) return
+                const all = Array.from(
+                  stripRef.current?.querySelectorAll<HTMLElement>('[role="tab"]') ?? [],
+                )
+                const move = (to: number) => {
+                  event.preventDefault()
+                  all[Math.max(0, Math.min(all.length - 1, to))]?.focus()
+                }
+                if (event.key === 'ArrowRight') move(index + 1)
+                else if (event.key === 'ArrowLeft') move(index - 1)
+                else if (event.key === 'Home') move(0)
+                else if (event.key === 'End') move(all.length - 1)
+                else if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  void window.aiOfficeTabs.activate(tab.id)
+                } else if (event.key === 'Delete' && tab.closable) {
+                  event.preventDefault()
+                  void window.aiOfficeTabs.close(tab.id)
+                }
+              }}
               // long file names ellipsize in the strip — hover reveals the
               // full title and where the file is (the close button's own tooltip still wins there)
               title={
@@ -581,6 +609,7 @@ export function TabBar({ split }: TabBarProps) {
               {tab.closable && (
                 <button
                   className="tab-close"
+                  tabIndex={-1}
                   title={t('closeTab')}
                   aria-label={tab.dirty ? `${t('closeTab')} (${t('tabUnsaved')})` : t('closeTab')}
                   onClick={(event) => {
@@ -596,27 +625,29 @@ export function TabBar({ split }: TabBarProps) {
             </div>
           )
         })}
-        <button
-          className="tab-new-btn"
-          title={t('newTab')}
-          aria-label={t('newTab')}
-          onClick={(event) => {
-            const rect = event.currentTarget.getBoundingClientRect()
-            void window.aiOfficeTabs.showNewMenu(Math.round(rect.left), Math.round(rect.bottom))
-          }}
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-            <path
-              d="M12 4.286v15.429M4.286 12h15.429"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
       </div>
+      {/* outside the scrolling strip: "+" never scrolls away (0.17 리뷰 v2 shell #11) */}
+      <button
+        className="tab-new-btn"
+        title={t('newTab')}
+        aria-label={t('newTab')}
+        onClick={(event) => {
+          const rect = event.currentTarget.getBoundingClientRect()
+          void window.aiOfficeTabs.showNewMenu(Math.round(rect.left), Math.round(rect.bottom))
+        }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M12 4.286v15.429M4.286 12h15.429"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+      <div className="tab-strip-rest" />
       {splitHint && (
         <div
           className={`tab-split-hint ${splitHint.orientation === 'side' ? 'for-side' : 'for-stack'}`}

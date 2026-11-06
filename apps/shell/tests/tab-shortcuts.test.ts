@@ -120,3 +120,26 @@ describe('handling a tab shortcut', () => {
     expect(shell.closeActive).not.toHaveBeenCalled()
   })
 })
+
+describe('closing from Home (0.17 review v2 shell #3)', () => {
+  it('closes at once when Home is the only tab', async () => {
+    const { closeFromHome } = await import('../src/main/tab-shortcuts')
+    const ask = vi.fn(async () => true)
+    const close = vi.fn()
+    await closeFromHome({ openDocuments: 0, ask, close })
+    expect(ask).not.toHaveBeenCalled()
+    expect(close).toHaveBeenCalled()
+  })
+
+  it('asks before closing the window with documents still open, and stays on no', async () => {
+    const { closeFromHome } = await import('../src/main/tab-shortcuts')
+    const close = vi.fn()
+    const ask = vi.fn(async () => false)
+    await closeFromHome({ openDocuments: 9, ask, close })
+    expect(ask).toHaveBeenCalledWith(9)
+    expect(close).not.toHaveBeenCalled()
+    ask.mockResolvedValueOnce(true)
+    await closeFromHome({ openDocuments: 9, ask, close })
+    expect(close).toHaveBeenCalled()
+  })
+})

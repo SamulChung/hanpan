@@ -8,7 +8,7 @@ export const vi = {
   toolRotate: 'Xoay tất cả',
   toolNup: 'Gộp trang',
   toolPageSize: 'Kích thước trang',
-  toolSplitPages: 'Chia trang',
+  toolSplitPages: 'Cắt một trang thành nhiều trang',
   toolStamps: 'Hình mờ & đầu/chân trang',
   toolCrop: 'Cắt xén trang',
   toolExportImages: 'Xuất hình ảnh',

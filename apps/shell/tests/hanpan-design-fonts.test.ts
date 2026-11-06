@@ -1,6 +1,6 @@
 // The design board's font list offers every font the installer ships (a design looks the
 // same on every PC and in every export), then the fonts installed on this PC.
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { TEMPLATE_FONTS, TEMPLATE_FONT_FAMILY_NAMES } from '@genoffice/ui/template-fonts'
 import {
   BUNDLED_FONTS,
@@ -8,6 +8,7 @@ import {
   SYSTEM_FONTS,
   isDisplayFont,
   pcFontChoices,
+  readPcFontsOnFirstGesture,
 } from '../src/renderer/src/design/fonts'
 import { FONTS } from '../src/renderer/src/design/model'
 
@@ -86,5 +87,35 @@ describe('fonts on this PC', () => {
       'Arial',
       'Gulim',
     ])
+  })
+})
+
+// 점검 v2 hwp-design #17: the list was read only when the font box itself was pressed, so
+// the box that opened still showed the 7 fixed fonts. The board now reads the installed
+// fonts at the first press or key anywhere (the API wants a user gesture), once.
+describe('reading the PC fonts early', () => {
+  it('reads at the first press or key anywhere, once, and stops listening', () => {
+    const target = new EventTarget()
+    const read = vi.fn()
+    const stop = readPcFontsOnFirstGesture(target, read)
+    expect(read).not.toHaveBeenCalled()
+    target.dispatchEvent(new Event('pointerdown'))
+    target.dispatchEvent(new Event('keydown'))
+    target.dispatchEvent(new Event('pointerdown'))
+    expect(read).toHaveBeenCalledTimes(1)
+    stop()
+  })
+
+  it('a key works as the gesture too, and stop() before any leaves it unread', () => {
+    const target = new EventTarget()
+    const read = vi.fn()
+    readPcFontsOnFirstGesture(target, read)
+    target.dispatchEvent(new Event('keydown'))
+    expect(read).toHaveBeenCalledTimes(1)
+    const other = new EventTarget()
+    const never = vi.fn()
+    readPcFontsOnFirstGesture(other, never)()
+    other.dispatchEvent(new Event('pointerdown'))
+    expect(never).not.toHaveBeenCalled()
   })
 })

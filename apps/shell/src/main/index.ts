@@ -45,7 +45,11 @@ import {
   windowHandleArg,
   type ShareAnswer,
 } from './share/system-share'
-import { configureDesignWindow, openDesignWithOutline } from './hanpan/design-window'
+import {
+  configureDesignWindow,
+  openDesignWindow,
+  openDesignWithOutline,
+} from './hanpan/design-window'
 import { registerGonguPictureIpc } from './hanpan/gongu-pictures'
 import { tabStripOverlay } from './title-bar-overlay'
 import { shellWindowBackground } from './window-background'
@@ -133,6 +137,7 @@ import { SPLIT_PANE_CHANNELS } from '@genoffice/electron-utils/split-pane-bridge
 import {
   agentSkillNoticeDue,
   markAgentSkillNoticeSeen,
+  documentThemeOf,
   readAppSettings,
   writeAgentPrefs,
   writeAppSetting,
@@ -160,7 +165,7 @@ import { installCliLinkBestEffort } from './cli-link'
 import { createDefaultAppService, execFileRunner } from './default-app'
 import { registerIntegrationsIpc } from './integrations-ipc'
 import { registerResultStoreIpc } from './result-store-ipc'
-import { feedbackDetails, feedbackMailUrl, feedbackText, platformLabel } from './feedback'
+import { feedbackDetails, feedbackMailUrl, feedbackText, osLabel } from './feedback'
 import { registerDriveIpc, type DriveService } from './drive/drive-ipc'
 import { registerOutboundIpc } from './outbound-confirm'
 import { projectSkillsAllowed, projectSkillsView, setProjectSkills } from './agent/project-skills'
@@ -433,6 +438,7 @@ import {
   matchesExtFamily,
   normalizeRecentQuery,
   pageRecentPaths,
+  recentNameHits,
   statPathEntries,
 } from './recent-files'
 import { HOME_FILTER_GROUPS } from '../shared/home-filter-groups'
@@ -488,11 +494,12 @@ import {
 } from './knowledge-base'
 import { runHeadlessExport, type HeadlessExporters } from './headless-export'
 import { TabManager, canonicalPath, type DetachedTab } from './tab-manager'
+import { pathsOpenInTabs, trashFilesClosingTabs } from './delete-open-files'
 import { tabMenuTemplate, type TabMenuActions, isProgramFile } from './tab-menu'
 import { runTabDocumentAction, type TabDocumentAction } from './tab-document-actions'
 import { duplicateDocumentFile } from './tab-duplicate'
 import { closeTabsInOrder, createRecentlyClosedTracker } from './tab-lifecycle'
-import { handleTabShortcut } from './tab-shortcuts'
+import { closeFromHome, handleTabShortcut } from './tab-shortcuts'
 import { settingsMenuItem } from './settings-menu'
 import { installDefaultDialogTitle } from './dialog-title'
 import { readSplitMemory, writeSplitMemory, type SplitMemory } from './split-memory'
@@ -1015,7 +1022,7 @@ let cachedDocTheme: DocTheme | null = null
 function currentDocTheme(): DocTheme {
   if (cachedDocTheme) return cachedDocTheme
   const saved = readAppSettings(APP_SETTINGS_PATH()).documentTheme
-  cachedDocTheme = saved === 'light' || saved === 'dark' ? saved : 'follow'
+  cachedDocTheme = documentThemeOf(saved)
   return cachedDocTheme
 }
 
@@ -1076,7 +1083,7 @@ const tMain = createI18n({
     shareFileMissing: '找不到该文件，无法共享',
     menuTabRename: '重命名',
     menuTabDuplicate: '创建副本（复制已保存的文件）',
-    menuTabSplitBeside: '左右分屏',
+    menuTabSplitBeside: '移到新窗口，各占半个屏幕',
     menuTabCopyPath: '复制路径',
     menuTabCopyName: '复制文件名',
     menuTabReveal: '在文件夹中显示',
@@ -1121,6 +1128,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: '思维导图',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan 模板…',
+    menuNewDesign: '设计',
     menuNewPdf: 'AI PDF',
     menuExportPdf: '导出为 PDF…',
     menuExportImages: '导出为图片…',
@@ -1135,6 +1144,9 @@ const tMain = createI18n({
     menuOpen: '打开…',
     menuSave: '保存',
     menuSaveAs: '另存为…',
+    closeWindowAsk: '要关闭 Hanpan 窗口吗？',
+    closeWindowAskDetail: '{n} 个打开的文档也会一起关闭。未保存的文档会另外询问。',
+    closeWindowYes: '关闭窗口',
     menuClose: '关闭',
     menuEdit: '编辑',
     menuView: '视图',
@@ -1217,6 +1229,7 @@ const tMain = createI18n({
     pdfPwdShow: '显示密码',
     pdfPwdHide: '隐藏密码',
     pdfDocxLocalCorruptDetail: '文件已损坏或不是有效的 PDF，无法转换。',
+    dlgPickMyForm: '选择要添加到我的模板的文件',
     dlgPickSaveDir: '选择默认保存位置',
     errSaveDirUnusable: '所选文件夹不可写，无法用作默认保存位置',
     saveDirFallbackMsg: '无法保存到"文档"文件夹',
@@ -1237,7 +1250,7 @@ const tMain = createI18n({
     shareFileMissing: 'The file cannot be found, so it cannot be shared',
     menuTabRename: 'Rename',
     menuTabDuplicate: 'Duplicate (copy the saved file)',
-    menuTabSplitBeside: 'Split side by side',
+    menuTabSplitBeside: 'Move to a new window, half the screen each',
     menuTabCopyPath: 'Copy path',
     menuTabCopyName: 'Copy file name',
     menuTabReveal: 'Show in folder',
@@ -1286,6 +1299,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Mind Map',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Export as PDF…',
     menuExportImages: 'Export as Images…',
@@ -1300,6 +1315,10 @@ const tMain = createI18n({
     menuOpen: 'Open…',
     menuSave: 'Save',
     menuSaveAs: 'Save As…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Close',
     menuEdit: 'Edit',
     menuWindow: 'Window',
@@ -1385,12 +1404,13 @@ const tMain = createI18n({
     pdfPwdShow: 'Show password',
     pdfPwdHide: 'Hide password',
     pdfDocxLocalCorruptDetail: 'The file is damaged or not a valid PDF and cannot be converted.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Choose Default Save Location',
     errSaveDirUnusable:
       'The selected folder is not writable and cannot be used as the default save location',
     saveDirFallbackMsg: "Can't save to the Documents folder",
     saveDirFallbackDetail:
-      'GenOffice could not create or write {blocked}, so new files are saved in {using}. If Windows Security\'s "Controlled folder access" blocked it, add GenOffice under "Allow an app through Controlled folder access" and restart the app. You can also pick another folder in Settings → General → Save Location.',
+      'GenOffice could not create or write {blocked}, so new files are saved in {using}. If Windows Security\'s "Controlled folder access" blocked it, add GenOffice (Hanpan.exe) under "Allow an app through Controlled folder access" and restart the app. You can also pick another folder in Settings → General → Save Location.',
   },
   vi: {
     menuTabSave: 'Lưu',
@@ -1405,11 +1425,11 @@ const tMain = createI18n({
     shareFailed: 'Không thể mở cửa sổ chia sẻ',
     shareFileMissing: 'Không tìm thấy tệp nên không thể chia sẻ',
     menuTabRename: 'Đổi tên',
-    menuTabDuplicate: 'Nhân bản (sao chép file đã lưu)',
-    menuTabSplitBeside: 'Chia đôi màn hình',
+    menuTabDuplicate: 'Tạo bản sao',
+    menuTabSplitBeside: 'Tách sang cửa sổ mới, mỗi bên nửa màn hình',
     menuTabCopyPath: 'Sao chép đường dẫn',
     menuTabCopyName: 'Sao chép tên file',
-    menuTabReveal: 'Mở thư mục chứa file',
+    menuTabReveal: 'Hiển thị trong thư mục',
     menuTabOpenDefault: 'Mở bằng ứng dụng mặc định',
     menuTabMoveLeft: 'Dời sang trái',
     menuTabMoveRight: 'Dời sang phải',
@@ -1448,9 +1468,11 @@ const tMain = createI18n({
     untitledPdf: 'PDF chưa có tiêu đề',
     menuNewSlide: 'AI Slides',
     menuNewMarkdown: 'AI Markdown',
-    menuNewHtml: 'AI HTML',
+    menuNewHtml: 'AI tài liệu web',
     menuNewMindmap: 'Sơ đồ tư duy',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Mẫu Hanpan…',
+    menuNewDesign: 'Thiết kế',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Xuất dưới dạng PDF…',
     menuExportImages: 'Xuất dưới dạng hình ảnh…',
@@ -1465,6 +1487,10 @@ const tMain = createI18n({
     menuOpen: 'Mở…',
     menuSave: 'Lưu',
     menuSaveAs: 'Lưu dưới dạng…',
+    closeWindowAsk: 'Đóng cửa sổ Hanpan?',
+    closeWindowAskDetail:
+      '{n} tài liệu đang mở cũng sẽ đóng. Bạn sẽ được hỏi về các thay đổi chưa lưu.',
+    closeWindowYes: 'Đóng cửa sổ',
     menuClose: 'Đóng',
     menuEdit: 'Chỉnh sửa',
     menuView: 'Hiển thị',
@@ -1509,7 +1535,7 @@ const tMain = createI18n({
     copySuffix: 'bản sao',
     menuHelp: 'Trợ giúp',
     menuUserGuide: 'Hướng dẫn sử dụng',
-    thirdPartyNotices: 'Thông báo của bên thứ ba',
+    thirdPartyNotices: 'Giấy phép mã nguồn mở',
     menuExportDocx: 'Xuất dưới dạng Word…',
     menuExportOdt: 'Xuất dưới dạng ODT…',
     btnCancel: 'Hủy',
@@ -1555,6 +1581,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Ẩn mật khẩu',
     pdfDocxLocalCorruptDetail:
       'Tệp bị hỏng hoặc không phải là tệp PDF hợp lệ và không thể chuyển đổi.',
+    dlgPickMyForm: 'Chọn tệp để thêm vào Mẫu của tôi',
     dlgPickSaveDir: 'Chọn vị trí lưu mặc định',
     errSaveDirUnusable: 'Thư mục đã chọn không thể ghi và không thể dùng làm vị trí lưu mặc định',
     saveDirFallbackMsg: 'Không thể lưu vào thư mục Tài liệu',
@@ -1621,6 +1648,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'マインドマップ',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'PDF として書き出す…',
     menuExportImages: '画像としてエクスポート…',
@@ -1635,6 +1664,10 @@ const tMain = createI18n({
     menuOpen: '開く…',
     menuSave: '保存',
     menuSaveAs: '名前を付けて保存…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: '閉じる',
     menuEdit: '編集',
     menuView: '表示',
@@ -1725,6 +1758,7 @@ const tMain = createI18n({
     pdfPwdShow: 'パスワードを表示',
     pdfPwdHide: 'パスワードを非表示',
     pdfDocxLocalCorruptDetail: 'ファイルが破損しているか有効なPDFではないため、変換できません。',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: '既定の保存先を選択',
     errSaveDirUnusable:
       '選択したフォルダーは書き込みできないため、既定の保存先として使用できません',
@@ -1745,11 +1779,11 @@ const tMain = createI18n({
     shareFailed: '공유 창을 열지 못했습니다',
     shareFileMissing: '파일을 찾을 수 없어 공유할 수 없습니다',
     menuTabRename: '이름 바꾸기',
-    menuTabDuplicate: '복제(저장된 파일 복사)',
-    menuTabSplitBeside: '나란히 분할',
+    menuTabDuplicate: '복사본 만들기',
+    menuTabSplitBeside: '새 창으로 떼어 화면 반씩 보기',
     menuTabCopyPath: '경로 복사',
     menuTabCopyName: '파일 이름 복사',
-    menuTabReveal: '폴더에서 표시',
+    menuTabReveal: '폴더에서 보기',
     menuTabOpenDefault: '기본 앱으로 열기',
     menuTabMoveLeft: '왼쪽으로 이동',
     menuTabMoveRight: '오른쪽으로 이동',
@@ -1792,13 +1826,15 @@ const tMain = createI18n({
     menuNewHtml: 'AI 웹 문서',
     menuNewMindmap: '마인드맵',
     menuNewHwp: 'AI 한글',
+    menuNewTemplates: '한판 양식…',
+    menuNewDesign: '디자인',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'PDF로 내보내기…',
     menuExportImages: '이미지로 내보내기…',
     menuExportHtml: '단일 파일 HTML로 내보내기…',
     menuExportMapImage: '이미지(PNG)로 내보내기…',
     menuExportMapOutline: '마크다운 개요로 내보내기…',
-    menuMakeFromDocument: '이 문서로 다른 문서 만들기',
+    menuMakeFromDocument: '이 문서로 새 문서 만들기',
     menuDocumentSources: '자료 보기',
     menuDerivedDocuments: '이 문서로 만든 문서',
     menuOpenInDocs: '워드 문서로 변환하여 열기',
@@ -1806,12 +1842,15 @@ const tMain = createI18n({
     menuOpen: '열기…',
     menuSave: '저장',
     menuSaveAs: '다른 이름으로 저장…',
+    closeWindowAsk: '한판 창을 닫을까요?',
+    closeWindowAskDetail: '열린 문서 {n}개도 함께 닫힙니다. 저장하지 않은 문서는 따로 묻습니다.',
+    closeWindowYes: '창 닫기',
     menuClose: '닫기',
     menuEdit: '편집',
     menuView: '보기',
-    menuUiZoomIn: 'UI 확대',
-    menuUiZoomOut: 'UI 축소',
-    menuUiZoomReset: 'UI 배율을 100%로 다시 설정',
+    menuUiZoomIn: '화면 크게',
+    menuUiZoomOut: '화면 작게',
+    menuUiZoomReset: '화면 크기 원래대로(100%)',
     menuWindow: '창',
     menuHome: '홈',
     backToHome: '홈으로 돌아가기',
@@ -1850,7 +1889,7 @@ const tMain = createI18n({
     copySuffix: '복사본',
     menuHelp: '도움말',
     menuUserGuide: '사용 설명서',
-    thirdPartyNotices: '타사 소프트웨어 고지',
+    thirdPartyNotices: '오픈소스 라이선스',
     menuExportDocx: 'Word로 내보내기…',
     menuExportOdt: 'ODT로 내보내기…',
     btnCancel: '취소',
@@ -1895,11 +1934,12 @@ const tMain = createI18n({
     pdfPwdShow: '암호 표시',
     pdfPwdHide: '암호 숨기기',
     pdfDocxLocalCorruptDetail: '파일이 손상되었거나 유효한 PDF가 아니어서 변환할 수 없습니다.',
+    dlgPickMyForm: '내 양식으로 추가할 파일 고르기',
     dlgPickSaveDir: '기본 저장 위치 선택',
     errSaveDirUnusable: '선택한 폴더에 쓸 수 없어 기본 저장 위치로 사용할 수 없습니다',
     saveDirFallbackMsg: '문서 폴더에 저장할 수 없습니다',
     saveDirFallbackDetail:
-      '{blocked} 폴더를 만들거나 쓰지 못해서, 새 파일은 {using}에 저장합니다. Windows 보안의 "제어된 폴더 액세스"가 막은 것이라면 "제어된 폴더 액세스를 통해 앱 허용"에 GenOffice를 추가한 뒤 앱을 다시 시작하세요. 설정 → 일반 → 저장 위치에서 다른 폴더를 고를 수도 있습니다.',
+      '{blocked} 폴더를 만들거나 쓰지 못해서, 새 파일은 {using}에 저장합니다. Windows 보안의 "제어된 폴더 액세스"가 막은 것이라면 "제어된 폴더 액세스를 통해 앱 허용"에 GenOffice(Hanpan.exe)를 추가한 뒤 앱을 다시 시작하세요. 설정 → 일반 → 저장 위치에서 다른 폴더를 고를 수도 있습니다.',
   },
   fr: {
     menuTabSave: 'Enregistrer',
@@ -1961,6 +2001,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Carte mentale',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Exporter en PDF…',
     menuExportImages: 'Exporter en images…',
@@ -1975,6 +2017,10 @@ const tMain = createI18n({
     menuOpen: 'Ouvrir…',
     menuSave: 'Enregistrer',
     menuSaveAs: 'Enregistrer sous…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Fermer',
     menuEdit: 'Édition',
     menuView: 'Affichage',
@@ -2066,6 +2112,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Masquer le mot de passe',
     pdfDocxLocalCorruptDetail:
       "Le fichier est endommagé ou n'est pas un PDF valide et ne peut pas être converti.",
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: "Choisir l'emplacement d'enregistrement par défaut",
     errSaveDirUnusable:
       "Le dossier sélectionné n'est pas accessible en écriture et ne peut pas servir d'emplacement d'enregistrement par défaut",
@@ -2133,6 +2180,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Mindmap',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Als PDF exportieren…',
     menuExportImages: 'Als Bilder exportieren…',
@@ -2147,6 +2196,10 @@ const tMain = createI18n({
     menuOpen: 'Öffnen…',
     menuSave: 'Speichern',
     menuSaveAs: 'Speichern unter…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Schließen',
     menuEdit: 'Bearbeiten',
     menuView: 'Ansicht',
@@ -2238,6 +2291,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Passwort ausblenden',
     pdfDocxLocalCorruptDetail:
       'Die Datei ist beschädigt oder keine gültige PDF und kann nicht konvertiert werden.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Standard-Speicherort auswählen',
     errSaveDirUnusable:
       'Der ausgewählte Ordner ist nicht beschreibbar und kann nicht als Standard-Speicherort verwendet werden',
@@ -2305,6 +2359,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Mapa mental',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Exportar como PDF…',
     menuExportImages: 'Exportar como imágenes…',
@@ -2319,6 +2375,10 @@ const tMain = createI18n({
     menuOpen: 'Abrir…',
     menuSave: 'Guardar',
     menuSaveAs: 'Guardar como…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Cerrar',
     menuEdit: 'Edición',
     menuView: 'Ver',
@@ -2410,6 +2470,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Ocultar contraseña',
     pdfDocxLocalCorruptDetail:
       'El archivo está dañado o no es un PDF válido y no se puede convertir.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Elegir ubicación de guardado predeterminada',
     errSaveDirUnusable:
       'La carpeta seleccionada no admite escritura y no puede usarse como ubicación de guardado predeterminada',
@@ -2476,6 +2537,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'แผนที่ความคิด',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'ส่งออกเป็น PDF…',
     menuExportImages: 'ส่งออกเป็นรูปภาพ…',
@@ -2490,6 +2553,10 @@ const tMain = createI18n({
     menuOpen: 'เปิด…',
     menuSave: 'บันทึก',
     menuSaveAs: 'บันทึกเป็น…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'ปิด',
     menuEdit: 'แก้ไข',
     menuView: 'มุมมอง',
@@ -2577,6 +2644,7 @@ const tMain = createI18n({
     pdfPwdShow: 'แสดงรหัสผ่าน',
     pdfPwdHide: 'ซ่อนรหัสผ่าน',
     pdfDocxLocalCorruptDetail: 'ไฟล์เสียหายหรือไม่ใช่ PDF ที่ถูกต้อง จึงไม่สามารถแปลงได้',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'เลือกตำแหน่งบันทึกเริ่มต้น',
     errSaveDirUnusable: 'โฟลเดอร์ที่เลือกไม่สามารถเขียนได้ จึงใช้เป็นตำแหน่งบันทึกเริ่มต้นไม่ได้',
     saveDirFallbackMsg: 'บันทึกลงในโฟลเดอร์เอกสารไม่ได้',
@@ -2643,6 +2711,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Peta pikiran',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Ekspor sebagai PDF…',
     menuExportImages: 'Ekspor sebagai gambar…',
@@ -2657,6 +2727,10 @@ const tMain = createI18n({
     menuOpen: 'Buka…',
     menuSave: 'Simpan',
     menuSaveAs: 'Simpan Sebagai…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Tutup',
     menuEdit: 'Edit',
     menuView: 'Tampilan',
@@ -2747,6 +2821,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Sembunyikan kata sandi',
     pdfDocxLocalCorruptDetail:
       'File rusak atau bukan PDF yang valid sehingga tidak dapat dikonversi.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Pilih Lokasi Penyimpanan Default',
     errSaveDirUnusable:
       'Folder yang dipilih tidak dapat ditulis dan tidak bisa digunakan sebagai lokasi penyimpanan default',
@@ -2814,6 +2889,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Интеллект-карта',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Экспортировать в PDF…',
     menuExportImages: 'Экспорт в изображения…',
@@ -2828,6 +2905,10 @@ const tMain = createI18n({
     menuOpen: 'Открыть…',
     menuSave: 'Сохранить',
     menuSaveAs: 'Сохранить как…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Закрыть',
     menuEdit: 'Правка',
     menuView: 'Вид',
@@ -2918,6 +2999,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Скрыть пароль',
     pdfDocxLocalCorruptDetail:
       'Файл повреждён или не является корректным PDF, преобразование невозможно.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Выбрать папку сохранения по умолчанию',
     errSaveDirUnusable:
       'Выбранная папка недоступна для записи и не может использоваться как папка сохранения по умолчанию',
@@ -2984,6 +3066,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'خريطة ذهنية',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'تصدير بتنسيق PDF…',
     menuExportImages: 'تصدير كصور…',
@@ -2998,6 +3082,10 @@ const tMain = createI18n({
     menuOpen: 'فتح…',
     menuSave: 'حفظ',
     menuSaveAs: 'حفظ باسم…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'إغلاق',
     menuEdit: 'تحرير',
     menuView: 'عرض',
@@ -3085,6 +3173,7 @@ const tMain = createI18n({
     pdfPwdShow: 'إظهار كلمة المرور',
     pdfPwdHide: 'إخفاء كلمة المرور',
     pdfDocxLocalCorruptDetail: 'الملف تالف أو ليس ملف PDF صالحًا ولا يمكن تحويله.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'اختيار موقع الحفظ الافتراضي',
     errSaveDirUnusable: 'المجلد المحدد غير قابل للكتابة ولا يمكن استخدامه كموقع حفظ افتراضي',
     saveDirFallbackMsg: 'تعذّر الحفظ في مجلد المستندات',
@@ -3151,6 +3240,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Mapa mental',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Exportar como PDF…',
     menuExportImages: 'Exportar como imagens…',
@@ -3165,6 +3256,10 @@ const tMain = createI18n({
     menuOpen: 'Abrir…',
     menuSave: 'Salvar',
     menuSaveAs: 'Salvar Como…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Fechar',
     menuEdit: 'Editar',
     menuView: 'Visualização',
@@ -3255,6 +3350,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Ocultar senha',
     pdfDocxLocalCorruptDetail:
       'O arquivo está danificado ou não é um PDF válido e não pode ser convertido.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Escolher local de salvamento padrão',
     errSaveDirUnusable:
       'A pasta selecionada não permite gravação e não pode ser usada como local de salvamento padrão',
@@ -3322,6 +3418,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Mappa mentale',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Esporta come PDF…',
     menuExportImages: 'Esporta come immagini…',
@@ -3336,6 +3434,10 @@ const tMain = createI18n({
     menuOpen: 'Apri…',
     menuSave: 'Salva',
     menuSaveAs: 'Salva con nome…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Chiudi',
     menuEdit: 'Modifica',
     menuView: 'Vista',
@@ -3426,6 +3528,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Nascondi password',
     pdfDocxLocalCorruptDetail:
       'Il file è danneggiato o non è un PDF valido e non può essere convertito.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Scegli la posizione di salvataggio predefinita',
     errSaveDirUnusable:
       'La cartella selezionata non è scrivibile e non può essere usata come posizione di salvataggio predefinita',
@@ -3493,6 +3596,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Mapa myśli',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Eksportuj jako PDF…',
     menuExportImages: 'Eksportuj jako obrazy…',
@@ -3507,6 +3612,10 @@ const tMain = createI18n({
     menuOpen: 'Otwórz…',
     menuSave: 'Zapisz',
     menuSaveAs: 'Zapisz jako…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Zamknij',
     menuEdit: 'Edycja',
     menuView: 'Widok',
@@ -3597,6 +3706,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Ukryj hasło',
     pdfDocxLocalCorruptDetail:
       'Plik jest uszkodzony lub nie jest prawidłowym plikiem PDF i nie można go przekonwertować.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Wybierz domyślną lokalizację zapisu',
     errSaveDirUnusable:
       'Wybrany folder nie pozwala na zapis i nie może być domyślną lokalizacją zapisu',
@@ -3663,6 +3773,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Myšlenková mapa',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Exportovat jako PDF…',
     menuExportImages: 'Exportovat jako obrázky…',
@@ -3677,6 +3789,10 @@ const tMain = createI18n({
     menuOpen: 'Otevřít…',
     menuSave: 'Uložit',
     menuSaveAs: 'Uložit jako…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Zavřít',
     menuEdit: 'Úpravy',
     menuView: 'Zobrazení',
@@ -3765,6 +3881,7 @@ const tMain = createI18n({
     pdfPwdShow: 'Zobrazit heslo',
     pdfPwdHide: 'Skrýt heslo',
     pdfDocxLocalCorruptDetail: 'Soubor je poškozený nebo není platným PDF a nelze ho převést.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Zvolte výchozí umístění pro ukládání',
     errSaveDirUnusable:
       'Do vybrané složky nelze zapisovat a nelze ji použít jako výchozí umístění pro ukládání',
@@ -3832,6 +3949,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Mindmap',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Exporteren als PDF…',
     menuExportImages: 'Exporteren als afbeeldingen…',
@@ -3846,6 +3965,10 @@ const tMain = createI18n({
     menuOpen: 'Openen…',
     menuSave: 'Opslaan',
     menuSaveAs: 'Opslaan als…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Sluiten',
     menuEdit: 'Bewerken',
     menuView: 'Weergave',
@@ -3937,6 +4060,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Wachtwoord verbergen',
     pdfDocxLocalCorruptDetail:
       'Het bestand is beschadigd of geen geldige PDF en kan niet worden geconverteerd.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Standaard opslaglocatie kiezen',
     errSaveDirUnusable:
       'De geselecteerde map is niet beschrijfbaar en kan niet als standaard opslaglocatie worden gebruikt',
@@ -4004,6 +4128,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Peta minda',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Eksport sebagai PDF…',
     menuExportImages: 'Eksport sebagai imej…',
@@ -4018,6 +4144,10 @@ const tMain = createI18n({
     menuOpen: 'Buka…',
     menuSave: 'Simpan',
     menuSaveAs: 'Simpan Sebagai…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Tutup',
     menuEdit: 'Edit',
     menuView: 'Paparan',
@@ -4107,6 +4237,7 @@ const tMain = createI18n({
     pdfPwdShow: 'Tunjukkan kata laluan',
     pdfPwdHide: 'Sembunyikan kata laluan',
     pdfDocxLocalCorruptDetail: 'Fail rosak atau bukan PDF yang sah dan tidak dapat ditukar.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Pilih Lokasi Simpanan Lalai',
     errSaveDirUnusable:
       'Folder yang dipilih tidak boleh ditulis dan tidak dapat digunakan sebagai lokasi simpanan lalai',
@@ -4173,6 +4304,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'מפת חשיבה',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'ייצוא כ-PDF…',
     menuExportImages: 'ייצוא כתמונות…',
@@ -4187,6 +4320,10 @@ const tMain = createI18n({
     menuOpen: 'פתיחה…',
     menuSave: 'שמירה',
     menuSaveAs: 'שמירה בשם…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'סגירה',
     menuEdit: 'עריכה',
     menuView: 'תצוגה',
@@ -4274,6 +4411,7 @@ const tMain = createI18n({
     pdfPwdShow: 'הצג סיסמה',
     pdfPwdHide: 'הסתר סיסמה',
     pdfDocxLocalCorruptDetail: 'הקובץ פגום או שאינו PDF תקין ולא ניתן להמירו.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'בחירת מיקום שמירה כברירת מחדל',
     errSaveDirUnusable:
       'התיקייה שנבחרה אינה ניתנת לכתיבה ולא ניתן להשתמש בה כמיקום שמירה כברירת מחדל',
@@ -4341,6 +4479,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'माइंड मैप',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'PDF के रूप में निर्यात…',
     menuExportImages: 'छवियों के रूप में निर्यात…',
@@ -4355,6 +4495,10 @@ const tMain = createI18n({
     menuOpen: 'खोलें…',
     menuSave: 'सहेजें',
     menuSaveAs: 'इस रूप में सहेजें…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'बंद करें',
     menuEdit: 'संपादन',
     menuView: 'व्यू',
@@ -4445,6 +4589,7 @@ const tMain = createI18n({
     pdfPwdHide: 'पासवर्ड छिपाएँ',
     pdfDocxLocalCorruptDetail:
       'फ़ाइल क्षतिग्रस्त है या मान्य PDF नहीं है, इसलिए रूपांतरण नहीं हो सकता।',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'डिफ़ॉल्ट सहेजने का स्थान चुनें',
     errSaveDirUnusable:
       'चयनित फ़ोल्डर में लिखा नहीं जा सकता, इसलिए इसे डिफ़ॉल्ट सहेजने के स्थान के रूप में उपयोग नहीं किया जा सकता',
@@ -4510,6 +4655,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: '心智圖',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: '匯出為 PDF…',
     menuExportImages: '匯出為圖片…',
@@ -4524,6 +4671,10 @@ const tMain = createI18n({
     menuOpen: '開啟…',
     menuSave: '儲存',
     menuSaveAs: '另存新檔…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: '關閉',
     menuEdit: '編輯',
     menuView: '檢視',
@@ -4606,6 +4757,7 @@ const tMain = createI18n({
     pdfPwdShow: '顯示密碼',
     pdfPwdHide: '隱藏密碼',
     pdfDocxLocalCorruptDetail: '檔案已損壞或不是有效的 PDF，無法轉換。',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: '選擇預設儲存位置',
     errSaveDirUnusable: '所選資料夾無法寫入，無法作為預設儲存位置',
     saveDirFallbackMsg: '無法儲存到「文件」資料夾',
@@ -4907,7 +5059,7 @@ async function openFeedbackSurvey(): Promise<void> {
   const lang = currentLang()
   const detail = feedbackDetails(lang, {
     version: app.getVersion(),
-    os: `${platformLabel(process.platform)} ${release()}`,
+    os: osLabel(process.platform, release()),
     language: lang,
   })
   const options = {
@@ -4983,12 +5135,15 @@ function withHelpItems(): void {
   // "Invalid item" and took the main process down on the next tab switch. The
   // trailing entry is filler, discarded; the type check is what stops this from
   // silently regressing if Electron's rule ever changes again.
-  const hasUserGuide = submenu.items.some((i) => i.accelerator === 'F1')
+  const guideAt = submenu.items.findIndex((i) => i.accelerator === 'F1')
+  const hasUserGuide = guideAt >= 0
+  // the user guide comes first and feedback right under it (0.17 리뷰 v2 shell #20)
   const template: MenuItemConstructorOptions[] = hasUserGuide
     ? [feedback, { type: 'separator' }, { role: 'undo' }]
     : [userGuide, { type: 'separator' }, feedback, { type: 'separator' }, { role: 'undo' }]
   const items = Menu.buildFromTemplate(template).items.filter((i) => i.role !== 'undo')
-  items.forEach((item, index) => submenu.insert(index, item))
+  const start = hasUserGuide ? guideAt + 1 : 0
+  items.forEach((item, index) => submenu.insert(start + index, item))
 }
 
 function applyMenuFor(kind: TabKind): void {
@@ -6075,10 +6230,17 @@ function registerHomeIpc(): void {
     const limit = Number.isFinite(query.limit) ? Math.max(0, Math.floor(query.limit!)) : 50
     const starred = new Set(readStarredFiles())
     const result = q ? fileIndexStore.search(q, { exts, offset, limit }) : { hits: [], total: 0 }
+    const progress = indexer.progress()
+    const hits = result.hits.map((h) => ({ ...h, starred: starred.has(h.path) }))
+    // while the index is still being built, recent files found by name come first (#16)
+    const early =
+      q && offset === 0 && (progress.scanning || progress.pending > 0)
+        ? recentNameHits(readRecentFiles(), q, exts, starred, new Set(hits.map((h) => h.path)))
+        : []
     return {
-      hits: result.hits.map((h) => ({ ...h, starred: starred.has(h.path) })),
-      total: result.total,
-      index: indexer.progress(),
+      hits: [...early, ...hits],
+      total: result.total + early.length,
+      index: progress,
     }
   })
 
@@ -6400,17 +6562,27 @@ function registerHomeIpc(): void {
     const list = stringPaths(paths).filter(
       (p) => isUserVisibleFile(p, targets) && statMaybeFile(p)?.isFile() !== false,
     )
-    for (const p of list) {
-      try {
-        await shell.trashItem(p)
-      } catch {
-        // file already gone or trash unavailable; still drop it from the list
-      }
-    }
-    removeRecentFiles(list)
+    // a file open in a tab: its tab closes first (asking about unsaved changes);
+    // a file whose tab stays open is left where it is
+    const trashed = await trashFilesClosingTabs(list, {
+      tabs: () => tabManager?.list() ?? [],
+      canonical: (p) => canonicalPath(p),
+      closeTab: async (id) => {
+        await tabManager?.closeTab(id)
+      },
+      trash: (p) => shell.trashItem(p),
+    })
+    removeRecentFiles(trashed)
     // the files were deliberately destroyed — stars must not survive as ghosts
-    removeStarredFiles(list)
+    removeStarredFiles(trashed)
   })
+
+  ipcMain.handle(HOME_CHANNELS.openTabPaths, (_event, paths: unknown) =>
+    pathsOpenInTabs(stringPaths(paths), {
+      tabs: () => tabManager?.list() ?? [],
+      canonical: (p) => canonicalPath(p),
+    }),
+  )
 
   ipcMain.handle(HOME_CHANNELS.openTrash, () => {
     if (process.platform === 'darwin') {
@@ -6964,7 +7136,8 @@ const TAB_MENU_ICON: Record<TabKind, keyof MenuIconSet> = {
   epub: 'epub',
   photo: 'photo',
   illust: 'illust',
-  help: 'home',
+  // the user guide is a book, not Home (0.17 리뷰 v2 shell #30)
+  help: 'epub',
 }
 
 // tab views see neither DOM events nor a focus change when the user clicks the
@@ -7553,11 +7726,32 @@ function tabMenuActions(): TabMenuActions {
       const win = createDetachedEditorWindow({ ...record, applyMenuFor })
       const area = screen.getDisplayMatching(shellWindow.getBounds()).workArea
       const half = Math.floor(area.width / 2)
+      // the shell goes back to how it was once the window beside it closes (#12)
+      const before = {
+        bounds: shellWindow.getNormalBounds(),
+        maximized: shellWindow.isMaximized(),
+      }
       if (shellWindow.isMaximized()) shellWindow.unmaximize()
       if (shellWindow.isFullScreen()) shellWindow.setFullScreen(false)
-      shellWindow.setBounds({ x: area.x, y: area.y, width: half, height: area.height })
+      const halfBounds = { x: area.x, y: area.y, width: half, height: area.height }
+      shellWindow.setBounds(halfBounds)
       win.setBounds({ x: area.x + half, y: area.y, width: area.width - half, height: area.height })
       win.focus()
+      const filePath = record.filePath
+      const kind = record.kind
+      win.once('closed', () => {
+        // closed here, not docked back: it can be reopened like a closed tab
+        if (filePath && !tabManager?.list().some((t) => t.filePath === filePath)) {
+          recentlyClosed.push({ kind, filePath })
+        }
+        const shell = shellWindow
+        if (!shell || shell.isDestroyed()) return
+        // only if the person left the shell on its half: a window they moved stays put
+        const now = shell.getBounds()
+        if (now.x !== halfBounds.x || now.width !== halfBounds.width) return
+        shell.setBounds(before.bounds)
+        if (before.maximized) shell.maximize()
+      })
     },
     rename: (id) => {
       if (shellWindow && !shellWindow.isDestroyed())
@@ -7576,7 +7770,15 @@ function tabMenuActions(): TabMenuActions {
     },
     move: (id, toIndex) => tabManager?.reorderTab(id, toIndex),
     closeTabs: (ids) => void (tabManager && closeTabsInOrder(tabManager, ids)),
-    reopenClosed: () => recentlyClosed.reopenNext(openDocumentPath, existsSync),
+    // the tab comes back where it was in the strip, not at the end (0.17 리뷰 v2 shell #39)
+    reopenClosed: () =>
+      recentlyClosed.reopenNext((path, entry) => {
+        if (!openDocumentPath(path)) return false
+        const key = canonicalPath(path)
+        const tab = tabManager?.list().find((t) => t.filePath && canonicalPath(t.filePath) === key)
+        if (tab && entry?.index !== undefined) tabManager?.reorderTab(tab.id, entry.index)
+        return true
+      }, existsSync),
     share: (id) => void shareTabFromShell(id),
     // the forms dialog lives on Home: show Home and let it open the dialog with this tab picked
     saveMyForm: (id) => {
@@ -7820,8 +8022,18 @@ function registerTabsIpc(): void {
       ...(front ? [sendToAppItemFor(front, !!tabManager?.canDetachTab(front.id))] : []).filter(
         (item): item is MenuItemConstructorOptions => item !== null,
       ),
+      // 내 양식으로 저장… here too, as in the tab menu (0.17 리뷰 v2 shell #21)
+      ...(front && (front.kind === 'docs' || front.kind === 'hwp')
+        ? [
+            {
+              label: tm('menuTabSaveMyForm'),
+              enabled: !!front.filePath,
+              click: () => tabMenuActions().saveMyForm(front.id),
+            },
+          ]
+        : []),
       { type: 'separator' },
-      settingsMenuItem(currentLang(), () => openSettingsFromMenu()),
+      settingsMenuItem(currentLang(), () => openSettingsFromMenu(), front?.kind === 'home'),
     )
     Menu.buildFromTemplate(appMenuPopupTemplate(menus, appMenuLabels(currentLang()))).popup({
       window: shellWindow,
@@ -7834,7 +8046,8 @@ function registerTabsIpc(): void {
     if (!tabManager || !shellWindow) return
     const menu = Menu.buildFromTemplate(
       tabManager.list().map((tab) => ({
-        label: tab.title,
+        // Home reads as the strip shows it ("한판"), not the window title "Hanpan"
+        label: tab.kind === 'home' ? productName(currentLang() as never) : tab.title,
         type: 'checkbox' as const,
         checked: tab.active,
         icon: menuIcons()[TAB_MENU_ICON[tab.kind]],
@@ -7949,31 +8162,7 @@ function registerTabsIpc(): void {
       // enabled:false so pre-Sonoma macOS / Windows (no 'header' support) degrade
       // to an inert label instead of a clickable no-op item
       { label: tm('menuSectionNew'), type: 'header', enabled: false },
-      {
-        label: tm('menuNewDoc'),
-        icon: menuIcons().docx,
-        click: () => newDocTab(),
-      },
-      {
-        label: tm('menuNewSheet'),
-        icon: menuIcons().xlsx,
-        click: () => void newSheetTab(),
-      },
-      {
-        label: tm('menuNewSlide'),
-        icon: menuIcons().pptx,
-        click: () => newSlideTab(),
-      },
-      {
-        label: tm('menuNewMarkdown'),
-        icon: menuIcons().md,
-        click: () => newMarkdownTab(),
-      },
-      {
-        label: tm('menuNewHtml'),
-        icon: menuIcons().html,
-        click: () => newHtmlTab(),
-      },
+      // Home's order: the mind map, AI 한글, PPT and 한판 양식 first (0.17 리뷰 v2 shell #38)
       {
         label: tm('menuNewMindmap'),
         icon: menuIcons().mindmap,
@@ -7988,6 +8177,46 @@ function registerTabsIpc(): void {
             },
           ]
         : []),
+      {
+        label: tm('menuNewSlide'),
+        icon: menuIcons().pptx,
+        click: () => newSlideTab(),
+      },
+      ...(koreanDocsOn()
+        ? [
+            {
+              label: tm('menuNewTemplates'),
+              click: () => {
+                const win = shellWindow
+                if (!win || win.isDestroyed()) return
+                tabManager?.openHomeTab()
+                win.webContents.send('hanpan:templates-open-request')
+              },
+            },
+          ]
+        : []),
+      { type: 'separator' },
+      {
+        label: tm('menuNewDoc'),
+        icon: menuIcons().docx,
+        click: () => newDocTab(),
+      },
+      {
+        label: tm('menuNewSheet'),
+        icon: menuIcons().xlsx,
+        click: () => void newSheetTab(),
+      },
+      { label: tm('menuNewDesign'), click: () => openDesignWindow() },
+      {
+        label: tm('menuNewMarkdown'),
+        icon: menuIcons().md,
+        click: () => newMarkdownTab(),
+      },
+      {
+        label: tm('menuNewHtml'),
+        icon: menuIcons().html,
+        click: () => newHtmlTab(),
+      },
       {
         label: tm('menuNewPhoto'),
         icon: menuIcons().photo,
@@ -8027,6 +8256,33 @@ async function openFileViaDialog(): Promise<void> {
   if (!result.canceled) for (const path of result.filePaths) openDocumentPath(path)
 }
 
+/** Home's File > Close: the window goes, after a question when documents are open */
+async function closeShellFromHome(): Promise<void> {
+  const win = shellWindow
+  if (!win || win.isDestroyed()) return
+  await closeFromHome({
+    openDocuments: (tabManager?.list() ?? []).filter(
+      (tab) => tab.kind !== 'home' && tab.kind !== 'help',
+    ).length,
+    ask: async (n) => {
+      const { response } = await dialog.showMessageBox(win, {
+        type: 'question',
+        title: productName(currentLang() as never),
+        message: tm('closeWindowAsk'),
+        detail: tm('closeWindowAskDetail', { n }),
+        buttons: [tm('closeWindowYes'), tm('btnCancel')],
+        defaultId: 1,
+        cancelId: 1,
+        noLink: true,
+      })
+      return response === 0
+    },
+    close: () => {
+      if (!win.isDestroyed()) win.close()
+    },
+  })
+}
+
 function buildHomeMenu(): void {
   const isMac = process.platform === 'darwin'
   const template: MenuItemConstructorOptions[] = [
@@ -8059,11 +8315,16 @@ function buildHomeMenu(): void {
           click: () => void openFileViaDialog(),
         },
         { type: 'separator' },
-        { role: 'close', label: tm('menuClose') },
+        {
+          label: tm('menuClose'),
+          accelerator: 'CmdOrCtrl+W',
+          click: () => void closeShellFromHome(),
+        },
       ],
     },
-    viewMenuTemplate(),
+    // File, Edit, View: the order every editor's menu uses (0.17 리뷰 v2 shell #21)
     editMenuTemplate(process.platform, appMenuLabels(currentLang())),
+    viewMenuTemplate(),
     windowMenuTemplate(process.platform, appMenuLabels(currentLang())),
     {
       role: 'help',
@@ -9605,6 +9866,8 @@ registerMyFormsIpc({
     const win = shellWindow
     if (!win) return null
     const picked = await dialog.showOpenDialog(win, {
+      // says what the file is for, not a bare "Open" (0.17 리뷰 v2 shell #33)
+      title: tm('dlgPickMyForm'),
       properties: ['openFile'],
       filters: [
         { name: 'Word, HWP', extensions: ['docx', 'hwp', 'hwpx'] },
@@ -9641,7 +9904,8 @@ registerMyFormsIpc({
 // Hanpan: the Markdown converter. The folder it writes to is chosen here only
 // (a picked file's folder, or the folder dialog), never taken from the page.
 let mdConvertFolder: string | null = null
-const mdFolder = () => mdConvertFolder ?? join(app.getPath('documents'), '한판 변환')
+// the app's save folder (Settings → General), as every other new document uses (0.17 리뷰 v2 shell #4)
+const mdFolder = () => mdConvertFolder ?? defaultSaveDir()
 ipcMain.handle('hanpan:md-folder', () => mdFolder())
 ipcMain.handle('hanpan:md-pick-file', async (event) => {
   const win = BrowserWindow.fromWebContents(event.sender) ?? shellWindow
@@ -9984,8 +10248,21 @@ app.whenReady().then(async () => {
     parentWindow: () => shellWindow,
     lang: () => currentLang(),
     theme: () => currentTheme(),
-    title: (lang) => `${lang === 'ko' ? '디자인' : 'Design'} - ${productName(lang as never)}`,
+    title: (lang) =>
+      `${lang === 'ko' ? '디자인' : lang === 'vi' ? 'Thiết kế' : 'Design'} - ${productName(lang as never)}`,
     gonguKey: () => readStoredAiSettings().gongu?.apiKey ?? '',
+    // a first save starts in the save folder Settings names, not a fixed Documents\Hanpan
+    saveDir: () => defaultSaveDir(),
+    // "Open Settings" beside the board's Gongu error: the shell comes forward on Integrations
+    openSettings: (section) => {
+      const target = shellWindow
+      if (!target || target.isDestroyed()) return
+      if (target.isMinimized()) target.restore()
+      target.show()
+      target.focus()
+      tabManager?.openHomeTab()
+      target.webContents.send(HOME_CHANNELS.openSettings, { section })
+    },
   })
   // Hanpan: Insert ▸ Gongu pictures in the Word and PowerPoint editors, the board's search
   registerGonguPictureIpc({ gonguKey: () => readStoredAiSettings().gongu?.apiKey ?? '' })

@@ -900,10 +900,15 @@ function AccountEntry({
   onOpenChange,
   onFileSearchSettingsChange,
   openRequest,
+  noticeDue = false,
+  onNoticeAcknowledge,
 }: {
   connection: SubscriptionConnection
   /** the settings modal opened or closed */
   onOpenChange?: (open: boolean) => void
+  /** the first-connection notice is owed: Settings shows it inside its AI section */
+  noticeDue?: boolean
+  onNoticeAcknowledge?: () => void
   onFileSearchSettingsChange?: () => void
   /** a fresh object per request: the home list asks to open the modal on a given block */
   openRequest?: SettingsTarget | null
@@ -973,6 +978,8 @@ function AccountEntry({
           skillUpdateDue={skillUpdate}
           onSkillUpdateDue={setSkillUpdate}
           target={target}
+          noticeDue={noticeDue}
+          onNoticeAcknowledge={onNoticeAcknowledge}
         />
       )}
       <button
@@ -1096,6 +1103,32 @@ function DropToOpenOverlay(): ReactElement | null {
 
 // ── Main component ──────────────────────────────────────
 
+/** 한판 양식 card: a ruled form page with a red seal */
+function TemplatesBadge() {
+  return (
+    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true" data-badge="templates">
+      <rect
+        x="6"
+        y="3"
+        width="22"
+        height="28"
+        rx="3"
+        fill="#fff"
+        stroke="#3b5ba5"
+        strokeWidth="1.6"
+      />
+      <path
+        d="M10 10h14M10 14.5h14M10 19h9"
+        stroke="#3b5ba5"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+      <circle cx="23" cy="25" r="4.6" fill="none" stroke="#d1383d" strokeWidth="1.8" />
+      <path d="M21 25h4" stroke="#d1383d" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 export function Home({
   connection,
   aiSettings,
@@ -1120,6 +1153,8 @@ export function Home({
   const [listTotal, setListTotal] = useState(0)
   /** sidebar Recent / Starred counts under the active type filter */
   const [navCounts, setNavCounts] = useState({ recent: 0, starred: 0 })
+  /** recent files under no filter: an empty filter must not read as "no recent files" (#25) */
+  const [recentAll, setRecentAll] = useState(0)
   const [loadingMore, setLoadingMore] = useState(false)
   const [sidebarWidth, setSidebarWidth] = useState(readSidebarWidth)
   const sidebarRef = useRef<HTMLElement>(null)
@@ -1145,12 +1180,6 @@ export function Home({
   // bumped when the Jev settings change so the current results are judged again (or the order dropped)
   const [rerankSettingsTick, setRerankSettingsTick] = useState(0)
   const [settingsRequest, setSettingsRequest] = useState<SettingsTarget | null>(null)
-  // latched once Settings was opened: a connection made there may only be seen
-  // here after the dialog closed, and its notice is still owed then
-  const [settingsVisited, setSettingsVisited] = useState(false)
-  const handleSettingsOpenChange = useCallback((open: boolean) => {
-    if (open) setSettingsVisited(true)
-  }, [])
   useEffect(
     () =>
       window.aiOffice.onOpenSettings?.((target) =>
@@ -1179,6 +1208,8 @@ export function Home({
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set())
   const [renaming, setRenaming] = useState<{ path: string; value: string } | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string[] | null>(null)
+  /** of the files about to be deleted, those open in a tab */
+  const [deleteOpenInTabs, setDeleteOpenInTabs] = useState<string[]>([])
   // unavailable recent entry (missing flag) the user clicked — offer list removal
   const [confirmMissing, setConfirmMissing] = useState<RecentEntry | null>(null)
   const [greetAskKey] = useState(
@@ -1317,6 +1348,7 @@ export function Home({
       if (seq !== requestSeq.current) return
       setEntries(page.entries)
       setListTotal(page.total)
+      if (view === 'recent') setRecentAll(page.totalAll ?? page.total)
       setNavCounts((prev) =>
         view === 'recent'
           ? { ...prev, recent: visiblePageCount(page) }
@@ -1326,6 +1358,7 @@ export function Home({
     // The other view fetches only its count under the same active filter.
     void secondary({ offset: 0, limit: 0, ext }).then((page) => {
       if (seq !== requestSeq.current) return
+      if (view !== 'recent') setRecentAll(page.totalAll ?? page.total)
       setNavCounts((prev) =>
         view === 'recent'
           ? { ...prev, starred: visiblePageCount(page) }
@@ -1690,10 +1723,21 @@ export function Home({
     void window.aiOffice.toggleStar(path).then(refresh)
   }
 
+  /** a short line that says a quiet action happened (0.17 리뷰 v2 shell #28) */
+  const [toast, setToast] = useState<string | null>(null)
+  useEffect(() => {
+    if (!toast) return
+    const handle = window.setTimeout(() => setToast(null), 2500)
+    return () => window.clearTimeout(handle)
+  }, [toast])
+
   const removeRecent = (paths: string[]) => {
     setRowMenu(null)
     setSelected(new Set())
-    void window.aiOffice.removeRecent(paths).then(refresh)
+    void window.aiOffice.removeRecent(paths).then(() => {
+      refresh()
+      setToast(t('toastRemovedFromList', { n: paths.length }))
+    })
   }
 
   /** the Starred view's bulk action: drop the stars, keep the recents entries */
@@ -1714,11 +1758,17 @@ export function Home({
   const deleteFiles = (paths: string[]) => {
     setRowMenu(null)
     setConfirmDelete(paths)
+    setDeleteOpenInTabs([])
+    // the question names files open in a tab: deleting closes those tabs first
+    void Promise.resolve(window.aiOffice.openTabPaths?.(paths))
+      .then((open) => setDeleteOpenInTabs(Array.isArray(open) ? open : []))
+      .catch(() => undefined)
   }
 
   const confirmDeleteNow = () => {
     const paths = confirmDelete ?? []
     setConfirmDelete(null)
+    setDeleteOpenInTabs([])
     setSelected(new Set())
     void window.aiOffice.deleteFiles(paths).then(refresh)
   }
@@ -1980,6 +2030,14 @@ export function Home({
       }),
     [],
   )
+  useEffect(
+    () =>
+      window.hanpanApi?.onOpenTemplatesRequest?.(() => {
+        setFormSaveTabId(undefined)
+        setTemplatesOpen(true)
+      }),
+    [],
+  )
   // 0.17: the widgets and the app card arrangement ("홈 꾸미기")
   const [homeLayout, updateHomeLayout] = useHomeLayout()
   const [customizeOpen, setCustomizeOpen] = useState(false)
@@ -2035,7 +2093,8 @@ export function Home({
         ? [
             {
               key: 'templates',
-              badge: <FileBadge ext="hwp" size={34} />,
+              // a form with a seal, not AI 한글's "가" (0.17 리뷰 v2 shell #29)
+              badge: <TemplatesBadge />,
               title: t('hpTemplatesCard'),
               sub: t('hpTemplatesCardSub'),
               ai: false,
@@ -2393,6 +2452,7 @@ export function Home({
       <button
         className="folder-more-btn"
         aria-label={t('folderMoreActions', { name: entry.name })}
+        data-tip={t('folderMoreActions', { name: entry.name })}
         aria-expanded={menuOpenAt('tree', entry.path)}
         onClick={(e) => {
           e.stopPropagation()
@@ -2626,7 +2686,7 @@ export function Home({
             {canCreate && (
               <button
                 className="folder-add-btn folder-new-btn"
-                data-tip={t('newFolder')}
+                data-tip={t('newFolderTip')}
                 aria-label={t('newFolder')}
                 onClick={() => startCreateFolder(createIn)}
               >
@@ -2807,7 +2867,9 @@ export function Home({
                   role="menuitem"
                   onClick={() => {
                     setRowMenu(null)
-                    void navigator.clipboard.writeText(entry.path)
+                    void navigator.clipboard
+                      .writeText(entry.path)
+                      .then(() => setToast(t('toastPathCopied')))
                   }}
                 >
                   {t('copyPath')}
@@ -3072,10 +3134,12 @@ export function Home({
   const renderSearchSettingsButton = () => (
     <button
       className="file-search-settings"
+      data-search-settings=""
       title={t('searchJevSettings')}
       aria-label={t('searchJevSettings')}
       onClick={() => setSettingsRequest({ section: 'aiMedia', block: 'rerank' })}
     >
+      {/* sliders: a settings button, not a sort arrow */}
       <svg
         width="16"
         height="16"
@@ -3087,8 +3151,10 @@ export function Home({
         strokeLinejoin="round"
         aria-hidden="true"
       >
-        <path d="M12 20V4M12 4l-4 4M12 4l4 4" />
-        <path d="M3 12h6M3 16h5M3 20h4" />
+        <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0" />
+        <circle cx="16" cy="6" r="2" />
+        <circle cx="10" cy="12" r="2" />
+        <circle cx="18" cy="18" r="2" />
       </svg>
     </button>
   )
@@ -3189,7 +3255,9 @@ export function Home({
         {busy && (
           <div className="search-status">
             <span className="load-more-spinner" />
-            {t('searchIndexing', { n: page.index.pending })}
+            {/* "0 files" read as broken while the scan still counts: say what is shown instead */}
+            {page.index.pending > 0 && t('searchIndexing', { n: page.index.pending })}{' '}
+            {t('searchIndexingMore')}
           </div>
         )}
         {page && page.hits.length === 0 && !busy
@@ -3419,9 +3487,25 @@ export function Home({
               renderSearchHeading()
             ) : (
               <div className="recents-heading folder-heading">
+                {/* which folder this is (0.17 리뷰 v2 shell #26) */}
+                {selectedFolder && (
+                  <span className="folder-heading-title" data-folder-heading="">
+                    <b>{fileName(selectedFolder)}</b>
+                    <span className="folder-heading-path" title={selectedFolder}>
+                      {selectedFolder}
+                    </span>
+                  </span>
+                )}
                 <span className="file-count">
                   {t(total === 1 ? 'itemCountOne' : 'itemCount', { n: total })}
                 </span>
+                <button
+                  type="button"
+                  className="folder-back-btn"
+                  onClick={() => changeView('recent')}
+                >
+                  {t('folderBackToRecent')}
+                </button>
               </div>
             )}
           </div>
@@ -3614,7 +3698,7 @@ export function Home({
             renderEmpty(
               view === 'starred'
                 ? t('emptyStarred')
-                : navCounts.recent === 0
+                : recentAll === 0
                   ? t('emptyRecent')
                   : t('emptyFiltered'),
             )
@@ -3819,7 +3903,8 @@ export function Home({
         {renderFolderPanel()}
         <AccountEntry
           connection={connection}
-          onOpenChange={handleSettingsOpenChange}
+          noticeDue={noticeDue}
+          onNoticeAcknowledge={onNoticeAcknowledge}
           onFileSearchSettingsChange={() => setRerankSettingsTick((n) => n + 1)}
           openRequest={settingsRequest}
         />
@@ -3870,6 +3955,11 @@ export function Home({
                 )}
               </ul>
             )}
+            {deleteOpenInTabs.length > 0 && (
+              <p className="modal-warn" data-delete-open-tabs="">
+                {t('deleteOpenTabs', { names: deleteOpenInTabs.map(fileName).join(', ') })}
+              </p>
+            )}
             <div className="modal-buttons">
               <button
                 className="btn btn-secondary"
@@ -3879,7 +3969,7 @@ export function Home({
                 {t('cancel')}
               </button>
               <button className="btn btn-danger" onClick={confirmDeleteNow}>
-                {t('delete')}
+                {deleteOpenInTabs.length > 0 ? t('deleteCloseTabs') : t('delete')}
               </button>
             </div>
           </div>
@@ -4024,16 +4114,19 @@ export function Home({
         </div>
       )}
 
-      {/* the first-connection notice comes up where a connection is made or first
-          used from this screen: in Settings and on the ask panel (an editor's AI
-          panel shows it for itself) */}
-      {noticeDue && (settingsVisited || askMode) && (
-        <FirstConnectionDialog onAcknowledge={onNoticeAcknowledge} />
-      )}
+      {/* the first-connection notice comes up where AI is first used from this
+          screen: the ask panel (an editor's AI panel shows it for itself). In
+          Settings it sits inside the AI section, never over the shell. */}
+      {noticeDue && askMode && <FirstConnectionDialog onAcknowledge={onNoticeAcknowledge} />}
       {/* documents with unsaved content left in recovery copies, asked about
           once at launch; the main process keeps Home in front meanwhile */}
       <LaunchRecoveryList />
       <DropToOpenOverlay />
+      {toast && (
+        <div className="home-toast" role="status" data-home-toast="">
+          {toast}
+        </div>
+      )}
     </div>
   )
 }

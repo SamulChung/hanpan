@@ -84,7 +84,7 @@ import {
   type DesignPage,
   type ShapeName,
 } from './model'
-import { loadPcFonts, type FontChoice, type PcFontInfo } from './fonts'
+import { loadPcFonts, readPcFontsOnFirstGesture, type FontChoice, type PcFontInfo } from './fonts'
 import { ICONS } from './icons'
 import { templatesFor } from './templates'
 import { coverRect, inkPath, shapePath, textPadding } from './style'
@@ -110,6 +110,15 @@ export interface DesignApi extends Partial<DesignAiApi & DesignAiSettingsApi & G
   /** Korean names and Hangul coverage of installed fonts, read from the font files */
   fontFamilyInfo?(families: string[]): Promise<ReadonlyArray<[string, PcFontInfo]>>
   openDesign(): Promise<{ name: string; text: string } | null>
+  /** whether the design has changes not yet saved; the main process asks before closing */
+  setDirty?(dirty: boolean): void
+  /** 저장 / 저장 안 함 / 취소, before unsaved work is replaced */
+  askUnsaved?(): Promise<'save' | 'discard' | 'cancel'>
+  /** the window is closing and the person chose 저장: save, then closeAfterSave */
+  onSaveThenClose?(handler: () => void): () => void
+  closeAfterSave?(): void
+  /** opens Settings → Integrations in the main window (the Gongu key) */
+  openGonguSettings?(): void
   pickImage(): Promise<{ dataUrl: string; width: number; height: number } | null>
 }
 
@@ -267,6 +276,11 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   const [doc, setDoc] = useState<DesignDoc>(() =>
     p.outline ? cardNewsFromOutline(p.outline) : templatesFor(p.lang)[0]!.make(),
   )
+  /** the design as last saved, opened or started; anything else is unsaved work */
+  const [savedDoc, setSavedDoc] = useState<DesignDoc | null>(() => (p.outline ? null : doc))
+  const savedRef = useRef(savedDoc)
+  savedRef.current = savedDoc
+  const dirty = doc !== savedDoc
   const [pageIndex, setPageIndex] = useState(0)
   const [selected, setSelected] = useState<string[]>([])
   const [past, setPast] = useState<DesignDoc[]>([])
@@ -325,7 +339,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   const docRef = useRef(doc)
   docRef.current = doc
   const lastMerge = useRef<{ key: string; at: number } | null>(null)
-  const saveRef = useRef<(mode?: 'save' | 'saveAs') => Promise<void>>(async () => {})
+  const saveRef = useRef<(mode?: 'save' | 'saveAs') => Promise<boolean>>(async () => false)
 
   const pi = Math.min(pageIndex, doc.pages.length - 1)
   const page: DesignPage = doc.pages[pi]!
@@ -354,6 +368,18 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     window.addEventListener('resize', measure)
     return () => window.removeEventListener('resize', measure)
   }, [doc.width, doc.height])
+
+  // the PC's fonts are read at the first press or key anywhere, so the font box already
+  // lists them when it first opens (점검 v2 hwp-design #17)
+  useEffect(
+    () =>
+      readPcFontsOnFirstGesture(window, () => {
+        void loadPcFonts(p.api.fontFamilyInfo?.bind(p.api)).then((list) => {
+          if (list.length) setPcFonts(list)
+        })
+      }),
+    [p.api],
+  )
 
   // fonts kept in the design are handed to the page (screen and export) as it opens
   useEffect(() => {
@@ -1011,6 +1037,11 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
         if (p.api.print) setPrintOpen(true)
         return
       }
+      // Esc closes the credit check first
+      if (event.key === 'Escape' && checkOpen) {
+        setCheckOpen(false)
+        return
+      }
       // Esc leaves the menu, crop mode or the pen even from a slider or field
       if (event.key === 'Escape' && (menu || cropping || pen)) {
         setMenu(null)
@@ -1335,21 +1366,66 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
       conditions: (issue.conditions ?? []).map((c) => names[c]).join(', '),
     })
   }
-  const save = async (mode: 'save' | 'saveAs' = 'save') => {
+  const save = async (mode: 'save' | 'saveAs' = 'save'): Promise<boolean> => {
     const current = docRef.current
     const path = await p.api.saveDesign(JSON.stringify(current), current.name, mode)
-    if (path) say(`${w.saved}: ${path}`)
+    if (!path) return false
+    setSavedDoc(current)
+    say(`${w.saved}: ${path}`)
+    return true
   }
   saveRef.current = save
+  /** Unsaved work about to be replaced: asks once (저장 / 저장 안 함 / 취소); false keeps it. */
+  const confirmReplace = async (): Promise<boolean> => {
+    if (docRef.current === savedRef.current || !p.api.askUnsaved) return true
+    const answer = await p.api.askUnsaved()
+    if (answer === 'cancel') return false
+    return answer === 'save' ? saveRef.current() : true
+  }
   /** a design that starts over (template, blank, outline): its first save asks where */
-  const startNew = (next: DesignDoc) => {
+  const startNew = async (make: () => DesignDoc): Promise<boolean> => {
+    if (!(await confirmReplace())) return false
     void p.api.newDesign?.()
+    const next = make()
     replaceDoc(next)
+    setSavedDoc(next)
+    return true
   }
   const open = async () => {
+    if (!(await confirmReplace())) return
     const file = await p.api.openDesign()
     const parsed = file ? parseDesign(file.text) : null
-    if (parsed) replaceDoc({ ...parsed, name: file!.name })
+    if (!parsed) return
+    const next = { ...parsed, name: file!.name }
+    replaceDoc(next)
+    setSavedDoc(next)
+  }
+  // the main process asks before the window closes on unsaved work
+  useEffect(() => {
+    p.api.setDirty?.(dirty)
+  }, [dirty, p.api])
+  useEffect(
+    () =>
+      p.api.onSaveThenClose?.(() => {
+        void saveRef.current().then((saved) => {
+          if (saved) p.api.closeAfterSave?.()
+        })
+      }),
+    [p.api],
+  )
+
+  /** A layer row's name: a text's first line, else the kind of element. */
+  const layerName = (e: DesignElement): string => {
+    if (e.kind === 'text') return (e.text ?? '').split('\n')[0] || w.text
+    if (e.kind === 'shape') return w.shapes[e.shape ?? 'star']
+    if (e.kind === 'qr') return w.qr
+    if (e.kind === 'image') return w.image
+    if (e.kind === 'draw') return w.drawing
+    if (e.kind === 'icon') {
+      const icon = ICONS.find((i) => i.name === e.icon)
+      return icon ? iconLabel(icon, p.lang) : w.icon
+    }
+    return w[e.kind]
   }
 
   // ---- drawing the page ----
@@ -1738,7 +1814,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
           actions={{
             newDesign: () => {
               const f = FORMATS.find((x) => x.id === formatId) ?? FORMATS[0]!
-              startNew(blankDoc(f))
+              void startNew(() => blankDoc(f))
             },
             open: () => void open(),
             save: () => void save(),
@@ -1839,14 +1915,34 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
           >
             {w.copy}
           </button>
-          <button type="button" data-action="design-png" onClick={() => void exportPicture('png')}>
-            {w.png}
+          {/* 파일 메뉴와 같은 이름: 툴바는 "내보내기" 아래 형식만 보인다 (점검 v2 hwp-design #33) */}
+          <span className="dz-export-label">{w.exportLabel}</span>
+          <button
+            type="button"
+            data-action="design-png"
+            title={w.fileMenu.exportPng}
+            aria-label={w.fileMenu.exportPng}
+            onClick={() => void exportPicture('png')}
+          >
+            PNG
           </button>
-          <button type="button" data-action="design-jpg" onClick={() => void exportPicture('jpg')}>
-            {w.jpg}
+          <button
+            type="button"
+            data-action="design-jpg"
+            title={w.fileMenu.exportJpg}
+            aria-label={w.fileMenu.exportJpg}
+            onClick={() => void exportPicture('jpg')}
+          >
+            JPG
           </button>
-          <button type="button" data-action="design-pdf" onClick={() => void exportPdf()}>
-            {w.pdf}
+          <button
+            type="button"
+            data-action="design-pdf"
+            title={w.fileMenu.exportPdf}
+            aria-label={w.fileMenu.exportPdf}
+            onClick={() => void exportPdf()}
+          >
+            PDF
           </button>
           {p.api.print && (
             <button
@@ -1953,7 +2049,9 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                     type="button"
                     className="dz-template"
                     data-template={t.id}
-                    onClick={() => (startNew(t.make()), setFromTemplate(true))}
+                    onClick={() =>
+                      void startNew(t.make).then((started) => started && setFromTemplate(true))
+                    }
                     title={t.name}
                   >
                     <PagePreview
@@ -1973,7 +2071,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                     key={f.id}
                     type="button"
                     className="ghost"
-                    onClick={() => startNew(blankDoc(f))}
+                    onClick={() => void startNew(() => blankDoc(f))}
                   >
                     + {w.formats[f.id] ?? f.name}
                   </button>
@@ -2000,7 +2098,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                     className="primary"
                     data-action="design-outline-make"
                     onClick={() => {
-                      startNew(cardNewsFromOutline(outlineText))
+                      void startNew(() => cardNewsFromOutline(outlineText))
                       setOutlineOpen(false)
                     }}
                   >
@@ -2122,6 +2220,12 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                     lang={p.lang}
                     api={{ gonguSearch: p.api.gonguSearch, gonguPicture: p.api.gonguPicture }}
                     insert={placeGonguPicture}
+                    {...(p.api.openGonguSettings
+                      ? {
+                          openSettings: () => p.api.openGonguSettings!(),
+                          openSettingsLabel: w.gonguOpenSettings,
+                        }
+                      : {})}
                   />
                 </>
               )}
@@ -2153,7 +2257,6 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                 ))}
               </div>
               {!shownIcons.length && <p className="dz-muted">{w.iconNone}</p>}
-              <p className="dz-muted dz-credit">{w.iconCredit}</p>
               <h3>{w.qr}</h3>
               <div className="dz-col">
                 <input
@@ -2223,8 +2326,18 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                   <li key={e.id} className={selected.includes(e.id) ? 'on' : ''}>
                     <button
                       type="button"
+                      className={`dz-layer-lock${e.locked ? ' on' : ''}`}
+                      aria-label={e.locked ? w.unlock : w.lock}
+                      title={e.locked ? w.unlock : w.lock}
+                      onClick={() => changeElement(e.id, { locked: e.locked ? undefined : true })}
+                    >
+                      {e.locked ? '🔒' : '🔓'}
+                    </button>
+                    <button
+                      type="button"
                       className="dz-layer"
                       data-layer={e.id}
+                      title={layerName(e)}
                       onClick={(ev) =>
                         setSelected(
                           ev.shiftKey
@@ -2250,37 +2363,16 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                                     ? '✦'
                                     : '◆'}
                       </span>
-                      <span className="dz-layer-name">
-                        {e.kind === 'text'
-                          ? (e.text ?? '').split('\n')[0] || w.text
-                          : e.kind === 'shape'
-                            ? w.shapes[e.shape ?? 'star']
-                            : e.kind === 'qr'
-                              ? w.qr
-                              : e.kind === 'image'
-                                ? w.image
-                                : e.kind === 'draw'
-                                  ? w.drawing
-                                  : e.kind === 'icon'
-                                    ? ((icon) => (icon ? iconLabel(icon, p.lang) : w.icon))(
-                                        ICONS.find((i) => i.name === e.icon),
-                                      )
-                                    : w[e.kind]}
-                      </span>
                       {e.group && (
-                        <span className="dz-layer-group" title={w.grouped}>
+                        <span
+                          className="dz-layer-group"
+                          title={w.layerGrouped}
+                          aria-label={w.layerGrouped}
+                        >
                           ⧉
                         </span>
                       )}
-                    </button>
-                    <button
-                      type="button"
-                      className={`dz-layer-lock${e.locked ? ' on' : ''}`}
-                      aria-label={e.locked ? w.unlock : w.lock}
-                      title={e.locked ? w.unlock : w.lock}
-                      onClick={() => changeElement(e.id, { locked: e.locked ? undefined : true })}
-                    >
-                      {e.locked ? '🔒' : '🔓'}
+                      <span className="dz-layer-name">{layerName(e)}</span>
                     </button>
                   </li>
                 ))}
@@ -2314,6 +2406,15 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                 }}
               >
                 {page.elements.map(renderElement)}
+                {page.elements.length === 0 && (
+                  <p
+                    className="dz-empty-hint"
+                    data-hanpan="design-empty"
+                    style={{ fontSize: 15 / scale }}
+                  >
+                    {w.emptyHint}
+                  </p>
+                )}
                 {guides.v.map((x) => (
                   <span
                     key={`v${x}`}

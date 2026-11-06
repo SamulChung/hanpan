@@ -298,6 +298,8 @@ export interface HomeApi {
   duplicateFile(path: string): Promise<void>
   /** move files to the trash and drop them from the recent list */
   deleteFiles(paths: string[]): Promise<void>
+  /** which of these files are open in a tab (deleting them closes those tabs first) */
+  openTabPaths?(paths: string[]): Promise<string[]>
   /** open the OS trash, where deleted files can be restored */
   openTrash(): Promise<void>
   /** the tree roots: the default save folder first, then the folders the user added */
@@ -594,6 +596,7 @@ export const HOME_CHANNELS = {
   renameFile: 'home:rename-file',
   duplicateFile: 'home:duplicate-file',
   deleteFiles: 'home:delete-files',
+  openTabPaths: 'home:open-tab-paths',
   openTrash: 'home:open-trash',
   folderRoots: 'home:folder-roots',
   addFolderRoot: 'home:folder-root-add',

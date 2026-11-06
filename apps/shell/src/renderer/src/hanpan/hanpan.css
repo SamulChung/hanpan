@@ -960,3 +960,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* "start" on an empty box marks the box (0.17 리뷰 v2 shell #38) */
+.hp-start-input[aria-invalid='true'] {
+  border-color: var(--danger, #d1383d);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger, #d1383d) 25%, transparent);
+}

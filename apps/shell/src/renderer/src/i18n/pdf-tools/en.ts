@@ -8,7 +8,7 @@ export const en = {
   toolRotate: 'Rotate all',
   toolNup: 'Merge pages',
   toolPageSize: 'Page size',
-  toolSplitPages: 'Split pages',
+  toolSplitPages: 'Cut one page into several',
   toolStamps: 'Watermark & header/footer',
   toolCrop: 'Crop pages',
   toolExportImages: 'Export images',

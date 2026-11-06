@@ -9,6 +9,13 @@ const KO = {
     '폴더 속 파일을 AI(Claude Code·Codex)가 직접 읽고 고치는 고급 기능입니다. 새 창에서 열립니다.',
 }
 
+/** Vietnamese names it by what it does too (0.17 리뷰 v2 shell #34: "Tác tử") */
+const VI: typeof KO = {
+  agent: 'Làm việc thư mục với AI',
+  agentTip:
+    'Tính năng nâng cao: AI (Claude Code·Codex) đọc và sửa trực tiếp các tệp trong thư mục. Mở trong cửa sổ mới.',
+}
+
 export function homeNavText(lang: string, key: keyof typeof KO): string | undefined {
-  return lang === 'ko' ? KO[key] : undefined
+  return lang === 'ko' ? KO[key] : lang === 'vi' ? VI[key] : undefined
 }

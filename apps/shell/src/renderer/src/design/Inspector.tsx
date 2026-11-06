@@ -14,7 +14,7 @@ import {
   type DesignPage,
   type ShadowKind,
 } from './model'
-import { REWRITE_MODES, type RewriteMode } from './ai'
+import { REWRITE_MODES, translateTarget, type RewriteMode } from './ai'
 import { BUNDLED_FONTS, GONGU_FONTS, SYSTEM_FONTS, type FontChoice } from './fonts'
 import type { AlignMode } from './geometry'
 import { LANG_NATIVE_NAMES, fontLabel, type Words } from './words'
@@ -90,7 +90,8 @@ export function ColorRow(p: {
       type="button"
       className={`dz-swatch${p.value?.toUpperCase() === c.toUpperCase() ? ' on' : ''}`}
       style={{ background: c }}
-      title={c}
+      title={p.w.colorNames[c.toUpperCase()] ?? c}
+      aria-label={p.w.colorNames[c.toUpperCase()] ?? c}
       onClick={() => p.onPick(c)}
     />
   )
@@ -405,7 +406,14 @@ export function Inspector(p: InspectorProps) {
                   onChange={(ev) => p.ai!.setTranslateTo(ev.target.value || null)}
                   data-hanpan="design-translate-to"
                 >
-                  <option value="">{w.translateAuto(LANG_NATIVE_NAMES[p.lang] ?? p.lang)}</option>
+                  <option value="">
+                    {/* the language it really goes to: English for a Korean text (점검 v2 #32) */}
+                    {w.translateAuto(
+                      ((target) => LANG_NATIVE_NAMES[target] ?? target)(
+                        translateTarget(p.lang, e.text ?? ''),
+                      ),
+                    )}
+                  </option>
                   {Object.entries(LANG_NATIVE_NAMES).map(([code, name]) => (
                     <option key={code} value={code}>
                       {name}
@@ -512,7 +520,8 @@ export function Inspector(p: InspectorProps) {
                 type="button"
                 className={e.align === a ? 'on' : ''}
                 onClick={() => set({ align: a })}
-                title={w.align}
+                title={w.textAligns[a]}
+                aria-label={w.textAligns[a]}
               >
                 {a === 'left' ? '⇤' : a === 'center' ? '↔' : '⇥'}
               </button>

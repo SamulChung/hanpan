@@ -49,6 +49,17 @@ contextBridge.exposeInMainWorld('hanpanDesign', {
   saveDesign: (text: string, name: string, mode?: 'save' | 'saveAs') =>
     ipcRenderer.invoke('hanpan-design:save', text, name, mode),
   newDesign: () => ipcRenderer.invoke('hanpan-design:new'),
+  // unsaved work: main asks 저장 / 저장 안 함 / 취소 before the window closes or a design is replaced
+  setDirty: (dirty: boolean) => void ipcRenderer.invoke('hanpan-design:set-dirty', dirty === true),
+  askUnsaved: () => ipcRenderer.invoke('hanpan-design:ask-unsaved'),
+  onSaveThenClose(handler: () => void) {
+    const listener = () => handler()
+    ipcRenderer.on('hanpan-design:save-then-close', listener)
+    return () => ipcRenderer.removeListener('hanpan-design:save-then-close', listener)
+  },
+  closeAfterSave: () => void ipcRenderer.invoke('hanpan-design:close-after-save'),
+  // Settings → Integrations, where the Gongu key goes
+  openGonguSettings: () => void ipcRenderer.invoke('hanpan-design:open-gongu-settings'),
   // Korean names of installed fonts, read from the files (registered by the docs main)
   fontFamilyInfo: (families: string[]) => ipcRenderer.invoke('app:font-family-info', families),
   openDesign: () => ipcRenderer.invoke('hanpan-design:open'),

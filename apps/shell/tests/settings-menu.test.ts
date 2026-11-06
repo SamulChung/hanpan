@@ -17,11 +17,16 @@ describe('the Settings item of the ☰ menu', () => {
     expect(settingsMenuItem('ja', open).label).toBe('設定…')
   })
 
+  it('shows the Ctrl+, hint only on Home, where the key opens Settings (0.17 review v2 #21)', () => {
+    const item = settingsMenuItem('ko', vi.fn(), false)
+    expect(item.accelerator).toBeUndefined()
+  })
+
   it('is in the ☰ popup for every tab and opens Home on the general section', () => {
     const source = readFileSync(new URL('../src/main/index.ts', import.meta.url), 'utf8')
     const handler = source.slice(source.indexOf('TABS_CHANNELS.showAppMenu'))
     expect(handler.slice(0, handler.indexOf('appMenuPopupTemplate('))).toContain(
-      'settingsMenuItem(currentLang(), () => openSettingsFromMenu())',
+      "settingsMenuItem(currentLang(), () => openSettingsFromMenu(), front?.kind === 'home')",
     )
     expect(source).toContain('openSettings: () => openSettingsFromMenu()')
   })
