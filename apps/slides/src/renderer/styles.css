@@ -4622,13 +4622,25 @@ body.vib .slide-list {
 }
 
 /* Format-background pane: fill-type buttons wrap their two-word labels */
-.fp-btn.fp-btn-wrap {
-  flex: 1;
-  height: auto;
-  min-height: 26px;
-  padding: 4px 8px;
-  white-space: normal;
-  line-height: 1.3;
+/* 배경 서식 창 채우기 방식: 좁은 창에서도 낱말이 꺾이지 않는 세로 라디오 목록 */
+.fp-fill-modes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 2px 0 8px;
+}
+.fp-radio {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.fp-radio input {
+  margin: 0;
+  accent-color: var(--accent);
 }
 
 /* Format-background pane: hide-background-graphics checkbox + picture preview */

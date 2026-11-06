@@ -12,7 +12,9 @@ const dialog = readFileSync(join(here, '..', 'src/renderer/components/PrintDialo
 describe('print range hint', () => {
   it('ko text names the slide span', () => {
     setModuleLang('ko')
-    expect(t('appPrintRangeOutOfDeck', { n: 5 })).toBe('이 문서는 1~5장입니다. 장 번호를 다시 넣으세요.')
+    expect(t('appPrintRangeOutOfDeck', { n: 5 })).toBe(
+      '이 문서는 1~5장입니다. 장 번호를 다시 넣으세요.',
+    )
     setModuleLang('zh')
   })
   it('the dialog shows it for a custom range that selects nothing', () => {
