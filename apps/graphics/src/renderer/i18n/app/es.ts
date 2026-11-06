@@ -15,7 +15,10 @@ export const es = {
   quickCenter: 'Centrar en la mesa de trabajo',
   quickExportPngSvg: 'Exportar PNG o SVG',
   quickDone: 'Hecho.',
-  quickRefused: 'La aplicación no pudo hacerlo ahora:',
+  quickNoDocument: 'Primero abre o crea una imagen.',
+  quickFailed:
+    'No se pudo hacer. Selecciona la imagen o capa que quieres cambiar e inténtalo de nuevo.',
+  quickExportFailed: 'No se pudo exportar. Prueba con otra carpeta u otro nombre.',
   quickExported: 'Copia guardada.',
   exportDialogTitle: 'Exportar',
   exportFormat: 'Formato',

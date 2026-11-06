@@ -52,6 +52,8 @@ export default function App({
   const noticeSeq = useRef(0)
   /** the AI or a quick action works on the document: the quick buttons wait */
   const [appBusy, setAppBusy] = useState(false)
+  /** the app has a document open: the quick buttons need one */
+  const [hasDocument, setHasDocument] = useState(false)
   /** the export dialog, open while an export asks for its format and size */
   const [exportAsk, setExportAsk] = useState<{
     size: PixelSize
@@ -125,7 +127,7 @@ export default function App({
       measure: measureImage,
       resize: (bytes, width, height, format) => resizeImage(bytes, width, height, format),
     })
-    if (result.messageKey) notify(result.messageKey, result.detail)
+    if (result.messageKey) notify(result.messageKey)
   }
 
   // one save at a time: a second request while one runs gets that run's outcome
@@ -232,6 +234,7 @@ export default function App({
           adapter,
           (info) => {
             titleRef.current = info.title
+            setHasDocument(info.hasDocument)
             dirtyRef.current.fromApp(info.hasDocument && info.dirty)
             captures.noteDoc(info)
           },
@@ -292,7 +295,12 @@ export default function App({
   return (
     <div className="gx-app" data-kind={kind} data-status={status}>
       {status === 'ready' && (
-        <QuickBar kind={kind} disabled={appBusy} onRun={(id) => void runQuick(id)} />
+        <QuickBar
+          kind={kind}
+          disabled={appBusy}
+          hasDocument={hasDocument}
+          onRun={(id) => void runQuick(id)}
+        />
       )}
       <div className="gx-body">
         <div className="gx-stage">

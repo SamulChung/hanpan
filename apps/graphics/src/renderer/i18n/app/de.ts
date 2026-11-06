@@ -16,7 +16,10 @@ export const de = {
   quickCenter: 'Auf Zeichenfläche zentrieren',
   quickExportPngSvg: 'Als PNG oder SVG exportieren',
   quickDone: 'Fertig.',
-  quickRefused: 'Die App konnte das gerade nicht ausführen:',
+  quickNoDocument: 'Öffnen oder erstellen Sie zuerst ein Bild.',
+  quickFailed:
+    'Das hat nicht geklappt. Wählen Sie das Bild oder die Ebene aus und versuchen Sie es erneut.',
+  quickExportFailed: 'Export nicht möglich. Versuchen Sie einen anderen Ordner oder Namen.',
   quickExported: 'Kopie gespeichert.',
   exportDialogTitle: 'Exportieren',
   exportFormat: 'Format',

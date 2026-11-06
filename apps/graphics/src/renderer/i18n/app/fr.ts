@@ -16,7 +16,10 @@ export const fr = {
   quickCenter: 'Centrer sur le plan de travail',
   quickExportPngSvg: 'Exporter en PNG ou SVG',
   quickDone: 'Terminé.',
-  quickRefused: "L'application n'a pas pu le faire maintenant :",
+  quickNoDocument: "Ouvrez ou créez d'abord une image.",
+  quickFailed:
+    "Cela n'a pas fonctionné. Sélectionnez l'image ou le calque à modifier, puis réessayez.",
+  quickExportFailed: 'Exportation impossible. Essayez un autre dossier ou un autre nom.',
   quickExported: 'Copie enregistrée.',
   exportDialogTitle: 'Exporter',
   exportFormat: 'Format',

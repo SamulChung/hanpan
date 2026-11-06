@@ -154,6 +154,25 @@ describe('the host page', () => {
     expect(api.commitSave).toHaveBeenCalled()
   })
 
+  // 0.17 리뷰 #3: 문서가 없으면 빠른 작업 단추는 꺼져 있고, 왜 꺼졌는지 알려 준다
+  it('keeps the quick buttons off until a document is open', async () => {
+    fakeApi()
+    await mount('illust')
+    await until(() => frame() !== null)
+    const page = readyPage()
+    ;(frame()!.contentWindow as unknown as Record<string, unknown>).vectorcraft = page
+    await until(() => host.querySelector('[data-quick="centerOnArtboard"]') !== null)
+    const buttons = () => [...host.querySelectorAll<HTMLButtonElement>('[data-quick]')]
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 80))
+    })
+    expect(buttons().every((b) => b.disabled)).toBe(true)
+    expect(buttons()[0]!.title).toBe('먼저 그림을 열거나 새로 만들어 주세요.')
+    page.withDocument('Untitled-1', false)
+    await until(() => buttons().every((b) => !b.disabled))
+    expect(buttons()[0]!.title).toBe('')
+  })
+
   it('the menu Undo waits while a quick action or the AI holds the app', async () => {
     const { listeners } = fakeApi()
     await mount('illust')
@@ -162,7 +181,11 @@ describe('the host page', () => {
     // a quick action that does not finish: it holds the lock
     page.handlers['document.inspect'] = () => new Promise(() => {})
     ;(frame()!.contentWindow as unknown as Record<string, unknown>).vectorcraft = page
-    await until(() => host.querySelector('[data-quick="centerOnArtboard"]') !== null)
+    await until(
+      () =>
+        host.querySelector<HTMLButtonElement>('[data-quick="centerOnArtboard"]')?.disabled ===
+        false,
+    )
     await act(async () =>
       (host.querySelector('[data-quick="centerOnArtboard"]') as HTMLButtonElement).click(),
     )
