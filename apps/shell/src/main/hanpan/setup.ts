@@ -48,6 +48,7 @@ import { BrowserWindow, webContents as allWebContents } from 'electron'
 import { docxToOdt } from '@genoffice/odt-engine'
 import { dirname } from 'node:path'
 import { checkConvertRequest, convertMarkdown, type ConvertResult } from './markdown-convert'
+import type { MyForm } from './my-forms'
 import chuseongJpg from './pictures/chuseong.jpg?asset'
 import geumgangJpg from './pictures/geumgang.jpg?asset'
 import inwangJpg from './pictures/inwang.jpg?asset'
@@ -203,6 +204,8 @@ export interface HanpanSetup {
   openTemplate(id: unknown, target: unknown): Promise<{ ok: true } | { ok: false; error: string }>
   /** a new untitled mind map in a tab with `topic` as its central topic (Home's start box) */
   newMap(topic: unknown): Promise<{ ok: true } | { ok: false; error: string }>
+  /** 내 양식: 보관한 파일의 사본을 제목 없는 새 워드·한글 문서로 연다(보관한 파일은 건드리지 않는다) */
+  openMyForm(form: MyForm, bytes: Uint8Array): Promise<boolean>
   sync: ReturnType<typeof createSyncService>
   /** the Markdown converter on Home: one text into every ticked format, in `folder` */
   convertMarkdown(request: unknown, folder: string): Promise<ConvertResult>
@@ -273,6 +276,24 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
     mkdirSync(dir, { recursive: true })
     return dir
   }
+  /** a copy of a file's bytes as a new untitled document in its own temp folder */
+  const openBytesCopy = async (
+    editor: 'hwp' | 'docs',
+    bytes: Uint8Array,
+    fileName: string,
+    title: string,
+  ): Promise<boolean> => {
+    const dir = await makeCopyDir()
+    const path = join(dir, fileName)
+    await atomicWriteFile(path, Buffer.from(bytes))
+    const opened = await deps.openCopy({ editor, path, dir, bytes, fileName, title })
+    if (!opened) {
+      rmSync(dir, { recursive: true, force: true })
+      return false
+    }
+    opened.contents.once('destroyed', () => rmSync(dir, { recursive: true, force: true }))
+    return true
+  }
   /** an official form: a copy of the HWP file as published, unchanged, in a new HWP tab */
   const openForm = async (
     id: string,
@@ -281,17 +302,9 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
     const file = FORM_FILES[id]
     if (!file) return { ok: false, error: 'no such form' }
     const bytes = new Uint8Array(await readFile(file))
-    const fileName = documentFileName(title, 'hwp')
-    const dir = await makeCopyDir()
-    const path = join(dir, fileName)
-    await atomicWriteFile(path, Buffer.from(bytes))
-    const opened = await deps.openCopy({ editor: 'hwp', path, dir, bytes, fileName, title })
-    if (!opened) {
-      rmSync(dir, { recursive: true, force: true })
-      return { ok: false, error: 'the new tab did not open' }
-    }
-    opened.contents.once('destroyed', () => rmSync(dir, { recursive: true, force: true }))
-    return { ok: true }
+    return (await openBytesCopy('hwp', bytes, documentFileName(title, 'hwp'), title))
+      ? { ok: true }
+      : { ok: false, error: 'the new tab did not open' }
   }
   /** A new untitled mind map from outline text, opened in its own tab. */
   const openMap = async (
@@ -419,6 +432,13 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
       if (!topic) return { ok: false, error: 'no topic' }
       return openMap(`- ${topic}\n`, topic)
     },
+    openMyForm: (form, bytes) =>
+      openBytesCopy(
+        form.type === 'docx' ? 'docs' : 'hwp',
+        bytes,
+        documentFileName(form.name, form.type),
+        form.name,
+      ),
     convertMarkdown: (raw, folder) =>
       convertMarkdown(checkConvertRequest(raw), folder, {
         loadHwpEngine,

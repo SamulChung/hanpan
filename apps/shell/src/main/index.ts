@@ -30,6 +30,8 @@ import {
 import type { MenuItemConstructorOptions, NativeImage, WebContents } from 'electron'
 import { atomicWriteFile } from './atomic-write'
 import { setupHanpan } from './hanpan/setup'
+import { createMyFormsStore, type MyFormType } from './hanpan/my-forms'
+import { registerMyFormsIpc, type MyFormSource } from './hanpan/my-forms-ipc'
 import { configureDesignWindow, openDesignWithOutline } from './hanpan/design-window'
 import { tabStripOverlay } from './title-bar-overlay'
 import { shellWindowBackground } from './window-background'
@@ -192,6 +194,7 @@ import {
   uniquePathIn,
   authorizeMcpDocWrite,
   activeAiStreamCount,
+  docsQueryDirty,
 } from '../../../docs/src/main/docs-main'
 import { blankXlsxBuffer } from '@genoffice/xlsx-gateway/gateway/csv-import'
 import { blankPdfBuffer } from '../../../pdf/src/main/blank-pdf'
@@ -296,6 +299,7 @@ import {
   configureHwpRuntime,
   editorTakes,
   hwpFileRenamed,
+  hwpReadBytes,
   hwpReadText,
   requestHwpPrint,
   requestHwpSave,
@@ -9007,6 +9011,68 @@ ipcMain.handle('hanpan:open-template', (_event, id: unknown, target: unknown) =>
     error: error instanceof Error ? error.message : String(error),
   })),
 )
+// Hanpan: 내 양식. The forms live under userData (hanpan-forms), never in the
+// install folder; the Home screen sends only tab ids, form ids and names, the
+// file to import comes from the dialog here, and a deleted form goes to the trash.
+const myFormSourceOf = (tab: {
+  id: string
+  kind: string
+  title: string
+  filePath?: string
+}): MyFormSource | null => {
+  const ext = tab.filePath ? extname(tab.filePath).toLowerCase() : ''
+  if (tab.kind === 'docs' && (!tab.filePath || ext === '.docx'))
+    return { tabId: tab.id, title: tab.title, type: 'docx' }
+  if (tab.kind === 'hwp')
+    return { tabId: tab.id, title: tab.title, type: ext === '.hwp' ? 'hwp' : 'hwpx' }
+  return null
+}
+registerMyFormsIpc({
+  handle: (channel, fn) => ipcMain.handle(channel, fn),
+  store: createMyFormsStore({
+    dir: () => join(app.getPath('userData'), 'hanpan-forms'),
+    now: () => Date.now(),
+    trash: (path) => shell.trashItem(path),
+  }),
+  isHome: (sender) =>
+    !!shellWindow && !shellWindow.isDestroyed() && sender === shellWindow.webContents,
+  pickFile: async () => {
+    const win = shellWindow
+    if (!win) return null
+    const picked = await dialog.showOpenDialog(win, {
+      properties: ['openFile'],
+      filters: [
+        { name: 'Word, HWP', extensions: ['docx', 'hwp', 'hwpx'] },
+        { name: '*', extensions: ['*'] },
+      ],
+    })
+    return picked.canceled ? null : (picked.filePaths[0] ?? null)
+  },
+  sources: () =>
+    (tabManager?.list() ?? []).flatMap((tab) => {
+      const source = myFormSourceOf(tab)
+      return source ? [source] : []
+    }),
+  readTab: async (tabId) => {
+    const manager = tabManager
+    const tab = manager?.list().find((t) => t.id === tabId)
+    const contents = tab && manager?.webContentsForTab(tab.id)
+    if (!tab || !contents || contents.isDestroyed()) return { ok: false, error: 'not-found' }
+    if (tab.kind === 'hwp') {
+      // the editor's current document, unsaved edits included
+      const bytes = await hwpReadBytes(contents)
+      const type: MyFormType = bytes[0] === 0x50 && bytes[1] === 0x4b ? 'hwpx' : 'hwp'
+      return { ok: true, bytes, type }
+    }
+    if (tab.kind !== 'docs') return { ok: false, error: 'unsupported-type' }
+    if (!tab.filePath) return { ok: false, error: 'not-saved' }
+    if (extname(tab.filePath).toLowerCase() !== '.docx')
+      return { ok: false, error: 'unsupported-type' }
+    if (await docsQueryDirty(contents)) return { ok: false, error: 'unsaved-changes' }
+    return { ok: true, bytes: new Uint8Array(readFileSync(tab.filePath)), type: 'docx' }
+  },
+  openCopy: (form, bytes) => hanpan.openMyForm(form, bytes),
+})
 // Hanpan: the Markdown converter. The folder it writes to is chosen here only
 // (a picked file's folder, or the folder dialog), never taken from the page.
 let mdConvertFolder: string | null = null
