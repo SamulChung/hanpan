@@ -33,6 +33,7 @@ import { setupHanpan } from './hanpan/setup'
 import { createMyFormsStore, type MyFormType } from './hanpan/my-forms'
 import { registerMyFormsIpc, type MyFormSource } from './hanpan/my-forms-ipc'
 import { configureDesignWindow, openDesignWithOutline } from './hanpan/design-window'
+import { registerGonguPictureIpc } from './hanpan/gongu-pictures'
 import { tabStripOverlay } from './title-bar-overlay'
 import { shellWindowBackground } from './window-background'
 import { installPointerSize } from './pointer-size'
@@ -9429,6 +9430,8 @@ app.whenReady().then(async () => {
     title: (lang) => `${lang === 'ko' ? '디자인' : 'Design'} - ${productName(lang as never)}`,
     gonguKey: () => readStoredAiSettings().gongu?.apiKey ?? '',
   })
+  // Hanpan: Insert ▸ Gongu pictures in the Word and PowerPoint editors, the board's search
+  registerGonguPictureIpc({ gonguKey: () => readStoredAiSettings().gongu?.apiKey ?? '' })
   configurePdfToolsWindow({
     parentWindow: () => shellWindow,
     lang: () => currentLang(),
