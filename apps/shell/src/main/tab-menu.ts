@@ -1,6 +1,7 @@
 import type { MenuItemConstructorOptions } from 'electron'
 import { extname } from 'node:path'
 import type { TabSummary } from '../shared/tabs-api'
+import { tabDocumentActionSupported } from './tab-document-actions'
 
 export type TabMenuStringKey =
   | 'menuTabSave'
@@ -152,7 +153,8 @@ export function tabMenuTemplate(input: TabMenuInput): MenuItemConstructorOptions
     {
       id: 'print',
       label: tm('menuTabPrint'),
-      enabled: document,
+      // AI 포토, AI 일러스트 and books have no print: the entry is off rather than dead
+      enabled: document && tabDocumentActionSupported(tab.kind, 'print'),
       click: () => actions.print(tab.id),
     },
     { type: 'separator' },

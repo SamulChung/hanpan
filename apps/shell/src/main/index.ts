@@ -7210,6 +7210,20 @@ function tabMenuActions(): TabMenuActions {
           void requestHtmlSave(contents, mode)
         },
         printHtml: sendHtmlPrintRequest,
+        saveHwp: (contents, mode) => {
+          void requestHwpSave(contents, mode)
+        },
+        printHwp: (contents) => requestHwpPrint(contents, 'print'),
+        saveMindmap: (contents, mode) => {
+          void requestMindmapSave(contents, mode)
+        },
+        printMindmap: sendMindmapPrintRequest,
+        saveEpub: (contents, mode) => {
+          void requestEpubSave(contents, mode)
+        },
+        saveGraphics: (contents, mode) => {
+          void requestGraphicsSave(contents, mode)
+        },
       },
       id,
       action,
