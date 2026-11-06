@@ -287,6 +287,11 @@ html.genoffice-popover-open .ribbon-tabs {
   color: var(--text-tertiary);
 }
 
+.mm-layout-label {
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
 .mm-layout-pick {
   min-width: 96px;
   font-size: 12.5px;

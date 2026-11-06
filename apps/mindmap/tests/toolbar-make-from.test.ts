@@ -208,3 +208,15 @@ describe('the File menu in the toolbar', () => {
     )
   })
 })
+
+describe('the ribbon tab names', () => {
+  it('say what the tabs hold: layout and theme under Design, the look of a topic under Format; the layout menu is named', async () => {
+    await render('ko', props(() => {}))
+    const name = (tab: string) =>
+      container.querySelector(`[data-ribbon-tab="${tab}"]`)!.textContent
+    expect(name('format')).toBe('디자인')
+    expect(name('style')).toBe('서식')
+    expect(container.querySelector('.mm-layout .mm-layout-label')!.textContent).toBe('배치')
+  })
+})
+

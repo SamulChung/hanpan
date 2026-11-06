@@ -399,6 +399,7 @@ export function Toolbar(p: ToolbarProps) {
                 data-tip={p.layoutExact ? t('tbLayout') : t('layoutStandIn')}
               >
                 <IconLayout />
+                <span className="mm-layout-label">{t('tbLayout')}</span>
                 <Dropdown
                   className="mm-layout-pick"
                   value={p.layout}
