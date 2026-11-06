@@ -145,6 +145,15 @@ const ZOOM_MAX = 3
 const ZOOM_STEP = 0.1
 /** How long the map is left alone before a change nobody reported is looked for. */
 const QUIET_SYNC_DELAY_MS = 300
+/** Room kept between a topic brought into view and the edge of the map, in screen pixels. */
+const VIEW_MARGIN = 24
+/** The library's steps after which the topic they made or named is brought into view. */
+const REVEALED_OPERATIONS: ReadonlySet<string> = new Set([
+  'addChild',
+  'insertSibling',
+  'insertParent',
+  'finishEdit',
+])
 
 export class MapController {
   readonly mind: MindElixirInstance
@@ -1391,6 +1400,28 @@ export class MapController {
    * its file with branches on the other side. The topics are moved, not drawn
    * again, so a topic being named keeps its edit box.
    */
+  /**
+   * A topic just added or being named stands wholly inside the map: the map is
+   * moved just enough, with a margin. The library only moves when a topic is
+   * almost all outside, so a new topic half under the AI panel stayed there.
+   */
+  #keepInView(topicId: string): void {
+    const topic = this.#element(topicId)
+    if (!topic) return
+    const box = this.mind.container.getBoundingClientRect()
+    const at = topic.getBoundingClientRect()
+    if (box.width === 0 || box.height === 0) return
+    const shift = (start: number, end: number, from: number, to: number): number => {
+      if (end - start > to - from - 2 * VIEW_MARGIN) return 0
+      if (end > to - VIEW_MARGIN) return to - VIEW_MARGIN - end
+      if (start < from + VIEW_MARGIN) return from + VIEW_MARGIN - start
+      return 0
+    }
+    const dx = shift(at.left, at.right, box.left, box.right)
+    const dy = shift(at.top, at.bottom, box.top, box.bottom)
+    if (dx !== 0 || dy !== 0) this.mind.move(dx, dy)
+  }
+
   #balanceSides(): void {
     const mind = this.mind
     if (mind.direction !== 2 || this.#structure !== 'map') return
@@ -1417,11 +1448,15 @@ export class MapController {
     // Opening the edit box changes nothing yet, and the library records no step for it.
     if (operation.name === 'beginEdit') {
       this.#dressEditBox(operation.obj.id)
+      this.#keepInView(operation.obj.id)
       return
     }
     // The session recorded this step and the screen was drawn from it: nothing to reconcile.
     if (this.#recordedBySession) return
     this.#balanceSides()
+    if (REVEALED_OPERATIONS.has(operation.name) && 'obj' in operation && operation.obj) {
+      this.#keepInView((operation.obj as { id: string }).id)
+    }
     const cut = this.#cutPending
     this.#cutPending = null
     if (operation.name === 'removeSummary') this.#removedSummaries.add(operation.obj.id)

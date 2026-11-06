@@ -185,6 +185,34 @@ describe('both sides', () => {
   })
 })
 
+describe('the topic being added or named', () => {
+  it('is brought fully into view when it lands partly outside the map', async () => {
+    const { mind, root } = await mount()
+    const rect = (left: number, top: number, width: number, height: number) =>
+      ({ left, top, right: left + width, bottom: top + height, width, height, x: left, y: top }) as DOMRect
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (
+      this: HTMLElement,
+    ) {
+      if (this.classList.contains('map-container')) return rect(0, 0, 800, 600)
+      // every topic stands half outside the right edge, as under the AI panel
+      if (this.tagName === 'ME-TPC') return rect(700, 300, 120, 30)
+      return rect(0, 0, 0, 0)
+    })
+    const move = vi.spyOn(mind, 'move').mockImplementation(() => true)
+    mind.selectNode(mind.findEle(root().id))
+    move.mockClear()
+    press(mind.container, 'Tab')
+    await settle()
+    expect(move).toHaveBeenCalled()
+    const [dx, dy] = move.mock.calls.at(-1)!
+    // just far enough left that the whole topic shows, with a margin; no vertical jump
+    expect(dx).toBeLessThanOrEqual(-36)
+    expect(dx).toBeGreaterThan(-100)
+    expect(dy).toBe(0)
+    vi.restoreAllMocks()
+  })
+})
+
 describe('shortcuts', () => {
   it('Tab adds a child topic with an id the file can keep', async () => {
     const { controller, mind, root, attached } = await mount()
