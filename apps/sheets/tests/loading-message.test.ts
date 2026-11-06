@@ -19,4 +19,10 @@ describe('the streaming status line', () => {
     expect(text).not.toContain('1a2b3c4d')
     expect(text).not.toMatch(/stream/i)
   })
+
+  it('reads the same while the sheet is still being indexed', () => {
+    expect(tFor('ko', 'appIndexing', params).startsWith('파일을 여는 중')).toBe(true)
+    expect(tFor('ko', 'appIndexing', params)).not.toContain('인덱스')
+    expect(tFor('en', 'appIndexing', params)).not.toMatch(/index/i)
+  })
 })

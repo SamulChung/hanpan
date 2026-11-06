@@ -531,6 +531,7 @@ html.genoffice-popover-open .ribbon-tabs {
   left: 0;
   z-index: 1000;
   min-width: 220px;
+  width: max-content;
   padding: 5px;
   background: var(--surface);
   border: 1px solid var(--border-strong);
@@ -539,6 +540,8 @@ html.genoffice-popover-open .ribbon-tabs {
 }
 
 .sheet-file-pop button {
+  /* labels never wrap ("다른 이름으로 저장…" broke onto two lines) */
+  white-space: nowrap;
   display: flex;
   justify-content: space-between;
   align-items: center;

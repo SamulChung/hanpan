@@ -616,7 +616,7 @@ export const en = {
   appRecalcPartial:
     'Formulas recalculated from your edits — {count} kept cached values (functions the fallback engine lacks).',
   appRecalcDone: 'Formulas recalculated from your edits ({count} cells, engine fallback).',
-  appIndexing: 'Indexing {name}: {rows} rows ready.',
+  appIndexing: 'Opening file… ({rows} rows)',
   appStreamingRows: 'Opening file… ({rows} rows)',
   appLoadRangeFailed: 'Unable to load the visible range.',
   appFullyLoaded: 'Workbook fully loaded — formulas recalculate live, rows/columns editable.',
