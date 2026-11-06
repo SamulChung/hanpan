@@ -3487,9 +3487,25 @@ export function Home({
               renderSearchHeading()
             ) : (
               <div className="recents-heading folder-heading">
+                {/* which folder this is (0.17 리뷰 v2 shell #26) */}
+                {selectedFolder && (
+                  <span className="folder-heading-title" data-folder-heading="">
+                    <b>{fileName(selectedFolder)}</b>
+                    <span className="folder-heading-path" title={selectedFolder}>
+                      {selectedFolder}
+                    </span>
+                  </span>
+                )}
                 <span className="file-count">
                   {t(total === 1 ? 'itemCountOne' : 'itemCount', { n: total })}
                 </span>
+                <button
+                  type="button"
+                  className="folder-back-btn"
+                  onClick={() => changeView('recent')}
+                >
+                  {t('folderBackToRecent')}
+                </button>
               </div>
             )}
           </div>

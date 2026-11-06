@@ -580,3 +580,16 @@ describe('0.17 review v2: starting a mind map with an empty box', () => {
     expect(newMap).not.toHaveBeenCalled()
   })
 })
+
+describe('0.17 review v2: a sidebar folder says which folder it is', () => {
+  it('names the folder and leads back to Recent', async () => {
+    await renderHome()
+    const folder = Array.from(host.querySelectorAll<HTMLElement>('.folder-panel *')).find(
+      (el) => el.textContent?.trim() === 'work' && el.closest('button, [role="treeitem"]'),
+    )
+    await click(folder?.closest('button, [role="treeitem"]'))
+    expect(host.querySelector('[data-folder-heading]')?.textContent).toContain('work')
+    await click(host.querySelector('.folder-back-btn'))
+    expect(host.querySelector('[data-folder-heading]')).toBeNull()
+  })
+})
