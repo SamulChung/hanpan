@@ -8,7 +8,7 @@
  * and the About box names Hanpan while keeping rhwp's credit, licence list and the HWP
  * specification notice. (0.17 review #12 and the HWP multi-language item.)
  */
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import {
@@ -18,6 +18,7 @@ import {
   patchTargets,
 } from '../scripts/rhwp-patches.mjs'
 import {
+  APP_STRINGS,
   EXTRA_LOCALES,
   aboutText,
   styleDisplayName,
@@ -171,7 +172,7 @@ describe('the studio language patches', () => {
     expect(coreTs).toContain(`from '${STUDIO_LOCALES_MODULE}'`)
     expect(coreTs).toMatch(/SUPPORTED[^=]*= \['ko', 'en', \.\.\./)
     const index = applyPatch('studio-locale-register', read('src/i18n/index.ts'))
-    expect(index).toMatch(/registerCatalog\(locale as Locale, \{ \.\.\.enCatalog, \.\.\.catalog \}/)
+    expect(index).toMatch(/registerCatalog\(locale as Locale, \{ \.\.\.enCatalog, .*\.\.\.catalog/)
   })
 
   it.skipIf(!fetched)(
@@ -185,4 +186,111 @@ describe('the studio language patches', () => {
       expect(about).toContain('rhwp: Edward Kim')
     },
   )
+})
+
+/**
+ * Text the studio writes straight into its markup instead of asking its catalogs: the page
+ * setup dialog's orientation, binding and margin names and the editing input's accessible
+ * name stayed Korean in an English or Vietnamese tab (0.17 acceptance D3/D7). The app gives
+ * them keys of its own (APP_STRINGS, in every studio language) and patches the studio to ask
+ * for them.
+ */
+describe('studio text with no catalog key', () => {
+  const HANGUL_LITERAL = /(['"`])((?:(?!\1).)*?[가-힣](?:(?!\1).)*?)\1/g
+  /** Korean string literals in code, comments left out. */
+  const koreanLiterals = (code: string) =>
+    code
+      .split(/\r?\n/)
+      .filter((l) => !/^\s*(\/\/|\*|\/\*)/.test(l))
+      .map((l) => l.replace(/\s\/\/.*$/, ''))
+      .flatMap((l) => [...l.matchAll(HANGUL_LITERAL)].map((m) => m[2]))
+
+  /** The studio source as the build compiles it: every studio patch that targets it applied. */
+  const patched = (file: string) => {
+    let code = read(file)
+    for (const name of STUDIO_PATCHES) {
+      if (patchTargets(name, join(studio, file))) code = applyPatch(name, code)
+    }
+    return code
+  }
+
+  it('has the same keys in Korean, English and every added language', () => {
+    const keys = Object.keys(APP_STRINGS.ko).sort()
+    expect(keys.length).toBeGreaterThan(10)
+    for (const locale of ['en', ...Object.keys(EXTRA_LOCALES)]) {
+      const words = (APP_STRINGS as Record<string, Record<string, string>>)[locale]
+      expect(Object.keys(words ?? {}).sort(), locale).toEqual(keys)
+      for (const [key, text] of Object.entries(words)) {
+        expect(text, `${locale} ${key}`).toBeTruthy()
+        expect(text, `${locale} ${key}`).not.toMatch(/[가-힣]/)
+      }
+    }
+  })
+
+  it.skipIf(!fetched)('leaves no Korean in the page setup dialog or the editing input', () => {
+    for (const file of ['src/ui/page-setup-dialog.ts', 'src/engine/input-handler.ts']) {
+      const code = patched(file)
+      const left = koreanLiterals(code)
+      if (file.endsWith('page-setup-dialog.ts')) expect(left, file).toEqual([])
+      else expect(left, file).not.toContain('문서 편집 입력')
+      const keys = [...code.matchAll(/i18nText\('(hanpan\.[^']+)'\)/g)].map((m) => m[1])
+      expect(keys.length, file).toBeGreaterThan(0)
+      for (const key of keys) expect(APP_STRINGS.ko, key).toHaveProperty([key])
+    }
+  })
+
+  it.skipIf(!fetched)('registers the app strings with every studio language', () => {
+    const index = applyPatch('studio-locale-register', read('src/i18n/index.ts'))
+    expect(index).toContain("registerCatalog('ko', { ...koCatalog, ...APP_STRINGS.ko }")
+    expect(index).toContain("registerCatalog('en', { ...enCatalog, ...APP_STRINGS.en }")
+    expect(index).toMatch(
+      /registerCatalog\(locale as Locale, \{ \.\.\.enCatalog, \.\.\.APP_STRINGS\.en, \.\.\.catalog, \.\.\.APP_STRINGS\[locale as keyof typeof APP_STRINGS\] \}/,
+    )
+  })
+
+  // The studio still writes Korean straight into these dialogs. A file that is not listed, or
+  // more Korean in a listed one (an rhwp upgrade, a patch), fails here so it gets keys first.
+  const KNOWN_HARDCODED_KOREAN: Record<string, number> = {
+    'bookmark-dialog.ts': 2,
+    'cell-border-bg-dialog.ts': 8,
+    'chart-data-dialog.ts': 10,
+    'char-shape-dialog.ts': 9,
+    'compare-dialog.ts': 47,
+    'compare-result-window.ts': 26,
+    'dialog-apply.ts': 2,
+    'equation-editor-dialog.ts': 3,
+    'equation-props-dialog.ts': 9,
+    'field-insert-dialog.ts': 2,
+    'font-set-edit-dialog.ts': 3,
+    'formula-dialog.ts': 22,
+    'history-dialog.ts': 46,
+    'hml-import-warning-message.ts': 4,
+    'hml-save-format-message.ts': 3,
+    'hyperlink-dialog.ts': 4,
+    'numbering-dialog.ts': 3,
+    'options-dialog.ts': 6,
+    'page-border-dialog.ts': 19,
+    'style-dialog.ts': 9,
+    'style-edit-dialog.ts': 6,
+    'table-cell-props-dialog.ts': 9,
+    'table-row-column-dialog.ts': 6,
+    // font family names, which stay as they are
+    'toolbar.ts': 9,
+  }
+
+  it.skipIf(!fetched)('finds Korean written into the studio UI only where it is known', () => {
+    const ui = join(studio, 'src', 'ui')
+    const found: Record<string, number> = {}
+    for (const name of readdirSync(ui)) {
+      if (!name.endsWith('.ts')) continue
+      const n = koreanLiterals(patched(`src/ui/${name}`)).length
+      if (n) found[name] = n
+    }
+    for (const [name, n] of Object.entries(found)) {
+      expect(n, `${name}: Korean written into the UI; give it keys`).toBeLessThanOrEqual(
+        KNOWN_HARDCODED_KOREAN[name] ?? 0,
+      )
+    }
+    expect(found['page-setup-dialog.ts']).toBeUndefined()
+  })
 })
