@@ -174,6 +174,7 @@ export const vi = {
   appPrintHidden: 'In các trang chiếu ẩn',
   appPrintPageCount: '{n} trang',
   appPrintNoPages: 'Không có trang chiếu nào để in',
+  appPrintRangeOutOfDeck: 'Bản trình bày này có các trang 1–{n}. Hãy nhập số trang trong khoảng đó.',
   appPrintRendering: 'Đang tạo bản xem trước…',
   appGuideDragTip: 'Kéo để di chuyển; nhấp đúp hoặc kéo ra ngoài vùng vẽ để xóa',
   appPrintFailed: 'In thất bại: {error}',

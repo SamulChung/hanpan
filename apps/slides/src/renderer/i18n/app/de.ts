@@ -185,6 +185,7 @@ export const de = {
   appPrintHidden: 'Ausgeblendete Folien drucken',
   appPrintPageCount: '{n} Seiten',
   appPrintNoPages: 'Keine Folien zum Drucken',
+  appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
   appPrintRendering: 'Vorschau wird erstellt…',
   appGuideDragTip:
     'Zum Verschieben ziehen; zum Entfernen doppelklicken oder aus der Zeichenfläche ziehen',

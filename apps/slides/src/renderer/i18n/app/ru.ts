@@ -176,6 +176,7 @@ export const ru = {
   appPrintHidden: 'Печатать скрытые слайды',
   appPrintPageCount: 'Страниц: {n}',
   appPrintNoPages: 'Нет слайдов для печати',
+  appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
   appPrintRendering: 'Создание предварительного просмотра…',
   appGuideDragTip:
     'Перетащите, чтобы переместить; двойной щелчок или перетаскивание за пределы — удалить',

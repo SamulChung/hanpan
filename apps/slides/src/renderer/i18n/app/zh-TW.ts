@@ -162,6 +162,7 @@ export const zhTW = {
   appPrintHidden: '列印隱藏投影片',
   appPrintPageCount: '共 {n} 頁',
   appPrintNoPages: '沒有可列印的投影片',
+  appPrintRangeOutOfDeck: '本簡報共 1–{n} 頁。請輸入此範圍內的頁碼。',
   appPrintRendering: '正在產生預覽…',
   appGuideDragTip: '拖曳移動參考線，按兩下或拖出畫布刪除',
   appPrintFailed: '列印失敗：{error}',

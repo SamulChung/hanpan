@@ -180,6 +180,7 @@ export const hi = {
   appPrintHidden: 'छिपी स्लाइड प्रिंट करें',
   appPrintPageCount: 'कुल {n} पृष्ठ',
   appPrintNoPages: 'प्रिंट करने के लिए कोई स्लाइड नहीं',
+  appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
   appPrintRendering: 'पूर्वावलोकन बनाया जा रहा है…',
   appGuideDragTip: 'हिलाने के लिए खींचें; हटाने के लिए डबल-क्लिक करें या कैनवास से बाहर खींचें',
   appPrintFailed: 'मुद्रण विफल: {error}',

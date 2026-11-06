@@ -181,6 +181,7 @@ export const es = {
   appPrintHidden: 'Imprimir diapositivas ocultas',
   appPrintPageCount: '{n} páginas',
   appPrintNoPages: 'No hay diapositivas para imprimir',
+  appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
   appPrintRendering: 'Generando la vista previa…',
   appGuideDragTip: 'Arrastra para mover; doble clic o arrastra fuera del lienzo para eliminar',
   appPrintFailed: 'Error al imprimir: {error}',

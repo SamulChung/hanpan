@@ -170,6 +170,7 @@ export const ko = {
   appPrintHidden: '숨겨진 슬라이드 인쇄',
   appPrintPageCount: '총 {n}페이지',
   appPrintNoPages: '인쇄할 슬라이드가 없습니다',
+  appPrintRangeOutOfDeck: '이 문서는 1~{n}장입니다. 장 번호를 다시 넣으세요.',
   appPrintRendering: '미리 보기 생성 중…',
   appGuideDragTip: '끌어서 이동, 두 번 클릭하거나 캔버스 밖으로 끌면 삭제',
   appPrintFailed: '인쇄 실패: {error}',

@@ -173,6 +173,7 @@ export const ja = {
   appPrintHidden: '非表示スライドを印刷する',
   appPrintPageCount: '全 {n} ページ',
   appPrintNoPages: '印刷できるスライドがありません',
+  appPrintRangeOutOfDeck: 'このプレゼンテーションは 1～{n} 枚です。その範囲の番号を入力してください。',
   appPrintRendering: 'プレビューを生成しています…',
   appGuideDragTip: 'ドラッグで移動、ダブルクリックまたは画面外へドラッグで削除',
   appPrintFailed: '印刷に失敗しました: {error}',

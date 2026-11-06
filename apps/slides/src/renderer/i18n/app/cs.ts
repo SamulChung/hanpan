@@ -174,6 +174,7 @@ export const cs = {
   appPrintHidden: 'Tisknout skryté snímky',
   appPrintPageCount: '{n} stránek',
   appPrintNoPages: 'Žádné snímky k tisku',
+  appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
   appPrintRendering: 'Generuje se náhled…',
   appGuideDragTip: 'Tažením přesunete; dvojklikem nebo přetažením mimo plátno odeberete',
   appPrintFailed: 'Tisk se nezdařil: {error}',

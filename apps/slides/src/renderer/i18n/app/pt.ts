@@ -181,6 +181,7 @@ export const pt = {
   appPrintHidden: 'Imprimir slides ocultos',
   appPrintPageCount: '{n} páginas',
   appPrintNoPages: 'Nenhum slide para imprimir',
+  appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
   appPrintRendering: 'Gerando a visualização…',
   appGuideDragTip:
     'Arraste para mover; clique duas vezes ou arraste para fora da tela para remover',

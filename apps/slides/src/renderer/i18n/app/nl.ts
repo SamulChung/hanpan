@@ -184,6 +184,7 @@ export const nl = {
   appPrintHidden: "Verborgen dia's afdrukken",
   appPrintPageCount: "{n} pagina's",
   appPrintNoPages: "Geen dia's om af te drukken",
+  appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
   appPrintRendering: 'Voorbeeld genereren…',
   appGuideDragTip:
     'Sleep om te verplaatsen; dubbelklik of sleep van het canvas af om te verwijderen',

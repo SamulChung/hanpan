@@ -172,6 +172,7 @@ export const en = {
   appPrintHidden: 'Print hidden slides',
   appPrintPageCount: '{n} pages',
   appPrintNoPages: 'No slides to print',
+  appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
   appPrintRendering: 'Generating preview…',
   appGuideDragTip: 'Drag to move; double-click or drag off canvas to remove',
   appPrintFailed: 'Print failed: {error}',

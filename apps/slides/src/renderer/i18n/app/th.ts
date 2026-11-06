@@ -169,6 +169,7 @@ export const th = {
   appPrintHidden: 'พิมพ์สไลด์ที่ซ่อน',
   appPrintPageCount: 'ทั้งหมด {n} หน้า',
   appPrintNoPages: 'ไม่มีสไลด์ที่จะพิมพ์',
+  appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
   appPrintRendering: 'กำลังสร้างตัวอย่าง…',
   appGuideDragTip: 'ลากเพื่อย้าย ดับเบิลคลิกหรือลากออกนอกพื้นที่เพื่อลบ',
   appPrintFailed: 'พิมพ์ไม่สำเร็จ: {error}',

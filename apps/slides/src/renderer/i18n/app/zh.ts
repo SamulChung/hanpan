@@ -161,6 +161,7 @@ export const zh = {
   appPrintHidden: '打印隐藏幻灯片',
   appPrintPageCount: '共 {n} 页',
   appPrintNoPages: '没有可打印的幻灯片',
+  appPrintRangeOutOfDeck: '本演示文稿共 1–{n} 页。请输入此范围内的页码。',
   appPrintRendering: '正在生成预览…',
   appGuideDragTip: '拖动移动参考线,双击或拖出画布删除',
   appPrintFailed: '打印失败：{error}',

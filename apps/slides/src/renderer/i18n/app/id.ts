@@ -176,6 +176,7 @@ export const id = {
   appPrintHidden: 'Cetak slide tersembunyi',
   appPrintPageCount: '{n} halaman',
   appPrintNoPages: 'Tidak ada slide untuk dicetak',
+  appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
   appPrintRendering: 'Membuat pratinjau…',
   appGuideDragTip:
     'Seret untuk memindahkan; klik dua kali atau seret keluar kanvas untuk menghapus',

@@ -183,6 +183,7 @@ export const it = {
   appPrintHidden: 'Stampa diapositive nascoste',
   appPrintPageCount: '{n} pagine',
   appPrintNoPages: 'Nessuna diapositiva da stampare',
+  appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
   appPrintRendering: 'Generazione dell’anteprima…',
   appGuideDragTip:
     "Trascina per spostare; fai doppio clic o trascina fuori dall'area di lavoro per rimuovere",

@@ -167,6 +167,7 @@ export const he = {
   appPrintHidden: 'הדפסת שקופיות מוסתרות',
   appPrintPageCount: '{n} עמודים',
   appPrintNoPages: 'אין שקופיות להדפסה',
+  appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
   appPrintRendering: 'יוצר תצוגה מקדימה…',
   appGuideDragTip: 'גרור כדי להזיז; לחץ פעמיים או גרור אל מחוץ לבד כדי להסיר',
   appPrintFailed: 'ההדפסה נכשלה: {error}',

@@ -9546,8 +9546,24 @@ body.show-curtain::after {
   accent-color: var(--accent);
 }
 .print-options .print-radio:has(input:disabled) {
-  opacity: 0.45;
+  /* 꺼진 선택지도 다크에서 보이게: 글자만 흐리게 하고 단추는 테두리를 살린다 */
+  color: var(--text-dim);
   cursor: default;
+}
+.print-options .print-radio input:disabled {
+  opacity: 0.75;
+  outline: 1px solid var(--border-strong);
+  outline-offset: 1px;
+  border-radius: 50%;
+}
+.print-options .print-radio input[type='checkbox']:disabled {
+  border-radius: 2px;
+}
+.print-options .print-range-error {
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--danger);
 }
 .print-options .print-range-input {
   display: block;

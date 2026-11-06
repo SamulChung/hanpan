@@ -171,6 +171,7 @@ export const ar = {
   appPrintHidden: 'طباعة الشرائح المخفية',
   appPrintPageCount: '{n} صفحات',
   appPrintNoPages: 'لا توجد شرائح للطباعة',
+  appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
   appPrintRendering: 'جارٍ إنشاء المعاينة…',
   appGuideDragTip: 'اسحب للتحريك، أو انقر نقرًا مزدوجًا أو اسحب خارج اللوحة للحذف',
   appPrintFailed: 'فشلت الطباعة: {error}',

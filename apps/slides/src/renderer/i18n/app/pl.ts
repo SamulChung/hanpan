@@ -180,6 +180,7 @@ export const pl = {
   appPrintHidden: 'Drukuj ukryte slajdy',
   appPrintPageCount: 'Stron: {n}',
   appPrintNoPages: 'Brak slajdów do wydrukowania',
+  appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
   appPrintRendering: 'Generowanie podglądu…',
   appGuideDragTip:
     'Przeciągnij, aby przesunąć; kliknij dwukrotnie lub przeciągnij poza kanwę, aby usunąć',

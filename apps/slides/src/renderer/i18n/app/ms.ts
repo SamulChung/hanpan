@@ -180,6 +180,7 @@ export const ms = {
   appPrintHidden: 'Cetak slaid tersembunyi',
   appPrintPageCount: '{n} halaman',
   appPrintNoPages: 'Tiada slaid untuk dicetak',
+  appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
   appPrintRendering: 'Menjana pratonton…',
   appGuideDragTip:
     'Seret untuk mengalihkan; dwiklik atau seret keluar dari kanvas untuk mengalih keluar',
