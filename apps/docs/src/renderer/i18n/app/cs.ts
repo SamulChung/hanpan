@@ -53,11 +53,12 @@ export const cs = {
   appFontsMissing: 'Chybějící písma dokumentu: {names} (zobrazena náhradní)',
   appVerticalTextNotice:
     'Tento dokument obsahuje svislý text (zatím se zobrazuje vodorovně; ukládání není ovlivněno)',
-  appNewDocCreated: 'Prázdný dokument vytvořen. Popište v panelu AI vlevo, co má vygenerovat.',
+  appNewDocCreated: 'Prázdný dokument vytvořen. Popište v panelu AI, co má vygenerovat.',
   appNewFailed: 'Dokument se nepodařilo vytvořit: {error}',
   appSaveFailed: 'Uložení se nezdařilo: {error}',
   appAutoSavedAt: 'Automaticky uloženo ({time})',
   appSaved: 'Uloženo',
+  appUnsaved: 'Neuloženo',
   appSectionBreakInserted: 'Konec oddílu vložen ({type})',
   appSectionBreakPending: 'Konec oddílu vložen; nový oddíl se projeví po uložení',
   appBreakNextPage: 'Další stránka',

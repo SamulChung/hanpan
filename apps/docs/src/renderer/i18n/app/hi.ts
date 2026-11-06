@@ -53,11 +53,12 @@ export const hi = {
   appFontsMissing: 'दस्तावेज़ के फ़ॉन्ट इंस्टॉल नहीं हैं: {names} (विकल्प फ़ॉन्ट दिखाए गए)',
   appVerticalTextNotice:
     'इस दस्तावेज़ में लंबवत पाठ है (फ़िलहाल क्षैतिज रूप में दिखाया गया है; सहेजने पर असर नहीं)',
-  appNewDocCreated: 'खाली दस्तावेज़ बनाया गया। बाईं ओर AI पैनल में बताएँ कि क्या जनरेट करना है।',
+  appNewDocCreated: 'खाली दस्तावेज़ बनाया गया। AI पैनल में बताएँ कि क्या जनरेट करना है।',
   appNewFailed: 'दस्तावेज़ बनाने में विफल: {error}',
   appSaveFailed: 'सहेजने में विफल: {error}',
   appAutoSavedAt: 'स्वतः सहेजा गया ({time})',
   appSaved: 'सहेजा गया',
+  appUnsaved: 'सहेजा नहीं गया',
   appSectionBreakInserted: 'अनुभाग विराम सम्मिलित किया गया ({type})',
   appSectionBreakPending: 'अनुभाग विराम सम्मिलित किया गया; नया अनुभाग सहेजने के बाद प्रभावी होगा',
   appBreakNextPage: 'अगला पृष्ठ',

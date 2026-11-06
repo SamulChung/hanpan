@@ -392,6 +392,7 @@ import { StylesPane } from './components/StylesPane'
 import { Ruler } from './components/Ruler'
 import { docBodyFont, docHasCjk, docLineFactor, docStyleCss, docThemeCss } from './doc-style-css'
 import { isDocDirty, runGuardedCandidate, runGuardedDocumentAction } from './doc-dirty'
+import { saveStatusView } from './save-status'
 import {
   EMPTY_HF_VARIANTS,
   restingHfAreaVariant,
@@ -5494,6 +5495,13 @@ export function App() {
   const anyDirtyRef = useRef(false)
   const hasUnsavedChanges = isDocDirty(fileCtxRef.current)
   anyDirtyRef.current = hasUnsavedChanges
+  // 상태줄: 다시 고치면 지난 "저장됨" 알림을 지우고 "저장 안 됨"을 켠다
+  const docDirtyNow = !!doc && (hasUnsavedChanges || dirtyRef.current)
+  const saveView = saveStatusView(status, docDirtyNow, t('appSaved'), t('appAutoSavedAt'))
+  // 셸 탭의 "저장 안 됨" 점: 바뀔 때만 알린다
+  useEffect(() => {
+    window.desktop.reportDirty?.(docDirtyNow)
+  }, [docDirtyNow])
 
   // close guard: the main process queries dirty state before closing a tab/window; choosing "Save" runs a full save and reports back
   useEffect(() => {
@@ -7995,8 +8003,13 @@ export function App() {
                   </button>
                 </>
               )}
+              {doc && saveView.unsaved && (
+                <span className="status-item status-unsaved" role="status">
+                  {t('appUnsaved')}
+                </span>
+              )}
               {!doc && t('appReady')}
-              {status && <span className="status-msg"> — {status}</span>}
+              {saveView.message && <span className="status-msg"> — {saveView.message}</span>}
             </div>
             <div className="status-right">
               {doc && (

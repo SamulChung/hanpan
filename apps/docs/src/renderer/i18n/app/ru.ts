@@ -53,11 +53,12 @@ export const ru = {
   appFontsMissing: 'Отсутствуют шрифты документа: {names} (показаны заменители)',
   appVerticalTextNotice:
     'Документ содержит вертикальный текст (пока отображается горизонтально; на сохранение это не влияет)',
-  appNewDocCreated: 'Создан пустой документ. Опишите содержимое для создания в панели ИИ слева',
+  appNewDocCreated: 'Создан пустой документ. Опишите содержимое для создания в панели ИИ',
   appNewFailed: 'Не удалось создать документ: {error}',
   appSaveFailed: 'Не удалось сохранить: {error}',
   appAutoSavedAt: 'Автосохранение ({time})',
   appSaved: 'Сохранено',
+  appUnsaved: 'Не сохранено',
   appSectionBreakInserted: 'Вставлен разрыв раздела ({type})',
   appSectionBreakPending: 'Разрыв раздела вставлен; новый раздел вступит в силу после сохранения',
   appBreakNextPage: 'Следующая страница',

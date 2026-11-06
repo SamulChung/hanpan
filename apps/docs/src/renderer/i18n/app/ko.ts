@@ -54,12 +54,12 @@ export const ko = {
   appFontsMissing: '문서 글꼴이 설치되어 있지 않습니다: {names} (대체 글꼴로 표시)',
   appVerticalTextNotice:
     '세로쓰기 텍스트가 포함된 문서입니다(현재 가로쓰기로 표시되며 저장에는 영향이 없습니다)',
-  appNewDocCreated:
-    '빈 문서를 만들었습니다. 왼쪽 AI 패널에서 생성할 내용을 바로 입력할 수 있습니다',
+  appNewDocCreated: '빈 문서를 만들었습니다. 오른쪽 AI 패널에 만들 내용을 적어 보세요',
   appNewFailed: '새로 만들기 실패: {error}',
   appSaveFailed: '저장 실패: {error}',
   appAutoSavedAt: '자동 저장됨 ({time})',
   appSaved: '저장됨',
+  appUnsaved: '저장 안 됨',
   // Section breaks
   appSectionBreakInserted: '구역 나누기를 삽입했습니다({type})',
   appSectionBreakPending: '구역 나누기를 삽입했습니다. 새 구역은 저장 후 적용됩니다',

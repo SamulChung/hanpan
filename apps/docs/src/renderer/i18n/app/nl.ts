@@ -54,11 +54,12 @@ export const nl = {
   appVerticalTextNotice:
     'Dit document bevat verticale tekst (voorlopig horizontaal weergegeven; opslaan wordt niet beïnvloed)',
   appNewDocCreated:
-    'Leeg document gemaakt. Beschrijf in het AI-paneel links wat er gegenereerd moet worden.',
+    'Leeg document gemaakt. Beschrijf in het AI-paneel wat er gegenereerd moet worden.',
   appNewFailed: 'Document maken mislukt: {error}',
   appSaveFailed: 'Opslaan mislukt: {error}',
   appAutoSavedAt: 'Automatisch opgeslagen ({time})',
   appSaved: 'Opgeslagen',
+  appUnsaved: 'Niet opgeslagen',
   appSectionBreakInserted: 'Sectie-einde ingevoegd ({type})',
   appSectionBreakPending:
     'Sectie-einde ingevoegd; de nieuwe sectie wordt van kracht na het opslaan',

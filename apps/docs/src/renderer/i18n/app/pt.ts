@@ -53,11 +53,12 @@ export const pt = {
   appFontsMissing: 'Fontes do documento ausentes: {names} (substitutas exibidas)',
   appVerticalTextNotice:
     'Este documento contém texto vertical (exibido horizontalmente por enquanto; o salvamento não é afetado)',
-  appNewDocCreated: 'Documento em branco criado. Descreva o que gerar no painel de IA à esquerda.',
+  appNewDocCreated: 'Documento em branco criado. Descreva o que gerar no painel de IA.',
   appNewFailed: 'Falha ao criar o documento: {error}',
   appSaveFailed: 'Falha ao salvar: {error}',
   appAutoSavedAt: 'Salvo automaticamente ({time})',
   appSaved: 'Salvo',
+  appUnsaved: 'Não salvo',
   appSectionBreakInserted: 'Quebra de seção inserida ({type})',
   appSectionBreakPending: 'Quebra de seção inserida; a nova seção entra em vigor após salvar',
   appBreakNextPage: 'Próxima página',
