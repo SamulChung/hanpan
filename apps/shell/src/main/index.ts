@@ -405,11 +405,13 @@ import { startRendererWatchdog } from './renderer-watchdog'
 import { memoryFigures, startCrashWatch, startLowMemoryWatch } from './crash-watch'
 import {
   capStatPaths,
+  isScratchDocument,
   matchesExtFamily,
   normalizeRecentQuery,
   pageRecentPaths,
   statPathEntries,
 } from './recent-files'
+import { HOME_FILTER_GROUPS } from '../shared/home-filter-groups'
 import { isMoveSource, isUserVisibleFile, type FileTargetSources } from './file-targets'
 import {
   DOCX_RE,
@@ -4605,7 +4607,10 @@ function ensureFileIndexer(): FileIndexer | null {
   }
   fileIndexer = new FileIndexer(fileIndexStore, extractWorkerPath, {
     roots: () => folderRootPaths().filter((root) => existsSync(root)),
-    extraPaths: () => [...readRecentFiles(), ...readStarredFiles()],
+    extraPaths: () => [
+      ...readRecentFiles().filter((path) => !isScratchDocument(path)),
+      ...readStarredFiles(),
+    ],
   })
   return fileIndexer
 }
@@ -4619,6 +4624,8 @@ const SEARCH_EXT_FAMILY: Record<string, readonly string[]> = {
   hwp: ['hwp', 'hwpx'],
   photo: OPEN_EXTS.photo,
   illust: OPEN_EXTS.illust,
+  // Hanpan's grouped Home tabs
+  ...HOME_FILTER_GROUPS,
 }
 
 /** one recursive watcher per tree root; follows the save-folder setting and the added folders */
@@ -7210,6 +7217,20 @@ function tabMenuActions(): TabMenuActions {
           void requestHtmlSave(contents, mode)
         },
         printHtml: sendHtmlPrintRequest,
+        saveHwp: (contents, mode) => {
+          void requestHwpSave(contents, mode)
+        },
+        printHwp: (contents) => requestHwpPrint(contents, 'print'),
+        saveMindmap: (contents, mode) => {
+          void requestMindmapSave(contents, mode)
+        },
+        printMindmap: sendMindmapPrintRequest,
+        saveEpub: (contents, mode) => {
+          void requestEpubSave(contents, mode)
+        },
+        saveGraphics: (contents, mode) => {
+          void requestGraphicsSave(contents, mode)
+        },
       },
       id,
       action,
@@ -9271,7 +9292,9 @@ app.whenReady().then(async () => {
         }))
       },
       recent: async () =>
-        readRecentFiles().map((path) => ({ path, title: basename(path), missing: false })),
+        readRecentFiles()
+          .filter((path) => !isScratchDocument(path))
+          .map((path) => ({ path, title: basename(path), missing: false })),
       stat: async (path) => {
         const entry = statPathEntries([path], new Set<string>())[0]
         return entry && !entry.missing ? { sizeBytes: entry.sizeBytes } : null

@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { writeJsonAtomic } from '@genoffice/electron-utils/atomic-write'
 import type { RecoveryStore } from '@genoffice/electron-utils'
 import type { DocumentTabKind } from '../shared/tabs-api'
+import { isScratchDocument } from './recent-files'
 import type { SplitOrientation, SplitViewState } from '../shared/split-view-api'
 
 /**
@@ -216,6 +217,8 @@ function normalizeTab(raw: unknown, strict: boolean): SessionRecordTab | null {
   const tab: SessionRecordTab = { kind: record.kind, title: record.title }
   if (record.filePath !== undefined) {
     if (typeof record.filePath === 'string' && record.filePath.length > 0) {
+      // a test scratch file is never a person's document: not kept, not brought back
+      if (isScratchDocument(record.filePath)) return null
       tab.filePath = record.filePath
     } else if (strict) {
       return null

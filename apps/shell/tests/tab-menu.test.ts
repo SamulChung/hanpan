@@ -233,6 +233,24 @@ describe('the tab context menu', () => {
     expect(enabled(stuck.get('Open in New Window'))).toBe(false)
   })
 
+  it.each(['photo', 'illust', 'epub'] as const)(
+    'switches off Print for a %s tab, whose editor has no print, but keeps Save',
+    (kind) => {
+      const current = tab('a', { kind, filePath: '/x/a.png' })
+      const { items } = menu(current, [home, current])
+      expect(enabled(items.get(tm('menuTabPrint')))).toBe(false)
+      expect(enabled(items.get(tm('menuTabSave')))).toBe(true)
+      expect(enabled(items.get(tm('menuTabSaveAs')))).toBe(true)
+    },
+  )
+
+  it.each(['mindmap', 'hwp'] as const)('keeps Save and Print on for a %s tab', (kind) => {
+    const current = tab('a', { kind, filePath: '/x/a' })
+    const { items } = menu(current, [home, current])
+    expect(enabled(items.get(tm('menuTabPrint')))).toBe(true)
+    expect(enabled(items.get(tm('menuTabSave')))).toBe(true)
+  })
+
   it('disables document commands for the chrome-free Present tab', () => {
     const preview = tab('preview', { kind: 'html', filePath: '/tmp/x/page.html' })
     const { items } = menu(preview, [home, preview], { canDetach: false })

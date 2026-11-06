@@ -72,6 +72,7 @@ interface RenderOptions {
   connection?: SubscriptionConnection
   noticeDue?: boolean
   onNoticeAcknowledge?: () => void
+  lang?: 'en' | 'ko'
 }
 
 function renderOnboarding(options: RenderOptions = {}): void {
@@ -79,7 +80,7 @@ function renderOnboarding(options: RenderOptions = {}): void {
     root.render(
       createElement(
         LocaleProvider,
-        { initial: 'en' },
+        { initial: options.lang ?? 'en' },
         createElement(Onboarding, {
           onDone: options.onDone ?? vi.fn(async () => true),
           connection: options.connection ?? connectionOf(statuses('not-installed', 'signed-out')),
@@ -135,14 +136,14 @@ describe('Onboarding', () => {
     expect(activeStep()).toBe('welcome')
   })
 
-  it('describes the product plainly on the welcome step', () => {
+  it('describes Hanpan plainly on the welcome step', () => {
     renderOnboarding()
     const step = host.querySelector<HTMLElement>('.onb-slide[data-step="welcome"]')!
-    expect(step.querySelector('.onb-subtitle')!.textContent).toBe(strings.en.onbWelcomeSubtitle)
-    expect(step.querySelector('.onb-body')!.textContent).toBe(strings.en.onbWelcomeBody)
+    expect(step.querySelector('.onb-title')!.textContent).toBe(strings.en.hpOnbTitle)
+    expect(step.querySelector('.onb-subtitle')!.textContent).toBe(strings.en.hpOnbSubtitle)
+    expect(step.querySelector('.onb-body')!.textContent).toBe(strings.en.hpOnbBody)
     // no superlative of its own
     expect(step.textContent).not.toMatch(/\b(first|best|leading|most|only)\b|AI-native/i)
-    expect(strings.en.onbWelcomeSubtitle).toBe('An open-source office suite')
   })
 
   it('can be completed without connecting a subscription', async () => {
@@ -157,7 +158,7 @@ describe('Onboarding', () => {
 
     await click('.onb-next')
     expect(activeStep()).toBe('done')
-    expect(host.textContent).toContain(strings.en.onbDoneNotConnected)
+    expect(host.textContent).toContain(strings.en.hpOnbDoneNotConnected)
     expect(onDone).not.toHaveBeenCalled()
 
     await click('.onb-next')
@@ -353,4 +354,59 @@ describe('welcome copy', () => {
     // the product is named by the title above, and no vendor of the suite is named at all
     expect(`${strings[lang].onbWelcomeSubtitle} ${body}`).not.toMatch(/genoffice/i)
   })
+})
+
+// 0.17 #5: the first run introduces Hanpan, not the upstream product; AI needs a
+// Claude/ChatGPT login or the PC model, never a paid subscription; and no
+// "no ads" promise is made (not confirmed by the company yet).
+describe('Hanpan first-run copy', () => {
+  async function allSteps(lang: 'en' | 'ko'): Promise<string[]> {
+    renderOnboarding({ lang, connection: connectionOf(statuses('not-installed', 'signed-out')) })
+    const seen: string[] = []
+    for (let step = 0; step < ONBOARDING_STEPS.length; step++) {
+      seen.push(host.querySelector<HTMLElement>('.onb-slide.active')!.textContent ?? '')
+      if (step < ONBOARDING_STEPS.length - 1) await click('.onb-next')
+    }
+    return seen
+  }
+
+  it('introduces Hanpan and its apps in Korean', async () => {
+    const [welcome] = await allSteps('ko')
+    expect(welcome).toContain('한판')
+    for (const app of [
+      'AI 워드',
+      'AI 엑셀',
+      'AI 파워포인트',
+      'AI 한글',
+      'PDF',
+      '마인드맵',
+      '디자인 보드',
+      'AI 포토',
+      'AI 일러스트',
+    ])
+      expect(welcome, app).toContain(app)
+  })
+
+  it('says AI runs on a Claude or ChatGPT login or the PC model', async () => {
+    const [, connect] = await allSteps('ko')
+    const lead = host.querySelector('.onb-slide[data-step="connect"] .onb-body-lead')!.textContent
+    expect(lead).toBe(strings.ko.hpOnbConnectBody)
+    for (const word of ['Claude', 'ChatGPT', 'PC']) expect(lead, word).toContain(word)
+    expect(connect).not.toContain(aiSubscriptionText('ko', 'connectBody'))
+  })
+
+  it.each(['ko', 'en'] as const)(
+    'names no upstream product, paid plan or ad promise (%s)',
+    async (lang) => {
+      const steps = await allSteps(lang)
+      const text = steps.join('\n')
+      expect(text).not.toMatch(/genoffice/i)
+      expect(text).not.toMatch(/광고|\bads?\b|advert/i)
+      // the copy Hanpan writes itself (the connection cards below are shared UI)
+      const own = [steps[0], host.querySelector('.onb-slide[data-step="done"]')!.textContent]
+      expect(own.join('\n')).not.toMatch(/유료|구독|paid|subscription/i)
+      const lead = host.querySelector('.onb-slide[data-step="connect"] .onb-body-lead')!
+      expect(lead.textContent).not.toMatch(/유료|구독|paid|subscription/i)
+    },
+  )
 })

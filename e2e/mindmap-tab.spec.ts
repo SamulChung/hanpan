@@ -379,11 +379,11 @@ test.describe('mind map editor in the shell', () => {
       await expectMindMapTabIcon(tab, tile)
       await page.screenshot({ path: screenshotPath('mindmap-home-recent-row') })
 
-      // ── the sidebar filter keeps it under "Mind Map" and hides it under "HTML"
+      // ── the sidebar filter keeps it under "Mind maps & images" and hides it under "Documents"
       const pills = page.locator('.filter-pills')
-      await pills.locator('.filter-pill', { hasText: /^HTML$/ }).click()
+      await pills.locator('.filter-pill', { hasText: /^Documents$/ }).click()
       await expect(row).toHaveCount(0)
-      await pills.locator('.filter-pill', { hasText: /^Mind Map$/ }).click()
+      await pills.locator('.filter-pill', { hasText: /^Mind maps & images$/ }).click()
       await expect(row).toBeVisible()
 
       // a clean map closes without a question; the recent row opens it again

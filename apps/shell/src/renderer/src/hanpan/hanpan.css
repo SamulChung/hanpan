@@ -86,10 +86,13 @@
 }
 .hp-tpl-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
 }
+/* a label stays on one line ("한글로 열기"); a narrow card moves buttons to the next row */
 .hp-tpl-actions button {
-  flex: 1;
+  flex: 1 1 auto;
+  white-space: nowrap;
   padding: 5px 8px;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -415,6 +418,35 @@
 
 .hp-secondary .hp-compact .ai-chip {
   margin-left: auto;
+}
+
+/* 0.17 #12: one card for a pair of features (AI PDF + PDF 도구, AI 마크다운 + 변환기):
+   the card makes the document, the button on its right edge opens the tool */
+.hp-secondary .hp-pair {
+  display: flex;
+  min-width: 0;
+}
+.hp-secondary .hp-pair > .quick-card.hp-compact {
+  flex: 1;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.hp-pair-alt {
+  flex: none;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+  background: var(--surface);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.hp-pair-alt:hover {
+  border-color: var(--border-hover);
+  color: var(--text-primary);
 }
 
 @media (prefers-reduced-motion: reduce) {

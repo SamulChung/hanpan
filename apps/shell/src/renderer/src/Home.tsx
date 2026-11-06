@@ -36,6 +36,7 @@ import type {
 } from '../../shared/home-api'
 import type { IntegrationsApi } from '../../shared/integrations-api'
 import { markText } from '../../shared/text-marks'
+import { HOME_FILTER_GROUPS } from '../../shared/home-filter-groups'
 import {
   AiMark,
   aiSubscriptionCardView,
@@ -318,19 +319,19 @@ function crumbsOf(root: FolderRoot, dir: string): Array<{ path: string; name: st
   return crumbs
 }
 
+/**
+ * Hanpan (0.17 #12, draft): six tabs. Word, HWP, Markdown, web documents and
+ * books are under "documents" (epub, md, html, hwp); mind maps and pictures
+ * under "others" (xmind, photo, illust). The groups live in
+ * shared/home-filter-groups.ts so the main side filters the same way.
+ */
 const FILTERS: { key: string; label: StringKey }[] = [
   { key: 'all', label: 'filterAll' },
-  { key: 'docx', label: 'filterDocs' },
+  { key: 'documents', label: 'hpFilterDocuments' },
   { key: 'xlsx', label: 'filterSheets' },
   { key: 'pptx', label: 'filterSlides' },
   { key: 'pdf', label: 'filterPdf' },
-  { key: 'md', label: 'filterMd' },
-  { key: 'html', label: 'filterHtml' },
-  { key: 'xmind', label: 'filterMindmap' },
-  { key: 'hwp', label: 'filterHwp' },
-  { key: 'epub', label: 'filterEpub' },
-  { key: 'photo', label: 'filterPhoto' },
-  { key: 'illust', label: 'filterIllust' },
+  { key: 'others', label: 'hpFilterOthers' },
 ]
 
 /** sidebar filter keys that stand for a family of extensions (mirrors recent-files.ts) */
@@ -343,6 +344,7 @@ const FILTER_FAMILY: Record<string, readonly string[]> = {
   hwp: ['hwp', 'hwpx'],
   photo: ['psd', 'psb', 'png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp', 'tif', 'tiff', 'heic', 'heif'],
   illust: ['svg', 'svgz', 'ai', 'vectorcraft'],
+  ...HOME_FILTER_GROUPS,
 }
 
 function matchesFilter(entry: RecentEntry, filter: string): boolean {
@@ -2005,7 +2007,18 @@ export function Home({
           ]
         : []),
     ]
-    const secondary = [
+    /** a second feature reached from the same card (0.17 #12: one card per pair) */
+    type CardExtra = { key: string; title: string; tip: string; action: () => unknown }
+    const secondary: Array<{
+      key: string
+      icon: ReactElement
+      title: string
+      ai: boolean
+      tip?: string
+      sub?: string
+      extra?: CardExtra
+      action: () => unknown
+    }> = [
       ...['docx', 'xlsx'].map((ext) => ({
         key: ext,
         icon: <FileBadge ext={ext} size={24} />,
@@ -2030,46 +2043,46 @@ export function Home({
             },
           ]
         : []),
+      // AI 마크다운 and the Markdown converter share one card
       {
         key: 'md',
         icon: <FileBadge ext="md" size={24} />,
         title: made('md').title,
         ai: true,
         tip: undefined as string | undefined,
+        extra: converterApi
+          ? {
+              key: 'md-convert',
+              title: t('hpConvChip'),
+              tip: `${t('hpConvCard')} · ${t('hpConvCardSub')}`,
+              action: () => setConverterOpen(true),
+            }
+          : undefined,
         action: made('md').action,
       },
-      ...(converterApi
-        ? [
-            {
-              key: 'md-convert',
-              icon: (
-                <span className="quick-folder hp-conv-badge" aria-hidden="true">
-                  ⇄
-                </span>
-              ),
-              title: t('hpConvCard'),
-              ai: false,
-              tip: t('hpConvCardSub'),
-              action: () => setConverterOpen(true),
-            },
-          ]
-        : []),
-      ...['html', 'pdf'].map((ext) => ({
-        key: ext,
-        icon: <FileBadge ext={ext} size={24} />,
-        title: made(ext).title,
+      {
+        key: 'html',
+        icon: <FileBadge ext="html" size={24} />,
+        title: made('html').title,
         ai: true,
         tip: undefined as string | undefined,
-        action: made(ext).action,
-      })),
-      // decision 0030: PDF tasks without AI, in their own window
+        action: made('html').action,
+      },
+      // AI PDF and the PDF tools share one card; decision 0030: PDF tasks
+      // without AI, in their own window
       {
-        key: 'pdf-tools',
+        key: 'pdf',
         icon: <FileBadge ext="pdf" size={24} />,
-        title: t('pdfToolsCard'),
-        ai: false,
-        tip: t('pdfToolsCardSub'),
-        action: () => window.aiOfficePdfToolsHome.open(),
+        title: made('pdf').title,
+        ai: true,
+        tip: undefined as string | undefined,
+        extra: {
+          key: 'pdf-tools',
+          title: t('pdfToolsCard'),
+          tip: t('pdfToolsCardSub'),
+          action: () => window.aiOfficePdfToolsHome.open(),
+        },
+        action: made('pdf').action,
       },
       // decision 0093: the PhotoCraft and VectorCraft web apps in tabs, with an AI assistant
       {
@@ -2141,29 +2154,45 @@ export function Home({
           <span className="section-label">{t('hpMoreTools')}</span>
         </div>
         <div className="quick-cards hp-secondary">
-          {secondary.map((card) => (
-            <button
-              key={card.key}
-              className="quick-card hp-compact"
-              data-new={card.key}
-              data-hanpan={
-                card.key === 'design' || card.key === 'md-convert' ? card.key : undefined
-              }
-              data-tip={card.tip}
-              onClick={() => void card.action()}
-            >
-              {card.icon}
-              {(card as { sub?: string }).sub ? (
-                <span className="hp-compact-text">
+          {secondary.map((card) => {
+            const main = (
+              <button
+                key={card.key}
+                className="quick-card hp-compact"
+                data-new={card.key}
+                data-hanpan={card.key === 'design' ? card.key : undefined}
+                data-tip={card.tip}
+                onClick={() => void card.action()}
+              >
+                {card.icon}
+                {card.sub ? (
+                  <span className="hp-compact-text">
+                    <span className="quick-title">{card.title}</span>
+                    <span className="hp-compact-sub">{card.sub}</span>
+                  </span>
+                ) : (
                   <span className="quick-title">{card.title}</span>
-                  <span className="hp-compact-sub">{(card as { sub?: string }).sub}</span>
-                </span>
-              ) : (
-                <span className="quick-title">{card.title}</span>
-              )}
-              {card.ai && <span className="ai-chip">AI</span>}
-            </button>
-          ))}
+                )}
+                {card.ai && <span className="ai-chip">AI</span>}
+              </button>
+            )
+            const extra = card.extra
+            if (!extra) return main
+            return (
+              <div key={card.key} className="hp-pair" data-pair={card.key}>
+                {main}
+                <button
+                  className="hp-pair-alt"
+                  data-new={extra.key}
+                  data-hanpan={extra.key === 'md-convert' ? extra.key : undefined}
+                  data-tip={extra.tip}
+                  onClick={() => void extra.action()}
+                >
+                  {extra.title}
+                </button>
+              </div>
+            )
+          })}
         </div>
         {templatesOpen && <TemplatePicker onClose={() => setTemplatesOpen(false)} />}
         {converterOpen && converterApi && (

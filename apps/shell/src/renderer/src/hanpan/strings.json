@@ -161,5 +161,50 @@
     "cs": "Dokumenty HWP, nástroje pro úřední dopisy, šablony Hanpan, návrhová tabule a Gongu. Vypnutím je skryjete na domovské obrazovce a v editorech.",
     "id": "Dokumen HWP, alat surat resmi, templat Hanpan, papan desain, dan Gongu. Matikan untuk menyembunyikannya di Beranda dan di editor.",
     "ms": "Dokumen HWP, alat surat rasmi, templat Hanpan, papan reka bentuk dan Gongu. Matikan untuk menyembunyikannya di Laman Utama dan dalam editor."
+  },
+  "hpOnbTitle": {
+    "ko": "한판에 오신 것을 환영합니다",
+    "en": "Welcome to Hanpan",
+    "vi": "Chào mừng đến với Hanpan"
+  },
+  "hpOnbSubtitle": {
+    "ko": "무료로 쓰는 한국어 AI 오피스",
+    "en": "A free Korean AI office suite",
+    "vi": "Bộ văn phòng AI tiếng Hàn miễn phí"
+  },
+  "hpOnbBody": {
+    "ko": "AI 워드·AI 엑셀·AI 파워포인트·AI 한글로 문서를 만들고, PDF·마인드맵·디자인 보드·AI 포토·AI 일러스트까지 한곳에서 씁니다.",
+    "en": "Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.",
+    "vi": "Soạn tài liệu với AI Word, AI Excel, AI PowerPoint và AI Hangul, và dùng PDF, sơ đồ tư duy, bảng thiết kế, AI Photo và AI Illustration ở cùng một nơi."
+  },
+  "hpOnbConnectBody": {
+    "ko": "AI는 쓰고 있는 Claude·ChatGPT 계정으로 로그인하거나, 이 PC에 설치된 AI 모델(PC 모델)로 씁니다. PC 모델이 있으면 한판이 켤 때 찾아서 연결합니다.",
+    "en": "AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.",
+    "vi": "AI chạy bằng tài khoản Claude hoặc ChatGPT bạn đăng nhập, hoặc bằng mô hình AI cài trên máy tính này (mô hình PC). Nếu có, Hanpan sẽ tự tìm và kết nối khi khởi động."
+  },
+  "hpOnbDoneNotConnected": {
+    "ko": "아직 AI가 연결되지 않았습니다. 설정 → AI에서 언제든 계정으로 로그인하거나 PC 모델을 연결할 수 있습니다.",
+    "en": "AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.",
+    "vi": "AI chưa được kết nối. Bạn có thể đăng nhập tài khoản hoặc kết nối mô hình PC bất cứ lúc nào trong Cài đặt → AI."
+  },
+  "hpOnbDoneBody": {
+    "ko": "홈의 마인드맵에서 시작해 보세요. 정리한 내용을 한글 보고서나 발표 자료로 이어서 만들 수 있습니다.",
+    "en": "Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.",
+    "vi": "Hãy bắt đầu từ sơ đồ tư duy ở Trang chủ: nội dung bạn sắp xếp có thể chuyển tiếp thành báo cáo HWP hoặc bài trình chiếu."
+  },
+  "hpFilterDocuments": {
+    "ko": "문서",
+    "en": "Documents",
+    "vi": "Tài liệu"
+  },
+  "hpFilterOthers": {
+    "ko": "마인드맵·그림",
+    "en": "Mind maps & images",
+    "vi": "Sơ đồ & hình ảnh"
+  },
+  "hpConvChip": {
+    "ko": "변환기",
+    "en": "Converter",
+    "vi": "Chuyển đổi"
   }
 }
