@@ -56,7 +56,7 @@ export const zh = {
   // Home: slides
   ribbonGroupSlides: '幻灯片',
   ribbonNewSlide: '新建幻灯片',
-  ribbonNewSlideTip: '新建空白幻灯片（沿用当前页版式背景）',
+  ribbonNewSlideTip: '新建幻灯片（标题幻灯片之后为“标题和内容”，否则沿用当前页版式）',
   ribbonChooseLayout: '选择版式',
   ribbonChooseLayoutNew: '选择版式新建幻灯片',
   ribbonChooseLayoutChange: '更改当前页版式',

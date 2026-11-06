@@ -57,7 +57,7 @@ export const ar = {
     'نسخ التنسيق (انقر لنسخ التنسيق وتطبيقه؛ ⌘⇧C نسخ التنسيق / ⌘⇧V لصق التنسيق)',
   ribbonGroupSlides: 'شرائح',
   ribbonNewSlide: 'شريحة جديدة',
-  ribbonNewSlideTip: 'شريحة فارغة جديدة (تحتفظ بخلفية تخطيط الشريحة الحالية)',
+  ribbonNewSlideTip: 'New slide (Title and Content after a title slide, otherwise the current slide\'s layout)',
   ribbonChooseLayout: 'اختيار التخطيط',
   ribbonChooseLayoutNew: 'شريحة جديدة بتخطيط',
   ribbonChooseLayoutChange: 'تغيير تخطيط الشريحة الحالية',

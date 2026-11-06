@@ -55,7 +55,7 @@ export const he = {
     'מברשת עיצוב (לחץ כדי להעתיק ולהחיל עיצוב; ⌘⇧C מעתיק עיצוב / ⌘⇧V מדביק עיצוב)',
   ribbonGroupSlides: 'שקופיות',
   ribbonNewSlide: 'שקופית חדשה',
-  ribbonNewSlideTip: 'שקופית ריקה חדשה (שומרת על רקע הפריסה של השקופית הנוכחית)',
+  ribbonNewSlideTip: 'New slide (Title and Content after a title slide, otherwise the current slide\'s layout)',
   ribbonChooseLayout: 'בחירת פריסה',
   ribbonChooseLayoutNew: 'שקופית חדשה עם פריסה',
   ribbonChooseLayoutChange: 'שינוי פריסת השקופית הנוכחית',

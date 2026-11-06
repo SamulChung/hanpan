@@ -57,7 +57,7 @@ export const en = {
     'Format Painter (click to copy and apply formatting; ⌘⇧C copy format / ⌘⇧V paste format)',
   ribbonGroupSlides: 'Slides',
   ribbonNewSlide: 'New Slide',
-  ribbonNewSlideTip: "New blank slide (keeps the current slide's layout background)",
+  ribbonNewSlideTip: 'New slide (Title and Content after a title slide, otherwise the current slide\'s layout)',
   ribbonChooseLayout: 'Choose Layout',
   ribbonChooseLayoutNew: 'New Slide with Layout',
   ribbonChooseLayoutChange: 'Change Current Slide Layout',

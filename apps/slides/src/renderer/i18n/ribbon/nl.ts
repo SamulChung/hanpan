@@ -59,7 +59,7 @@ export const nl = {
     'Opmaak kopiëren/plakken (klik om opmaak te kopiëren en toe te passen; ⌘⇧C kopieert opmaak / ⌘⇧V plakt opmaak)',
   ribbonGroupSlides: "Dia's",
   ribbonNewSlide: 'Nieuwe dia',
-  ribbonNewSlideTip: 'Nieuwe lege dia (behoudt de indelingsachtergrond van de huidige dia)',
+  ribbonNewSlideTip: 'New slide (Title and Content after a title slide, otherwise the current slide\'s layout)',
   ribbonChooseLayout: 'Indeling kiezen',
   ribbonChooseLayoutNew: 'Nieuwe dia met indeling',
   ribbonChooseLayoutChange: 'Indeling van huidige dia wijzigen',

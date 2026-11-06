@@ -765,6 +765,8 @@ export interface AddBlankSlideOp {
   fitWidthPx: number
   /** Land the new slide before sourceIndex instead of after (insert at position 0) */
   before?: boolean
+  /** The ribbon's New Slide: use a layout with placeholders (see new-slide-layout.ts) */
+  withPlaceholders?: boolean
 }
 
 /** New blank page (with a specific layout): inserted after slide sourceIndex, rels pointing at layoutPath. */

@@ -57,7 +57,7 @@ export const cs = {
     'Kopírovat formát (kliknutím zkopírujete a použijete formátování; ⌘⇧C kopírovat formát / ⌘⇧V vložit formát)',
   ribbonGroupSlides: 'Snímky',
   ribbonNewSlide: 'Nový snímek',
-  ribbonNewSlideTip: 'Nový prázdný snímek (zachová pozadí rozložení aktuálního snímku)',
+  ribbonNewSlideTip: 'New slide (Title and Content after a title slide, otherwise the current slide\'s layout)',
   ribbonChooseLayout: 'Zvolit rozložení',
   ribbonChooseLayoutNew: 'Nový snímek s rozložením',
   ribbonChooseLayoutChange: 'Změnit rozložení aktuálního snímku',

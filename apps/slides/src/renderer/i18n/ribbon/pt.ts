@@ -58,7 +58,7 @@ export const pt = {
     'Pincel de Formatação (clique para copiar e aplicar a formatação; ⌘⇧C copia o formato / ⌘⇧V cola o formato)',
   ribbonGroupSlides: 'Slides',
   ribbonNewSlide: 'Novo Slide',
-  ribbonNewSlideTip: 'Novo slide em branco (mantém o plano de fundo do layout do slide atual)',
+  ribbonNewSlideTip: 'New slide (Title and Content after a title slide, otherwise the current slide\'s layout)',
   ribbonChooseLayout: 'Escolher Layout',
   ribbonChooseLayoutNew: 'Novo Slide com Layout',
   ribbonChooseLayoutChange: 'Alterar Layout do Slide Atual',

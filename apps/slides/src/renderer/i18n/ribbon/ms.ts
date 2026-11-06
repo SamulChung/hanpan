@@ -57,7 +57,7 @@ export const ms = {
     'Penyalin Format (klik untuk menyalin dan menggunakan pemformatan; ⌘⇧C salin format / ⌘⇧V tampal format)',
   ribbonGroupSlides: 'Slaid',
   ribbonNewSlide: 'Slaid Baharu',
-  ribbonNewSlideTip: 'Slaid kosong baharu (mengekalkan latar belakang tataletak slaid semasa)',
+  ribbonNewSlideTip: 'New slide (Title and Content after a title slide, otherwise the current slide\'s layout)',
   ribbonChooseLayout: 'Pilih Tataletak',
   ribbonChooseLayoutNew: 'Slaid Baharu dengan Tataletak',
   ribbonChooseLayoutChange: 'Tukar Tataletak Slaid Semasa',

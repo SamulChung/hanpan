@@ -33,8 +33,8 @@ describe('folded group flyout', () => {
             icon: null,
             hint: '먼저 개체를 선택하세요',
           },
+          children: createElement('button', null, 'x'),
         },
-        createElement('button', null, 'x'),
       ),
     )
     expect(html).toMatch(/class="rb-collapse-hint"[^>]*>먼저 개체를 선택하세요</)

@@ -60,8 +60,7 @@ export const fr = {
     'Reproduire la mise en forme (cliquez pour copier et appliquer le format ; ⌘⇧C copier le format / ⌘⇧V coller le format)',
   ribbonGroupSlides: 'Diapositives',
   ribbonNewSlide: 'Nouvelle diapositive',
-  ribbonNewSlideTip:
-    "Nouvelle diapositive vide (conserve l'arrière-plan de disposition de la diapositive actuelle)",
+  ribbonNewSlideTip: 'New slide (Title and Content after a title slide, otherwise the current slide\'s layout)',
   ribbonChooseLayout: 'Choisir une disposition',
   ribbonChooseLayoutNew: 'Nouvelle diapositive avec disposition',
   ribbonChooseLayoutChange: 'Modifier la disposition de la diapositive',

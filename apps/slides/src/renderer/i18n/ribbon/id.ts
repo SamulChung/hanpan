@@ -59,7 +59,7 @@ export const id = {
     'Penyalin Format (klik untuk menyalin dan menerapkan format; ⌘⇧C salin format / ⌘⇧V tempel format)',
   ribbonGroupSlides: 'Slide',
   ribbonNewSlide: 'Slide Baru',
-  ribbonNewSlideTip: 'Slide kosong baru (mempertahankan latar belakang tata letak slide saat ini)',
+  ribbonNewSlideTip: 'New slide (Title and Content after a title slide, otherwise the current slide\'s layout)',
   ribbonChooseLayout: 'Pilih Tata Letak',
   ribbonChooseLayoutNew: 'Slide Baru dengan Tata Letak',
   ribbonChooseLayoutChange: 'Ubah Tata Letak Slide Saat Ini',

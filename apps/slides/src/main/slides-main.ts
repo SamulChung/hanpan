@@ -264,6 +264,7 @@ import type {
   SetEffectsPatch,
 } from '../shared/ipc'
 import { DECK_LINK_PROTOCOLS } from '../shared/run-link'
+import { newSlideLayoutPath } from '../shared/new-slide-layout'
 import { planSlideDuplicates, planSlideMoves } from '../shared/slide-selection'
 import { buildPrintDocumentHtml } from '../shared/print-html'
 
@@ -2973,6 +2974,16 @@ export function registerSlidesIpc(): void {
   ipcMain.handle('slides:add-blank-slide', (e, op: AddBlankSlideOp) => {
     const session = sessions.get(e.sender.id)
     if (!session) return null
+    // the ribbon's New Slide: a slide with placeholders (Title and Content after a
+    // title slide, else the source slide's layout); a blank source keeps the blank insert
+    if (op.withPlaceholders && !op.before) {
+      const source = session.opened.deck.slides[op.sourceIndex]
+      const layoutPath = source
+        ? newSlideLayoutPath(layoutChoices(session), source.layoutPath)
+        : null
+      if (layoutPath)
+        return addSlideWithLayoutTo(session, op.sourceIndex, layoutPath, op.fitWidthPx)
+    }
     const r = sessionTxn(session, {
       ops: [
         { op: 'addBlankSlide', target: { slide: op.sourceIndex } },
@@ -2995,6 +3006,19 @@ export function registerSlidesIpc(): void {
   })
 
   // 'builtin:<key>' virtual paths get injected into the package on first use
+  /** The layout list the picker shows: the deck's own layouts, plus — for decks whose own
+   *  layouts carry no placeholders (AI-generated single blank layout) — the built-in
+   *  standard set, injected into the package on first use */
+  function layoutChoices(session: Session) {
+    const layouts = listSlideLayouts(session.opened.archive)
+    if (shouldOfferBuiltinLayouts(layouts)) {
+      layouts.push(
+        ...builtinLayoutInfos(session.opened.deck.size, new Set(layouts.map((l) => l.name))),
+      )
+    }
+    return layouts
+  }
+
   const resolveLayoutPath = (session: Session, layoutPath?: string): string | undefined => {
     if (!layoutPath?.startsWith(BUILTIN_LAYOUT_PREFIX)) return layoutPath
     return (
@@ -3006,42 +3030,43 @@ export function registerSlidesIpc(): void {
     )
   }
 
-  ipcMain.handle('slides:add-slide-with-layout', (e, op: AddSlideWithLayoutOp) => {
-    const session = sessions.get(e.sender.id)
-    if (!session) return null
+  function addSlideWithLayoutTo(
+    session: Session,
+    sourceIndex: number,
+    requestedPath: string,
+    fitWidthPx: number,
+  ) {
     // 'builtin:' resolution may inject a layout part — do it before the undo snapshot
     // is taken so a failed insert still rolls back to a consistent package
     pushHistory(session)
-    const layoutPath = resolveLayoutPath(session, op.layoutPath)
+    const layoutPath = resolveLayoutPath(session, requestedPath)
     const r = layoutPath
       ? journaledTxn(session, 'edit', {
-          ops: [{ op: 'addSlideWithLayout', target: { slide: op.sourceIndex }, layoutPath }],
+          ops: [{ op: 'addSlideWithLayout', target: { slide: sourceIndex }, layoutPath }],
         })
       : null
     if (!r?.applied) {
       session.undoStack.pop()
       return null
     }
-    session.fitWidthPx = op.fitWidthPx
+    session.fitWidthPx = fitWidthPx
     markMetaDirty(session)
     return {
-      slides: buildAllRenderSlides(session.opened, op.fitWidthPx),
-      index: op.sourceIndex + 1,
+      slides: buildAllRenderSlides(session.opened, fitWidthPx),
+      index: sourceIndex + 1,
     }
+  }
+
+  ipcMain.handle('slides:add-slide-with-layout', (e, op: AddSlideWithLayoutOp) => {
+    const session = sessions.get(e.sender.id)
+    if (!session) return null
+    return addSlideWithLayoutTo(session, op.sourceIndex, op.layoutPath, op.fitWidthPx)
   })
 
   ipcMain.handle('slides:get-layouts', (e) => {
     const session = sessions.get(e.sender.id)
     if (!session) return null
-    const layouts = listSlideLayouts(session.opened.archive)
-    // Decks whose own layouts carry no placeholders (AI-generated single blank layout)
-    // get the built-in standard set, injected into the package on first use
-    if (shouldOfferBuiltinLayouts(layouts)) {
-      layouts.push(
-        ...builtinLayoutInfos(session.opened.deck.size, new Set(layouts.map((l) => l.name))),
-      )
-    }
-    return { layouts, size: { ...session.opened.deck.size } }
+    return { layouts: layoutChoices(session), size: { ...session.opened.deck.size } }
   })
 
   // ── Master edit view ───────────────────────────────────────────────

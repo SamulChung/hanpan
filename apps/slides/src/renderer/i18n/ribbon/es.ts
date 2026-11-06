@@ -60,8 +60,7 @@ export const es = {
     'Copiar formato (haga clic para copiar y aplicar el formato; ⌘⇧C copiar formato / ⌘⇧V pegar formato)',
   ribbonGroupSlides: 'Diapositivas',
   ribbonNewSlide: 'Nueva diapositiva',
-  ribbonNewSlideTip:
-    'Nueva diapositiva en blanco (conserva el fondo del diseño de la diapositiva actual)',
+  ribbonNewSlideTip: 'New slide (Title and Content after a title slide, otherwise the current slide\'s layout)',
   ribbonChooseLayout: 'Elegir diseño',
   ribbonChooseLayoutNew: 'Nueva diapositiva con diseño',
   ribbonChooseLayoutChange: 'Cambiar diseño de la diapositiva actual',
