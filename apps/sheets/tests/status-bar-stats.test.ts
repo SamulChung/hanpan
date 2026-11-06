@@ -58,11 +58,38 @@ describe('status bar statistics preference', () => {
       ],
       pattern: '0.00',
     }
+    // COUNTA/COUNT stay: Univer's status bar service drops SUM/AVERAGE/MIN/MAX
+    // unless COUNTA > 1 and COUNT > 0 ride in the same state (the footer hides
+    // unticked items itself, statusBarDisplayItems)
     expect(filterStatusBarState(state, ['SUM'])).toEqual({
-      values: [{ func: 'SUM', value: 6 }],
+      values: [
+        { func: 'COUNTA', value: 3 },
+        { func: 'SUM', value: 6 },
+      ],
       pattern: '0.00',
     })
     expect(filterStatusBarState(null, ['SUM'])).toBeNull()
+  })
+
+  it('X2: keeps the numeric count the service needs to let Sum and Average through', () => {
+    const upstream = {
+      values: [
+        { func: 'MAX', value: 1800 },
+        { func: 'MIN', value: 500 },
+        { func: 'SUM', value: 12345 },
+        { func: 'COUNTA', value: 12 },
+        { func: 'COUNT', value: 12 },
+        { func: 'AVERAGE', value: 1028.75 },
+      ],
+      pattern: null,
+    }
+    const filtered = filterStatusBarState(upstream, DEFAULT_STATUS_BAR_FUNCS)!
+    // Univer's IStatusBarService.setState gate for SUM/AVERAGE/MIN/MAX
+    const count = (func: string) => filtered.values.find((v) => v.func === func)?.value ?? 0
+    const gated = filtered.values.filter(
+      (v) => v.func === 'COUNTA' || (count('COUNTA') > 1 && count('COUNT') > 0),
+    )
+    expect(gated.map((v) => v.func)).toEqual(['SUM', 'COUNTA', 'COUNT', 'AVERAGE'])
   })
 })
 

@@ -70,7 +70,16 @@ export function filterStatusBarState(
 ): StatusBarState | null {
   if (!state) return null
   return {
-    values: state.values.filter((item) => (enabled as readonly string[]).includes(item.func)),
+    // COUNTA·COUNT는 체크와 상관없이 남긴다: Univer 통계 서비스는 같은 상태에
+    // COUNTA > 1, COUNT > 0이 없으면 합계·평균·최소·최대를 버린다(X2: 기본 체크
+    // 평균·개수·합계에서 COUNT가 빠져 "개수"만 남았다). 화면에서 숨기는 것은
+    // statusBarDisplayItems가 한다.
+    values: state.values.filter(
+      (item) =>
+        item.func === 'COUNTA' ||
+        item.func === 'COUNT' ||
+        (enabled as readonly string[]).includes(item.func),
+    ),
     pattern: state.pattern,
   }
 }

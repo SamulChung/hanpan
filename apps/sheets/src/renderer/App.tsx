@@ -2072,7 +2072,8 @@ export function App({
           formulaBar: true,
           footer: {
             sheetBar: true,
-            statisticBar: true,
+            // 집계는 앱 상태 표시줄이 그린다(X2)
+            statisticBar: false,
             menus: true,
             // zoom lives in the custom full-width status bar (unified with docs/slides)
             zoomSlider: false,
