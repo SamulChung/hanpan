@@ -26,6 +26,8 @@ import { effectivePageBreaks } from './page-break-preview'
 import { COLOR_SCHEMES, FONT_SCHEMES, rethemeStyles, THEME_PRESETS } from './themes'
 import { startFullLoad } from './full-load'
 import { showToast } from './toast-bus'
+import { imageScaleFor, rasterizeHtml } from './sheet-image'
+import { exportBaseName } from './csv-export'
 import { fitsFullLoad, workbookCellCounts } from './load-budget'
 import { loadVisibleRange } from './univer-sync'
 import {
@@ -408,7 +410,7 @@ async function sheetPrintDocument(
 ): Promise<SheetPrintDocument> {
   const sheetId = worksheet.getSheetId()
   const setup = sheetPageSetup(state, sheetId, overrides)
-  const baseName = (state?.file.name ?? 'Book1').replace(/\.[^.]+$/, '')
+  const baseName = exportBaseName(state)
   const pictures = state
     ? await loadHeaderFooterPictures(state.file.sessionId, setup.headerFooterPictures)
     : new Map<string, HeaderFooterPictureImage>()
@@ -504,7 +506,7 @@ export function createPrintPreviewHost(ctx: PageLayoutContext): PrintPreviewHost
           !sheet.isSheetHidden() &&
           !(state && isSheetRemoved(state.editJournal, sheet.getSheetId())),
       )
-  const baseName = (state?.file.name ?? 'Book1').replace(/\.[^.]+$/, '')
+  const baseName = exportBaseName(state)
   const include = (pages: PrintOutputSettings['pages']) =>
     pages === null ? undefined : (page: number) => page >= pages.from && page <= pages.to
   return {
@@ -705,7 +707,7 @@ export async function handleExportImage(ctx: PageLayoutContext): Promise<boolean
         : null
     const sheetId = worksheet.getSheetId()
     const frames = await settledVisualFrames(ctx, state, sheetId)
-    const baseName = (state?.file.name ?? 'Book1').replace(/\.[^.]+$/, '')
+    const baseName = exportBaseName(state)
     const layout = layoutSheetImage(
       worksheet as unknown as PrintWorksheet,
       sheetPageSetup(state, sheetId, {}),
@@ -714,17 +716,19 @@ export async function handleExportImage(ctx: PageLayoutContext): Promise<boolean
       snapshotPrintVisuals(document, frames),
       selection,
     )
+    const scale = imageScaleFor(layout.widthPx, layout.heightPx)
+    if (scale === null) {
+      ctx.setMessage(t('appPngTooLarge'))
+      showToast(t('appPngTooLarge'), 'error')
+      return false
+    }
+    const png = await rasterizeHtml(layout.html, layout.widthPx, layout.heightPx, scale)
     const result = await window.desktopApi.exportImage({
       fileName: `${baseName}-${worksheet.getSheetName()}.png`.replace(/[\\/:*?"<>|]/g, '_'),
-      ...layout,
+      png,
     })
     if (result.canceled) {
       ctx.setMessage(t('appPngCanceled'))
-      return false
-    }
-    if ('tooLarge' in result) {
-      ctx.setMessage(t('appPngTooLarge'))
-      showToast(t('appPngTooLarge'), 'error')
       return false
     }
     const exported = t('appPngExported', { path: result.path })

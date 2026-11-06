@@ -6,7 +6,7 @@
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
-import { serializeAllSheetsCsv } from '../src/renderer/csv-export'
+import { exportBaseName, serializeAllSheetsCsv } from '../src/renderer/csv-export'
 import { csvFileNamesForSheets, planCsvAllExport } from '../src/main/csv-all-export'
 import { workbookExportCsvAllRequestSchema } from '../src/shared/desktop-api'
 
@@ -112,5 +112,21 @@ describe('the request', () => {
         hasFormulas: false,
       }).success,
     ).toBe(false)
+  })
+})
+
+describe('exportBaseName', () => {
+  it('names exports after the file the user opened, not the session copy', () => {
+    const state = (file: { name: string; path?: string }) => ({ file }) as never
+    expect(
+      exportBaseName(
+        state({
+          name: '85dd27b1-c8df-40bc-9eec-612d5fcffc5b.xlsx',
+          path: 'C:\\문서\\매출 보고.xlsx',
+        }),
+      ),
+    ).toBe('매출 보고')
+    expect(exportBaseName(state({ name: 'Book2.xlsx' }))).toBe('Book2')
+    expect(exportBaseName(null)).toBe('Book1')
   })
 })

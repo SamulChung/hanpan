@@ -461,9 +461,7 @@ const desktopApi: DesktopApi = {
     if (
       !isRecord(request) ||
       typeof request.fileName !== 'string' ||
-      typeof request.html !== 'string' ||
-      typeof request.widthPx !== 'number' ||
-      typeof request.heightPx !== 'number'
+      !(request.png instanceof Uint8Array)
     ) {
       throw new Error('Invalid image export request.')
     }

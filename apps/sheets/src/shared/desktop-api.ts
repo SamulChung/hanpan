@@ -2826,21 +2826,17 @@ export type WorkbookExportCsvAllRequest = z.infer<typeof workbookExportCsvAllReq
 export type WorkbookExportCsvAllResult = z.infer<typeof workbookExportCsvAllResultSchema>
 
 /// The sheet (or the selected range) as a PNG (0.17): the renderer lays it out as one
-/// page sized to the cells, the main process draws it in a hidden window and saves it.
+/// page sized to the cells and draws it; the main process asks where and writes the bytes.
 export const workbookExportImageRequestSchema = z
   .object({
     fileName: z.string().min(1).max(255),
-    html: z.string().min(1).max(20_000_000),
-    widthPx: z.number().positive().max(1_000_000),
-    heightPx: z.number().positive().max(1_000_000),
+    png: z.instanceof(Uint8Array).refine((bytes) => bytes.length <= 512 * 1024 * 1024),
   })
   .strict()
 
 export const workbookExportImageResultSchema = z.union([
   z.object({ canceled: z.literal(true) }).strict(),
   z.object({ canceled: z.literal(false), path: z.string().min(1) }).strict(),
-  /// The sheet is too large to draw as one picture.
-  z.object({ canceled: z.literal(false), tooLarge: z.literal(true) }).strict(),
 ])
 
 export type WorkbookExportImageRequest = z.infer<typeof workbookExportImageRequestSchema>

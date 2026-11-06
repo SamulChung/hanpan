@@ -44,6 +44,14 @@ export interface CsvWorksheet {
   }
 }
 
+/// The name exports are offered under: the file the user opened (`file.path`), without its
+/// extension. `file.name` is the session's own copy, which can be a generated name.
+export function exportBaseName(state: Pick<LazyWorkbookState, 'file'> | null): string {
+  const path = state?.file.path
+  const name = path ? (path.split(/[\\/]/).pop() ?? '') : (state?.file.name ?? '')
+  return name.replace(/\.[^.]+$/, '') || 'Book1'
+}
+
 export function csvField(text: string): string {
   const normalized = text.replace(/\r\n|\r/g, '\n')
   return /[",\n]/.test(normalized) ? `"${normalized.replace(/"/g, '""')}"` : normalized
@@ -143,7 +151,7 @@ export async function handleExportCsv(ctx: CsvExportContext, targetPath?: string
       ctx.setMessage(t('appCsvExportTooLarge'))
       return
     }
-    const baseName = (state?.file.name ?? 'Book1').replace(/\.[^.]+$/, '')
+    const baseName = exportBaseName(state)
     const result = await window.desktopApi.exportCsv({
       fileName: `${baseName}.csv`,
       content,
@@ -211,7 +219,7 @@ export async function handleExportAllCsv(ctx: CsvExportContext): Promise<void> {
       return
     }
     const result = await window.desktopApi.exportCsvAll({
-      baseName: (state?.file.name ?? 'Book1').replace(/\.[^.]+$/, ''),
+      baseName: exportBaseName(state),
       sheets: all.sheets,
       hasFormulas: all.hasFormulas,
     })

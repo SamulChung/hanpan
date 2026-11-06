@@ -95,4 +95,13 @@ describe('layoutSheetImage', () => {
     const plain = image(grid(2, 2))
     expect(plain.html).toContain('#c0c0c0')
   })
+
+  it('leaves the last row and column room for their borders (the box is rounded to 0.01 in)', () => {
+    const { html } = image(grid(4, 4))
+    const box = /<div class="content" style="[^"]*width:([\d.]+)in;height:([\d.]+)in/.exec(html)
+    expect(box).not.toBeNull()
+    // 4 columns of 75pt and 4 rows of 15pt
+    expect(Number(box![1]) * 72).toBeGreaterThanOrEqual(4 * 75)
+    expect(Number(box![2]) * 72).toBeGreaterThanOrEqual(4 * 15)
+  })
 })

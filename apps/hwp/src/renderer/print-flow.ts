@@ -85,3 +85,23 @@ export function pageImageUrl(job: PrintJob, index: number): string {
     : svg.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"')
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(withNs)}`
 }
+
+/** Page `index` of the job drawn as PNG bytes at `scale` (the page picture export). */
+export async function rasterizePage(job: PrintJob, index: number, scale = 2): Promise<Uint8Array> {
+  const page = job.pages[index]
+  if (!page) throw new Error('no such page')
+  const image = new Image()
+  image.src = pageImageUrl(job, index)
+  await image.decode()
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.round(page.width * scale)
+  canvas.height = Math.round(page.height * scale)
+  const context = canvas.getContext('2d')
+  if (!context) throw new Error('no canvas')
+  context.fillStyle = '#fff'
+  context.fillRect(0, 0, canvas.width, canvas.height)
+  context.drawImage(image, 0, 0, canvas.width, canvas.height)
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'))
+  if (!blob) throw new Error('the picture could not be written')
+  return new Uint8Array(await blob.arrayBuffer())
+}

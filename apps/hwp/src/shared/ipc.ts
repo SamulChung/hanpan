@@ -19,6 +19,8 @@ export const HWP_CHANNELS = {
   printRequest: 'hwp:print-request',
   fileCommand: 'hwp:file-command',
   printPages: 'hwp:print-pages',
+  /** invoke(PngExport) → PrintResult: page pictures drawn by the renderer, written (0.17) */
+  savePngs: 'hwp:save-pngs',
   /** invoke(html) → PrintResult: the document's HTML written as a Word file (0.17) */
   exportDocx: 'hwp:export-docx',
   dirtyChanged: 'hwp:dirty-changed',
@@ -111,8 +113,11 @@ export type ExportCommand = PrintMode | 'docx'
  */
 export type PrintMode = 'pdf' | 'print' | 'png' | 'pngPage'
 
-/** Print modes that write pictures. */
-export const IMAGE_PRINT_MODES: readonly PrintMode[] = ['png', 'pngPage']
+/** Pages drawn as PNG by the renderer: every page ('png') or the current one ('pngPage'). */
+export interface PngExport {
+  mode: 'png' | 'pngPage'
+  pngs: Uint8Array[]
+}
 
 /** One page as the editor draws it for printing: SVG, and its size in CSS pixels. */
 export interface PrintPage {
@@ -351,6 +356,8 @@ export interface HwpApi {
   printPages(job: PrintJob): Promise<PrintResult>
   /** the document's HTML (agentBridge.exportHtml) written as a .docx where the user picks */
   exportDocx(html: string): Promise<PrintResult>
+  /** pictures of the pages, drawn here, written where the user picks */
+  savePngs(request: PngExport): Promise<PrintResult>
   onCloseSaveRequest(handler: () => void): () => void
   sendCloseSaveResult(ok: boolean): void
   /** the memo editor opened or closed in this tab: main holds back save, close and quit */

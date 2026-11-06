@@ -15,7 +15,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import init, { HwpDocument } from '@rhwp/core'
 import { agentPlugin, documentHtml, type AgentPluginHost } from '../studio-plugin/agent-plugin.mjs'
-import { badJob, printJobToPngs, type PrintWindow } from '../src/main/print-document'
+import { badPngRequest, pngPageNames } from '../src/main/print-document'
 import { gatherPageJob, pageImageUrl } from '../src/renderer/print-flow'
 import { PrintPreview } from '../src/renderer/PrintPreview'
 import { LocaleProvider } from '../src/renderer/i18n/locale'
@@ -131,59 +131,20 @@ describe('gathering one page', () => {
 })
 
 describe('pages as PNG', () => {
-  it('draws each page at its own size, twice as sharp, in one hidden window', async () => {
-    const loaded: string[] = []
-    const commands: [string, unknown][] = []
-    let destroyed = 0
-    const win: PrintWindow = {
-      loadFile: async (path: string) => {
-        loaded.push(readFileSync(path, 'utf8'))
-      },
-      destroy: () => {
-        destroyed++
-      },
-      webContents: {
-        printToPDF: async () => Buffer.alloc(0),
-        print: () => {},
-        debugger: {
-          attach: () => {},
-          detach: () => {},
-          sendCommand: async (method: string, params?: unknown) => {
-            commands.push([method, params])
-            return method === 'Page.captureScreenshot'
-              ? { data: Buffer.from(`png${commands.length}`).toString('base64') }
-              : {}
-          },
-        },
-      },
-    } as unknown as PrintWindow
-    const job: PrintJob = {
-      mode: 'png',
-      pages: [
-        { svg: '<svg>one</svg>', width: 793.7, height: 1122.5 },
-        { svg: '<svg>two</svg>', width: 1122.5, height: 793.7 },
-      ],
-      images: [],
-    }
-    const pngs = await printJobToPngs(job, () => win)
-    expect(pngs).toHaveLength(2)
-    expect(loaded).toHaveLength(2)
-    expect(loaded[0]).toContain('one')
-    expect(loaded[0]).not.toContain('two')
-    const sizes = commands
-      .filter(([method]) => method === 'Emulation.setDeviceMetricsOverride')
-      .map(([, params]) => params)
-    expect(sizes).toEqual([
-      { width: 794, height: 1123, deviceScaleFactor: 2, mobile: false },
-      { width: 1123, height: 794, deviceScaleFactor: 2, mobile: false },
-    ])
-    expect(destroyed).toBe(1)
+  it('are named after the document, numbered to the same width', () => {
+    expect(pngPageNames('보고서', 3)).toEqual(['보고서-1.png', '보고서-2.png', '보고서-3.png'])
+    expect(pngPageNames('a', 12)[0]).toBe('a-01.png')
   })
 
-  it('are jobs the main process takes', () => {
-    const page = { svg: '<svg/>', width: 10, height: 10 }
-    expect(badJob({ mode: 'png', pages: [page], images: [] })).toBeNull()
-    expect(badJob({ mode: 'pngPage', pages: [page], images: [] })).toBeNull()
+  it('come from the renderer as PNG bytes, one per page, and nothing else is written', () => {
+    const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1])
+    expect(badPngRequest({ mode: 'png', pngs: [png, png] })).toBeNull()
+    expect(badPngRequest({ mode: 'pngPage', pngs: [png] })).toBeNull()
+    expect(badPngRequest({ mode: 'pngPage', pngs: [png, png] })).toMatch(/one page/)
+    expect(badPngRequest({ mode: 'png', pngs: [] })).toMatch(/no pages/)
+    expect(badPngRequest({ mode: 'png', pngs: [new Uint8Array([1, 2, 3])] })).toMatch(/not a PNG/)
+    expect(badPngRequest({ mode: 'pdf', pngs: [png] })).toMatch(/mode/)
+    expect(badPngRequest(null)).toMatch(/not/)
   })
 })
 
@@ -272,6 +233,8 @@ describe('the app', () => {
     expect(app).toContain('agentBridge.exportHtml()')
     expect(app).toContain('window.hwpApi.exportDocx(')
     expect(app).toContain('gatherPageJob(agentBridge')
+    expect(app).toContain('rasterizePage(job, index')
+    expect(app).toContain('window.hwpApi.savePngs(')
   })
 })
 

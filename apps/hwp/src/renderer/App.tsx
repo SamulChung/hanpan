@@ -26,7 +26,7 @@ import { MEMO_INSERT_EVENT, memoNoticeOf, type MemoNotice } from './MemoPanel'
 import { MemoSide, MemoToggle, memoPanelInitiallyOpen, rememberMemoPanelOpen } from './MemoSide'
 import { openDocumentsDroppedOn } from './editor-drop'
 import { hwpPresentationKeyOf } from './presentation-keys'
-import { gatherPageJob, gatherPrintJob } from './print-flow'
+import { gatherPageJob, gatherPrintJob, rasterizePage } from './print-flow'
 import { PrintPreview } from './PrintPreview'
 import {
   RECOVERY_TICK_MS,
@@ -642,7 +642,13 @@ export default function App() {
               return
             }
             setNotice({ tone: 'info', key: 'printSending', sticky: true })
-            const result = await window.hwpApi.printPages(job)
+            const result =
+              mode === 'png' || mode === 'pngPage'
+                ? await window.hwpApi.savePngs({
+                    mode,
+                    pngs: await Promise.all(job.pages.map((_, index) => rasterizePage(job, index))),
+                  })
+                : await window.hwpApi.printPages(job)
             setNotice(result.ok ? null : { tone: 'error', key: failed, detail: result.error })
           } catch (error) {
             setNotice({ tone: 'error', key: failed, detail: detailOf(error) })

@@ -26,9 +26,9 @@ import { atomicWriteFile } from './atomic-write'
 import { badDocxHtml, htmlToDocx } from './docx-export'
 import {
   badJob,
+  badPngRequest,
   pngPageNames,
   printJobToPdf,
-  printJobToPngs,
   printJobToPrinter,
 } from './print-document'
 import { tm } from './dialog-strings'
@@ -63,6 +63,7 @@ import type {
   MeasuredTab,
   MemoPathStep,
   MemoSnapshot,
+  PngExport,
   PrintJob,
   PrintResult,
   SaveMode,
@@ -577,9 +578,6 @@ function registerHwpIpc(): void {
       }
       const win =
         BrowserWindow.fromWebContents(e.sender) ?? BrowserWindow.getFocusedWindow() ?? undefined
-      if (printJob.mode === 'png' || printJob.mode === 'pngPage') {
-        return await exportPngs(printJob, wcId, win)
-      }
       const current = savePathByWc.get(wcId)
       const picked = await showSaveDialogWithMemory(dialog, win, {
         title: tm('dlgExportPdfTitle'),
@@ -611,7 +609,7 @@ function registerHwpIpc(): void {
    * `<document>-<n>.png`, or the current page where the user saves it.
    */
   async function exportPngs(
-    job: PrintJob,
+    job: PngExport,
     wcId: number,
     win: BrowserWindow | undefined,
   ): Promise<PrintResult> {
@@ -635,7 +633,7 @@ function registerHwpIpc(): void {
         : await dialog.showOpenDialog(options)
       const folder = picked.canceled ? undefined : picked.filePaths[0]
       if (!folder) return { ok: true, canceled: true }
-      targets = pngPageNames(exportBase(wcId), job.pages.length).map((name) => join(folder, name))
+      targets = pngPageNames(exportBase(wcId), job.pngs.length).map((name) => join(folder, name))
       const existing = targets.filter((target) => existsSync(target)).length
       if (existing > 0) {
         const ask = {
@@ -652,9 +650,8 @@ function registerHwpIpc(): void {
         if (response !== 0) return { ok: true, canceled: true }
       }
     }
-    const pngs = await printJobToPngs(job, printWindow)
     for (let index = 0; index < targets.length; index++) {
-      await atomicWriteFile(targets[index]!, pngs[index]!)
+      await atomicWriteFile(targets[index]!, Buffer.from(job.pngs[index]!))
     }
     try {
       shell.showItemInFolder(targets[0]!)
@@ -663,6 +660,19 @@ function registerHwpIpc(): void {
     }
     return { ok: true, path: targets[0]! }
   }
+
+  // pictures of the pages (0.17): drawn by the renderer, written where the user picks
+  ipcMain.handle(HWP_CHANNELS.savePngs, async (e, request: unknown): Promise<PrintResult> => {
+    const bad = badPngRequest(request)
+    if (bad) return { ok: false, error: `hwp: ${bad}` }
+    try {
+      const win =
+        BrowserWindow.fromWebContents(e.sender) ?? BrowserWindow.getFocusedWindow() ?? undefined
+      return await exportPngs(request as PngExport, e.sender.id, win)
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) }
+    }
+  })
 
   // the document as Word (0.17): the renderer hands the document's HTML, written as .docx
   ipcMain.handle(HWP_CHANNELS.exportDocx, async (e, html: unknown): Promise<PrintResult> => {

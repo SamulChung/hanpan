@@ -11,7 +11,6 @@ import {
 import { copyFile, mkdir, open, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
 import { refreshCsvDigest } from './csv-digest'
 import { planCsvAllExport } from './csv-all-export'
-import { imageCaptureScale, renderHtmlToPng } from './image-export'
 import { createServer } from 'node:http'
 import { basename, dirname, isAbsolute, join } from 'node:path'
 
@@ -3833,13 +3832,10 @@ export function registerSheetsIpc(): void {
     return { canceled: false, folder, count: files.length }
   })
 
-  // The sheet or the selected range as a PNG (0.17), drawn in a hidden window.
+  // The sheet or the selected range as a PNG (0.17), drawn by the renderer.
   ipcMain.handle(IPC_CHANNELS.exportImage, async (event, input: unknown) => {
     sessionFor(event)
     const request = workbookExportImageRequestSchema.parse(input)
-    if (imageCaptureScale(request.widthPx, request.heightPx) === null) {
-      return { canceled: false, tooLarge: true }
-    }
     const selection = await saveFileDialog(event, {
       defaultPath: request.fileName,
       filters: [{ name: 'PNG', extensions: ['png'] }],
@@ -3848,9 +3844,7 @@ export function registerSheetsIpc(): void {
     const target = /\.png$/i.test(selection.filePath)
       ? selection.filePath
       : `${selection.filePath}.png`
-    const png = await renderHtmlToPng(request.html, request.widthPx, request.heightPx)
-    if (!png) return { canceled: false, tooLarge: true }
-    await atomicWriteFile(target, png)
+    await atomicWriteFile(target, Buffer.from(request.png))
     return { canceled: false, path: target }
   })
 

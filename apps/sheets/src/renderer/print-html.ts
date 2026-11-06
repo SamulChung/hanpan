@@ -578,10 +578,15 @@ export function layoutSheetPrint(
 
 /// A paper exactly the content's size plus the margins (the sheet image's one page).
 function contentPaper(widthPt: number, heightPt: number, margins: PrintMargins): PaperGeometry {
-  const widthIn = round4(widthPt / 72 + margins.left + margins.right)
-  const heightIn = round4(heightPt / 72 + margins.top + margins.bottom)
+  // the page writes its content box rounded to 0.01 in: without the slack the last row's
+  // and column's borders (drawn inside the cells) fall just outside it
+  const widthIn = round4((widthPt + CONTENT_SLACK_PT) / 72 + margins.left + margins.right)
+  const heightIn = round4((heightPt + CONTENT_SLACK_PT) / 72 + margins.top + margins.bottom)
   return { pageSize: { width: widthIn, height: heightIn }, landscape: false, widthIn, heightIn }
 }
+
+/// Room past the cells for rounding (0.01 in is 0.72pt).
+const CONTENT_SLACK_PT = 1.5
 
 /// White border around the sheet image, in inches (about 8px).
 const IMAGE_MARGIN_IN = 1 / 12
