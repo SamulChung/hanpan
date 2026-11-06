@@ -1,3 +1,5 @@
+import type { ParsedChartData } from '@genoffice/xlsx-gateway/domain/chart-visual'
+
 /**
  * 새 차트의 왼쪽 열. Excel처럼 원본 오른쪽에 한 칸 띄워 두되, 차트가 덮을
  * 행에 데이터가 있으면(비고 열 등) 그 데이터가 끝난 다음 빈 열로 민다(X4).
@@ -35,4 +37,22 @@ export function chartAnchorColumn(input: {
   if (lastFilled < 0) return preferred
   if (emptyRun === 0) return preferred
   return Math.max(preferred, lastFilled + 2)
+}
+
+/**
+ * 새 차트의 제목. 계열이 하나이고 그 계열의 머리글 셀이 있으면 머리글을 쓰고,
+ * 머리글 없는 한 열(A1:A3)이면 자동 이름 "Series 1" 대신 화면 언어의
+ * "차트 제목"을 쓴다(설치판 점검).
+ */
+export function newChartTitle(
+  values: readonly (readonly unknown[])[],
+  parsed: ParsedChartData,
+  fallback: string,
+): string {
+  const only = parsed.series.length === 1 ? parsed.series[0] : undefined
+  if (!only || !parsed.hasHeaderRow) return fallback
+  const header = parsed.byRow ? values[only.column]?.[0] : values[0]?.[only.column]
+  return header === null || header === undefined || String(header).trim() === ''
+    ? fallback
+    : String(header)
 }

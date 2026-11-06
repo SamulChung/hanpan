@@ -3,7 +3,8 @@
  * 행에서 데이터가 끝난 다음 빈 열에 둔다.
  */
 import { describe, expect, it } from 'vitest'
-import { chartAnchorColumn } from '../src/renderer/chart-placement'
+import { chartDataFromValues } from '@genoffice/xlsx-gateway/domain/chart-visual'
+import { chartAnchorColumn, newChartTitle } from '../src/renderer/chart-placement'
 
 describe('chartAnchorColumn', () => {
   it('skips the filled columns right of the selection', () => {
@@ -21,5 +22,25 @@ describe('chartAnchorColumn', () => {
     expect(
       chartAnchorColumn({ startRow: 0, endColumn: 3, rows: 16, isEmpty: () => false, maxScan: 10 }),
     ).toBe(5)
+  })
+})
+
+describe('newChartTitle (0.17 final: one column titled "Series 1")', () => {
+  const fallback = '차트 제목'
+  it('uses the UI-language title for one headerless column', () => {
+    const parsed = chartDataFromValues([[10], [20], [30]])!
+    expect(newChartTitle([[10], [20], [30]], parsed, fallback)).toBe(fallback)
+  })
+  it('keeps the header of a single labelled column', () => {
+    const values = [['매출'], [10], [20]]
+    expect(newChartTitle(values, chartDataFromValues(values)!, fallback)).toBe('매출')
+  })
+  it('uses the UI-language title for several series', () => {
+    const values = [[10, 1], [20, 2], [30, 3]]
+    expect(newChartTitle(values, chartDataFromValues(values)!, fallback)).toBe(fallback)
+  })
+  it('uses the UI-language title for one headerless row', () => {
+    const values = [[10, 20, 30]]
+    expect(newChartTitle(values, chartDataFromValues(values)!, fallback)).toBe(fallback)
   })
 })

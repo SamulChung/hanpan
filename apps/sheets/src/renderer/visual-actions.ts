@@ -30,7 +30,7 @@ import {
   removeVisualAdd,
   updateVisualAdd,
 } from './edit-journal'
-import { chartAnchorColumn } from './chart-placement'
+import { chartAnchorColumn, newChartTitle } from './chart-placement'
 import { t } from './i18n/locale'
 import { filePivotAtSelection, type PivotActionContext } from './pivot-actions'
 import {
@@ -270,10 +270,7 @@ export async function handleInsertChart(
       ...(chartKind === 'column' || chartKind === 'bar' || chartKind === 'combo'
         ? { barDirection: chartKind === 'bar' ? 'bar' : 'col' }
         : {}),
-      title:
-        parsed.series.length === 1 && parsed.series[0]
-          ? parsed.series[0].name
-          : t('appChartTitleEl'),
+      title: newChartTitle(values, parsed, t('appChartTitleEl')),
       series: parsed.series.map((series) => ({
         name: series.name,
         categories: parsed.categories,
