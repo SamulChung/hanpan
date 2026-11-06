@@ -2,8 +2,7 @@ import type { zh } from './zh'
 
 export const ko = {
   ribbonAiCreditNote: 'AI를 호출하며 AI 사용량이 차감됩니다',
-  ribbonAiRewriteConfirm:
-    '이 작업은 AI를 호출합니다. AI 사용량이 차감되며 전체 내용이 다시 작성될 수 있습니다. 계속하시겠습니까? (확인 후 다시 묻지 않습니다)',
+  ribbonAiRewriteConfirm: 'AI가 슬라이드 글을 직접 고칩니다. 구독 중인 AI 사용량이 조금 쓰이고, 글이 많이 바뀔 수 있습니다. 계속할까요? (다음부터는 묻지 않습니다)',
   // tabs
   ribbonTabFile: '파일',
   ribbonTabHome: '홈',
@@ -322,7 +321,7 @@ export const ko = {
   ribbonTransZoom: '확대/축소',
   ribbonTransRandom: '임의 효과',
   ribbonTransNoneTip: '현재 슬라이드의 화면 전환 효과 제거',
-  ribbonTransApplyTip: '이 슬라이드에 "{name}" 전환 적용(PowerPoint 슬라이드 쇼에서 적용됨)',
+  ribbonTransApplyTip: '이 슬라이드에 "{name}" 전환 적용(슬라이드 쇼와 PowerPoint에서 모두 재생)',
   ribbonGroupTiming: '타이밍',
   ribbonTransApplyAllTip: '현재 슬라이드의 화면 전환 효과를 모든 슬라이드에 적용',
   // Animations
@@ -408,8 +407,7 @@ export const ko = {
   ribbonGroupProofing: '언어 교정',
   ribbonSpellCheck: '맞춤법 검사',
   ribbonSpellCheckTip: 'AI가 슬라이드별로 오타, 문법, 문장 부호를 검사하여 바로 수정',
-  ribbonSpellCheckPrompt:
-    '이 프레젠테이션을 슬라이드별로 오타, 문법, 문장 부호를 검사해 주세요. 문제가 있으면 도구로 직접 수정하되 레이아웃과 원래 의미는 유지하고, 마지막에 슬라이드별 수정 사항을 간단히 보고하며 문제가 없는 슬라이드는 건너뛰세요.',
+  ribbonSpellCheckPrompt: '이 프레젠테이션을 슬라이드별로 오타, 문법, 문장 부호를 검사해 주세요. 문제가 있으면 도구로 직접 수정하되 레이아웃과 원래 의미는 유지하세요. 보고의 첫 줄은 고친 곳이 없으면 "틀린 곳 없음", 있으면 "N곳 고침"(N은 고친 곳의 수)으로 쓰고, 그 아래에 슬라이드별 수정 사항을 간단히 적되 문제가 없는 슬라이드는 건너뛰세요.',
   ribbonTranslate: '번역',
   ribbonTranslateTip: 'AI가 현재 슬라이드의 텍스트를 선택한 언어로 번역(원문을 직접 대체)',
   ribbonTranslatePrompt:
@@ -794,4 +792,5 @@ export const ko = {
   ribbonZoomSelectedSections: '구역 {n}개 선택됨',
   ribbonTabCollapseTip: '두 번 클릭하면 리본을 접습니다 ({key})',
   ribbonAnimSelectFirst: '먼저 애니메이션을 넣을 개체를 선택하세요',
+  ribbonSpellCheckStarted: 'AI 창에서 맞춤법 검사를 시작했습니다. 끝나면 "틀린 곳 없음" 또는 "N곳 고침"으로 알려 드립니다.',
 } satisfies Record<keyof typeof zh, string>

@@ -314,7 +314,7 @@ export const zh = {
   ribbonTransZoom: '缩放',
   ribbonTransRandom: '随机',
   ribbonTransNoneTip: '移除当前页切换效果',
-  ribbonTransApplyTip: '当前页使用「{name}」切换（PowerPoint 放映生效）',
+  ribbonTransApplyTip: '为此幻灯片应用“{name}”切换（放映时和 PowerPoint 中都会播放）',
   ribbonGroupTiming: '计时',
   ribbonTransApplyAllTip: '把当前页的切换效果应用到全部页',
   // Animations
@@ -395,8 +395,7 @@ export const zh = {
   ribbonGroupProofing: '校对',
   ribbonSpellCheck: '拼写检查',
   ribbonSpellCheckTip: 'AI 逐页检查错别字、语法和标点并直接修正',
-  ribbonSpellCheckPrompt:
-    '逐页检查这份演示文稿的错别字、语法和标点：有问题的用工具直接修正，保持版式与原意不变；最后按页简要汇报修改点，没有问题的页跳过。',
+  ribbonSpellCheckPrompt: '请逐页检查本演示文稿的错别字、语法和标点：有问题时直接用工具修改，保持版式和原意不变。报告第一行写“未发现错误”（没有修改时）或“已修正 N 处”（N 为修改数），然后简要列出每页的修改，没有问题的页跳过。',
   ribbonTranslate: '翻译',
   ribbonTranslateTip: 'AI 把当前页文本翻译成所选语言（直接替换原文）',
   ribbonTranslatePrompt:
@@ -780,4 +779,5 @@ export const zh = {
   ribbonZoomSelectedSections: '已选择 {n} 个节',
   ribbonTabCollapseTip: '双击可折叠功能区（{key}）',
   ribbonAnimSelectFirst: '请先选择要添加动画的对象',
+  ribbonSpellCheckStarted: '已在 AI 窗格中开始拼写检查。完成后会提示“未发现错误”或“已修正 N 处”。',
 }

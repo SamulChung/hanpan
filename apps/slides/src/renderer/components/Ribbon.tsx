@@ -5,6 +5,7 @@
  */
 import { useEscapeToClose } from './use-escape-close'
 import { useEscOverlay } from '../esc-overlay'
+import { showToast } from './toast-bus'
 import React, {
   useCallback,
   useEffect,
@@ -2605,7 +2606,10 @@ export function Ribbon({
                 disabled={!hasDoc}
                 data-tip={`${t('ribbonSpellCheckTip')} — ${t('ribbonAiCreditNote')}`}
                 onClick={() => {
-                  if (confirmAiRewrite()) onAiPreset(t('ribbonSpellCheckPrompt'))
+                  if (!confirmAiRewrite()) return
+                  onAiPreset(t('ribbonSpellCheckPrompt'))
+                  // the check runs in the AI pane: say so, or the press looks like it did nothing
+                  showToast(t('ribbonSpellCheckStarted'))
                 }}
               >
                 <span className="rb-big-icon">
