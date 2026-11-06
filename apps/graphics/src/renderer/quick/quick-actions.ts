@@ -7,7 +7,7 @@
 import type { GraphicsAdapter } from '../adapters'
 import type { ExportRequest, ExportResult, PickedImage } from '../../shared/ipc'
 import type { GraphicsKind } from '../../shared/kinds'
-import type { StringKey } from '../i18n/locale'
+import { t, type StringKey } from '../i18n/locale'
 import type { PixelSize } from './resize'
 
 export const QUICK_ACTIONS = {
@@ -24,6 +24,8 @@ export interface ExportChoice {
   /** a raster size other than the picture's own */
   width?: number
   height?: number
+  /** JPEG quality, 0–1; the resize's own default when absent */
+  quality?: number
 }
 
 export interface QuickDeps {
@@ -40,7 +42,14 @@ export interface QuickDeps {
     width: number,
     height: number,
     format: 'png' | 'jpg',
+    quality?: number,
   ): Promise<Uint8Array>
+  /**
+   * the export's file name while the app still calls the document by its own
+   * default ("Untitled-1"): the Hanpan tab's name. The tab's untitled name in
+   * the interface language when absent.
+   */
+  untitledName?: string
 }
 
 /**
@@ -53,7 +62,27 @@ export interface QuickResult {
   messageKey: StringKey | null
 }
 
-const DONE: QuickResult = { ok: true, messageKey: 'quickDone' }
+/** what each action says once it worked */
+const DONE: Record<Exclude<QuickActionId, 'exportAtSize' | 'exportPngSvg'>, QuickResult> = {
+  removeBackground: { ok: true, messageKey: 'quickDoneRemoveBackground' },
+  autoTone: { ok: true, messageKey: 'quickDoneAutoTone' },
+  traceImage: { ok: true, messageKey: 'quickDoneTrace' },
+  centerOnArtboard: { ok: true, messageKey: 'quickDoneCenter' },
+}
+
+/**
+ * The likely cause when the app refuses: the pixel actions need a picture layer
+ * (a type or empty layer has no pixels), the trace a placed picture, the
+ * centering something on the artboard.
+ */
+const FAILED: Record<QuickActionId, StringKey> = {
+  removeBackground: 'quickNeedPixelLayer',
+  autoTone: 'quickNeedPixelLayer',
+  traceImage: 'quickTraceFailed',
+  centerOnArtboard: 'quickCenterFailed',
+  exportAtSize: 'quickExportFailed',
+  exportPngSvg: 'quickExportFailed',
+}
 const CANCELED: QuickResult = { ok: true, messageKey: null }
 const NO_DOCUMENT: QuickResult = { ok: false, messageKey: 'quickNoDocument' }
 
@@ -78,8 +107,16 @@ async function selectedImage(deps: QuickDeps): Promise<boolean> {
   return record(node.kind).type === 'image'
 }
 
-function baseName(title: string | null): string {
-  return (title ?? 'export').replace(/\.[^.]+$/, '') || 'export'
+/** the apps' own name for a document never saved: "Untitled-1" (VectorCraft), "제목 없음-1" (PhotoCraft in Korean) */
+const APP_UNTITLED = /^(untitled|제목\s*없음)(-\d+)?$/i
+
+function baseName(title: string | null, untitled: string): string {
+  const name = (title ?? '').replace(/\.[^.]+$/, '').trim()
+  return !name || APP_UNTITLED.test(name) ? untitled : name
+}
+
+function untitledName(kind: GraphicsKind, deps: QuickDeps): string {
+  return deps.untitledName ?? t(kind === 'photo' ? 'untitledPhoto' : 'untitledIllust')
 }
 
 async function exportWithDialog(kind: GraphicsKind, deps: QuickDeps): Promise<QuickResult> {
@@ -100,6 +137,7 @@ async function exportWithDialog(kind: GraphicsKind, deps: QuickDeps): Promise<Qu
       choice.width ?? size.width,
       choice.height ?? size.height,
       choice.format,
+      ...(choice.quality === undefined ? [] : [choice.quality]),
     )
   } else {
     bytes = raster
@@ -107,7 +145,7 @@ async function exportWithDialog(kind: GraphicsKind, deps: QuickDeps): Promise<Qu
   const title = (await deps.adapter.docInfo()).title
   const result = await deps.exportFile({
     bytes,
-    defaultName: `${baseName(title)}.${choice.format}`,
+    defaultName: `${baseName(title, untitledName(kind, deps))}.${choice.format}`,
     format: choice.format,
   })
   if (!result.ok) {
@@ -127,10 +165,10 @@ async function run(id: QuickActionId, deps: QuickDeps): Promise<QuickResult> {
   switch (id) {
     case 'removeBackground':
       await execute('layer.removeBackground')
-      return DONE
+      return DONE.removeBackground
     case 'autoTone':
       await execute('image.autoTone')
-      return DONE
+      return DONE.autoTone
     case 'exportAtSize':
       return exportWithDialog('photo', deps)
     case 'exportPngSvg':
@@ -143,12 +181,12 @@ async function run(id: QuickActionId, deps: QuickDeps): Promise<QuickResult> {
         await deps.adapter.placeImage(picked.name, picked.bytes)
       }
       await execute('imageTrace.makeAndExpand')
-      return DONE
+      return DONE.traceImage
     }
     case 'centerOnArtboard':
       if ((await selection(deps)).length === 0) await execute('select.all')
       await execute('object.align', { horizontal: 'center', vertical: 'center', to: 'artboard' })
-      return DONE
+      return DONE.centerOnArtboard
   }
 }
 
@@ -158,7 +196,7 @@ export async function runQuickAction(id: QuickActionId, deps: QuickDeps): Promis
     return await run(id, deps)
   } catch (error) {
     console.warn(`quick action ${id} failed:`, errorText(error))
-    return { ok: false, messageKey: 'quickFailed' }
+    return { ok: false, messageKey: FAILED[id] }
   } finally {
     unlock()
   }

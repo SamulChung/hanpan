@@ -36,7 +36,12 @@ export function QuickBar({
           data-quick={id}
           disabled={disabled || !hasDocument}
           title={hasDocument ? undefined : t('quickNoDocument')}
-          onClick={() => onRun(id)}
+          onClick={(e) => {
+            // a mouse click leaves no focus behind: the button would look held
+            // down after the action. A key press (detail 0) keeps it for the keyboard.
+            if (e.detail > 0) e.currentTarget.blur()
+            onRun(id)
+          }}
         >
           {t(LABELS[id])}
         </button>

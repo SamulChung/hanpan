@@ -97,4 +97,24 @@ describe('QuickBar', () => {
     await act(async () => buttons[0]!.click())
     expect(onRun).not.toHaveBeenCalled()
   })
+
+  // 0.17 UX v2 G11: 마우스로 누른 단추에 포커스가 남아 눌린 것처럼 보이지 않게 한다
+  it('a mouse click leaves no focus on the button; a key press keeps it', async () => {
+    const onRun = vi.fn()
+    const el = await render(<QuickBar kind="photo" disabled={false} hasDocument onRun={onRun} />)
+    const button = el.querySelector('button') as HTMLButtonElement
+    button.focus()
+    await act(async () => {
+      button.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 1 }))
+    })
+    expect(onRun).toHaveBeenCalledWith('removeBackground')
+    expect(document.activeElement).not.toBe(button)
+
+    button.focus()
+    await act(async () => {
+      // Enter or Space on a focused button: a click with detail 0
+      button.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 0 }))
+    })
+    expect(document.activeElement).toBe(button)
+  })
 })
