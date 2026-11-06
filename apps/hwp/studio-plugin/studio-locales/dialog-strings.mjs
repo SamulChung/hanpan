@@ -7,6 +7,8 @@
  *
  * `{name}` is a placeholder the studio fills in; `$1`, `$2` are a regular expression's groups.
  */
+import { SOURCE_STRINGS } from './source-strings.mjs'
+
 export const DIALOG_STRINGS = {
   // 책갈피
   'hanpan.bookmark.defaultName': ['책갈피{count}', 'Bookmark{count}', 'DấuTrang{count}'],
@@ -389,9 +391,12 @@ export const DIALOG_STRINGS = {
   'hanpan.tableRowColumn.cols': ['칸', 'Columns', 'Cột'],
 }
 
-/** The table above by language, as APP_STRINGS holds its words. */
+/** The table above and the studio's other text (source-strings.mjs) by language, as APP_STRINGS holds its words. */
 export function dialogStrings(index) {
   return Object.fromEntries(
-    Object.entries(DIALOG_STRINGS).map(([key, words]) => [key, words[index]]),
+    Object.entries({ ...DIALOG_STRINGS, ...SOURCE_STRINGS }).map(([key, words]) => [
+      key,
+      words[index],
+    ]),
   )
 }

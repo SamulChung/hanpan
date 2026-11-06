@@ -21,6 +21,7 @@ import {
   APP_STRINGS,
   EXTRA_LOCALES,
   aboutText,
+  diffTitleText,
   styleDisplayName,
   studioLocaleOf,
 } from '../studio-plugin/studio-locales.mjs'
@@ -258,9 +259,9 @@ describe('studio text with no catalog key', () => {
     }
   })
 
-  // Korean that stays in the studio UI source after the patches: data the code compares or
-  // writes into a document, not interface text. Each entry says why. Console output is not
-  // counted (developer logs, never shown).
+  // Korean that stays in the studio source after the patches: data the code compares, writes
+  // into a document or hands to another program, not interface text. Each entry says why.
+  // Console output is not counted (developer logs, never shown).
   const DIFF_ENGINE_DATA = {
     '(없음)':
       "the diff engine's empty-value marker in its summaries, compared before a value is shown",
@@ -269,17 +270,23 @@ describe('studio text with no catalog key', () => {
   }
   const FONT_NAME = 'a font family name'
   const LOGGED_ERROR = 'an internal error, caught and written to the console only'
+  const CONSOLE_ARGUMENT = 'a console message continued on its own line'
+  const PICTURE_DESCRIPTION =
+    'the description written into the document with an inserted picture, as Hangul writes it'
+  const CLIPBOARD_TEXT = 'the plain text put on the clipboard for a copied object, as Hangul does'
+  const ENGINE_MESSAGE = 'part of an engine error message, matched to tell the error apart'
   const DATA_NOT_TEXT: Record<string, Record<string, string>> = {
-    'compare-dialog.ts': DIFF_ENGINE_DATA,
-    'history-dialog.ts': DIFF_ENGINE_DATA,
-    'compare-result-window.ts': { '(없음)': DIFF_ENGINE_DATA['(없음)'] },
-    'font-set-edit-dialog.ts': { 함초롬바탕: FONT_NAME },
-    'numbering-dialog.ts': {
+    'ui/compare-dialog.ts': DIFF_ENGINE_DATA,
+    'ui/history-dialog.ts': DIFF_ENGINE_DATA,
+    'ui/compare-result-window.ts': { '(없음)': DIFF_ENGINE_DATA['(없음)'] },
+    'compare/diff-location-label.ts': { '(없음)': DIFF_ENGINE_DATA['(없음)'] },
+    'ui/font-set-edit-dialog.ts': { 함초롬바탕: FONT_NAME },
+    'ui/numbering-dialog.ts': {
       '제^1장': 'the Korean outline preset, whose sample label is Korean in every language',
       '제^2절': 'the Korean outline preset, whose sample label is Korean in every language',
       가나다라마바사아자차카타파하: 'the Hangul numbering glyphs a number format draws',
     },
-    'toolbar.ts': {
+    'ui/toolbar.ts': {
       함초롬바탕: FONT_NAME,
       함초롬돋움: FONT_NAME,
       '맑은 고딕': FONT_NAME,
@@ -288,11 +295,114 @@ describe('studio text with no catalog key', () => {
       돋움: FONT_NAME,
       궁서: FONT_NAME,
     },
-    'style-dialog.ts': { '[StyleDialog] 스타일 삭제 실패': LOGGED_ERROR },
-    'style-edit-dialog.ts': {
+    'ui/style-dialog.ts': { '[StyleDialog] 스타일 삭제 실패': LOGGED_ERROR },
+    'ui/style-edit-dialog.ts': {
       '[StyleEditDialog] 생성한 스타일의 모양 적용 실패': LOGGED_ERROR,
       '[StyleEditDialog] 스타일 모양 적용 실패': LOGGED_ERROR,
     },
+    'engine/input-handler.ts': {
+      '그림입니다.\\r\\n원본 그림의 이름: ${fileName}\\r\\n원본 그림의 크기: 가로 ${naturalWidth}pixel, 세로 ${naturalHeight}pixel':
+        PICTURE_DESCRIPTION,
+      '[그림]': CLIPBOARD_TEXT,
+      '[표]': CLIPBOARD_TEXT,
+    },
+    'engine/input-handler-table.ts': {
+      '그림입니다.\\r\\n원본 그림의 이름: ${imgData.fileName}\\r\\n원본 그림의 크기: 가로 ${imgData.naturalWidth}pixel, 세로 ${imgData.naturalHeight}pixel':
+        PICTURE_DESCRIPTION,
+    },
+    'engine/input-handler-keyboard.ts': { '[그림]': CLIPBOARD_TEXT },
+    'engine/cursor.ts': { '인라인 컨트롤 위치': ENGINE_MESSAGE },
+    'command/commands/table.ts': { '표 크기': ENGINE_MESSAGE, 초과: ENGINE_MESSAGE },
+    'core/canvas-metric-recovery.ts': { '렌더링 오류: ${DESCRIPTOR_MISMATCH}': ENGINE_MESSAGE },
+    'main.ts': {
+      '비밀번호가 필요한 암호 문서': ENGINE_MESSAGE,
+      '비밀번호가 일치하지 않거나 암호화 데이터가 손상되었습니다': ENGINE_MESSAGE,
+      '지원하지 않는 암호화 방식': ENGINE_MESSAGE,
+    },
+    'view/canvaskit-renderer.ts': { '(인)': 'the seal mark a form field draws into the page' },
+    'core/font-loader.ts': {
+      함초롬바탕: FONT_NAME,
+      함초롬돋움: FONT_NAME,
+      '맑은 고딕': FONT_NAME,
+      바탕: FONT_NAME,
+      돋움: FONT_NAME,
+      굴림: FONT_NAME,
+      굴림체: FONT_NAME,
+      바탕체: FONT_NAME,
+      궁서: FONT_NAME,
+      mmmmmmmmmwwwwwwwWMWMWM한글글꼴측정0123456789:
+        'text measured to tell whether a font is installed',
+    },
+    'core/local-fonts.ts': {
+      가나다라마바사아자차카타파하: 'text measured to tell whether a font is installed',
+      '한글과 English 12345': 'text measured to tell whether a font is installed',
+    },
+  }
+  // Files whose Korean (beyond the data above) is not interface text, with how many such
+  // literals they hold, so a string added to one of them fails here until it is looked at.
+  const AUTOMATION = 'HwpCtrl automation names and errors, for scripts that drive the studio'
+  const INTERNAL = 'internal errors and checks of the engine, renderer or undo history'
+  const DEV = 'developer tools and debug output'
+  const AGENT = "errors of the document-agent protocol the app's AI plugin speaks, not shown"
+  const FONT_TABLE = 'generated font tables: font family names'
+  const NOT_INTERFACE: Record<string, [number, string]> = {
+    'automation/host.ts': [4, 'errors for automation scripts calling studio commands'],
+    'command/commands/file.ts': [2, CONSOLE_ARGUMENT],
+    'command/commands/insert.ts': [3, LOGGED_ERROR],
+    'command/commands/table.ts': [20, 'names of table operations in the console log of a failure'],
+    'command/file-open-picker.ts': [1, CONSOLE_ARGUMENT],
+    'command/print-pages.ts': [1, INTERNAL],
+    'command/print-surface.ts': [7, INTERNAL],
+    'compare/diff-engine.ts': [
+      84,
+      'item titles and summaries the compare views match on (shown through diffTitleText), its empty marker and debug output',
+    ],
+    'core/canvaskit-document-preflight.ts': [3, INTERNAL],
+    'core/char-shape-runs.ts': [3, INTERNAL],
+    'core/export-content-loss.ts': [4, INTERNAL],
+    'core/font-loader.ts': [1, DEV],
+    'core/generated/font-rule-projections/canvas2d-paint.ts': [501, FONT_TABLE],
+    'core/generated/font-rule-projections/canvaskit-sfnt.ts': [548, FONT_TABLE],
+    'core/generated/font-rule-projections/webfont-supply.ts': [152, FONT_TABLE],
+    'core/hwp-constants.ts': [169, AUTOMATION],
+    'core/local-text-replace-result.ts': [1, INTERNAL],
+    'core/numbering-defaults.ts': [
+      13,
+      'numbering preset names, a Korean sample of each format; the numbering dialog shows nameEn outside Korean',
+    ],
+    'core/paper-defaults.ts': [13, 'paper names in a table nothing in the studio imports'],
+    'core/rhwp-dev.ts': [5, DEV],
+    'core/subsecond-runtime.ts': [26, DEV],
+    'core/user-settings.ts': [32, 'built-in font sets: font family names'],
+    'core/wasm-bridge.ts': [329, INTERNAL],
+    'dev/page-scroll-probe.ts': [34, DEV],
+    'dev/scroll-observation.ts': [3, DEV],
+    'dev/zoom-session-observation.ts': [1, DEV],
+    'document-agent/contract.ts': [12, AGENT],
+    'document-agent/controller.ts': [39, AGENT],
+    'embed/runtime.ts': [2, 'embed protocol errors for the host app'],
+    'engine/command.ts': [14, INTERNAL],
+    'engine/input-handler.ts': [7, INTERNAL],
+    'engine/picture-resize-journal.ts': [1, INTERNAL],
+    'hwpctl/action-registry.ts': [30, AUTOMATION],
+    'hwpctl/action.ts': [3, AUTOMATION],
+    'hwpctl/actions/clipboard.ts': [7, AUTOMATION],
+    'hwpctl/actions/format.ts': [5, AUTOMATION],
+    'hwpctl/actions/navigate.ts': [5, AUTOMATION],
+    'hwpctl/actions/page.ts': [5, AUTOMATION],
+    'hwpctl/actions/table-edit.ts': [5, AUTOMATION],
+    'hwpctl/actions/table.ts': [1, AUTOMATION],
+    'hwpctl/actions/text.ts': [4, AUTOMATION],
+    'hwpctl/index.ts': [1, AUTOMATION],
+    'main.ts': [7, 'console messages on their own lines and internal errors'],
+    'plugin/dev-probe-plugin.ts': [2, DEV],
+    'plugin/host.ts': [10, 'errors of the plugin API, for plugins'],
+    'view/canvas-pool.ts': [4, INTERNAL],
+    'view/canvas-view.ts': [2, INTERNAL],
+    'view/canvaskit-renderer.ts': [12, INTERNAL],
+    'view/page-renderer.ts': [1, INTERNAL],
+    'view/renderer-session.ts': [2, INTERNAL],
+    'view/zoom-input-settle.ts': [1, INTERNAL],
   }
 
   /** Korean literals the user can see: console output and comments left out. */
@@ -304,34 +414,125 @@ describe('studio text with no catalog key', () => {
         .join('\n'),
     )
 
-  const uiFiles = () =>
-    fetched ? readdirSync(join(studio, 'src', 'ui')).filter((name) => name.endsWith('.ts')) : []
-
-  it.skipIf(!fetched)('writes no Korean into the studio UI outside the catalogs', () => {
-    const left: string[] = []
-    for (const name of uiFiles()) {
-      for (const text of shownKorean(patched(`src/ui/${name}`))) {
-        if (!DATA_NOT_TEXT[name]?.[text]) left.push(`${name}: ${text}`)
+  /** Every studio source file the build compiles, but the catalogs themselves. */
+  const sourceFiles = (): string[] => {
+    if (!fetched) return []
+    const out: string[] = []
+    const walk = (dir: string, rel: string) => {
+      for (const entry of readdirSync(join(studio, 'src', dir), { withFileTypes: true })) {
+        const path = rel ? `${rel}/${entry.name}` : entry.name
+        if (entry.isDirectory()) {
+          if (!['i18n', '__tests__'].includes(entry.name)) walk(join(dir, entry.name), path)
+        } else if (/\.ts$/.test(entry.name) && !/\.(test|spec|d)\.ts$/.test(entry.name)) {
+          out.push(path)
+        }
       }
     }
-    expect(left, 'Korean written into the UI; give it keys (APP_STRINGS)').toEqual([])
+    walk('', '')
+    return out
+  }
+
+  it.skipIf(!fetched)('writes no Korean into the studio interface outside the catalogs', () => {
+    const left: string[] = []
+    for (const path of sourceFiles()) {
+      if (NOT_INTERFACE[path]) continue
+      for (const text of shownKorean(patched(`src/${path}`))) {
+        if (!DATA_NOT_TEXT[path]?.[text]) left.push(`${path}: ${text}`)
+      }
+    }
+    expect(left, 'Korean written into the interface; give it keys (APP_STRINGS)').toEqual([])
+  })
+
+  it.skipIf(!fetched)('keeps the files that hold no interface text as they were looked at', () => {
+    for (const [path, [count]] of Object.entries(NOT_INTERFACE)) {
+      const left = shownKorean(patched(`src/${path}`)).filter(
+        (text) => !DATA_NOT_TEXT[path]?.[text],
+      )
+      expect(left.length, path).toBe(count)
+    }
   })
 
   it.skipIf(!fetched)('lists only data that is still there', () => {
-    for (const [name, allowed] of Object.entries(DATA_NOT_TEXT)) {
-      const found = new Set(shownKorean(patched(`src/ui/${name}`)))
+    for (const [path, allowed] of Object.entries(DATA_NOT_TEXT)) {
+      const found = new Set(shownKorean(patched(`src/${path}`)))
       for (const text of Object.keys(allowed))
-        expect(found.has(text), `${name}: ${text}`).toBe(true)
+        expect(found.has(text), `${path}: ${text}`).toBe(true)
     }
   })
 
   it.skipIf(!fetched)('asks only for app keys that every language has', () => {
     const used = new Set<string>()
-    for (const name of uiFiles()) {
-      const code = patched(`src/ui/${name}`)
-      for (const m of code.matchAll(/\b(?:i18nText|t)\('(hanpan\.[^']+)'/g)) used.add(m[1])
+    for (const path of sourceFiles()) {
+      const code = patched(`src/${path}`)
+      for (const m of code.matchAll(/\b(?:i18nText|hanpanText|t)\('(hanpan\.[^']+)'/g))
+        used.add(m[1])
     }
-    expect(used.size).toBeGreaterThan(150)
+    expect(used.size).toBeGreaterThan(300)
     for (const key of used) expect(APP_STRINGS.ko, key).toHaveProperty([key])
+  })
+
+  it.skipIf(!fetched)('shows style names in the UI language in the style dialog', () => {
+    const code = patched('src/ui/style-dialog.ts')
+    expect(code).toContain('name.textContent = styleDisplayName(s, getLocale());')
+    expect(code).not.toMatch(/textContent = [^;]*\.name\b[^;]*;/)
+  })
+
+  it.skipIf(!fetched)('names a numbering preset in English outside Korean', () => {
+    const code = patched('src/ui/numbering-dialog.ts')
+    expect(code).toContain("cell.title = getLocale() === 'ko' ? preset.name : preset.nameEn;")
+  })
+
+  it.skipIf(!fetched)(
+    'shows a compare item title in the UI language, keeping the stored one',
+    () => {
+      for (const file of ['ui/compare-dialog.ts', 'ui/history-dialog.ts']) {
+        const code = patched(`src/${file}`)
+        expect(code, file).toContain('${this.escape(diffTitleText(item.title, getLocale()))}')
+        expect(code, file).toContain("item.title.includes('텍스트 변경')")
+      }
+      const result = patched('src/ui/compare-result-window.ts')
+      expect(result.match(/\$\{diffTitleText\(item\.title, getLocale\(\)\)\}/g)).toHaveLength(2)
+    },
+  )
+})
+
+describe('a compare item title', () => {
+  it('stays as the diff engine wrote it in Korean', () => {
+    for (const title of ['문단 추가 (구역 0, 문단 3)', '표 텍스트 변경(2셀)', '그림 크기 변경'])
+      expect(diffTitleText(title, 'ko')).toBe(title)
+  })
+
+  it('reads in English and Vietnamese', () => {
+    const cases: [string, string, string][] = [
+      ['텍스트 변경', 'Text changed', 'Thay đổi văn bản'],
+      [
+        '문단 추가 (구역 0, 문단 3)',
+        'Paragraph added (section 0, paragraph 3)',
+        'Đã thêm đoạn văn (phần 0, đoạn 3)',
+      ],
+      [
+        '문단 이동 감지 (구역 1, 문단 2)',
+        'Paragraph move detected (section 1, paragraph 2)',
+        'Phát hiện di chuyển đoạn văn (phần 1, đoạn 2)',
+      ],
+      ['표 텍스트 변경(2셀)', 'Table text changed (2 cells)', 'Thay đổi văn bản bảng (2 ô)'],
+      [
+        '테이블 텍스트 변경(구조변경 동반, 3셀)',
+        'Table text changed (with structure change, 3 cells)',
+        'Thay đổi văn bản bảng (kèm thay đổi cấu trúc, 3 ô)',
+      ],
+      ['그림 자르기 변경', 'Picture crop changed', 'Thay đổi vùng cắt hình'],
+      ['도형 회전/대칭 변경', 'Shape rotation/flip changed', 'Thay đổi xoay/lật hình vẽ'],
+      ['이미지 추가', 'Image added', 'Đã thêm hình ảnh'],
+      ['메타 삭제', 'Metadata deleted', 'Đã xóa siêu dữ liệu'],
+    ]
+    for (const [ko, en, vi] of cases) {
+      expect(diffTitleText(ko, 'en'), ko).toBe(en)
+      expect(diffTitleText(ko, 'vi'), ko).toBe(vi)
+    }
+  })
+
+  it('keeps a title it does not know', () => {
+    expect(diffTitleText('무엇인가 다른 것', 'en')).toBe('무엇인가 다른 것')
   })
 })
