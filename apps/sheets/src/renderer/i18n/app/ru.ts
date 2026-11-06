@@ -282,7 +282,7 @@ export const ru = {
     'Сводные таблицы/таблицы нельзя сохранить вместе с новыми листами плюс изменениями строк/столбцов — сначала сохраните структуру, затем добавьте их.',
   appSaveSecondCanceled:
     'Вторая фаза сохранения отменена — структура сохранена; сводные таблицы/таблицы/определённые имена ещё не записаны.',
-  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
+  appReloadInputPaused: 'Reloading the saved workbook — typing resumes in a moment.',
   appSavedTwoPhase: 'Сохранено.',
   appSaveSecondFailed:
     'Структура сохранена, но вторая фаза (сводные таблицы/таблицы/определённые имена) не удалась: {reason}',
@@ -1356,6 +1356,11 @@ export const ru = {
   appCfMenuClearSelection: 'Clear Rules from Selected Cells',
   appCfMenuClearSheet: 'Clear Rules from Entire Sheet',
   appCfMenuManage: 'Manage Rules…',
+  appSheetBarPrev: 'Previous sheets',
+  appCloseSidebar: 'Close pane',
+  appSheetBarNext: 'Next sheets',
+  appSheetBarAdd: 'New sheet',
+  appSheetBarAll: 'All sheets',
   appConditionalFormatting: 'Условное форматирование',
   appFormatAsTable: 'Форматировать как таблицу',
   appFormatAsTableTitle: 'Создать настоящую таблицу Excel из выделения (первая строка — заголовки)',

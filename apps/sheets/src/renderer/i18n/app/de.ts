@@ -294,7 +294,7 @@ export const de = {
     'PivotTables/Tabellen können nicht zusammen mit neuen Blättern plus Zeilen-/Spaltenänderungen gespeichert werden — speichern Sie zuerst die Struktur und fügen Sie sie dann hinzu.',
   appSaveSecondCanceled:
     'Die zweite Speicherphase wurde abgebrochen — die Struktur ist gespeichert; PivotTables/Tabellen/definierte Namen sind noch nicht geschrieben.',
-  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
+  appReloadInputPaused: 'Reloading the saved workbook — typing resumes in a moment.',
   appSavedTwoPhase: 'Gespeichert.',
   appSaveSecondFailed:
     'Die Struktur ist gespeichert, aber die zweite Phase (PivotTables/Tabellen/definierte Namen) ist fehlgeschlagen: {reason}',
@@ -1389,6 +1389,11 @@ export const de = {
   appCfMenuClearSelection: 'Clear Rules from Selected Cells',
   appCfMenuClearSheet: 'Clear Rules from Entire Sheet',
   appCfMenuManage: 'Manage Rules…',
+  appSheetBarAdd: 'New sheet',
+  appSheetBarAll: 'All sheets',
+  appSheetBarPrev: 'Previous sheets',
+  appSheetBarNext: 'Next sheets',
+  appCloseSidebar: 'Close pane',
   appConditionalFormatting: 'Bedingte Formatierung',
   appFormatAsTable: 'Als Tabelle formatieren',
   appFormatAsTableTitle:

@@ -126,10 +126,13 @@ describe('save reopen holds input until the reloaded workbook is ready', () => {
     })
     const release = vi.fn()
     let ready: (() => void) | undefined
-    const ctx = ctxWith(async (_file, opts) => {
-      ready = opts?.onInitialRangeLoaded
-      return true
-    }, () => release)
+    const ctx = ctxWith(
+      async (_file, opts) => {
+        ready = opts?.onInitialRangeLoaded
+        return true
+      },
+      () => release,
+    )
 
     await handleSave(ctx, 'save')
     expect(release).not.toHaveBeenCalled()
@@ -143,7 +146,10 @@ describe('save reopen holds input until the reloaded workbook is ready', () => {
       file: { sessionId: '33333333-3333-4333-8333-333333333333', path: '/tmp/a.xlsx' },
     })
     const release = vi.fn()
-    const ctx = ctxWith(async () => false, () => release)
+    const ctx = ctxWith(
+      async () => false,
+      () => release,
+    )
     await handleSave(ctx, 'save')
     expect(release).toHaveBeenCalledTimes(1)
   })
@@ -154,9 +160,12 @@ describe('save reopen holds input until the reloaded workbook is ready', () => {
       file: { sessionId: '44444444-4444-4444-8444-444444444444', path: '/tmp/a.xlsx' },
     })
     const release = vi.fn()
-    const ctx = ctxWith(async () => {
-      throw new Error('boom')
-    }, () => release)
+    const ctx = ctxWith(
+      async () => {
+        throw new Error('boom')
+      },
+      () => release,
+    )
     await handleSave(ctx, 'save')
     expect(release).toHaveBeenCalledTimes(1)
   })

@@ -278,7 +278,7 @@ export const cs = {
     'Kontingenční tabulky/tabulky nelze uložit společně s novými listy a změnami řádků/sloupců — nejprve uložte strukturu a pak přidejte kontingenční tabulky/tabulky.',
   appSaveSecondCanceled:
     'Druhá fáze ukládání byla zrušena — struktura je uložena; kontingenční tabulky/tabulky/definované názvy ještě nejsou zapsány.',
-  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
+  appReloadInputPaused: 'Reloading the saved workbook — typing resumes in a moment.',
   appSavedTwoPhase: 'Uloženo.',
   appSaveSecondFailed:
     'Struktura je uložena, ale druhá fáze (kontingenční tabulky/tabulky/definované názvy) selhala: {reason}',
@@ -1338,6 +1338,11 @@ export const cs = {
   appCfMenuClearSelection: 'Clear Rules from Selected Cells',
   appCfMenuClearSheet: 'Clear Rules from Entire Sheet',
   appCfMenuManage: 'Manage Rules…',
+  appSheetBarAdd: 'New sheet',
+  appSheetBarAll: 'All sheets',
+  appSheetBarPrev: 'Previous sheets',
+  appSheetBarNext: 'Next sheets',
+  appCloseSidebar: 'Close pane',
   appConditionalFormatting: 'Podmíněné formátování',
   appFormatAsTable: 'Formátovat jako tabulku',
   appFormatAsTableTitle:

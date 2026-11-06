@@ -869,11 +869,13 @@ export function ExcelShell({
         button.type = 'button'
         button.className = 'goto-in-bar'
         button.textContent = '▾'
-        button.setAttribute('aria-label', 'Go To')
         button.addEventListener('click', () => setShowGoTo(true))
         wrapper.after(button)
       }
       if (button.dataset['tip'] !== gotoTipRef.current) button.dataset['tip'] = gotoTipRef.current
+      if (button.getAttribute('aria-label') !== gotoTipRef.current) {
+        button.setAttribute('aria-label', gotoTipRef.current)
+      }
     }
     ensure()
     const container = document.getElementById('univer-container')
@@ -1125,13 +1127,16 @@ export function ExcelShell({
             </div>
             <div className="status-right">
               <div className="status-stats" aria-live="polite">
-                {statusBarDisplayItems(statusBarState, statusBarFuncs, (func) => t(STAT_LABEL[func]), lang).map(
-                  (item) => (
-                    <span key={item.func} className="status-stat">
-                      {item.text}
-                    </span>
-                  ),
-                )}
+                {statusBarDisplayItems(
+                  statusBarState,
+                  statusBarFuncs,
+                  (func) => t(STAT_LABEL[func]),
+                  lang,
+                ).map((item) => (
+                  <span key={item.func} className="status-stat">
+                    {item.text}
+                  </span>
+                ))}
               </div>
               {/* One-of-N view switcher, so it is a radiogroup rather than a
                   second set of buttons named like the View tab's. */}
@@ -2712,7 +2717,7 @@ function Ribbon({
       return (
         <MenuSelect
           className="select-like compact"
-          label={`Fit to ${axis}`}
+          label={axis === 'width' ? t('appWidth') : t('appHeight')}
           data-tip={axis === 'width' ? t('appWidth') : t('appHeight')}
           value={current}
           display={options.find((option) => option.value === current)?.label ?? current}

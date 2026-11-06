@@ -71,6 +71,7 @@ import { consumePendingUndoCarry, undoStackDepth } from './undo-carry'
 import { createSaveGate, shouldRunSaveTick } from './save-scheduler'
 import { createReloadInputGuard, type ReloadInputGuard } from './reload-input-guard'
 import { installEscapePopupGuard } from './escape-popup-guard'
+import { installUniverChromeLabels } from './univer-chrome-labels'
 import { selectionClientRect } from './selection-client-rect'
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import {
@@ -709,8 +710,11 @@ export function App({
     reloadInputGuardRef.current = guard
     // 패널 안 드롭다운의 Esc가 패널까지 닫지 않게(X7)
     const escapePopupGuard = installEscapePopupGuard(window, document)
+    // 시트 탭 줄 단추·작업창 닫기 단추의 이름(X10·X11)
+    const chromeLabels = installUniverChromeLabels(document, (key) => t(key))
     return () => {
       escapePopupGuard.dispose()
+      chromeLabels.dispose()
       guard.dispose()
       if (reloadInputGuardRef.current === guard) reloadInputGuardRef.current = null
     }

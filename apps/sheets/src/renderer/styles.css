@@ -7466,7 +7466,10 @@ body:has(.note-pictures-pane) .threaded-comments-pane {
 
 /* 수식 탭(X6): 1366에서 넘치면 함수 범주 단추부터 아이콘만, 더 좁으면 이름 정의·
    수식 분석·계산 묶음의 큰 단추도 아이콘만 남긴다(이름은 풍선 도움말과 화면 읽기에 남음). */
-.ribbon[data-fit] .ribbon-group-fnlib .ribbon-tool.large:nth-child(n + 3) > span:not(.tool-icon-row),
+.ribbon[data-fit]
+  .ribbon-group-fnlib
+  .ribbon-tool.large:nth-child(n + 3)
+  > span:not(.tool-icon-row),
 .ribbon[data-fit='2'] .ribbon-group-names .ribbon-tool.large > span:not(.tool-icon-row),
 .ribbon[data-fit='2'] .ribbon-group-audit .ribbon-tool.large > span:not(.tool-icon-row),
 .ribbon[data-fit='2'] .ribbon-group-calc .ribbon-tool.large > span:not(.tool-icon-row) {
@@ -7480,4 +7483,11 @@ body:has(.note-pictures-pane) .threaded-comments-pane {
 
 .ribbon[data-fit] .ribbon-group-fnlib .ribbon-tool.large:nth-child(n + 3) {
   min-width: 34px;
+}
+
+/* 함수 인수 힌트(X20): Univer는 머리글에 overflow-wrap:anywhere를 줘서
+   "tab / le_array"처럼 인수 이름 가운데서 끊겼다. 인수 하나(이름+쉼표)를
+   한 덩어리로 두어 인수 사이에서만 줄을 바꾼다. */
+[class*='univer-w-[250px]'] > [style*='overflow-wrap: anywhere'] > div > span {
+  display: inline-block;
 }

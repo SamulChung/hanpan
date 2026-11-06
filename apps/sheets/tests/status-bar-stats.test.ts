@@ -86,7 +86,12 @@ describe('statusBarDisplayItems (X2: every ticked aggregate, in the UI language)
   }
 
   it('shows average, count and sum together, Excel order, localized labels', () => {
-    const items = statusBarDisplayItems(state, ['AVERAGE', 'COUNTA', 'SUM'], (f) => labels[f]!, 'ko')
+    const items = statusBarDisplayItems(
+      state,
+      ['AVERAGE', 'COUNTA', 'SUM'],
+      (f) => labels[f]!,
+      'ko',
+    )
     expect(items.map((item) => item.text)).toEqual([
       '평균: 1,028.792',
       '개수: 12',
@@ -95,10 +100,12 @@ describe('statusBarDisplayItems (X2: every ticked aggregate, in the UI language)
   })
 
   it('hides aggregates the selection has no value for and empty selections', () => {
-    expect(statusBarDisplayItems(state, ['MIN', 'MAX'], (f) => labels[f]!, 'ko').map((i) => i.func)).toEqual([
-      'MAX',
-    ])
+    expect(
+      statusBarDisplayItems(state, ['MIN', 'MAX'], (f) => labels[f]!, 'ko').map((i) => i.func),
+    ).toEqual(['MAX'])
     expect(statusBarDisplayItems(null, ['SUM'], (f) => labels[f]!, 'ko')).toEqual([])
-    expect(statusBarDisplayItems({ values: [], pattern: null }, ['SUM'], (f) => labels[f]!, 'ko')).toEqual([])
+    expect(
+      statusBarDisplayItems({ values: [], pattern: null }, ['SUM'], (f) => labels[f]!, 'ko'),
+    ).toEqual([])
   })
 })

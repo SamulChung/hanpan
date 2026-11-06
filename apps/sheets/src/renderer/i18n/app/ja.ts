@@ -130,7 +130,7 @@ export const ja = {
   appMoreItems: '+{count} 項目…',
   appTruncationNote: '先頭 {shown}/{total} 項目',
   // ExcelShell (name box / ribbon)
-  appGoToButtonTitle: 'ジャンプ（Go To、⌘G）',
+  appGoToButtonTitle: 'ジャンプ（⌘G）',
   appPivotChartHintIn: '現在のピボットテーブルからピボットグラフを作成',
   appPivotChartHintOut:
     '先にピボットテーブルの出力範囲内のセルを選択してから、グラフの種類を選択してください',
@@ -290,7 +290,7 @@ export const ja = {
     'ピボットテーブル/テーブルは、新規シートと行列の変更と同時には保存できません。先に構造を一度保存してから、ピボットテーブル/テーブルを追加してください。',
   appSaveSecondCanceled:
     '2 段階目の保存がキャンセルされました。構造は保存済みですが、ピボットテーブル/テーブル/名前付き範囲はまだ書き込まれていません。',
-  appReloadInputPaused: "保存したブックを再読み込みしています。少し待ってから入力してください。",
+  appReloadInputPaused: '保存したブックを再読み込みしています。少し待ってから入力してください。',
   appSavedTwoPhase: '保存しました。',
   appSaveSecondFailed:
     '構造は保存されましたが、2 段階目（ピボットテーブル/テーブル/名前付き範囲）に失敗しました：{reason}',
@@ -1387,6 +1387,11 @@ export const ja = {
   appCfMenuClearSelection: '選択したセルからルールをクリア',
   appCfMenuClearSheet: 'シート全体からルールをクリア',
   appCfMenuManage: 'ルールの管理…',
+  appSheetBarAdd: '新しいシート',
+  appSheetBarAll: 'すべてのシート',
+  appCloseSidebar: '作業ウィンドウを閉じる',
+  appSheetBarPrev: '前のシート',
+  appSheetBarNext: '次のシート',
   appConditionalFormatting: '条件付き書式',
   appFormatAsTable: 'テーブルとして書式設定',
   appFormatAsTableTitle: '選択範囲に実際の Excel テーブルを作成（先頭行がヘッダー）',

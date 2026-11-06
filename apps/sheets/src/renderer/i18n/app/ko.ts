@@ -128,7 +128,7 @@ export const ko = {
   appMoreItems: '+{count}개 항목…',
   appTruncationNote: '처음 {shown}/{total}개 항목',
   // ExcelShell (name box / ribbon)
-  appGoToButtonTitle: '이동(Go To, ⌘G)',
+  appGoToButtonTitle: '이동(⌘G)',
   appPivotChartHintIn: '현재 피벗 테이블을 기준으로 피벗 차트 만들기',
   appPivotChartHintOut: '먼저 피벗 테이블 출력 영역의 셀을 선택한 후 차트 종류를 선택하십시오',
   appChartColumn: '세로 막대형 차트',
@@ -278,7 +278,7 @@ export const ko = {
     '피벗 테이블/표는 새 시트 및 행/열 변경과 한 번에 저장할 수 없습니다. 먼저 구조를 저장한 후 피벗 테이블/표를 추가하십시오.',
   appSaveSecondCanceled:
     '두 번째 저장 단계가 취소되었습니다. 구조는 저장되었지만 피벗 테이블/표/이름 범위는 아직 기록되지 않았습니다.',
-  appReloadInputPaused: "저장한 통합 문서를 다시 불러오는 중입니다. 잠시 뒤에 입력하세요.",
+  appReloadInputPaused: '저장한 통합 문서를 다시 불러오는 중입니다. 잠시 뒤에 입력하세요.',
   appSavedTwoPhase: '저장했습니다.',
   appSaveSecondFailed:
     '구조는 저장되었지만 두 번째 단계(피벗 테이블/표/이름 범위)가 실패했습니다: {reason}',
@@ -1360,6 +1360,11 @@ export const ko = {
   appCfMenuClearSelection: '선택한 셀의 규칙 지우기',
   appCfMenuClearSheet: '시트 전체의 규칙 지우기',
   appCfMenuManage: '규칙 관리…',
+  appSheetBarAdd: '시트 추가',
+  appSheetBarAll: '모든 시트',
+  appSheetBarPrev: '이전 시트',
+  appSheetBarNext: '다음 시트',
+  appCloseSidebar: '작업창 닫기',
   appConditionalFormatting: '조건부 서식',
   appFormatAsTable: '표 서식',
   appFormatAsTableTitle: '선택 영역에 실제 Excel 표 만들기(첫 행이 머리글)',

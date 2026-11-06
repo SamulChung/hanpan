@@ -2163,18 +2163,18 @@ function ChartVisual({
           // 차트 상자 안에 끼우면 작은 창에 안쪽 스크롤이 생기고 차트를 가렸다(X4):
           // 차트 옆에 뜨는 작업창으로 띄운다.
           <div className="chart-editor-float" style={chartEditorFloatStyle(figureRef.current)}>
-        <ChartEditor
-          chart={chart}
-          isPie={isPie}
-          convertible={convertibleType(withChartEdit(sourceChart, undefined))}
-          pendingType={pendingEdit?.chartType}
-          readVector={rangeReader(chartEditing, editKey)}
-          onApply={(edit) => {
-            chartEditing.onEdit(editKey, edit)
-            setIsEditing(false)
-          }}
-          onCancel={() => setIsEditing(false)}
-        />
+            <ChartEditor
+              chart={chart}
+              isPie={isPie}
+              convertible={convertibleType(withChartEdit(sourceChart, undefined))}
+              pendingType={pendingEdit?.chartType}
+              readVector={rangeReader(chartEditing, editKey)}
+              onApply={(edit) => {
+                chartEditing.onEdit(editKey, edit)
+                setIsEditing(false)
+              }}
+              onCancel={() => setIsEditing(false)}
+            />
           </div>,
           document.body,
         )}
@@ -2689,7 +2689,10 @@ export function chartEditorFloatPosition(
 
 function chartEditorFloatStyle(figure: HTMLElement | null): React.CSSProperties {
   const rect = figure?.getBoundingClientRect() ?? { left: 0, right: 0, top: 80 }
-  const at = chartEditorFloatPosition(rect, { width: window.innerWidth, height: window.innerHeight })
+  const at = chartEditorFloatPosition(rect, {
+    width: window.innerWidth,
+    height: window.innerHeight,
+  })
   return { left: at.left, top: at.top, maxHeight: at.maxHeight, width: CHART_EDITOR_WIDTH }
 }
 

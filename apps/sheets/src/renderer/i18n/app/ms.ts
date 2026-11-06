@@ -278,7 +278,7 @@ export const ms = {
     'Jadual Pangsi/jadual tidak boleh disimpan bersama helaian baharu serta perubahan baris/lajur — simpan struktur dahulu, kemudian tambah Jadual Pangsi/jadual.',
   appSaveSecondCanceled:
     'Fasa simpanan kedua dibatalkan — struktur telah disimpan; Jadual Pangsi/jadual/nama tertakrif belum ditulis.',
-  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
+  appReloadInputPaused: 'Reloading the saved workbook — typing resumes in a moment.',
   appSavedTwoPhase: 'Disimpan.',
   appSaveSecondFailed:
     'Struktur telah disimpan, tetapi fasa kedua (Jadual Pangsi/jadual/nama tertakrif) gagal: {reason}',
@@ -1337,6 +1337,11 @@ export const ms = {
   appCfMenuClearSelection: 'Clear Rules from Selected Cells',
   appCfMenuClearSheet: 'Clear Rules from Entire Sheet',
   appCfMenuManage: 'Manage Rules…',
+  appSheetBarAdd: 'New sheet',
+  appSheetBarAll: 'All sheets',
+  appCloseSidebar: 'Close pane',
+  appSheetBarNext: 'Next sheets',
+  appSheetBarPrev: 'Previous sheets',
   appConditionalFormatting: 'Pemformatan Bersyarat',
   appFormatAsTable: 'Formatkan sebagai Jadual',
   appFormatAsTableTitle:

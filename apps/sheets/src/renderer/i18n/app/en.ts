@@ -270,7 +270,7 @@ export const en = {
     'PivotTables/tables cannot be saved together with new sheets plus row/column changes — save the structure first, then add the PivotTables/tables.',
   appSaveSecondCanceled:
     'The second save phase was canceled — the structure is saved; PivotTables/tables/defined names are not written yet.',
-  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
+  appReloadInputPaused: 'Reloading the saved workbook — typing resumes in a moment.',
   appSavedTwoPhase: 'Saved.',
   appSaveSecondFailed:
     'The structure is saved, but the second phase (PivotTables/tables/defined names) failed: {reason}',
@@ -1316,6 +1316,11 @@ export const en = {
   appCfMenuClearSelection: 'Clear Rules from Selected Cells',
   appCfMenuClearSheet: 'Clear Rules from Entire Sheet',
   appCfMenuManage: 'Manage Rules…',
+  appSheetBarAdd: 'New sheet',
+  appSheetBarAll: 'All sheets',
+  appSheetBarPrev: 'Previous sheets',
+  appSheetBarNext: 'Next sheets',
+  appCloseSidebar: 'Close pane',
   appConditionalFormatting: 'Conditional Formatting',
   appFormatAsTable: 'Format as Table',
   appFormatAsTableTitle: 'Create a real Excel table over the selection (headers in its first row)',

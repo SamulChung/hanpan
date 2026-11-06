@@ -294,7 +294,7 @@ export const es = {
     'Las tablas dinámicas/tablas no se pueden guardar junto con hojas nuevas más cambios de filas/columnas — guarde primero la estructura y luego agréguelas.',
   appSaveSecondCanceled:
     'La segunda fase de guardado se canceló — la estructura está guardada; las tablas dinámicas/tablas/nombres definidos aún no se escribieron.',
-  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
+  appReloadInputPaused: 'Reloading the saved workbook — typing resumes in a moment.',
   appSavedTwoPhase: 'Guardado.',
   appSaveSecondFailed:
     'La estructura está guardada, pero la segunda fase (tablas dinámicas/tablas/nombres definidos) falló: {reason}',
@@ -1379,6 +1379,11 @@ export const es = {
   appCfMenuClearSelection: 'Clear Rules from Selected Cells',
   appCfMenuClearSheet: 'Clear Rules from Entire Sheet',
   appCfMenuManage: 'Manage Rules…',
+  appSheetBarAdd: 'New sheet',
+  appSheetBarAll: 'All sheets',
+  appSheetBarNext: 'Next sheets',
+  appSheetBarPrev: 'Previous sheets',
+  appCloseSidebar: 'Close pane',
   appConditionalFormatting: 'Formato condicional',
   appFormatAsTable: 'Dar formato como tabla',
   appFormatAsTableTitle:

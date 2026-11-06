@@ -25,7 +25,9 @@ describe('installEscapePopupGuard', () => {
       if (event.key === 'Escape') sidebarClose()
     })
     // radix closes its popup from a document capture listener
-    const popupClose = vi.fn(() => document.querySelector('[data-radix-popper-content-wrapper]')?.remove())
+    const popupClose = vi.fn(() =>
+      document.querySelector('[data-radix-popper-content-wrapper]')?.remove(),
+    )
     document.addEventListener('keydown', popupClose, { capture: true })
 
     const popup = document.createElement('div')

@@ -9,10 +9,7 @@
  */
 const POPUP_SELECTOR = '[data-radix-popper-content-wrapper]'
 
-export function installEscapePopupGuard(
-  win: Window,
-  doc: Document,
-): { dispose(): void } {
+export function installEscapePopupGuard(win: Window, doc: Document): { dispose(): void } {
   let popupWasOpen = false
   const onCapture = (event: KeyboardEvent): void => {
     popupWasOpen = event.key === 'Escape' && doc.querySelector(POPUP_SELECTOR) !== null

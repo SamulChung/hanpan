@@ -270,7 +270,7 @@ export const ar = {
     'لا يمكن حفظ الجداول المحورية/الجداول مع أوراق جديدة وتغييرات صفوف/أعمدة معًا — احفظ البنية أولاً ثم أضفها.',
   appSaveSecondCanceled:
     'أُلغيت مرحلة الحفظ الثانية — حُفظت البنية؛ لم تُكتب الجداول المحورية/الجداول/الأسماء المعرفة بعد.',
-  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
+  appReloadInputPaused: 'Reloading the saved workbook — typing resumes in a moment.',
   appSavedTwoPhase: 'تم الحفظ.',
   appSaveSecondFailed:
     'حُفظت البنية لكن المرحلة الثانية (الجداول المحورية/الجداول/الأسماء المعرفة) فشلت: {reason}',
@@ -1302,6 +1302,11 @@ export const ar = {
   appCfMenuClearSelection: 'Clear Rules from Selected Cells',
   appCfMenuClearSheet: 'Clear Rules from Entire Sheet',
   appCfMenuManage: 'Manage Rules…',
+  appSheetBarAdd: 'New sheet',
+  appSheetBarAll: 'All sheets',
+  appSheetBarPrev: 'Previous sheets',
+  appSheetBarNext: 'Next sheets',
+  appCloseSidebar: 'Close pane',
   appConditionalFormatting: 'تنسيق شرطي',
   appFormatAsTable: 'التنسيق كجدول',
   appFormatAsTableTitle: 'إنشاء جدول Excel حقيقي من التحديد (الصف الأول رؤوس)',

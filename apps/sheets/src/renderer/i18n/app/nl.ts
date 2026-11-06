@@ -289,7 +289,7 @@ export const nl = {
     'Draaitabellen/tabellen kunnen niet samen met nieuwe werkbladen plus rij-/kolomwijzigingen worden opgeslagen — sla eerst de structuur op en voeg daarna de draaitabellen/tabellen toe.',
   appSaveSecondCanceled:
     'De tweede opslagfase is geannuleerd — de structuur is opgeslagen; draaitabellen/tabellen/gedefinieerde namen zijn nog niet geschreven.',
-  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
+  appReloadInputPaused: 'Reloading the saved workbook — typing resumes in a moment.',
   appSavedTwoPhase: 'Opgeslagen.',
   appSaveSecondFailed:
     'De structuur is opgeslagen, maar de tweede fase (draaitabellen/tabellen/gedefinieerde namen) is mislukt: {reason}',
@@ -1372,6 +1372,11 @@ export const nl = {
   appCfMenuClearSelection: 'Clear Rules from Selected Cells',
   appCfMenuClearSheet: 'Clear Rules from Entire Sheet',
   appCfMenuManage: 'Manage Rules…',
+  appSheetBarAdd: 'New sheet',
+  appSheetBarAll: 'All sheets',
+  appCloseSidebar: 'Close pane',
+  appSheetBarNext: 'Next sheets',
+  appSheetBarPrev: 'Previous sheets',
   appConditionalFormatting: 'Voorwaardelijke opmaak',
   appFormatAsTable: 'Opmaken als tabel',
   appFormatAsTableTitle:

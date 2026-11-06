@@ -128,7 +128,7 @@ export const id = {
   appMoreSeries: '+{count} seri lagi…',
   appMoreItems: '+{count} lagi…',
   appTruncationNote: '{shown} pertama dari {total}',
-  appGoToButtonTitle: 'Buka (Go To, ⌘G)',
+  appGoToButtonTitle: 'Buka (⌘G)',
   appPivotChartHintIn: 'Buat PivotChart dari PivotTable saat ini',
   appPivotChartHintOut:
     'Pilih dahulu sel di dalam area keluaran PivotTable, lalu pilih jenis bagan',
@@ -278,7 +278,7 @@ export const id = {
     'PivotTable/tabel tidak dapat disimpan bersama lembar baru plus perubahan baris/kolom — simpan strukturnya dahulu, lalu tambahkan PivotTable/tabel.',
   appSaveSecondCanceled:
     'Fase penyimpanan kedua dibatalkan — struktur sudah tersimpan; PivotTable/tabel/nama yang ditentukan belum ditulis.',
-  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
+  appReloadInputPaused: 'Reloading the saved workbook — typing resumes in a moment.',
   appSavedTwoPhase: 'Disimpan.',
   appSaveSecondFailed:
     'Struktur sudah tersimpan, tetapi fase kedua (PivotTable/tabel/nama yang ditentukan) gagal: {reason}',
@@ -1337,6 +1337,11 @@ export const id = {
   appCfMenuClearSelection: 'Clear Rules from Selected Cells',
   appCfMenuClearSheet: 'Clear Rules from Entire Sheet',
   appCfMenuManage: 'Manage Rules…',
+  appSheetBarAdd: 'New sheet',
+  appSheetBarAll: 'All sheets',
+  appCloseSidebar: 'Close pane',
+  appSheetBarNext: 'Next sheets',
+  appSheetBarPrev: 'Previous sheets',
   appConditionalFormatting: 'Pemformatan Bersyarat',
   appFormatAsTable: 'Format sebagai Tabel',
   appFormatAsTableTitle: 'Buat tabel Excel asli pada pilihan (header di baris pertamanya)',
