@@ -168,9 +168,16 @@ export function submitNewComment(ctx: ReviewContext, text: string): void {
     cancelNewComment(ctx)
     return
   }
+  // the range picked at New Comment (mapped through edits since), not wherever
+  // the selection is now: clicks in the pane or the ribbon may have moved it
+  const picked = pendingCommentPluginKey.getState(ctx.editor.state)?.find()[0]
   setPendingCommentRange(ctx, null)
   const id = nextCommentId(ctx.comments)
-  if (!addCommentToSelection(ctx.editor, id)) {
+  const added =
+    picked && picked.from < picked.to
+      ? addCommentToRange(ctx.editor, picked.from, picked.to, id)
+      : addCommentToSelection(ctx.editor, id)
+  if (!added) {
     ctx.setStatus(t('appCommentSelectionLost'))
     ctx.setCommentComposing(false)
     return
@@ -310,6 +317,37 @@ export function gotoComment(ctx: ReviewContext, dir: 1 | -1): boolean {
   editor.view.focus()
   ctx.setShowComments(true)
   ctx.setCommentFocus({ id: target.id, nonce: Date.now() })
+  return true
+}
+
+/**
+ * Comments pane card click: select the thread's anchored text in the body (Word
+ * moves the selection to the comment's range), so it is clear which words the
+ * comment belongs to. False when the anchor is gone from the document.
+ */
+export function selectComment(ctx: ReviewContext, id: string): boolean {
+  const editor = ctx.editor
+  if (!editor) return false
+  const anchors = commentAnchors(editor.state.doc).filter((a) => a.id === id)
+  if (anchors.length === 0) return false
+  // the first contiguous run starts the range; later marked runs (the comment
+  // spans formatting changes or paragraphs) extend it
+  let from = anchors[0]!.from
+  let to = anchors[0]!.to
+  const markType = editor.state.schema.marks.comment
+  editor.state.doc.descendants((node, pos) => {
+    if (!node.isText || !markType) return
+    const mark = node.marks.find((m) => m.type === markType)
+    if (!mark || !String(mark.attrs.ids ?? '').split(' ').includes(id)) return
+    from = Math.min(from, pos)
+    to = Math.max(to, pos + node.nodeSize)
+  })
+  const tr = editor.state.tr
+  tr.setSelection(TextSelection.between(tr.doc.resolve(from), tr.doc.resolve(to)))
+  tr.scrollIntoView()
+  tr.setMeta(TRACK_IGNORE, true)
+  editor.view.dispatch(tr)
+  editor.view.focus()
   return true
 }
 

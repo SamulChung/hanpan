@@ -482,6 +482,7 @@ import {
   compareWithFile as compareWithFileImpl,
   deleteAllComments as deleteAllCommentsImpl,
   deleteComment as deleteCommentImpl,
+  selectComment as selectCommentImpl,
   deleteCommentAtCaret as deleteCommentAtCaretImpl,
   deleteNote as deleteNoteImpl,
   editComment as editCommentImpl,
@@ -3066,6 +3067,10 @@ export function App() {
     [],
   )
   const deleteComment = useCallback((id: string) => deleteCommentImpl(reviewCtxRef.current, id), [])
+  const selectCommentAnchor = useCallback(
+    (id: string) => void selectCommentImpl(reviewCtxRef.current, id),
+    [],
+  )
   const handleRevision = useCallback(
     (action: 'accept' | 'reject', all: boolean) =>
       handleRevisionImpl(reviewCtxRef.current, action, all),
@@ -7943,6 +7948,7 @@ export function App() {
                 onCancelNew={cancelNewComment}
                 onDelete={deleteComment}
                 onClose={closeCommentsPanel}
+                onSelect={selectCommentAnchor}
                 focus={commentFocus}
                 odtLocked={odtDoc}
               />
