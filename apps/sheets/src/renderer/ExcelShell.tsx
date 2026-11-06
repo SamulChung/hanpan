@@ -3430,7 +3430,7 @@ function Ribbon({
   }
 
   const fontSizes = [9, 10, 11, 12, 14, 16, 18, 22, 26]
-  const echoFamily = echoFontFamily(selectionFormat, normalFontFamily)
+  const echoFamily = echoFontFamily(selectionFormat, normalFontFamily, lang)
   const echoSize = selectionFormat?.fontSize ?? 11
   // Korean UI: installed Korean fonts are listed right below the common ones,
   // each with its Korean name beside the English one the system reports

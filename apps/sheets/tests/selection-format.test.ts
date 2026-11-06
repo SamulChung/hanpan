@@ -155,4 +155,23 @@ describe('echoFontFamily', () => {
     expect(echoFontFamily(blank, 'Calibri')).toBe('Calibri')
     expect(echoFontFamily(toSelectionFormat({ ff: 'Arial' }, 'General'), 'Calibri')).toBe('Arial')
   })
+
+  // with no Normal font to read (an in-memory blank workbook), the box names the font a
+  // new workbook gets in the UI language (new-workbook-lang.ts), not always 맑은 고딕
+  it.each([
+    ['ko', '맑은 고딕'],
+    ['vi', 'Arial'],
+    ['ja', '游ゴシック'],
+    ['en', 'Calibri'],
+  ])('falls back to the %s new-workbook font %s', (lang, font) => {
+    expect(echoFontFamily(null, undefined, lang)).toBe(font)
+    expect(echoFontFamily(toSelectionFormat({}, 'General'), undefined, lang)).toBe(font)
+    expect(echoFontFamily(null, 'Calibri', lang)).toBe('Calibri')
+  })
+
+  it('is given the UI language by the ribbon', async () => {
+    const { readFileSync } = await import('node:fs')
+    const shell = readFileSync(new URL('../src/renderer/ExcelShell.tsx', import.meta.url), 'utf8')
+    expect(shell).toContain('echoFontFamily(selectionFormat, normalFontFamily, lang)')
+  })
 })
