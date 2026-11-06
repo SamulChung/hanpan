@@ -484,6 +484,7 @@ import { duplicateDocumentFile } from './tab-duplicate'
 import { closeTabsInOrder, createRecentlyClosedTracker } from './tab-lifecycle'
 import { handleTabShortcut } from './tab-shortcuts'
 import { settingsMenuItem } from './settings-menu'
+import { installDefaultDialogTitle } from './dialog-title'
 import { readSplitMemory, writeSplitMemory, type SplitMemory } from './split-memory'
 import { SPLIT_EVEN_RATIO, decideSplitDrop, paneRects, splitDropZone } from './split-layout'
 import { configureGenerateWindow } from './generate/generate-window'
@@ -4579,6 +4580,9 @@ const tMain = createI18n({
 
 const tm = (key: Parameters<typeof tMain>[1], params?: Parameters<typeof tMain>[2]) =>
   tMain(currentLang(), key, params)
+
+// 제목 없는 메시지 상자(편집기의 저장 확인 창 포함)는 "Hanpan" 대신 화면 언어의 제품 이름을 쓴다
+installDefaultDialogTitle(dialog, () => productName(currentLang()))
 
 let saveDirFallbackNoticed = false
 
