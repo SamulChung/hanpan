@@ -121,6 +121,10 @@ import type {
 const tDlg = createI18n({
   zh: {
     dlgSaveTitle: '保存 HTML 文档',
+    dlgExportDocx: '导出为 Word',
+    dlgExportOdt: '导出为 ODT',
+    dlgExportPdf: '导出为 PDF',
+    dlgExportHtml: '导出为单文件 HTML',
     filterHtml: 'HTML 文档',
     dlgPickImage: '选择图片',
     filterImages: '图片',
@@ -146,6 +150,10 @@ const tDlg = createI18n({
   },
   en: {
     dlgSaveTitle: 'Save HTML Document',
+    dlgExportDocx: 'Export as Word',
+    dlgExportOdt: 'Export as ODT',
+    dlgExportPdf: 'Export as PDF',
+    dlgExportHtml: 'Export as Single-File HTML',
     filterHtml: 'HTML Documents',
     dlgPickImage: 'Choose an Image',
     filterImages: 'Images',
@@ -171,6 +179,10 @@ const tDlg = createI18n({
   },
   vi: {
     dlgSaveTitle: 'Lưu tài liệu HTML',
+    dlgExportDocx: 'Xuất dưới dạng Word',
+    dlgExportOdt: 'Xuất dưới dạng ODT',
+    dlgExportPdf: 'Xuất dưới dạng PDF',
+    dlgExportHtml: 'Xuất dưới dạng HTML một tệp',
     filterHtml: 'Tài liệu HTML',
     dlgPickImage: 'Chọn một hình ảnh',
     filterImages: 'Hình ảnh',
@@ -197,6 +209,10 @@ const tDlg = createI18n({
   },
   ja: {
     dlgSaveTitle: 'HTML ドキュメントを保存',
+    dlgExportDocx: 'Word として書き出す',
+    dlgExportOdt: 'ODT として書き出す',
+    dlgExportPdf: 'PDF として書き出す',
+    dlgExportHtml: '単一ファイル HTML として書き出す',
     filterHtml: 'HTML ドキュメント',
     dlgPickImage: '画像を選択',
     filterImages: '画像',
@@ -223,6 +239,10 @@ const tDlg = createI18n({
   },
   ko: {
     dlgSaveTitle: 'HTML 문서 저장',
+    dlgExportDocx: 'Word로 내보내기',
+    dlgExportOdt: 'ODT로 내보내기',
+    dlgExportPdf: 'PDF로 내보내기',
+    dlgExportHtml: '단일 파일 HTML로 내보내기',
     filterHtml: 'HTML 문서',
     dlgPickImage: '이미지 선택',
     filterImages: '이미지',
@@ -249,6 +269,10 @@ const tDlg = createI18n({
   },
   fr: {
     dlgSaveTitle: 'Enregistrer le document HTML',
+    dlgExportDocx: 'Exporter en Word',
+    dlgExportOdt: 'Exporter en ODT',
+    dlgExportPdf: 'Exporter en PDF',
+    dlgExportHtml: 'Exporter en HTML (fichier unique)',
     filterHtml: 'Documents HTML',
     dlgPickImage: 'Choisir une image',
     filterImages: 'Images',
@@ -275,6 +299,10 @@ const tDlg = createI18n({
   },
   de: {
     dlgSaveTitle: 'HTML-Dokument speichern',
+    dlgExportDocx: 'Als Word exportieren',
+    dlgExportOdt: 'Als ODT exportieren',
+    dlgExportPdf: 'Als PDF exportieren',
+    dlgExportHtml: 'Als Einzeldatei-HTML exportieren',
     filterHtml: 'HTML-Dokumente',
     dlgPickImage: 'Bild auswählen',
     filterImages: 'Bilder',
@@ -301,6 +329,10 @@ const tDlg = createI18n({
   },
   es: {
     dlgSaveTitle: 'Guardar documento HTML',
+    dlgExportDocx: 'Exportar como Word',
+    dlgExportOdt: 'Exportar como ODT',
+    dlgExportPdf: 'Exportar como PDF',
+    dlgExportHtml: 'Exportar como HTML de archivo único',
     filterHtml: 'Documentos HTML',
     dlgPickImage: 'Elegir imagen',
     filterImages: 'Imágenes',
@@ -327,6 +359,10 @@ const tDlg = createI18n({
   },
   th: {
     dlgSaveTitle: 'บันทึกเอกสาร HTML',
+    dlgExportDocx: 'ส่งออกเป็น Word',
+    dlgExportOdt: 'ส่งออกเป็น ODT',
+    dlgExportPdf: 'ส่งออกเป็น PDF',
+    dlgExportHtml: 'ส่งออกเป็น HTML ไฟล์เดียว',
     filterHtml: 'เอกสาร HTML',
     dlgPickImage: 'เลือกรูปภาพ',
     filterImages: 'รูปภาพ',
@@ -353,6 +389,10 @@ const tDlg = createI18n({
   },
   id: {
     dlgSaveTitle: 'Simpan dokumen HTML',
+    dlgExportDocx: 'Ekspor sebagai Word',
+    dlgExportOdt: 'Ekspor sebagai ODT',
+    dlgExportPdf: 'Ekspor sebagai PDF',
+    dlgExportHtml: 'Ekspor sebagai HTML satu file',
     filterHtml: 'Dokumen HTML',
     dlgPickImage: 'Pilih gambar',
     filterImages: 'Gambar',
@@ -379,6 +419,10 @@ const tDlg = createI18n({
   },
   ru: {
     dlgSaveTitle: 'Сохранить документ HTML',
+    dlgExportDocx: 'Экспортировать в Word',
+    dlgExportOdt: 'Экспортировать в ODT',
+    dlgExportPdf: 'Экспортировать в PDF',
+    dlgExportHtml: 'Экспортировать в один файл HTML',
     filterHtml: 'Документы HTML',
     dlgPickImage: 'Выберите изображение',
     filterImages: 'Изображения',
@@ -405,6 +449,10 @@ const tDlg = createI18n({
   },
   ar: {
     dlgSaveTitle: 'حفظ مستند HTML',
+    dlgExportDocx: 'تصدير كملف Word',
+    dlgExportOdt: 'تصدير كملف ODT',
+    dlgExportPdf: 'تصدير بتنسيق PDF',
+    dlgExportHtml: 'تصدير كملف HTML واحد',
     filterHtml: 'مستندات HTML',
     dlgPickImage: 'اختر صورة',
     filterImages: 'صور',
@@ -431,6 +479,10 @@ const tDlg = createI18n({
   },
   pt: {
     dlgSaveTitle: 'Salvar documento HTML',
+    dlgExportDocx: 'Exportar como Word',
+    dlgExportOdt: 'Exportar como ODT',
+    dlgExportPdf: 'Exportar como PDF',
+    dlgExportHtml: 'Exportar como HTML de arquivo único',
     filterHtml: 'Documentos HTML',
     dlgPickImage: 'Escolher imagem',
     filterImages: 'Imagens',
@@ -457,6 +509,10 @@ const tDlg = createI18n({
   },
   it: {
     dlgSaveTitle: 'Salva documento HTML',
+    dlgExportDocx: 'Esporta come Word',
+    dlgExportOdt: 'Esporta come ODT',
+    dlgExportPdf: 'Esporta come PDF',
+    dlgExportHtml: 'Esporta come HTML a file singolo',
     filterHtml: 'Documenti HTML',
     dlgPickImage: 'Scegli immagine',
     filterImages: 'Immagini',
@@ -483,6 +539,10 @@ const tDlg = createI18n({
   },
   pl: {
     dlgSaveTitle: 'Zapisz dokument HTML',
+    dlgExportDocx: 'Eksportuj jako Word',
+    dlgExportOdt: 'Eksportuj jako ODT',
+    dlgExportPdf: 'Eksportuj jako PDF',
+    dlgExportHtml: 'Eksportuj jako pojedynczy plik HTML',
     filterHtml: 'Dokumenty HTML',
     dlgPickImage: 'Wybierz obraz',
     filterImages: 'Obrazy',
@@ -509,6 +569,10 @@ const tDlg = createI18n({
   },
   cs: {
     dlgSaveTitle: 'Uložit dokument HTML',
+    dlgExportDocx: 'Exportovat jako Word',
+    dlgExportOdt: 'Exportovat jako ODT',
+    dlgExportPdf: 'Exportovat jako PDF',
+    dlgExportHtml: 'Exportovat jako samostatné HTML',
     filterHtml: 'Dokumenty HTML',
     dlgPickImage: 'Vyberte obrázek',
     filterImages: 'Obrázky',
@@ -535,6 +599,10 @@ const tDlg = createI18n({
   },
   nl: {
     dlgSaveTitle: 'HTML-document opslaan',
+    dlgExportDocx: 'Exporteren als Word',
+    dlgExportOdt: 'Exporteren als ODT',
+    dlgExportPdf: 'Exporteren als PDF',
+    dlgExportHtml: 'Exporteren als één HTML-bestand',
     filterHtml: 'HTML-documenten',
     dlgPickImage: 'Kies een afbeelding',
     filterImages: 'Afbeeldingen',
@@ -561,6 +629,10 @@ const tDlg = createI18n({
   },
   ms: {
     dlgSaveTitle: 'Simpan dokumen HTML',
+    dlgExportDocx: 'Eksport sebagai Word',
+    dlgExportOdt: 'Eksport sebagai ODT',
+    dlgExportPdf: 'Eksport sebagai PDF',
+    dlgExportHtml: 'Eksport sebagai HTML fail tunggal',
     filterHtml: 'Dokumen HTML',
     dlgPickImage: 'Pilih imej',
     filterImages: 'Imej',
@@ -587,6 +659,10 @@ const tDlg = createI18n({
   },
   he: {
     dlgSaveTitle: 'שמירת מסמך HTML',
+    dlgExportDocx: 'ייצוא כ-Word',
+    dlgExportOdt: 'ייצוא כ-ODT',
+    dlgExportPdf: 'ייצוא כ-PDF',
+    dlgExportHtml: 'ייצוא כ-HTML בקובץ יחיד',
     filterHtml: 'מסמכי HTML',
     dlgPickImage: 'בחרו תמונה',
     filterImages: 'תמונות',
@@ -613,6 +689,10 @@ const tDlg = createI18n({
   },
   hi: {
     dlgSaveTitle: 'HTML दस्तावेज़ सहेजें',
+    dlgExportDocx: 'Word के रूप में निर्यात करें',
+    dlgExportOdt: 'ODT के रूप में निर्यात करें',
+    dlgExportPdf: 'PDF के रूप में निर्यात',
+    dlgExportHtml: 'एकल-फ़ाइल HTML के रूप में निर्यात',
     filterHtml: 'HTML दस्तावेज़',
     dlgPickImage: 'छवि चुनें',
     filterImages: 'छवियाँ',
@@ -639,6 +719,10 @@ const tDlg = createI18n({
   },
   'zh-TW': {
     dlgSaveTitle: '儲存 HTML 文件',
+    dlgExportDocx: '匯出為 Word',
+    dlgExportOdt: '匯出為 ODT',
+    dlgExportPdf: '匯出為 PDF',
+    dlgExportHtml: '匯出為單檔 HTML',
     filterHtml: 'HTML 文件',
     dlgPickImage: '選擇圖片',
     filterImages: '圖片',
@@ -665,6 +749,10 @@ const tDlg = createI18n({
 })
 type DlgKey =
   | 'dlgSaveTitle'
+  | 'dlgExportDocx'
+  | 'dlgExportOdt'
+  | 'dlgExportPdf'
+  | 'dlgExportHtml'
   | 'filterHtml'
   | 'dlgPickImage'
   | 'filterImages'
@@ -1835,6 +1923,7 @@ function registerHtmlIpc(): void {
               dialog,
               win,
               {
+                title: tm('dlgExportDocx'),
                 defaultPath: `${exportFileName(request.suggestedName)}.docx`,
                 filters: [{ name: 'Word', extensions: ['docx'] }],
               },
@@ -1880,6 +1969,7 @@ function registerHtmlIpc(): void {
             dialog,
             win,
             {
+              title: tm('dlgExportOdt'),
               defaultPath: `${exportFileName(request.suggestedName)}.odt`,
               filters: [{ name: odtFilterName(), extensions: ['odt'] }],
             },
@@ -1925,6 +2015,7 @@ function registerHtmlIpc(): void {
               dialog,
               win,
               {
+                title: tm('dlgExportPdf'),
                 defaultPath: `${exportFileName(request.suggestedName)}.pdf`,
                 filters: [{ name: 'PDF', extensions: ['pdf'] }],
               },
@@ -1993,6 +2084,7 @@ function registerHtmlIpc(): void {
               dialog,
               win,
               {
+                title: tm('dlgExportHtml'),
                 defaultPath: `${singleFileExportBaseName(exportFileName(request.suggestedName))}.html`,
                 filters: [{ name: 'HTML', extensions: ['html'] }],
               },
