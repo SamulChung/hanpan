@@ -2,7 +2,7 @@ import type { zh } from './zh'
 
 export const ko = {
   toolMerge: 'PDF 병합',
-  toolSplit: 'PDF 분할',
+  toolSplit: '파일 나누기',
   toolExtract: '페이지를 PDF로 추출',
   toolReverse: '역순 정렬',
   toolRotate: '모두 회전',

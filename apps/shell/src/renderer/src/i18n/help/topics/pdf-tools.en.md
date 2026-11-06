@@ -12,7 +12,7 @@ A window for everyday PDF tasks, starting from the task. The result is always sa
 
 | Group             | Tools                                                                                     |
 | ----------------- | ----------------------------------------------------------------------------------------- |
-| Organize pages    | Merge PDF, Split PDF, Extract Pages as PDF, Reverse order, Rotate all, Remove blank pages |
+| Organize pages    | Merge PDF, Split into files, Extract Pages as PDF, Reverse order, Rotate all, Remove blank pages |
 | Prepare for print | Pad for two-sided printing, Merge pages, Page size, Split pages                           |
 | Decorate          | Add a background                                                                          |
 | Clean up          | Remove annotations                                                                        |

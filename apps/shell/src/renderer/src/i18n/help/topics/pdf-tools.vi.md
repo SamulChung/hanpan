@@ -12,7 +12,7 @@ Cửa sổ cho các việc thường làm với PDF, bắt đầu từ việc c�
 
 | Nhóm                      | Công cụ                                                                                     |
 | ------------------------- | ------------------------------------------------------------------------------------------- |
-| Sắp xếp trang             | Gộp PDF, Tách PDF, Trích xuất các trang thành PDF, Đảo thứ tự, Xoay tất cả, Xóa trang trống |
+| Sắp xếp trang             | Gộp PDF, Tách thành tệp, Trích xuất các trang thành PDF, Đảo thứ tự, Xoay tất cả, Xóa trang trống |
 | Chuẩn bị in               | Chuẩn bị in hai mặt, Gộp trang, Kích thước trang, Chia trang                                |
 | Trang trí                 | Thêm nền                                                                                    |
 | Dọn dẹp                   | Xóa chú thích                                                                               |

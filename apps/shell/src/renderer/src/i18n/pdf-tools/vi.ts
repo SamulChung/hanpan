@@ -2,7 +2,7 @@ import type { zh } from './zh'
 
 export const vi = {
   toolMerge: 'Gộp PDF',
-  toolSplit: 'Tách PDF',
+  toolSplit: 'Tách thành tệp',
   toolExtract: 'Trích xuất các trang thành PDF',
   toolReverse: 'Đảo thứ tự',
   toolRotate: 'Xoay tất cả',

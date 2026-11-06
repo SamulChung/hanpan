@@ -2,7 +2,7 @@ import type { zh } from './zh'
 
 export const en = {
   toolMerge: 'Merge PDF',
-  toolSplit: 'Split PDF',
+  toolSplit: 'Split into files',
   toolExtract: 'Extract Pages as PDF',
   toolReverse: 'Reverse order',
   toolRotate: 'Rotate all',
