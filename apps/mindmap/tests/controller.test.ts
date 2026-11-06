@@ -153,6 +153,38 @@ describe('opening', () => {
   })
 })
 
+describe('both sides', () => {
+  /** The main topics in file order, each with the side it is drawn on. */
+  function sides(el: HTMLElement, attachedIds: string[]): string[] {
+    return attachedIds.map((id) => (topicEl(el, id).closest('.lhs') ? 'left' : 'right'))
+  }
+  const balanced = (n: number): string[] =>
+    Array.from({ length: n }, (_x, at) => (at < Math.ceil(n / 2) ? 'right' : 'left'))
+
+  it('new main topics land on the side reopening the file would put them', async () => {
+    const { controller, mind, el, attached, root } = await mount()
+    expect(controller.layout).toBe('both')
+    for (let round = 0; round < 3; round++) {
+      mind.selectNode(mind.findEle(root().id))
+      press(mind.container, 'Tab')
+      await settle()
+      // the new topic is being named: the box stays while the sides are put right
+      expect(el.querySelector('#input-box')).not.toBeNull()
+      finishEditing(el, `added ${round}`)
+      await settle()
+      const ids = attached().map((t) => t.id)
+      expect(sides(el, ids), `after adding ${round + 1}`).toEqual(balanced(ids.length))
+    }
+    mind.selectNode(mind.findEle(attached()[0]!.id))
+    press(mind.container, 'Enter')
+    await settle()
+    finishEditing(el, 'sibling')
+    await settle()
+    const ids = attached().map((t) => t.id)
+    expect(sides(el, ids)).toEqual(balanced(ids.length))
+  })
+})
+
 describe('shortcuts', () => {
   it('Tab adds a child topic with an id the file can keep', async () => {
     const { controller, mind, root, attached } = await mount()

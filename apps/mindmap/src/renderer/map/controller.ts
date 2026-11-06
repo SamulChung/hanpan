@@ -1383,6 +1383,36 @@ export class MapController {
     }
   }
 
+  /**
+   * Both sides: the main topics stand as reopening the file draws them
+   * (`viewToMind`: the first half to the right, the rest to the left, in file
+   * order). The library puts a new main topic on whichever side has fewer and
+   * a sibling on its neighbour's side, so without this a map came back from
+   * its file with branches on the other side. The topics are moved, not drawn
+   * again, so a topic being named keeps its edit box.
+   */
+  #balanceSides(): void {
+    const mind = this.mind
+    if (mind.direction !== 2 || this.#structure !== 'map') return
+    const lhs = mind.map.querySelector('.lhs')
+    const rhs = mind.map.querySelector('.rhs')
+    if (!lhs || !rhs) return
+    const mains = mind.nodeData.children ?? []
+    const right = Math.ceil(mains.length / 2)
+    const wrappers = mains.map((main) => this.#element(main.id)?.closest('me-wrapper') ?? null)
+    if (wrappers.some((wrapper) => wrapper === null)) return
+    const want = (side: number) => wrappers.filter((_w, at) => (at < right ? 1 : 0) === side)
+    const same = (box: Element, list: (Element | null)[]) =>
+      box.children.length === list.length && list.every((w, at) => box.children[at] === w)
+    mains.forEach((main, at) => {
+      main.direction = at < right ? 1 : 0
+    })
+    if (same(rhs, want(1)) && same(lhs, want(0))) return
+    for (const wrapper of want(1)) rhs.appendChild(wrapper!)
+    for (const wrapper of want(0)) lhs.appendChild(wrapper!)
+    mind.linkDiv()
+  }
+
   #onOperation = (operation: Operation): void => {
     // Opening the edit box changes nothing yet, and the library records no step for it.
     if (operation.name === 'beginEdit') {
@@ -1391,6 +1421,7 @@ export class MapController {
     }
     // The session recorded this step and the screen was drawn from it: nothing to reconcile.
     if (this.#recordedBySession) return
+    this.#balanceSides()
     const cut = this.#cutPending
     this.#cutPending = null
     if (operation.name === 'removeSummary') this.#removedSummaries.add(operation.obj.id)
