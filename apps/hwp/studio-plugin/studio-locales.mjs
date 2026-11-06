@@ -139,7 +139,7 @@ export const APP_STRINGS = {
     'hanpan.pageSetup.portrait': 'Dọc',
     'hanpan.pageSetup.landscape': 'Ngang',
     'hanpan.pageSetup.bindingSingle': 'Một mặt',
-    'hanpan.pageSetup.bindingFacing': 'Hai trang đối',
+    'hanpan.pageSetup.bindingFacing': 'Hai mặt',
     'hanpan.pageSetup.bindingTop': 'Gáy trên',
     'hanpan.pageSetup.marginTop': 'Trên',
     'hanpan.pageSetup.marginBottom': 'Dưới',
