@@ -778,4 +778,5 @@ export const zh = {
   ribbonZoomSectionItem: '第 {n} 页　第 {k} 节：{name}',
   ribbonZoomSelectedSlides: '已选择 {n} 张幻灯片',
   ribbonZoomSelectedSections: '已选择 {n} 个节',
+  ribbonTabCollapseTip: '双击可折叠功能区（{key}）',
 }

@@ -804,4 +804,5 @@ export const fr = {
   ribbonZoomSectionItem: 'Diapositive {n} Section {k} : {name}',
   ribbonZoomSelectedSlides: '{n} diapositives sélectionnées',
   ribbonZoomSelectedSections: '{n} sections sélectionnées',
+  ribbonTabCollapseTip: 'Double-click to collapse the ribbon ({key})',
 } satisfies Record<keyof typeof zh, string>

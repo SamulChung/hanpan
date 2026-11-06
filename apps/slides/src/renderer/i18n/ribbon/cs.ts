@@ -782,4 +782,5 @@ export const cs = {
   ribbonZoomSectionItem: 'Snímek {n} Oddíl {k}: {name}',
   ribbonZoomSelectedSlides: 'Vybráno snímků: {n}',
   ribbonZoomSelectedSections: 'Vybráno oddílů: {n}',
+  ribbonTabCollapseTip: 'Double-click to collapse the ribbon ({key})',
 } satisfies Record<keyof typeof zh, string>

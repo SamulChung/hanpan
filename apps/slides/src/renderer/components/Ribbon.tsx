@@ -18,6 +18,9 @@ import type { ChartStyleInfo } from '@genoffice/pptx-render'
 import {
   useDismissablePopover,
   useRibbonCollapse,
+  RibbonCollapseButton,
+  RibbonExpandButton,
+  RIBBON_TOGGLE_SHORTCUT,
   Dropdown,
   THEME_COLORS,
   THEME_COLOR_SHADES,
@@ -721,6 +724,8 @@ function DisabledBig({ icon, label }: { icon: ReactNode; label: string }) {
  * body overflows, these groups (in order) fold into a single dropdown button */
 const COLLAPSE_ORDER: Record<string, string[]> = {
   animations: ['motionPaths', 'animation'],
+  // rightmost first; one-button groups (comments, symbols) gain nothing by folding
+  insert: ['media', 'text', 'illustrations', 'images', 'links'],
 }
 
 /** Checkbox row for toggle commands (View tab's Show group) */
@@ -1425,6 +1430,12 @@ export function Ribbon({
     compact: t('ribbonCompact'),
     expandFull: t('ribbonExpand'),
   })
+  // tab tips: a single press no longer collapses, so the selected tab says how to
+  const tabTip = (isActive: boolean): string | undefined => {
+    if (collapse.collapsed || !isActive || collapse.density === 'compact')
+      return collapse.tabTip(isActive)
+    return t('ribbonTabCollapseTip', { key: RIBBON_TOGGLE_SHORTCUT })
+  }
   const bodyRef = useRef<HTMLDivElement | null>(null)
   const inlineWidthsRef = useRef(new Map<string, number>())
   const collapsedWidthsRef = useRef(new Map<string, number>())
@@ -1894,9 +1905,11 @@ export function Ribbon({
           <button
             key={tb}
             className={`ribbon-tab ${collapse.tabClass(tab === tb)}`}
-            data-tip={collapse.tabTip(tab === tb)}
+            data-tip={tabTip(tab === tb)}
             onClick={() => {
-              collapse.onTabPress(tab === tb)
+              // a press on the selected tab does nothing (Office on Windows): collapsing
+              // is a double-click, the ˄ button or Ctrl+F1 — it read as "the buttons vanished"
+              collapse.onTabPress(false)
               setTab(tb)
               setFileOpen(false)
             }}
@@ -1909,17 +1922,19 @@ export function Ribbon({
             key={contextTab}
             className={`ribbon-tab ribbon-tab-context ${collapse.tabClass(tab === contextTab)}`}
             onClick={() => {
-              collapse.onTabPress(tab === contextTab)
+              collapse.onTabPress(false)
               setTab(contextTab)
             }}
-            data-tip={collapse.tabTip(tab === contextTab) ?? t(TAB_LABEL[contextTab])}
+            data-tip={tabTip(tab === contextTab) ?? t(TAB_LABEL[contextTab])}
           >
             {t(TAB_LABEL[contextTab])}
           </button>
         )}
+        <RibbonExpandButton state={collapse} label={t('ribbonExpand')} />
         <span className="ribbon-tabs-spacer" />
       </div>
 
+      <RibbonCollapseButton state={collapse} label={t('ribbonCollapse')} />
       <div className="ribbon-body" data-ribbon-body="" ref={bodyRef}>
         {tab === 'home' ? (
           <RibbonHomeTab rb={tabCtx} />

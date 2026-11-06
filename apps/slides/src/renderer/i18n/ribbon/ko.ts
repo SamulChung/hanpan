@@ -792,4 +792,5 @@ export const ko = {
   ribbonZoomSectionItem: '슬라이드 {n} 구역 {k}: {name}',
   ribbonZoomSelectedSlides: '슬라이드 {n}개 선택됨',
   ribbonZoomSelectedSections: '구역 {n}개 선택됨',
+  ribbonTabCollapseTip: '두 번 클릭하면 리본을 접습니다 ({key})',
 } satisfies Record<keyof typeof zh, string>

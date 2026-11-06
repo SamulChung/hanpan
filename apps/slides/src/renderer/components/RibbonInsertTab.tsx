@@ -1,7 +1,7 @@
 /** Insert tab of the slides ribbon. Extracted from Ribbon.tsx. */
 import type { InsertKind } from '../../shared/ipc'
 import { platformShortcuts } from '@genoffice/i18n'
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { GonguPicker, WORDART_PRESETS, gonguPickerText, wordArtStrokePx } from '@genoffice/ui'
 import { useI18n } from '../i18n/locale'
 import {
@@ -70,6 +70,9 @@ const SOUND_EFFECT_LABEL: Record<SoundEffectId, StringKey> = {
 export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
   const {
     closePanels,
+    collapsedGroups,
+    collapseOpen,
+    setCollapseOpen,
     editing,
     hasDoc,
     hasSelection,
@@ -114,6 +117,17 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
   /** Hanpan: the Gongu picture picker */
   const [gonguOpen, setGonguOpen] = useState(false)
   const { lang } = useI18n()
+  /** Office-style shrink: when the band is too narrow the Ribbon folds these groups
+   *  (COLLAPSE_ORDER.insert) into one "group ▾" button each, so no button sits off-screen */
+  const fold = (id: string, icon: ReactNode) => ({
+    collapsed: collapsedGroups.includes(id),
+    open: collapseOpen === id,
+    onToggle: () => {
+      closePanels(['collapse'])
+      setCollapseOpen((v) => (v === id ? null : id))
+    },
+    icon,
+  })
   return (
     <>
       <Group label={t('ribbonGroupSlides')}>
@@ -225,7 +239,11 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
         </div>
       </Group>
       <div className="ribbon-sep" />
-      <Group label={t('ribbonGroupImages')}>
+      <Group
+        label={t('ribbonGroupImages')}
+        groupId="images"
+        collapse={fold('images', <IconPicture size={BIG} />)}
+      >
         <button
           className="rb-big"
           disabled={!hasDoc}
@@ -316,7 +334,11 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
         </button>
       </Group>
       <div className="ribbon-sep" />
-      <Group label={t('ribbonGroupIllustrations')}>
+      <Group
+        label={t('ribbonGroupIllustrations')}
+        groupId="illustrations"
+        collapse={fold('illustrations', <IconShapes size={BIG} />)}
+      >
         {dropBig(
           'shapes',
           <IconShapes size={BIG} />,
@@ -392,7 +414,11 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
         )}
       </Group>
       <div className="ribbon-sep" />
-      <Group label={t('ribbonGroupLinks')}>
+      <Group
+        label={t('ribbonGroupLinks')}
+        groupId="links"
+        collapse={fold('links', <IconLink size={BIG} />)}
+      >
         <button
           className="rb-big"
           data-keep-edit=""
@@ -448,7 +474,11 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
         </button>
       </Group>
       <div className="ribbon-sep" />
-      <Group label={t('ribbonShapeGroupText')}>
+      <Group
+        label={t('ribbonShapeGroupText')}
+        groupId="text"
+        collapse={fold('text', <IconTextBox size={BIG} />)}
+      >
         <button
           className="rb-big"
           disabled={!hasDoc}
@@ -538,7 +568,11 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
         </button>
       </Group>
       <div className="ribbon-sep" />
-      <Group label={t('ribbonGroupMedia')}>
+      <Group
+        label={t('ribbonGroupMedia')}
+        groupId="media"
+        collapse={fold('media', <IconVideo size={BIG} />)}
+      >
         <button
           className="rb-big"
           disabled={!hasDoc}

@@ -766,4 +766,5 @@ export const he = {
   ribbonZoomSectionItem: 'שקופית {n} מקטע {k}: {name}',
   ribbonZoomSelectedSlides: 'נבחרו {n} שקופיות',
   ribbonZoomSelectedSections: 'נבחרו {n} מקטעים',
+  ribbonTabCollapseTip: 'Double-click to collapse the ribbon ({key})',
 } satisfies Record<keyof typeof zh, string>

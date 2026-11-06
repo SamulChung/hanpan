@@ -756,4 +756,5 @@ export const zhTW = {
   ribbonZoomSectionItem: '第 {n} 頁　第 {k} 節：{name}',
   ribbonZoomSelectedSlides: '已選取 {n} 張投影片',
   ribbonZoomSelectedSections: '已選取 {n} 個節',
+  ribbonTabCollapseTip: 'Double-click to collapse the ribbon ({key})',
 } satisfies Record<keyof typeof zh, string>

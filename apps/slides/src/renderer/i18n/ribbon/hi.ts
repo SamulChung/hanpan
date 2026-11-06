@@ -787,4 +787,5 @@ export const hi = {
   ribbonZoomSectionItem: 'स्लाइड {n} अनुभाग {k}: {name}',
   ribbonZoomSelectedSlides: '{n} स्लाइड चयनित',
   ribbonZoomSelectedSections: '{n} अनुभाग चयनित',
+  ribbonTabCollapseTip: 'Double-click to collapse the ribbon ({key})',
 } satisfies Record<keyof typeof zh, string>
