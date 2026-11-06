@@ -555,18 +555,15 @@ body.overlay-title-bar .tab-bar-drag-spacer {
   transform: translate(-50%, -50%);
 }
 
-/* "+" stays at the strip's right edge while the tabs scroll under it
- * (0.17 리뷰 v2 #11): after the shared button rule, which sets relative */
-.tab-strip > .tab-new-btn {
-  position: sticky;
-  right: 0;
-  z-index: 1;
-  background: var(--tabstrip-bg);
-  box-shadow: -10px 0 8px -6px var(--tabstrip-bg);
+/* the strip is as wide as its tabs; "+" follows it outside the scroll area and
+ * the rest of the bar stays a drag region (0.17 리뷰 v2 shell #11) */
+.tab-strip {
+  flex: 0 1 auto;
 }
 
-.tab-strip > .tab-new-btn:hover {
-  background: color-mix(in srgb, var(--tabstrip-bg) 88%, #000);
+.tab-strip-rest {
+  flex: 1 1 0;
+  min-width: 8px;
 }
 
 /* keyboard focus on a tab (role=tab, #31): a ring on the plate, not the browser default */

@@ -625,27 +625,29 @@ export function TabBar({ split }: TabBarProps) {
             </div>
           )
         })}
-        <button
-          className="tab-new-btn"
-          title={t('newTab')}
-          aria-label={t('newTab')}
-          onClick={(event) => {
-            const rect = event.currentTarget.getBoundingClientRect()
-            void window.aiOfficeTabs.showNewMenu(Math.round(rect.left), Math.round(rect.bottom))
-          }}
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-            <path
-              d="M12 4.286v15.429M4.286 12h15.429"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
       </div>
+      {/* outside the scrolling strip: "+" never scrolls away (0.17 리뷰 v2 shell #11) */}
+      <button
+        className="tab-new-btn"
+        title={t('newTab')}
+        aria-label={t('newTab')}
+        onClick={(event) => {
+          const rect = event.currentTarget.getBoundingClientRect()
+          void window.aiOfficeTabs.showNewMenu(Math.round(rect.left), Math.round(rect.bottom))
+        }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M12 4.286v15.429M4.286 12h15.429"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+      <div className="tab-strip-rest" />
       {splitHint && (
         <div
           className={`tab-split-hint ${splitHint.orientation === 'side' ? 'for-side' : 'for-stack'}`}

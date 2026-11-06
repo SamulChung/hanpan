@@ -2415,3 +2415,21 @@ html[dir='rtl'] .quick-title-row {
 .folder-back-btn:hover {
   border-color: var(--accent);
 }
+
+/* the smallest window (736px): the filter pills scroll in their own strip
+ * instead of giving the whole Home a sideways scrollbar (0.17 리뷰 v2 shell #32) */
+.toolbar-filters {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.filter-pills {
+  flex-shrink: 1;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.filter-pill {
+  flex-shrink: 0;
+}
