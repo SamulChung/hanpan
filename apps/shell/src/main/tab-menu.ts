@@ -58,6 +58,8 @@ export interface TabMenuInput {
   canReopen: boolean
   /** this system has a share sheet the app can open (Windows, macOS) */
   canShare?: boolean
+  /** 다른 앱으로 보내기 submenu (send-to-app/menu.ts), placed right below Share; null for a tab that cannot send */
+  sendTo?: MenuItemConstructorOptions | null
   /** Translate through the shell's existing 21-locale main table. */
   tm(key: TabMenuStringKey): string
   actions: TabMenuActions
@@ -174,6 +176,9 @@ export function tabMenuTemplate(input: TabMenuInput): MenuItemConstructorOptions
       enabled: document && !!input.canShare,
       click: () => actions.share(tab.id),
     },
+    ...(input.sendTo
+      ? [{ ...input.sendTo, enabled: document && input.sendTo.enabled !== false }]
+      : []),
     // 내 양식 are Word or HWP documents (the forms dialog lists only those tabs)
     ...(MY_FORM_KINDS.has(tab.kind)
       ? [
