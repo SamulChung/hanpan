@@ -805,3 +805,29 @@ function filesIn(root: string): string[] {
     .filter((entry) => entry.isFile())
     .map((entry) => entry.name)
 }
+
+describe('master view of a new deck (UX v2 #20)', () => {
+  it('lists the same standard layouts the New Slide menu offers', async () => {
+    const path = makeDeckFile('master.pptx')
+    const tab = new FakeContents(70)
+    await call<Promise<unknown>>(tab, 'slides:open-path', path, FIT)
+    const r = call<{ items: Array<{ kind: string; name: string }> } | null>(
+      tab,
+      'slides:master-enter',
+      FIT,
+    )
+    const layoutNames = r!.items.filter((i) => i.kind === 'layout').map((i) => i.name)
+    expect(layoutNames).toEqual(
+      expect.arrayContaining([
+        'Title Slide',
+        'Title and Content',
+        'Section Header',
+        'Two Content',
+        'Title Only',
+        'Blank',
+      ]),
+    )
+    const menu = call<{ layouts: Array<{ name: string; path: string }> }>(tab, 'slides:get-layouts')
+    expect(menu.layouts.every((l) => !l.path.startsWith('builtin:'))).toBe(true)
+  })
+})

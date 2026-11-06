@@ -9488,6 +9488,9 @@ body.show-curtain::after {
   display: flex;
   justify-content: safe center;
 }
+.master-stage .master-fit {
+  flex-shrink: 0;
+}
 .master-stage .stage-rel {
   flex-shrink: 0;
   background: var(--slides-paper);

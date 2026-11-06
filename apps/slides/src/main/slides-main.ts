@@ -130,6 +130,7 @@ import {
   savePptxToFile,
   commitSaved,
   builtinLayoutInfos,
+  BUILTIN_LAYOUTS,
   ensureBuiltinLayout,
   shouldOfferBuiltinLayouts,
   BUILTIN_LAYOUT_PREFIX,
@@ -269,6 +270,7 @@ import { planSlideDuplicates, planSlideMoves } from '../shared/slide-selection'
 import { buildPrintDocumentHtml } from '../shared/print-html'
 
 import { animTargetName } from './anim-target-name'
+import { localizeMasterPrompts } from './master-prompts'
 import { tm } from './i18n-main'
 import { tiffToPng } from './tiff-decode'
 import {
@@ -3078,14 +3080,29 @@ export function registerSlidesIpc(): void {
   // reparses all slides — inheritance takes effect immediately, and each undo snapshot's
   // (slides model, entries) pair stays self-consistent (rendering and file don't diverge after
   // undo).
+  /** PowerPoint's English master prompts → UI language, for drawing only (the model keeps them) */
+  const masterPromptDict = (): Record<string, string> => ({
+    'Click to edit Master title style': tm('masterPromptTitle'),
+    'Click to edit Master subtitle style': tm('masterPromptSubtitle'),
+    'Click to edit Master text styles': tm('masterPromptText'),
+    'Second level': tm('masterPromptLevel2'),
+    'Third level': tm('masterPromptLevel3'),
+    'Fourth level': tm('masterPromptLevel4'),
+    'Fifth level': tm('masterPromptLevel5'),
+  })
+
   const buildMasterRenderSlide = (session: Session): RenderSlide | null => {
     const me = session.masterEdit
     if (!me) return null
-    return buildRenderSlide(me.slide, session.opened.deck.size, {
-      fitWidthPx: session.fitWidthPx,
-      media: makeMediaResolver(session.opened),
-      metrics: getFontMetrics(),
-    })
+    return buildRenderSlide(
+      localizeMasterPrompts(me.slide, masterPromptDict()),
+      session.opened.deck.size,
+      {
+        fitWidthPx: session.fitWidthPx,
+        media: makeMediaResolver(session.opened),
+        metrics: getFontMetrics(),
+      },
+    )
   }
 
   // Master edits run as part-addressed op transactions seeded with the live
@@ -3104,15 +3121,27 @@ export function registerSlidesIpc(): void {
     const session = sessions.get(e.sender.id)
     if (!session) return null
     session.fitWidthPx = fitWidthPx
+    // A deck whose own layouts carry no placeholders (a new or AI-made deck) is offered the
+    // built-in standard set by New Slide; master view shows that same set, so it is put in
+    // the package here (PowerPoint's blank deck carries the full set too)
+    if (shouldOfferBuiltinLayouts(listSlideLayouts(session.opened.archive))) {
+      for (const def of BUILTIN_LAYOUTS)
+        ensureBuiltinLayout(session.opened.archive, session.opened.deck.size, def.key)
+    }
     const items: MasterEnterResult['items'] = []
+    const prompts = masterPromptDict()
     for (const p of listMasterParts(session.opened.archive)) {
       const slide = parseMasterPart(session.opened.archive, p.partPath)
       if (!slide) continue
-      const rendered = buildRenderSlide(slide, session.opened.deck.size, {
-        fitWidthPx,
-        media: makeMediaResolver(session.opened),
-        metrics: getFontMetrics(),
-      })
+      const rendered = buildRenderSlide(
+        localizeMasterPrompts(slide, prompts),
+        session.opened.deck.size,
+        {
+          fitWidthPx,
+          media: makeMediaResolver(session.opened),
+          metrics: getFontMetrics(),
+        },
+      )
       items.push({ partPath: p.partPath, kind: p.kind, name: p.name, slide: rendered })
       if (!session.masterEdit) session.masterEdit = { partPath: p.partPath, slide }
     }
