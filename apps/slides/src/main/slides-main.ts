@@ -267,6 +267,7 @@ import { DECK_LINK_PROTOCOLS } from '../shared/run-link'
 import { planSlideDuplicates, planSlideMoves } from '../shared/slide-selection'
 import { buildPrintDocumentHtml } from '../shared/print-html'
 
+import { animTargetName } from './anim-target-name'
 import { tm } from './i18n-main'
 import { tiffToPng } from './tiff-decode'
 import {
@@ -4497,13 +4498,24 @@ export function registerSlidesIpc(): void {
       chart: tm('labelChart'),
       passthrough: tm('labelObject'),
     }
+    const animLabels = {
+      title: tm('labelTitle'),
+      subtitle: tm('labelSubtitle'),
+      text: typeLabel.text!,
+      shape: typeLabel.shape!,
+      picture: typeLabel.picture!,
+      table: typeLabel.table!,
+      chart: typeLabel.chart!,
+      group: typeLabel.group!,
+      object: tm('labelObject'),
+    }
     const out: AnimationItem[] = []
     for (const a of getSlideAnimations(slide)) {
       const el = bySpid.get(a.spid)
       if (!el) continue // Leftover animations whose target shape was deleted are not echoed back
       out.push({
         sourceId: el.id,
-        targetName: el.name || typeLabel[el.type] || tm('labelObject'),
+        targetName: animTargetName(el, animLabels),
         effect: a.effect,
         trigger: a.trigger,
         durationMs: a.durationMs,
