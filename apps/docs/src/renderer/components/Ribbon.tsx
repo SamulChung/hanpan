@@ -3139,7 +3139,7 @@ function RibbonInner({
         ) : tab === 'home' ? (
           <>
             {/* ---- AI (first slot: entry + one-click AI actions) ---- */}
-            <div className="ribbon-group">
+            <div className="ribbon-group ribbon-group-ai">
               <div className="ribbon-group-items">
                 <button
                   className={`rb-big ai-entry ${showAi ? 'active' : ''}`}
@@ -3152,7 +3152,7 @@ function RibbonInner({
                   <span>{aiSubscriptionText(lang, 'aiAssistant')}</span>
                 </button>
                 <button
-                  className="rb-big ai-entry"
+                  className="rb-big ai-entry ai-preset"
                   disabled={docEmpty}
                   data-tip={t('aiSummarizeBtn')}
                   onClick={() => onAiPreset(t('aiSummarizePrompt'))}
@@ -3184,7 +3184,7 @@ function RibbonInner({
                   <span>{t('aiSummarizeBtn')}</span>
                 </button>
                 <button
-                  className="rb-big ai-entry"
+                  className="rb-big ai-entry ai-preset"
                   disabled={docEmpty}
                   data-tip={t('aiPolishBtn')}
                   onClick={() =>
@@ -3220,7 +3220,7 @@ function RibbonInner({
                   <span>{t('aiPolishBtn')}</span>
                 </button>
                 <button
-                  className="rb-big ai-entry"
+                  className="rb-big ai-entry ai-preset"
                   disabled={docEmpty}
                   data-tip={t('aiTidyBtn')}
                   onClick={() => onAiPreset(t('aiTidyPrompt'))}
@@ -3249,7 +3249,7 @@ function RibbonInner({
                   <span>{t('aiTidyBtn')}</span>
                 </button>
                 <button
-                  className="rb-big ai-entry"
+                  className="rb-big ai-entry ai-preset"
                   disabled={docEmpty}
                   data-tip={t('aiMindMapBtn')}
                   onClick={() => onAiPreset(t('aiMindMapPrompt'))}
