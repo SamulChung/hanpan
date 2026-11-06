@@ -338,7 +338,13 @@ export function selectComment(ctx: ReviewContext, id: string): boolean {
   editor.state.doc.descendants((node, pos) => {
     if (!node.isText || !markType) return
     const mark = node.marks.find((m) => m.type === markType)
-    if (!mark || !String(mark.attrs.ids ?? '').split(' ').includes(id)) return
+    if (
+      !mark ||
+      !String(mark.attrs.ids ?? '')
+        .split(' ')
+        .includes(id)
+    )
+      return
     from = Math.min(from, pos)
     to = Math.max(to, pos + node.nodeSize)
   })

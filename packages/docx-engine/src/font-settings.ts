@@ -24,9 +24,5 @@ export async function previewFontSettings(
   for (const up of upserts) xml = upsertStyleXml(xml, up)
   if (defaults) xml = mergeDefaultFontsXml(xml, defaults)
   zip.file('word/styles.xml', xml)
-  return parseStyles(
-    zip,
-    theme?.colors ?? parsed.themeColors,
-    theme?.fonts ?? parsed.themeFonts,
-  )
+  return parseStyles(zip, theme?.colors ?? parsed.themeColors, theme?.fonts ?? parsed.themeFonts)
 }

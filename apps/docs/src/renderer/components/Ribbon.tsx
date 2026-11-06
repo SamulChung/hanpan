@@ -950,6 +950,9 @@ function RibbonInner({
       if (e.key !== 'Escape' || e.isComposing) return
       // a modal opened from the dropdown owns Esc
       if (document.querySelector('.modal-backdrop, [role="dialog"][aria-modal="true"]')) return
+      // a ribbon text field (font / size combo) reverts its own typing on Esc first
+      const target = e.target as Element | null
+      if (target?.closest?.('.ribbon input, .ribbon textarea, .ribbon select')) return
       e.preventDefault()
       e.stopPropagation()
       const wasFile = dropdown === 'file'

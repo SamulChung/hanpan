@@ -29,12 +29,18 @@ describe('References tab notices', () => {
     Object.assign(window, {
       desktop: {
         ...(window as unknown as { desktop?: object }).desktop,
-        zoteroCommand: async () => ({ ok: false, error: 'refused', errorCode: 'connection-refused' }),
+        zoteroCommand: async () => ({
+          ok: false,
+          error: 'refused',
+          errorCode: 'connection-refused',
+        }),
       },
     })
     act(() => root.render(createElement(Ribbon, ribbonProps(editor, computeFormatState(editor)))))
     // tab order: (file) home insert draw design layout references …
-    const refs = container.querySelectorAll<HTMLButtonElement>('.ribbon-tab:not(.ribbon-tab-file)')[5]!
+    const refs = container.querySelectorAll<HTMLButtonElement>(
+      '.ribbon-tab:not(.ribbon-tab-file)',
+    )[5]!
     act(() => refs.click())
   })
 

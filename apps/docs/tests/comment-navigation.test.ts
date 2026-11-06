@@ -225,9 +225,9 @@ describe('selectComment', () => {
     expect(editor.state.selection.from).toBe(18)
     expect(editor.state.selection.to).toBe(23)
     expect(selectComment(ctx, '3')).toBe(true)
-    expect(editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)).toBe(
-      'zeta',
-    )
+    expect(
+      editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to),
+    ).toBe('zeta')
   })
 
   it('is false for a thread with no anchor left in the document', () => {

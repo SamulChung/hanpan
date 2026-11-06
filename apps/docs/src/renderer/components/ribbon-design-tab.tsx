@@ -132,7 +132,9 @@ const CHINESE_EA = /[一-鿿]/
 export function themeFontPresets(lang: string): Array<{ nameKey: StringKey; fonts: ThemeFonts }> {
   if (lang !== 'ko') return THEME_FONT_PRESETS
   const latin = THEME_FONT_PRESETS.filter((p) => !CHINESE_EA.test(p.fonts.major)).map((p) =>
-    CHINESE_EA.test(p.fonts.eastAsia) ? { ...p, fonts: { ...p.fonts, eastAsia: '맑은 고딕' } } : p,
+    CHINESE_EA.test(p.fonts.eastAsia ?? '')
+      ? { ...p, fonts: { ...p.fonts, eastAsia: '맑은 고딕' } }
+      : p,
   )
   const chinese = THEME_FONT_PRESETS.filter((p) => CHINESE_EA.test(p.fonts.major))
   // Office (DengXian) is the Chinese Office pair: it goes with the Chinese ones

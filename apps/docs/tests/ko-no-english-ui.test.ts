@@ -10,6 +10,7 @@ const PROPER_NOUNS = new Set([
   'Office (DengXian)',
   'SimSun',
   'Microsoft YaHei',
+  'Pretendard',
   'KaiTi',
   'Times New Roman',
   'Arial',

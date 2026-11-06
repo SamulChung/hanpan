@@ -492,7 +492,8 @@ export const vi = {
   ribbonShapeFlowPunchedTape: 'Lưu đồ: Băng đục lỗ',
   ribbonShapeCloudCallout: 'Chú thích hình đám mây',
   ribbonThemes: 'Chủ đề',
-  ribbonThemesTip: 'Thay đổi chủ đề tài liệu (phông chữ + màu sắc); văn bản dùng phông chữ và màu của chủ đề đổi ngay',
+  ribbonThemesTip:
+    'Thay đổi chủ đề tài liệu (phông chữ + màu sắc); văn bản dùng phông chữ và màu của chủ đề đổi ngay',
   ribbonFonts: 'Phông chữ',
   ribbonThemeFontsTip: 'Thay đổi phông chữ chủ đề (cặp tiêu đề + nội dung)',
   ribbonColors: 'Màu sắc',

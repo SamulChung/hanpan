@@ -19,8 +19,7 @@ describe('Korean defaults', () => {
   })
 
   it('drops Article/Section and Chapter list styles for ko and adds the official-document one', () => {
-    const texts = (lang: string) =>
-      multilevelLibraryFor(lang).map((levels) => levels[0]!.lvlText)
+    const texts = (lang: string) => multilevelLibraryFor(lang).map((levels) => levels[0]!.lvlText)
     expect(texts('ko').some((x) => /Article|Chapter/.test(x))).toBe(false)
     expect(texts('en').some((x) => /Article/.test(x))).toBe(true)
     expect(multilevelLibraryFor('ko').some((levels) => levels[1]!.numFmt === 'ganada')).toBe(true)

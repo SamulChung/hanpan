@@ -7,8 +7,12 @@ describe('Design > Fonts presets', () => {
   it('ko: Korean pairs come first, the Chinese-only pairs last', () => {
     const list = themeFontPresets('ko')
     expect(list[0]!.fonts.eastAsia).toBe('맑은 고딕')
-    const firstChinese = list.findIndex((p) => /宋体|微软雅黑|楷体|等线/.test(p.fonts.eastAsia))
-    const lastKorean = list.map((p) => /고딕|바탕|Pretendard|Noto Sans KR/.test(p.fonts.eastAsia)).lastIndexOf(true)
+    const firstChinese = list.findIndex((p) =>
+      /宋体|微软雅黑|楷体|等线/.test(p.fonts.eastAsia ?? ''),
+    )
+    const lastKorean = list
+      .map((p) => /고딕|바탕|Pretendard|Noto Sans KR/.test(p.fonts.eastAsia ?? ''))
+      .lastIndexOf(true)
     expect(lastKorean).toBeLessThan(firstChinese)
     expect(list.some((p) => p.fonts.minor === 'Pretendard')).toBe(true)
   })
