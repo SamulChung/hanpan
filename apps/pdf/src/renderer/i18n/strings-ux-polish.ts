@@ -17,6 +17,7 @@ const uxPolishStrings = {
   formBannerClose: 'Close',
   // 인쇄 창
   printPreview: 'Preview',
+  fileMenuExportImages: 'Export as images (PNG)…',
   printSummary: '{pages} pages to print',
   printNextStepHint:
     'Choose the printer and the number of copies in the print window that opens next.',
@@ -34,6 +35,7 @@ const localizedUxPolishStrings = {
     formBannerOpen: '양식 채우기',
     formBannerClose: '닫기',
     printPreview: '미리 보기',
+    fileMenuExportImages: '이미지(PNG)로 내보내기…',
     printSummary: '{pages}쪽을 인쇄합니다',
     printNextStepHint: '프린터와 매수는 다음에 열리는 인쇄 창에서 고릅니다.',
   },
@@ -48,6 +50,7 @@ const localizedUxPolishStrings = {
     formBannerOpen: 'Điền biểu mẫu',
     formBannerClose: 'Đóng',
     printPreview: 'Xem trước',
+    fileMenuExportImages: 'Xuất thành hình ảnh (PNG)…',
     printSummary: 'Sẽ in {pages} trang',
     printNextStepHint: 'Chọn máy in và số bản trong cửa sổ in mở ra tiếp theo.',
   },

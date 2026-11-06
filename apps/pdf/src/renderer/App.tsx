@@ -8553,6 +8553,7 @@ export default function App() {
             onConvert={(format) => void convertTo(format)}
             onConvertDialog={openConvertDialog}
             onPrint={openPrintDlg}
+            onExportImages={() => void exportImages(true)}
           />
           <button
             className="qa-btn"
