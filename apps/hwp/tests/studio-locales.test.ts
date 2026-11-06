@@ -73,8 +73,9 @@ describe('the Vietnamese studio catalog', () => {
       ),
     )
     const vi = EXTRA_LOCALES.vi as Record<string, string>
-    const wanted = Object.keys(en).filter((key) => /^(menu|ui|option|command)\./.test(key))
-    expect(wanted.length).toBeGreaterThan(400)
+    // every studio string, the dialogs included (no English left in a Vietnamese tab)
+    const wanted = Object.keys(en)
+    expect(wanted.length).toBeGreaterThan(1900)
     for (const key of wanted) expect(vi[key], key).toBeTruthy()
     const holes = (s: string) => [...s.matchAll(/\{\w+\}/g)].map((m) => m[0]).sort()
     for (const [key, text] of Object.entries(vi)) {
@@ -82,6 +83,24 @@ describe('the Vietnamese studio catalog', () => {
       expect(holes(text), key).toEqual(holes(JSON.parse(`"${en[key]}"`)))
     }
     expect(vi['menu.file']).toBe('Tệp')
+  })
+
+  // a toolbar label breaks into two lines only where the studio's markup renders the break
+  // (data-i18n-lines); elsewhere "\n" collapses to a space and widens the button
+  it.skipIf(!fetched)('breaks a toolbar label only where the markup renders the break', () => {
+    const html = read('index.html')
+    const vi = EXTRA_LOCALES.vi as Record<string, string>
+    for (const [key, text] of Object.entries(vi)) {
+      if (!key.includes('toolbarLabel') || !text.includes('\n')) continue
+      const plain = html.includes(`data-i18n="${key}"`)
+      expect(plain, `${key} is shown with data-i18n, which drops the break`).toBe(false)
+    }
+  })
+
+  it('keeps the note buttons as short as the English ones', () => {
+    const vi = EXTRA_LOCALES.vi as Record<string, string>
+    expect(vi['command.insert.footnote.toolbarLabel.x195a3d']).toBe('Cước chú')
+    expect(vi['command.insert.endnote.toolbarLabel.x25a949']).toBe('Hậu chú')
   })
 })
 

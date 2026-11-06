@@ -11,7 +11,7 @@
 - 메인 프로세스(`src/main/hwp-main.ts`): 파일 읽기, 저장 대상 정하기와 쓰기, 저장 전 원본 보관(`save-plan.ts`), `.hwp`를 저장할 때 엔진이 빠뜨린 바탕쪽과 메모를 다시 붙이기(`section-tails.ts`), 새 탭의 폭과 필드의 종류를 바로잡기(`tab-widths.ts`, `field-kinds.ts`), 변경 추적 문서를 지금의 내용으로 열기(`tracked-changes.ts`), 닫기 전 확인, 저장·인쇄 단축키, PDF 만들기와 인쇄(`print-document.ts`), 열린 탭의 지금 글자를 편집기 밖에 내주기(`hwpReadText`), AI 창의 첨부 파일 받기와 읽기(`attachments-ipc.ts`), 메모 저장 손실 확인(`memos.ts`, 결정 0072).
 - IPC 계약 `src/shared/ipc.ts`(`HWP_CHANNELS`).
 - 편집기 빌드(`scripts/build-studio.mjs`)와 빌드 때 rhwp 소스에 거는 패치(`scripts/rhwp-patches.mjs`).
-- 편집기에 더하는 화면 언어(`studio-plugin/studio-locales.mjs`, 언어별 표는 `studio-plugin/studio-locales/`): rhwp는 한국어·영어만 있어서, 베트남어 표를 영어 표 위에 얹어 등록한다(빠진 키는 영어로 나온다. 지금 베트남어는 메뉴·도구 모음·상태 줄·명령 이름이고 대화상자는 영어). 스타일 목록에 보이는 이름, 제품 정보의 머리 글도 여기서 정한다. 언어를 더하려면 표를 넣고 `EXTRA_LOCALES`와 `studio-settings.ts`의 `EXTRA_STUDIO_LOCALES`에 이름을 적는다.
+- 편집기에 더하는 화면 언어(`studio-plugin/studio-locales.mjs`, 언어별 표는 `studio-plugin/studio-locales/`): rhwp는 한국어·영어만 있어서, 베트남어 표를 영어 표 위에 얹어 등록한다(빠진 키는 영어로 나온다. 베트남어는 대화상자까지 모든 키를 담았다). 스타일 목록에 보이는 이름, 제품 정보의 머리 글도 여기서 정한다. 언어를 더하려면 표를 넣고 `EXTRA_LOCALES`와 `studio-settings.ts`의 `EXTRA_STUDIO_LOCALES`에 이름을 적는다.
 - 한글 탭의 단축키(`studio-plugin/hancom-keys.mjs`, 결정 0060): 한컴 한글 2024의 기본 키 표, Ctrl+N·K·Q·M·G 연속키, 편집기에 없던 명령(한 줄 지우기, 글자색 여덟, 스타일 열, 보통 모양, 날짜 문자열, 거꾸로 찾기, 표의 쉬운 계산식, 쪽 번호 매기기)과 그 메뉴 항목.
 
 ## 맡지 않는 것 (경계)
