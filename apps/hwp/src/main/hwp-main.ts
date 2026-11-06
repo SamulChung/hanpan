@@ -23,7 +23,14 @@ import { getUiLang } from '@genoffice/i18n'
 import { registerHwpAttachmentIpc } from './attachments-ipc'
 import { registerHwpImageIpc } from './ai-image'
 import { atomicWriteFile } from './atomic-write'
-import { badJob, printJobToPdf, printJobToPrinter } from './print-document'
+import { badDocxHtml, htmlToDocx } from './docx-export'
+import {
+  badJob,
+  badPngRequest,
+  pngPageNames,
+  printJobToPdf,
+  printJobToPrinter,
+} from './print-document'
 import { tm } from './dialog-strings'
 import { fieldKindsOf } from './field-kinds'
 import type { FieldKinds } from './field-kinds'
@@ -51,12 +58,13 @@ import { HWP_CHANNELS, MAX_HWP_SAVE_BYTES, hwpFormatOfPath } from '../shared/ipc
 import type {
   BeginSaveResult,
   CommitSaveResult,
+  ExportCommand,
   HwpFormat,
   MeasuredTab,
   MemoPathStep,
   MemoSnapshot,
+  PngExport,
   PrintJob,
-  PrintMode,
   PrintResult,
   SaveMode,
   TabSpot,
@@ -279,8 +287,11 @@ export async function requestHwpClose(
  * keystroke behind, and Ctrl+S right after typing must still save. The
  * renderer asks the editor itself and declines a save with nothing to write.
  */
-/** The File menu or Ctrl+P: the renderer gathers the pages and comes back with printPages. */
-export function requestHwpPrint(contents: WebContents, mode: PrintMode): void {
+/**
+ * The File menu or Ctrl+P: the renderer gathers the pages and comes back with printPages
+ * (or, for Word, the document's HTML and comes back with exportDocx).
+ */
+export function requestHwpPrint(contents: WebContents, mode: ExportCommand): void {
   if (!contents.isDestroyed()) contents.send(HWP_CHANNELS.printRequest, mode)
 }
 
@@ -290,9 +301,20 @@ const printWindow = (): BrowserWindow =>
 
 /** The name an exported PDF is offered under: the document's, or the untitled one. */
 function pdfName(wcId: number): string {
+  return `${exportBase(wcId)}.pdf`
+}
+
+/** The document's name without its extension, or the untitled one: what exports are named. */
+function exportBase(wcId: number): string {
   const current = savePathByWc.get(wcId)
   const base = current ? basename(current).replace(/.hwpx?$/i, '') : ''
-  return `${base || tm('untitledFile')}.pdf`
+  return base || tm('untitledFile')
+}
+
+/** Where an export is first offered: beside the document, else the default save folder. */
+function exportDir(wcId: number): string {
+  const current = savePathByWc.get(wcId)
+  return current ? dirname(current) : configuredDefaultSaveDir(app)
 }
 
 export function requestHwpSave(contents: WebContents, mode: SaveMode): Promise<boolean> {
@@ -343,7 +365,9 @@ export function hwpReadText(contents: WebContents): Promise<string> {
 /** Hanpan: the document tools, carried out by the shell (which holds the engine and the rules) */
 let hanpanToolHook: ((wc: WebContents, request: unknown) => Promise<unknown>) | null = null
 
-export function setHwpHanpanToolHook(hook: ((wc: WebContents, request: unknown) => Promise<unknown>) | null): void {
+export function setHwpHanpanToolHook(
+  hook: ((wc: WebContents, request: unknown) => Promise<unknown>) | null,
+): void {
   hanpanToolHook = hook
 }
 
@@ -580,6 +604,108 @@ function registerHwpIpc(): void {
     }
   })
 
+  /**
+   * Pictures of the pages (0.17): every page into a folder the user picks as
+   * `<document>-<n>.png`, or the current page where the user saves it.
+   */
+  async function exportPngs(
+    job: PngExport,
+    wcId: number,
+    win: BrowserWindow | undefined,
+  ): Promise<PrintResult> {
+    let targets: string[]
+    if (job.mode === 'pngPage') {
+      const picked = await showSaveDialogWithMemory(dialog, win, {
+        title: tm('dlgExportPngPageTitle'),
+        defaultPath: join(exportDir(wcId), `${exportBase(wcId)}.png`),
+        filters: [{ name: 'PNG', extensions: ['png'] }],
+      })
+      if (picked.canceled || !picked.filePath) return { ok: true, canceled: true }
+      targets = [/\.png$/i.test(picked.filePath) ? picked.filePath : `${picked.filePath}.png`]
+    } else {
+      const options = {
+        title: tm('dlgExportPngTitle'),
+        defaultPath: exportDir(wcId),
+        properties: ['openDirectory' as const, 'createDirectory' as const],
+      }
+      const picked = win
+        ? await dialog.showOpenDialog(win, options)
+        : await dialog.showOpenDialog(options)
+      const folder = picked.canceled ? undefined : picked.filePaths[0]
+      if (!folder) return { ok: true, canceled: true }
+      targets = pngPageNames(exportBase(wcId), job.pngs.length).map((name) => join(folder, name))
+      const existing = targets.filter((target) => existsSync(target)).length
+      if (existing > 0) {
+        const ask = {
+          type: 'question' as const,
+          message: tm('pngOverwriteMsg', { count: existing }),
+          buttons: [tm('btnReplace'), tm('btnCancel')],
+          defaultId: 1,
+          cancelId: 1,
+          noLink: true,
+        }
+        const { response } = win
+          ? await dialog.showMessageBox(win, ask)
+          : await dialog.showMessageBox(ask)
+        if (response !== 0) return { ok: true, canceled: true }
+      }
+    }
+    for (let index = 0; index < targets.length; index++) {
+      await atomicWriteFile(targets[index]!, Buffer.from(job.pngs[index]!))
+    }
+    try {
+      shell.showItemInFolder(targets[0]!)
+    } catch (err) {
+      console.warn('[hwp] could not show the exported pictures:', err)
+    }
+    return { ok: true, path: targets[0]! }
+  }
+
+  // pictures of the pages (0.17): drawn by the renderer, written where the user picks
+  ipcMain.handle(HWP_CHANNELS.savePngs, async (e, request: unknown): Promise<PrintResult> => {
+    const bad = badPngRequest(request)
+    if (bad) return { ok: false, error: `hwp: ${bad}` }
+    try {
+      const win =
+        BrowserWindow.fromWebContents(e.sender) ?? BrowserWindow.getFocusedWindow() ?? undefined
+      return await exportPngs(request as PngExport, e.sender.id, win)
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) }
+    }
+  })
+
+  // the document as Word (0.17): the renderer hands the document's HTML, written as .docx
+  ipcMain.handle(HWP_CHANNELS.exportDocx, async (e, html: unknown): Promise<PrintResult> => {
+    const wcId = e.sender.id
+    const bad = badDocxHtml(html)
+    if (bad) return { ok: false, error: `hwp: ${bad}` }
+    if (printing.has(wcId)) return { ok: false, error: 'hwp: already printing' }
+    printing.add(wcId)
+    try {
+      const win =
+        BrowserWindow.fromWebContents(e.sender) ?? BrowserWindow.getFocusedWindow() ?? undefined
+      const picked = await showSaveDialogWithMemory(dialog, win, {
+        title: tm('dlgExportDocxTitle'),
+        defaultPath: join(exportDir(wcId), `${exportBase(wcId)}.docx`),
+        filters: [{ name: tm('filterDocx'), extensions: ['docx'] }],
+      })
+      if (picked.canceled || !picked.filePath) return { ok: true, canceled: true }
+      const target = /\.docx$/i.test(picked.filePath) ? picked.filePath : `${picked.filePath}.docx`
+      const docx = await htmlToDocx(html as string)
+      await atomicWriteFile(target, Buffer.from(docx))
+      try {
+        if (!runtime.openGeneratedPath?.(target)) shell.showItemInFolder(target)
+      } catch (err) {
+        console.warn('[hwp] could not open the exported Word document:', err)
+      }
+      return { ok: true, path: target }
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) }
+    } finally {
+      printing.delete(wcId)
+    }
+  })
+
   ipcMain.handle(HWP_CHANNELS.beginSave, async (e, mode: unknown): Promise<BeginSaveResult> => {
     const wcId = e.sender.id
     pendingSaveByWc.delete(wcId)
@@ -764,7 +890,14 @@ function registerHwpIpc(): void {
   ipcMain.on(HWP_CHANNELS.fileCommand, (e, command: unknown) => {
     if (command === 'open') runtime.openFileDialog?.()
     else if (command === 'save' || command === 'saveAs') void requestHwpSave(e.sender, command)
-    else if (command === 'pdf' || command === 'print') requestHwpPrint(e.sender, command)
+    else if (
+      command === 'pdf' ||
+      command === 'print' ||
+      command === 'docx' ||
+      command === 'png' ||
+      command === 'pngPage'
+    )
+      requestHwpPrint(e.sender, command)
   })
 
   ipcMain.on(HWP_CHANNELS.abortSave, (e) => {

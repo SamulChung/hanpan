@@ -383,3 +383,88 @@ body {
   list-style: none;
   font-size: 11px;
 }
+
+/* print preview (0.17): the pages as they print, then Print or Cancel */
+.hwp-preview-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(0 0 0 / 45%);
+}
+
+.hwp-preview {
+  display: flex;
+  flex-direction: column;
+  width: min(900px, 92vw);
+  height: 90vh;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 8px 28px var(--hwp-shadow-soft);
+  overflow: hidden;
+}
+
+.hwp-preview-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.hwp-preview-title {
+  font-weight: 600;
+}
+
+.hwp-preview-count {
+  opacity: 0.7;
+}
+
+.hwp-preview-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.hwp-preview-actions button {
+  padding: 5px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.hwp-preview-actions button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.hwp-preview-actions button:focus-visible {
+  outline: 2px solid var(--hwp-focus-ring-blue);
+  outline-offset: 1px;
+}
+
+.hwp-preview-pages {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #8a8d91;
+}
+
+.hwp-preview-page {
+  max-width: 100%;
+  height: auto;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 35%);
+}

@@ -1547,6 +1547,17 @@ export const ru = {
   appFileSaveAs: 'Сохранить как…',
   appFileExportPdf: 'Экспорт в PDF…',
   appFileExportCsv: 'Экспорт в CSV…',
+  appFileExportPng: 'Экспорт в изображение (PNG)…',
+  appFileExportCsvAll: 'Экспорт всех листов в CSV…',
+  appCsvAllExported: 'Экспортировано листов в CSV: {count}, папка {path}.',
+  appPngNeedsFullLoad:
+    'Для экспорта изображения книга должна быть полностью загружена — дождитесь окончания загрузки.',
+  appPngRendering: 'Рисуем изображение…',
+  appPngExported: 'Экспортировано: {path}.',
+  appPngCanceled: 'Экспорт изображения отменён.',
+  appPngTooLarge:
+    'Лист слишком велик для одного изображения. Выделите меньший диапазон или экспортируйте в PDF.',
+  appPngExportFailed: 'Не удалось экспортировать изображение.',
   appFilePrint: 'Печать…',
   appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

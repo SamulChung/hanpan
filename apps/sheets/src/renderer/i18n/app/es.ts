@@ -1575,6 +1575,17 @@ export const es = {
   appFileSaveAs: 'Guardar como…',
   appFileExportPdf: 'Exportar como PDF…',
   appFileExportCsv: 'Exportar como CSV…',
+  appFileExportPng: 'Exportar como imagen (PNG)…',
+  appFileExportCsvAll: 'Exportar todas las hojas a CSV…',
+  appCsvAllExported: 'Se exportaron {count} hojas como CSV en {path}.',
+  appPngNeedsFullLoad:
+    'La exportación a imagen necesita el libro completamente cargado; espere a que termine la carga.',
+  appPngRendering: 'Dibujando la imagen…',
+  appPngExported: 'Se exportó {path}.',
+  appPngCanceled: 'Exportación a imagen cancelada.',
+  appPngTooLarge:
+    'La hoja es demasiado grande para una imagen. Seleccione un rango menor o exporte a PDF.',
+  appPngExportFailed: 'No se pudo exportar la imagen.',
   appFilePrint: 'Imprimir…',
   appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

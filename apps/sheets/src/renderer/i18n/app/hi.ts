@@ -1527,6 +1527,17 @@ export const hi = {
   appFileSaveAs: 'इस रूप में सहेजें…',
   appFileExportPdf: 'PDF के रूप में निर्यात करें…',
   appFileExportCsv: 'CSV के रूप में निर्यात करें…',
+  appFileExportPng: 'छवि (PNG) के रूप में निर्यात करें…',
+  appFileExportCsvAll: 'सभी शीट CSV के रूप में निर्यात करें…',
+  appCsvAllExported: '{count} शीट CSV के रूप में {path} में निर्यात की गईं।',
+  appPngNeedsFullLoad:
+    'छवि निर्यात के लिए वर्कबुक पूरी तरह लोड होनी चाहिए — लोडिंग पूरी होने तक प्रतीक्षा करें।',
+  appPngRendering: 'छवि बनाई जा रही है…',
+  appPngExported: '{path} निर्यात किया गया।',
+  appPngCanceled: 'छवि निर्यात रद्द किया गया।',
+  appPngTooLarge:
+    'शीट एक छवि के लिए बहुत बड़ी है। छोटी श्रेणी चुनें या PDF के रूप में निर्यात करें।',
+  appPngExportFailed: 'छवि निर्यात विफल रहा।',
   appFilePrint: 'प्रिंट करें…',
   appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

@@ -1549,6 +1549,17 @@ export const ko = {
   appFileSaveAs: '다른 이름으로 저장…',
   appFileExportPdf: 'PDF로 내보내기…',
   appFileExportCsv: 'CSV로 내보내기…',
+  appFileExportPng: '이미지(PNG)로 내보내기…',
+  appFileExportCsvAll: '모든 시트를 CSV로 내보내기…',
+  appCsvAllExported: '시트 {count}개를 {path} 폴더에 CSV로 내보냈습니다.',
+  appPngNeedsFullLoad:
+    '이미지로 내보내려면 통합 문서를 끝까지 불러와야 합니다. 불러오기가 끝날 때까지 기다려 주세요.',
+  appPngRendering: '이미지를 그리는 중…',
+  appPngExported: '{path}을(를) 내보냈습니다.',
+  appPngCanceled: '이미지 내보내기를 취소했습니다.',
+  appPngTooLarge:
+    '시트가 너무 커서 이미지 한 장에 담을 수 없습니다. 범위를 좁혀 선택하거나 PDF로 내보내세요.',
+  appPngExportFailed: '이미지로 내보내지 못했습니다.',
   appFilePrint: '인쇄…',
   appSheetNamePrefix: '시트',
 } satisfies Record<keyof typeof zh, string>

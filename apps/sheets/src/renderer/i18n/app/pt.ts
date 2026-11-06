@@ -1571,6 +1571,17 @@ export const pt = {
   appFileSaveAs: 'Salvar como…',
   appFileExportPdf: 'Exportar como PDF…',
   appFileExportCsv: 'Exportar como CSV…',
+  appFileExportPng: 'Exportar como imagem (PNG)…',
+  appFileExportCsvAll: 'Exportar todas as planilhas como CSV…',
+  appCsvAllExported: '{count} planilhas exportadas como CSV para {path}.',
+  appPngNeedsFullLoad:
+    'A exportação de imagem precisa da pasta de trabalho totalmente carregada — aguarde o fim do carregamento.',
+  appPngRendering: 'Desenhando a imagem…',
+  appPngExported: '{path} exportado.',
+  appPngCanceled: 'Exportação de imagem cancelada.',
+  appPngTooLarge:
+    'A planilha é grande demais para uma imagem. Selecione um intervalo menor ou exporte como PDF.',
+  appPngExportFailed: 'Falha ao exportar a imagem.',
   appFilePrint: 'Imprimir…',
   appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>
