@@ -601,6 +601,7 @@ describe('the studio source the build fetched', () => {
     'src/ui/history-dialog.ts',
     'src/ui/para-shape-dialog.ts',
     'src/ui/table-create-dialog.ts',
+    'src/ui/equation-editor-dialog.ts',
     'src/ui/hml-import-warning-message.ts',
     'src/ui/hml-save-format-message.ts',
     'src/ui/hyperlink-dialog.ts',

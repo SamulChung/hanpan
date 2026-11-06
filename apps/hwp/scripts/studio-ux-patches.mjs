@@ -26,6 +26,13 @@
  * studio-options-no-pdf (#5)
  *   Tools > Preferences offered the browser print guide for PDFs; the app writes PDFs itself.
  *
+ * studio-page-border-ux (#25)
+ *   쪽 테두리/배경: the line controls are off while 테두리 사용 안 함 is on, and 굵기 has its own row.
+ *
+ * studio-equation-labels (#28)
+ *   수식: the cases and lim buttons are named in the UI language, the HWP/LaTeX badge says it is
+ *   the syntax switch, and the input says it is the input.
+ *
  * studio-about-licenses (#6)
  *   File > About listed rhwp's crates, sent the reader to THIRD_PARTY_LICENSES.md (which the app
  *   cannot open) and ended with rhwp's copyright line. One line and a button now open the app's
@@ -298,6 +305,96 @@ export const UX_PATCHES = {
           "    copyright.textContent = '\\u00A9 2026 rhwp: Edward Kim';",
           '    body.appendChild(copyright);',
           '  }',
+        ].join('\n'),
+      },
+    ],
+  },
+
+  'studio-page-border-ux': {
+    file: studioFile('ui/page-border-dialog'),
+    edits: [
+      {
+        find: "    lineRow.append(this.label(t('dialog.pageBorder.label.label')), this.buildLineTypeSelect(), this.label(t('dialog.pageBorder.label.label.x4482fe')), this.buildLineWidthSelect());",
+        replace: [
+          "    lineRow.append(this.label(t('dialog.pageBorder.label.label')), this.buildLineTypeSelect());",
+          '    // 굵기 on its own row: beside 종류 it wrapped and left its label at the end of the line',
+          '    const widthRow = this.row();',
+          "    widthRow.append(this.label(t('dialog.pageBorder.label.label.x4482fe')), this.buildLineWidthSelect());",
+        ].join('\n'),
+      },
+      {
+        find: '    controls.append(lineRow, colorRow,',
+        replace: '    controls.append(lineRow, widthRow, colorRow,',
+      },
+      {
+        find: "    this.lineColorInput.value = firstBorder.color || '#000000';\n",
+        replace: [
+          "    this.lineColorInput.value = firstBorder.color || '#000000';",
+          '    this.syncBorderControls();',
+          '',
+        ].join('\n'),
+      },
+      {
+        find: [
+          '  private handleBorderNoneChange(): void {',
+          '    if (this.borderNoneCheck.checked) {',
+          '      this.clearAllSides();',
+          '    }',
+        ].join('\n'),
+        replace: [
+          "  /** With 테두리 사용 안 함 on, the line's kind, width and colour change nothing: they are off. */",
+          '  private syncBorderControls(): void {',
+          '    const off = this.borderNoneCheck.checked;',
+          '    this.lineTypeSelect.disabled = off;',
+          '    this.lineWidthSelect.disabled = off;',
+          '    this.lineColorInput.disabled = off;',
+          '  }',
+          '',
+          '  private handleBorderNoneChange(): void {',
+          '    this.syncBorderControls();',
+          '    if (this.borderNoneCheck.checked) {',
+          '      this.clearAllSides();',
+          '    }',
+        ].join('\n'),
+      },
+      {
+        find: [
+          '    this.borderNoneCheck.checked = !ALL_SIDES.some(side => this.isSideActive(side));',
+          '  }',
+        ].join('\n'),
+        replace: [
+          '    this.borderNoneCheck.checked = !ALL_SIDES.some(side => this.isSideActive(side));',
+          '    this.syncBorderControls();',
+          '  }',
+        ].join('\n'),
+      },
+    ],
+  },
+
+  'studio-equation-labels': {
+    file: studioFile('ui/equation-editor-dialog'),
+    edits: [
+      {
+        find: "    { label: 'cases', hwp:",
+        replace: "    { label: i18nText('hanpan.equation.cases'), hwp:",
+      },
+      {
+        find: "    { label: 'lim', hwp:",
+        replace: "    { label: i18nText('hanpan.equation.lim'), hwp:",
+      },
+      {
+        find: "    this.modeBtn.className = 'eq-mode-btn';",
+        replace: [
+          "    this.modeBtn.className = 'eq-mode-btn';",
+          '    // the HWP/LaTeX badge is the syntax switch; say so',
+          "    this.modeBtn.title = i18nText('hanpan.equation.modeTip');",
+        ].join('\n'),
+      },
+      {
+        find: '    this.scriptArea.spellcheck = false;',
+        replace: [
+          '    this.scriptArea.spellcheck = false;',
+          "    this.scriptArea.placeholder = i18nText('hanpan.equation.inputHint');",
         ].join('\n'),
       },
     ],

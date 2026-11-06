@@ -978,6 +978,35 @@ export const DIALOG_THEME_CSS = `
   cursor: default;
 }
 
+/* 글자 모양·문단 모양 (0.17 UX v2 #27): 확인/취소 at the bottom as in every other dialog,
+   not in a column on the right */
+:where(:root[${DIALOG_THEME_ATTRIBUTE}]) :is(.cs-dialog, .ps-dialog) > .cs-main-row {
+  flex-direction: column;
+}
+
+:where(:root[${DIALOG_THEME_ATTRIBUTE}]) :is(.cs-dialog, .ps-dialog) > .cs-main-row > .cs-right-col {
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 12px;
+  border-left: 0;
+  border-top: 1px solid var(--ieum-dialog-line);
+}
+
+/* the paragraph shape dialog takes the focus so Esc reaches it (#10): no ring around it */
+:root[${DIALOG_THEME_ATTRIBUTE}] .ps-dialog:focus {
+  outline: none;
+}
+
+/* 편집 용지 at 1366 (0.17 UX v2 #26): the three binding cards stay on one row */
+:where(:root[${DIALOG_THEME_ATTRIBUTE}]) .page-setup-sections > .dialog-section:first-child {
+  flex: 0 0 auto;
+}
+
+:where(:root[${DIALOG_THEME_ATTRIBUTE}]) .page-setup-sections > .dialog-section:last-child .dialog-icon-radio-group {
+  flex-wrap: nowrap;
+}
+
 /* the ▾ of a split button (찾기) read as a dot at 8px in a muted grey (0.17 UX v2 #12) */
 :root[${DIALOG_THEME_ATTRIBUTE}] #icon-toolbar .tb-split-arrow .tb-arrow-icon {
   font-size: 11px;

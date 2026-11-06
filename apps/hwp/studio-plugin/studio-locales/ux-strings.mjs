@@ -12,6 +12,15 @@
  */
 
 export const UX_CORRECTIONS = {
+  // 수식 (#28): the box above is the preview, the input is below it
+  'dialog.equationEditor.showPreviewMessage.label': [
+    '미리 보기 — 아래 칸에 입력한 수식이 여기에 보입니다',
+    'Preview — the equation you type below shows here',
+    'Xem trước — công thức bạn nhập bên dưới hiện ở đây',
+  ],
+  // 글자 모양·문단 모양 (#27): 확인 as in every other dialog
+  'dialog.charShape.okBtn.text': ['확인', 'OK', 'OK'],
+  'dialog.paraShape.okBtn.text': ['확인', 'OK', 'OK'],
   // 입력 > 필드 입력 (#21): it puts a 누름틀, the word the AI panel and Hangul users know
   'command.insert.field.label': ['누름틀 넣기', 'Insert Click-Here Field', 'Chèn trường nhập'],
   'dialog.fieldInsert.title': ['누름틀 넣기', 'Insert Click-Here Field', 'Chèn trường nhập'],
@@ -195,6 +204,19 @@ export const UX_CORRECTIONS = {
 }
 
 export const UX_STRINGS = {
+  // 입력 > 수식 (#28)
+  'hanpan.equation.cases': ['경우 나누기', 'Cases', 'Phân trường hợp'],
+  'hanpan.equation.lim': ['극한', 'Limit', 'Giới hạn'],
+  'hanpan.equation.modeTip': [
+    '수식을 쓰는 문법입니다. 누르면 HWP와 LaTeX 사이에서 바뀝니다.',
+    'The syntax the equation is written in. Click to switch between HWP and LaTeX.',
+    'Cú pháp viết công thức. Bấm để chuyển giữa HWP và LaTeX.',
+  ],
+  'hanpan.equation.inputHint': [
+    '여기에 수식을 입력하세요 (예: 1 over 2)',
+    'Type the equation here (for example: 1 over 2)',
+    'Nhập công thức ở đây (ví dụ: 1 over 2)',
+  ],
   // 파일 > 제품 정보 (#6): the licences are in the app's own list, not a crate table
   'hanpan.about.licenses': [
     'rhwp가 쓰는 프로그램을 포함한 모든 라이선스와 저작권 고지는 한판의 오픈소스 라이선스 목록에 있습니다.',

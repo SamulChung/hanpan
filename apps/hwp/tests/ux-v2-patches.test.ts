@@ -298,3 +298,41 @@ describe('the header and footer presets (#11)', () => {
     expect(ids).toEqual(['0', 'md-sep', '1', '2', '3', '4', '5'])
   })
 })
+
+describe.skipIf(!fetched)('small dialog fixes (#25, #27, #28)', () => {
+  it('page border: the line controls are off while "no border" is on, and 굵기 has a row of its own', () => {
+    const c = patched('src/ui/page-border-dialog.ts')
+    expect(c).toContain('private syncBorderControls(): void {')
+    expect(c.split('this.syncBorderControls();').length - 1).toBeGreaterThanOrEqual(3)
+    expect(c).toContain('controls.append(lineRow, widthRow, colorRow,')
+  })
+
+  it('equation: the template buttons and the input say what they are', () => {
+    const c = patched('src/ui/equation-editor-dialog.ts')
+    expect(c).toContain("{ label: i18nText('hanpan.equation.cases'),")
+    expect(c).toContain("{ label: i18nText('hanpan.equation.lim'),")
+    expect(c).toContain("this.modeBtn.title = i18nText('hanpan.equation.modeTip');")
+    expect(c).toContain("this.scriptArea.placeholder = i18nText('hanpan.equation.inputHint');")
+    for (const locale of ['ko', 'en', 'vi'] as const) {
+      for (const key of ['cases', 'lim', 'modeTip', 'inputHint']) {
+        expect(APP_STRINGS[locale][`hanpan.equation.${key}`], `${locale} ${key}`).toBeTruthy()
+      }
+    }
+    expect(APP_STRINGS.ko['dialog.equationEditor.showPreviewMessage.label']).toMatch(/미리 보기/)
+  })
+
+  it('character and paragraph shape: 확인 at the bottom, as every other dialog', () => {
+    expect(APP_STRINGS.ko['dialog.charShape.okBtn.text']).toBe('확인')
+    expect(APP_STRINGS.ko['dialog.paraShape.okBtn.text']).toBe('확인')
+    const css = DIALOG_THEME_CSS.replace(/\s+/g, ' ')
+    expect(css).toContain(':is(.cs-dialog, .ps-dialog) > .cs-main-row')
+  })
+})
+
+describe('the page setup dialog at 1366 (#26)', () => {
+  it('keeps the three binding cards on one row', () => {
+    expect(DIALOG_THEME_CSS.replace(/\s+/g, ' ')).toContain(
+      '.page-setup-sections > .dialog-section:last-child .dialog-icon-radio-group',
+    )
+  })
+})
