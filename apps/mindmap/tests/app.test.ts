@@ -522,6 +522,23 @@ describe('a new map', () => {
   })
 })
 
+describe('a new map, the first thing seen', () => {
+  it('opens with the central topic picked and a line on how to add topics', async () => {
+    await mountApp(fakeApi(null, null))
+    await until(
+      () => container.querySelector('me-root me-tpc.selected') !== null,
+      'the central topic to be picked',
+    )
+    const hint = container.querySelector('[data-hint="new-map"]')!
+    expect(hint.textContent).toBe('Tab: add a subtopic · Enter: add a topic at the same level')
+  })
+
+  it('a file that opens shows no such line', async () => {
+    await openWith(plainSheet())
+    expect(container.querySelector('[data-hint="new-map"]')).toBeNull()
+  })
+})
+
 describe('sheets', () => {
   it('the only sheet cannot be deleted', async () => {
     await openWith(plainSheet())

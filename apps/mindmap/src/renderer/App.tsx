@@ -125,6 +125,8 @@ export default function App() {
   const [themeOpen, setThemeOpen] = useState(false)
   /** F5: the map alone, shell chrome covered by HTML fullscreen */
   const [presenting, setPresenting] = useState(false)
+  /** a new, empty map: the line on how to add topics shows until the map is first changed */
+  const [startHint, setStartHint] = useState(false)
   const [hiddenParts, setHiddenParts] = useState<HiddenPart[]>(rememberedHiddenParts)
   const [find, setFind] = useState<FindState | null>(null)
   const hiddenPartsRef = useRef(hiddenParts)
@@ -290,6 +292,8 @@ export default function App() {
                   sheetTitle: translate('sheetDefaultName', { n: 1 }),
                   rootTitle: translate('centralTopic'),
                 })
+            // an empty new map: its central topic is picked and the keys are told
+            if (!seed) setStartHint(true)
           }
           if (cancelled) return
         }
@@ -330,6 +334,12 @@ export default function App() {
     if (dirty && saveState === 'saved') setSaveState('idle')
   }, [dirty, saveState])
 
+  const startHintRef = useRef(startHint)
+  startHintRef.current = startHint
+  useEffect(() => {
+    if (dirty) setStartHint(false)
+  }, [dirty])
+
   // ---- one drawing-library instance per sheet, made when the sheet is first shown ----
 
   useEffect(() => {
@@ -345,6 +355,8 @@ export default function App() {
     })
     created.setHiddenParts(hiddenPartsRef.current)
     controllers.current.set(activeKey, created)
+    // a new map starts on its central topic, so Tab and Enter work at once
+    if (startHintRef.current) created.revealTopic(session.view(activeKey).root.id)
     setMapTick((tick) => tick + 1)
   }, [session, activeKey, host, tabs])
 
@@ -1247,6 +1259,11 @@ export default function App() {
       <main className="mm-stage">
         {/* the theme panel and the AI panel dock at this element's end side, one open at a time */}
         <div className="mm-card" aria-label={t('appName')} onClickCapture={onMapClick}>
+          {startHint && !presenting && (
+            <div className="mm-start-hint" data-hint="new-map" role="note">
+              {t('newMapHint')}
+            </div>
+          )}
           {find && !presenting && (
             <FindBar
               withReplace={find.withReplace}
