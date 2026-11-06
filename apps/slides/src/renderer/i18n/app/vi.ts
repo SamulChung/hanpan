@@ -69,8 +69,7 @@ export const vi = {
   appStatusRecordingUnavailable:
     'Tính năng ghi màn hình không khả dụng (bị từ chối quyền hoặc đã hủy lựa chọn)',
   appStatusTransitionAll: 'Đã áp dụng hiệu ứng chuyển tiếp cho tất cả trang chiếu',
-  appStatusTransitionSet:
-    'Đã thiết lập hiệu ứng chuyển tiếp (có hiệu lực khi trình chiếu PowerPoint)',
+  appStatusTransitionSet: 'Đã thiết lập hiệu ứng chuyển tiếp (phát khi trình chiếu)',
   appStatusAnimRemoved: 'Đã xóa hiệu ứng hoạt hình khỏi các hình đã chọn',
   appStatusAnimSet:
     'Đã thiết lập hiệu ứng hoạt hình (phát từng bước khi trình chiếu; cũng hoạt động trong PowerPoint)',
@@ -175,6 +174,10 @@ export const vi = {
   appPrintPageCount: '{n} trang',
   appPrintNoPages: 'Không có trang chiếu nào để in',
   appPrintRangeOutOfDeck: 'Bản trình bày này có các trang 1–{n}. Hãy nhập số trang trong khoảng đó.',
+  appEqTriangleArea: 'Diện tích tam giác',
+  appEqSlope: 'Hệ số góc của đường thẳng',
+  appEqCompound: 'Lãi kép',
+  appEqDistance: 'Khoảng cách giữa hai điểm',
   appPrintRendering: 'Đang tạo bản xem trước…',
   appGuideDragTip: 'Kéo để di chuyển; nhấp đúp hoặc kéo ra ngoài vùng vẽ để xóa',
   appPrintFailed: 'In thất bại: {error}',

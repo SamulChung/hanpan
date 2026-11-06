@@ -185,6 +185,10 @@ export const nl = {
   appPrintPageCount: "{n} pagina's",
   appPrintNoPages: "Geen dia's om af te drukken",
   appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
+  appEqTriangleArea: 'Area of a triangle',
+  appEqSlope: 'Slope of a line',
+  appEqCompound: 'Compound interest',
+  appEqDistance: 'Distance between two points',
   appPrintRendering: 'Voorbeeld genereren…',
   appGuideDragTip:
     'Sleep om te verplaatsen; dubbelklik of sleep van het canvas af om te verwijderen',

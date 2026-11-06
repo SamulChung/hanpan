@@ -184,6 +184,10 @@ export const it = {
   appPrintPageCount: '{n} pagine',
   appPrintNoPages: 'Nessuna diapositiva da stampare',
   appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
+  appEqTriangleArea: 'Area of a triangle',
+  appEqSlope: 'Slope of a line',
+  appEqCompound: 'Compound interest',
+  appEqDistance: 'Distance between two points',
   appPrintRendering: 'Generazione dell’anteprima…',
   appGuideDragTip:
     "Trascina per spostare; fai doppio clic o trascina fuori dall'area di lavoro per rimuovere",

@@ -183,6 +183,10 @@ export const fr = {
   appPrintPageCount: '{n} pages',
   appPrintNoPages: 'Aucune diapositive à imprimer',
   appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
+  appEqTriangleArea: 'Area of a triangle',
+  appEqSlope: 'Slope of a line',
+  appEqCompound: 'Compound interest',
+  appEqDistance: 'Distance between two points',
   appPrintRendering: 'Génération de l’aperçu…',
   appGuideDragTip:
     'Faites glisser pour déplacer ; double-cliquez ou faites glisser hors du canevas pour supprimer',

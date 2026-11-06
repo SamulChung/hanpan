@@ -181,6 +181,10 @@ export const ms = {
   appPrintPageCount: '{n} halaman',
   appPrintNoPages: 'Tiada slaid untuk dicetak',
   appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
+  appEqTriangleArea: 'Area of a triangle',
+  appEqSlope: 'Slope of a line',
+  appEqCompound: 'Compound interest',
+  appEqDistance: 'Distance between two points',
   appPrintRendering: 'Menjana pratonton…',
   appGuideDragTip:
     'Seret untuk mengalihkan; dwiklik atau seret keluar dari kanvas untuk mengalih keluar',

@@ -67,7 +67,7 @@ export const en = {
   appStatusRecordingUnavailable:
     'Screen recording unavailable (permission denied or selection canceled)',
   appStatusTransitionAll: 'Transition applied to all slides',
-  appStatusTransitionSet: 'Transition set (takes effect in PowerPoint slide shows)',
+  appStatusTransitionSet: 'Transition set (plays in the slide show)',
   appStatusAnimRemoved: 'Animations removed from the selected shapes',
   appStatusAnimSet:
     'Animation set (plays step by step during slide shows; also works in PowerPoint)',
@@ -173,6 +173,10 @@ export const en = {
   appPrintPageCount: '{n} pages',
   appPrintNoPages: 'No slides to print',
   appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
+  appEqTriangleArea: 'Area of a triangle',
+  appEqSlope: 'Slope of a line',
+  appEqCompound: 'Compound interest',
+  appEqDistance: 'Distance between two points',
   appPrintRendering: 'Generating preview…',
   appGuideDragTip: 'Drag to move; double-click or drag off canvas to remove',
   appPrintFailed: 'Print failed: {error}',

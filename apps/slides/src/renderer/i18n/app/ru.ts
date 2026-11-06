@@ -177,6 +177,10 @@ export const ru = {
   appPrintPageCount: 'Страниц: {n}',
   appPrintNoPages: 'Нет слайдов для печати',
   appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
+  appEqTriangleArea: 'Area of a triangle',
+  appEqSlope: 'Slope of a line',
+  appEqCompound: 'Compound interest',
+  appEqDistance: 'Distance between two points',
   appPrintRendering: 'Создание предварительного просмотра…',
   appGuideDragTip:
     'Перетащите, чтобы переместить; двойной щелчок или перетаскивание за пределы — удалить',

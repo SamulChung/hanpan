@@ -182,6 +182,10 @@ export const pt = {
   appPrintPageCount: '{n} páginas',
   appPrintNoPages: 'Nenhum slide para imprimir',
   appPrintRangeOutOfDeck: 'This presentation has slides 1–{n}. Enter slide numbers in that range.',
+  appEqTriangleArea: 'Area of a triangle',
+  appEqSlope: 'Slope of a line',
+  appEqCompound: 'Compound interest',
+  appEqDistance: 'Distance between two points',
   appPrintRendering: 'Gerando a visualização…',
   appGuideDragTip:
     'Arraste para mover; clique duas vezes ou arraste para fora da tela para remover',
