@@ -5,6 +5,7 @@ export const th = {
   editorFailed: 'ไม่สามารถเริ่มตัวแก้ไขได้',
   openFailed: 'ไม่สามารถเปิดเอกสารได้',
   saveFailed: 'ไม่สามารถบันทึกเอกสารได้',
+  fileOpen: 'เปิด…',
   fileSave: 'บันทึก',
   fileSaveAs: 'บันทึกเป็น…',
   fileExportPdf: 'ส่งออกเป็น PDF…',

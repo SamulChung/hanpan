@@ -1457,4 +1457,12 @@ export const zh = {
   appVisualFlipV: '垂直翻转',
   appVisualFlipH: '水平翻转',
   appCtxPasteVisual: '粘贴图片/形状',
+  appFileMenu: '文件',
+  appFileOpen: '打开…',
+  appFileSave: '保存',
+  appFileSaveAs: '另存为…',
+  appFileExportPdf: '导出为 PDF…',
+  appFileExportCsv: '导出为 CSV…',
+  appFilePrint: '打印…',
+  appSheetNamePrefix: 'Sheet',
 }

@@ -5,6 +5,7 @@ export const nl = {
   editorFailed: 'De editor kon niet worden gestart.',
   openFailed: 'Het document kon niet worden geopend.',
   saveFailed: 'Het document kon niet worden opgeslagen.',
+  fileOpen: 'Openen…',
   fileSave: 'Opslaan',
   fileSaveAs: 'Opslaan als…',
   fileExportPdf: 'Exporteren als PDF…',

@@ -57,6 +57,7 @@ import {
 } from './paste-special'
 import { COLOR_SCHEMES, FONT_SCHEMES, THEME_PRESETS } from './themes'
 import { useI18n, type StringKey } from './i18n/locale'
+import { FileMenu, type FileMenuAction } from './FileMenu'
 import { NameManagerDialog, type DefinedNameAction, type DefinedNameRow } from './NameManagerDialog'
 import {
   NUMBER_FORMAT_LABEL,
@@ -64,7 +65,7 @@ import {
   numberFormatCategories,
 } from './number-format'
 import { setContextMenuCommandSink, registerPasteSpecialOpener } from './cell-context-menu'
-import { numberFormatLabel, type SelectionFormat } from './selection-format'
+import { echoFontFamily, numberFormatLabel, type SelectionFormat } from './selection-format'
 import { fontFamilyGroups, useSystemFontFamilies } from './system-fonts'
 import {
   isFormulaBarKeyTarget,
@@ -244,6 +245,8 @@ interface ExcelShellProps {
   readonly prompt: string
   readonly preview: ChangePlan | null
   readonly selectionFormat: SelectionFormat | null
+  /// The workbook's Normal font: what a cell with no font of its own is drawn in.
+  readonly normalFontFamily: string | undefined
   readonly formatPainterActive: boolean
   /// True when the workbook has any cell content (the one-click AI action
   /// buttons are greyed out on an empty sheet).
@@ -328,6 +331,8 @@ interface ExcelShellProps {
   /// file-backed session (the in-memory demo workbook has nowhere to copy).
   readonly canSaveAs: boolean
   readonly onSaveAs: () => void
+  /// The on-screen File menu (0.17 #6): the same actions the shell's ☰ menu sends.
+  readonly onFileAction: (action: FileMenuAction) => void
   /// QAT redo (workbook history, same path as the app menu's ⇧⌘Z); undo
   /// shares the AI panel's onUndo above.
   readonly onRedo: () => void
@@ -482,6 +487,7 @@ export function ExcelShell({
   presenting,
   preview,
   selectionFormat,
+  normalFontFamily,
   formatPainterActive,
   sheetHasContent,
   aiBusy,
@@ -565,6 +571,7 @@ export function ExcelShell({
   onSave,
   canSaveAs,
   onSaveAs,
+  onFileAction,
   onRedo,
   canUndo,
   canRedo,
@@ -889,6 +896,15 @@ export function ExcelShell({
           aria-label={t('appScopeWorkbook')}
           onDoubleClick={collapse.onTabsDoubleClick}
         >
+          {/* like the slide editor: on a Mac the system menu bar holds the File menu */}
+          {!IS_MAC && (
+            <FileMenu
+              hasWorkbook={!openingWorkbook}
+              canSave={canSave}
+              canSaveAs={canSaveAs}
+              onAction={onFileAction}
+            />
+          )}
           <button
             type="button"
             className="qa-btn"
@@ -964,6 +980,7 @@ export function ExcelShell({
         <Ribbon
           activeTab={activeTab}
           selectionFormat={selectionFormat}
+          normalFontFamily={normalFontFamily}
           formatPainterActive={formatPainterActive}
           sheetHasContent={sheetHasContent}
           sheetProtected={onGetSheetProtection()?.protected ?? null}
@@ -1932,6 +1949,7 @@ function LinkDialog({
 function Ribbon({
   activeTab,
   selectionFormat,
+  normalFontFamily,
   formatPainterActive,
   sheetHasContent,
   sheetProtected,
@@ -1954,6 +1972,8 @@ function Ribbon({
 }: {
   readonly activeTab: RibbonTab
   readonly selectionFormat: SelectionFormat | null
+  /// The workbook's Normal font: what a cell with no font of its own is drawn in.
+  readonly normalFontFamily: string | undefined
   readonly formatPainterActive: boolean
   readonly sheetHasContent: boolean
   readonly sheetProtected: boolean | null
@@ -3405,7 +3425,7 @@ function Ribbon({
   }
 
   const fontSizes = [9, 10, 11, 12, 14, 16, 18, 22, 26]
-  const echoFamily = selectionFormat?.fontFamily ?? 'Aptos'
+  const echoFamily = echoFontFamily(selectionFormat, normalFontFamily)
   const echoSize = selectionFormat?.fontSize ?? 11
   // Korean UI: installed Korean fonts are listed right below the common ones,
   // each with its Korean name beside the English one the system reports

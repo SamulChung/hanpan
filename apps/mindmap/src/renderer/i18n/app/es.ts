@@ -280,4 +280,9 @@ export const es = {
     '«{topic}»: la imagen no tiene crédito en la nota. Compruebe su origen y añádalo.',
   mmCreditConditions: 'Imagen «{title}» en «{topic}»: tiene condiciones de uso ({license}).',
   mmCreditGo: 'Ir',
+  tbSendToLabel: 'Send to a document',
+  fileMenu: 'Archivo',
+  fileOpen: 'Abrir…',
+  fileSave: 'Guardar',
+  filePrint: 'Imprimir…',
 } satisfies Record<keyof typeof zh, string>

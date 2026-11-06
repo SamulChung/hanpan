@@ -291,6 +291,7 @@ import {
   SORT_COMMAND_PATTERN,
   STRUCTURAL_EDIT_COMMAND_PATTERN,
   STRUCTURE_LOCK_COMMANDS,
+  DEFAULT_FIRST_SHEET_NAME,
 } from './app-constants'
 import {
   fullLoadGate,
@@ -3797,7 +3798,7 @@ export function App({
     const snapshot = adapterRef.current.getSnapshot()
     if (snapshot.sheets.length < 2) return null
     const defaultSheet = snapshot.sheets.find((sheet) => sheet.id === 'sheet-1')
-    if (!defaultSheet || defaultSheet.name !== 'Sheet1') return null
+    if (!defaultSheet || defaultSheet.name !== DEFAULT_FIRST_SHEET_NAME) return null
     if (Object.keys(defaultSheet.cells).length > 0) return null
     if ((defaultSheet.visuals?.length ?? 0) > 0) return null
     const touched =
@@ -5425,6 +5426,7 @@ export function App({
           fillSeriesContext(univerRef.current, lazyWorkbookRef.current?.file.date1904 === true)
         }
         selectionFormat={selectionFormat}
+        normalFontFamily={workbookFile?.styles[0]?.fontFamily}
         formatPainterActive={formatPainterActive}
         statusMessage={openingWorkbook ? t('appOpeningWorkbook') : message}
         emptyCsvNotice={emptyCsvNotice}
@@ -5492,6 +5494,7 @@ export function App({
         onSave={() => void handleSave('save')}
         canSaveAs={workbookFile !== null}
         onSaveAs={() => void handleSave('save-as')}
+        onFileAction={(action) => menuActionRef.current(action)}
         onRedo={handleRedo}
         autoSave={autoSave}
         onAutoSaveChange={setAutoSave}

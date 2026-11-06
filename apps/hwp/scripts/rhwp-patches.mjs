@@ -778,6 +778,17 @@ const PATCHES = {
     replace:
       'descriptor.set!.call(this, scopedHostCanvasFont(String(value)) ?? memoSubstituteCssFontFamily(String(value)));',
   },
+  // the status line after a document opens showed the load time ("(173.6ms)"): a number for
+  // developers, not for the person reading; the line keeps the name and pages and the time
+  // goes to the console
+  'studio-hide-load-timing': {
+    file: /[\\/]rhwp-studio[\\/]src[\\/]main\.ts$/,
+    find: "    await initializeDocument(docInfo, t('ui.sbMessage.filePagesTimed', { p1: fileName, p2: docInfo.pageCount, p3: elapsed.toFixed(1) }), {",
+    replace: [
+      '    console.debug(`[rhwp] ${fileName} opened in ${elapsed.toFixed(1)}ms`);',
+      "    await initializeDocument(docInfo, t('ui.sbMessage.filePages', { p1: fileName, p2: docInfo.pageCount }), {",
+    ].join('\n'),
+  },
 }
 
 /** The patches the studio build applies, in order; the SDK's own is applied by the renderer builds. */
@@ -808,6 +819,7 @@ export const STUDIO_PATCHES = /** @type {const} */ ([
   'studio-memo-delete-undo',
   'studio-font-memo-state',
   'studio-font-memo-use',
+  'studio-hide-load-timing',
 ])
 
 /** Whether a patch is written against this file. */

@@ -6,7 +6,7 @@ import JSZip from 'jszip'
 
 import { encodeXlsxEscapes } from './xlsx-escapes'
 import { DEFAULT_THEME_XML } from './xlsx-default-theme'
-import { MINIMAL_STYLESHEET_XML } from './xlsx-default-styles'
+import { MINIMAL_STYLESHEET_XML, NEW_WORKBOOK_STYLESHEET_XML } from './xlsx-default-styles'
 import { validateSheetName } from './xlsx-sheets'
 
 const DELIMITERS = [',', ';', '\t'] as const
@@ -410,9 +410,13 @@ export async function sheetCsvToXlsxBuffer(csvText: string, sheetName = 'Sheet1'
   return xlsxBufferFromRows(parseCsv(csvText, ','), sheetName)
 }
 
-/** minimal empty workbook: the backing file for a "new blank spreadsheet" tab */
-export async function blankXlsxBuffer(sheetName = 'Sheet1'): Promise<Buffer> {
-  return xlsxBufferFromRows([], sheetName)
+/**
+ * minimal empty workbook: the backing file for a "new blank spreadsheet" tab. It starts in
+ * Korean (Hanpan 0.17): the first sheet is 시트1 unless the caller names it, and the Normal
+ * font is 맑은 고딕.
+ */
+export async function blankXlsxBuffer(sheetName = '시트1'): Promise<Buffer> {
+  return xlsxBufferFromSheets([{ name: sheetName, rows: [] }], NEW_WORKBOOK_STYLESHEET_XML)
 }
 
 export interface MinimalWorksheet {
@@ -432,6 +436,7 @@ async function xlsxBufferFromRows(
 /** A minimal workbook from plain cell text, shared by CSV and HTML imports. */
 export async function xlsxBufferFromSheets(
   worksheets: readonly MinimalWorksheet[],
+  stylesheet: string = MINIMAL_STYLESHEET_XML,
 ): Promise<Buffer> {
   if (worksheets.length === 0) throw new Error('A workbook needs at least one worksheet.')
   for (const worksheet of worksheets) validateSheetName(worksheet.name)
@@ -489,7 +494,7 @@ export async function xlsxBufferFromSheets(
       '</Relationships>',
   )
   zip.file('xl/theme/theme1.xml', DEFAULT_THEME_XML)
-  zip.file('xl/styles.xml', MINIMAL_STYLESHEET_XML)
+  zip.file('xl/styles.xml', stylesheet)
   worksheets.forEach((worksheet, index) => {
     zip.file(
       `xl/worksheets/sheet${index + 1}.xml`,

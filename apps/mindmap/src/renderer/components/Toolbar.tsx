@@ -23,6 +23,7 @@ import { useI18n } from '../i18n/locale'
 import type { ExportFormat } from '../../shared/ipc'
 import type { HiddenPart } from '../map/hidden-parts'
 import { ExportMenu } from './ExportMenu'
+import { FileMenu } from './FileMenu'
 import { RibbonMenu } from './RibbonMenu'
 import { StyleTab, type StyleTabProps } from './StyleTab'
 import {
@@ -111,6 +112,10 @@ export interface ToolbarProps {
   hiddenParts: readonly HiddenPart[]
   onSave(): void
   onSaveAs(): void
+  /** the File menu's Open: the shell's open dialog */
+  onOpen(): void
+  /** the File menu's Print */
+  onPrint(): void
   onUndo(): void
   onRedo(): void
   onToggleAutoSave(on: boolean): void
@@ -190,6 +195,14 @@ export function Toolbar(p: ToolbarProps) {
   return (
     <header className="ribbon mm-ribbon">
       <div className="ribbon-tabs">
+        <FileMenu
+          disabled={p.disabled}
+          onOpen={p.onOpen}
+          onSave={p.onSave}
+          onSaveAs={p.onSaveAs}
+          onExport={p.onExport}
+          onPrint={p.onPrint}
+        />
         <button
           type="button"
           className="qa-btn"

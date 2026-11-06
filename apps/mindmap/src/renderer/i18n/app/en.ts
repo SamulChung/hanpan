@@ -278,4 +278,9 @@ export const en = {
     '“{topic}”: the picture has no credit line in the note. Check where it is from and add one.',
   mmCreditConditions: 'Picture “{title}” on “{topic}”: comes with conditions of use ({license}).',
   mmCreditGo: 'Go',
+  tbSendToLabel: 'Send to a document',
+  fileMenu: 'File',
+  fileOpen: 'Open…',
+  fileSave: 'Save',
+  filePrint: 'Print…',
 } satisfies Record<keyof typeof zh, string>

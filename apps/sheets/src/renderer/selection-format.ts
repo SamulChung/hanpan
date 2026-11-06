@@ -78,6 +78,18 @@ function rotationOf(style: IStyleData): number | null {
   return angle >= 0 ? angle : 90 - angle
 }
 
+/// The font a new workbook writes (0.17) and the font box names when nothing else is known.
+export const DEFAULT_FONT_FAMILY = '맑은 고딕'
+
+/// What the font box shows: the cell's own font, else the workbook's Normal font (a cell
+/// with no font of its own is drawn in it), else the new-workbook default.
+export function echoFontFamily(
+  format: SelectionFormat | null,
+  normalFontFamily: string | undefined,
+): string {
+  return format?.fontFamily ?? normalFontFamily ?? DEFAULT_FONT_FAMILY
+}
+
 export function toSelectionFormat(
   style: IStyleData,
   numberFormat: string,

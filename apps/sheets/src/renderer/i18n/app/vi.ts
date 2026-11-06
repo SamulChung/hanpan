@@ -1512,4 +1512,12 @@ export const vi = {
   appVisualFlipV: 'Lật dọc',
   appVisualFlipH: 'Lật ngang',
   appCtxPasteVisual: 'Dán ảnh hoặc hình',
+  appFileMenu: 'Tệp',
+  appFileOpen: 'Mở…',
+  appFileSave: 'Lưu',
+  appFileSaveAs: 'Lưu thành…',
+  appFileExportPdf: 'Xuất PDF…',
+  appFileExportCsv: 'Xuất CSV…',
+  appFilePrint: 'In…',
+  appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

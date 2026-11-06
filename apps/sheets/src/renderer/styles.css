@@ -500,6 +500,83 @@ html.genoffice-popover-open .ribbon-tabs {
   flex: 1;
 }
 
+/* the on-screen File menu (FileMenu.tsx), first in the tab row like the slide editor's */
+.sheet-file-menu {
+  position: relative;
+  display: inline-flex;
+  -webkit-app-region: no-drag;
+}
+
+.sheet-file-tab {
+  border: 0;
+  padding: 7px 9px 6px;
+  border-bottom: 2.5px solid transparent;
+  border-radius: 4px 4px 0 0;
+  color: inherit;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sheet-file-tab:hover,
+.sheet-file-tab.open {
+  color: var(--accent-dark);
+}
+
+.sheet-file-pop {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  z-index: 1000;
+  min-width: 220px;
+  width: max-content;
+  padding: 5px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 16%);
+}
+
+.sheet-file-pop button {
+  /* labels never wrap ("다른 이름으로 저장…" broke onto two lines) */
+  white-space: nowrap;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sheet-file-pop button:hover:not(:disabled) {
+  background: var(--surface-hover);
+}
+
+.sheet-file-pop button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.sheet-file-key {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.sheet-file-sep {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--border);
+}
+
 .qa-sep {
   width: 1px;
   height: 16px;

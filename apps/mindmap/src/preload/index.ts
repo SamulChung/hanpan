@@ -145,6 +145,7 @@ const ai: MindmapAiApi = {
   getPathForFile: (file) => webUtils.getPathForFile(file),
   setProvisionalTitle: (title) => ipcRenderer.send(MINDMAP_CHANNELS.provisionalTitle, title),
   openSourcePath: (path) => ipcRenderer.invoke(APP_CHANNELS.openSourcePath, path),
+  openFileDialog: () => ipcRenderer.invoke(APP_CHANNELS.openFileDialog),
   getAiPanelPrefs: () => ipcRenderer.invoke(APP_CHANNELS.getAiPanelPrefs),
   setAiPanelPrefs: (patch) => ipcRenderer.invoke(APP_CHANNELS.setAiPanelPrefs, patch),
   onAiPanelPrefsChanged: (handler) =>

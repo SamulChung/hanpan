@@ -760,9 +760,10 @@ function registerHwpIpc(): void {
     },
   )
 
-  // the editor's File menu: the same requests as Ctrl+S and Ctrl+P, so one path saves
+  // the editor's File menu: the same requests as Ctrl+O, Ctrl+S and Ctrl+P, so one path saves
   ipcMain.on(HWP_CHANNELS.fileCommand, (e, command: unknown) => {
-    if (command === 'save' || command === 'saveAs') void requestHwpSave(e.sender, command)
+    if (command === 'open') runtime.openFileDialog?.()
+    else if (command === 'save' || command === 'saveAs') void requestHwpSave(e.sender, command)
     else if (command === 'pdf' || command === 'print') requestHwpPrint(e.sender, command)
   })
 

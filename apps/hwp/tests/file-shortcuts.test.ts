@@ -260,3 +260,15 @@ describe('keys that are Hangul table keys where the caret is', () => {
     expect(goHome).toHaveBeenCalledTimes(1)
   })
 })
+
+describe("the editor's File menu", () => {
+  it('asks the shell to open a file when Open is picked', async () => {
+    createHwpView()
+    const { ipcMain } = await import('electron')
+    const on = ipcMain.on as unknown as { mock: { calls: [string, (...args: unknown[]) => void][] } }
+    const handler = on.mock.calls.find(([channel]) => channel === 'hwp:file-command')?.[1]
+    expect(handler).toBeDefined()
+    handler?.({ sender: createHwpView().webContents }, 'open')
+    expect(openFileDialog).toHaveBeenCalledTimes(1)
+  })
+})

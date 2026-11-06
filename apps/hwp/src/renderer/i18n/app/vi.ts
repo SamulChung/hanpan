@@ -5,6 +5,7 @@ export const vi = {
   editorFailed: 'Không thể khởi động trình soạn thảo.',
   openFailed: 'Không thể mở tài liệu.',
   saveFailed: 'Không thể lưu tài liệu.',
+  fileOpen: 'Mở…',
   fileSave: 'Lưu',
   fileSaveAs: 'Lưu dưới dạng…',
   fileExportPdf: 'Xuất dưới dạng PDF…',

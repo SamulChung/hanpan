@@ -1592,4 +1592,12 @@ export const fr = {
   appVisualFlipV: 'Retourner verticalement',
   appVisualFlipH: 'Retourner horizontalement',
   appCtxPasteVisual: "Coller l'image ou la forme",
+  appFileMenu: 'Fichier',
+  appFileOpen: 'Ouvrir…',
+  appFileSave: 'Enregistrer',
+  appFileSaveAs: 'Enregistrer sous…',
+  appFileExportPdf: 'Exporter en PDF…',
+  appFileExportCsv: 'Exporter en CSV…',
+  appFilePrint: 'Imprimer…',
+  appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

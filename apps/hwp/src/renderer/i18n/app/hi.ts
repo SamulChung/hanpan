@@ -5,6 +5,7 @@ export const hi = {
   editorFailed: 'संपादक शुरू नहीं हो सका।',
   openFailed: 'दस्तावेज़ खोला नहीं जा सका।',
   saveFailed: 'दस्तावेज़ सहेजा नहीं जा सका।',
+  fileOpen: 'खोलें…',
   fileSave: 'सहेजें',
   fileSaveAs: 'इस रूप में सहेजें…',
   fileExportPdf: 'PDF के रूप में निर्यात…',

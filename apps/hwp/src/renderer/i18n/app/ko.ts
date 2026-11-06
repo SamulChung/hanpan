@@ -5,6 +5,7 @@ export const ko = {
   editorFailed: '편집기를 시작하지 못했습니다.',
   openFailed: '문서를 열지 못했습니다.',
   saveFailed: '문서를 저장하지 못했습니다.',
+  fileOpen: '열기…',
   fileSave: '저장',
   fileSaveAs: '다른 이름으로 저장…',
   fileExportPdf: 'PDF로 내보내기…',

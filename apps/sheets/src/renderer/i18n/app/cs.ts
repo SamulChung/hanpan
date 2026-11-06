@@ -1523,4 +1523,12 @@ export const cs = {
   appVisualFlipV: 'Převrátit svisle',
   appVisualFlipH: 'Převrátit vodorovně',
   appCtxPasteVisual: 'Vložit obrázek nebo obrazec',
+  appFileMenu: 'Soubor',
+  appFileOpen: 'Otevřít…',
+  appFileSave: 'Uložit',
+  appFileSaveAs: 'Uložit jako…',
+  appFileExportPdf: 'Exportovat jako PDF…',
+  appFileExportCsv: 'Exportovat jako CSV…',
+  appFilePrint: 'Tisk…',
+  appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

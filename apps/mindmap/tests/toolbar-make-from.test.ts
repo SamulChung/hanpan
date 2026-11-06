@@ -91,6 +91,8 @@ function props(onMakeFromDocument: () => void, disabled = false): ToolbarProps {
     onToggleHiddenPart: none,
     onZoomReset: none,
     onMakeFromDocument,
+    onOpen: none,
+    onPrint: none,
   }
 }
 
@@ -146,5 +148,30 @@ describe('the make-from-document button', () => {
       props(() => {}, true),
     )
     expect(button.disabled).toBe(true)
+  })
+})
+
+describe('the File menu in the toolbar', () => {
+  it('comes first in the tab row and reaches open, export and print', async () => {
+    const onOpen = vi.fn()
+    const onPrint = vi.fn()
+    const onExport = vi.fn()
+    await render('ko', { ...props(() => {}), onOpen, onPrint, onExport })
+    const tabs = container.querySelector('.ribbon-tabs')!
+    expect(tabs.firstElementChild?.querySelector('[data-action="file-menu"]')).not.toBeNull()
+    const pick = async (id: string) => {
+      await act(async () => {
+        container.querySelector<HTMLButtonElement>('[data-action="file-menu"]')!.click()
+      })
+      await act(async () => {
+        container.querySelector<HTMLButtonElement>(`[data-file="${id}"]`)!.click()
+      })
+    }
+    await pick('open')
+    await pick('export-pdf')
+    await pick('print')
+    expect(onOpen).toHaveBeenCalledTimes(1)
+    expect(onExport).toHaveBeenCalledWith('pdf')
+    expect(onPrint).toHaveBeenCalledTimes(1)
   })
 })

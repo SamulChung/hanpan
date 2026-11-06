@@ -493,7 +493,7 @@ export type AgentDeleteTableResult =
   | { ok: false; reason: 'has_objects'; count: number }
 
 /** What a File menu item of the editor asks the app to do. */
-export type AgentFileCommand = 'save' | 'saveAs' | 'pdf' | 'print'
+export type AgentFileCommand = 'open' | 'save' | 'saveAs' | 'pdf' | 'print'
 
 /** The event those items fire on the editor's window; `detail` is the AgentFileCommand. */
 export declare const FILE_COMMAND_EVENT: 'ieum:file-command'

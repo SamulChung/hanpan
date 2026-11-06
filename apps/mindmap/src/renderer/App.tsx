@@ -1128,6 +1128,8 @@ export default function App() {
           ai.setOpen(!ai.open)
         }}
         onExport={exporter.exportAs}
+        onPrint={exporter.print}
+        onOpen={() => void window.mindmapApi.openFileDialog().catch(() => {})}
         onMakeFromDocument={() => window.mindmapApi.makeFromDocument?.()}
         onSendTo={window.mindmapApi.sendToDocument ? (target) => setSendTarget(target) : undefined}
         onSync={window.mindmapApi.syncCheck ? () => setSyncOpen(true) : undefined}

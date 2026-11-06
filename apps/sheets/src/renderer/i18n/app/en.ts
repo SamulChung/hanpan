@@ -616,8 +616,8 @@ export const en = {
   appRecalcPartial:
     'Formulas recalculated from your edits — {count} kept cached values (functions the fallback engine lacks).',
   appRecalcDone: 'Formulas recalculated from your edits ({count} cells, engine fallback).',
-  appIndexing: 'Indexing {name}: {rows} rows ready.',
-  appStreamingRows: 'Streaming {name}: {rows} rows available.',
+  appIndexing: 'Opening file… ({rows} rows)',
+  appStreamingRows: 'Opening file… ({rows} rows)',
   appLoadRangeFailed: 'Unable to load the visible range.',
   appFullyLoaded: 'Workbook fully loaded — formulas recalculate live, rows/columns editable.',
   appRangeMustBeVector: '{range} must be a single row or a single column of cells.',
@@ -1501,4 +1501,12 @@ export const en = {
   appVisualFlipV: 'Flip Vertical',
   appVisualFlipH: 'Flip Horizontal',
   appCtxPasteVisual: 'Paste Picture or Shape',
+  appFileMenu: 'File',
+  appFileOpen: 'Open…',
+  appFileSave: 'Save',
+  appFileSaveAs: 'Save As…',
+  appFileExportPdf: 'Export as PDF…',
+  appFileExportCsv: 'Export as CSV…',
+  appFilePrint: 'Print…',
+  appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

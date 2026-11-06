@@ -296,6 +296,56 @@ html.genoffice-popover-open .ribbon-tabs {
   display: flex;
   align-items: center;
   margin-inline-start: auto;
+  /* the toolbar scrolls sideways when the window is narrow; the send button and the AI entry
+     are the map's way out, so they stay pinned at the end */
+  position: sticky;
+  inset-inline-end: 0;
+  flex-shrink: 0;
+  z-index: 1;
+  padding-inline-start: 6px;
+  background: var(--surface);
+}
+
+/* the on-screen File menu (components/FileMenu.tsx), first in the tab row */
+.mm-file-menu {
+  display: inline-flex;
+  align-self: stretch;
+  -webkit-app-region: no-drag;
+}
+
+.mm-file-pop {
+  min-width: 200px;
+}
+
+.mm-file-item {
+  font-size: 13px;
+  padding: 6px 10px;
+}
+
+.mm-file-item:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.mm-file-sep {
+  height: 1px;
+  margin: 3px 4px;
+  background: var(--border);
+}
+
+/* Hanpan: "send to a document" is the map's main action, so it carries its name */
+.hp-send-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  padding-inline: 8px;
+  white-space: nowrap;
+}
+
+.hp-send-button-label {
+  font-size: 13px;
+  font-weight: 600;
 }
 
 /* ---- ribbon tabs and big buttons ---- */

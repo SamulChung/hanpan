@@ -2,6 +2,8 @@ import { BooleanNumber, WrapStrategy } from '@univerjs/core'
 import { describe, expect, it } from 'vitest'
 
 import {
+  DEFAULT_FONT_FAMILY,
+  echoFontFamily,
   normalizeHexColor,
   numberFormatLabel,
   selectionFormatEquals,
@@ -139,5 +141,18 @@ describe('numberFormatLabel', () => {
     ['0 "kg"', 'Number'],
   ])('%s → %s', (pattern, label) => {
     expect(numberFormatLabel(pattern)).toBe(label)
+  })
+})
+
+// 0.17 #9: the font box of a cell with no font of its own names the workbook's Normal font,
+// and 맑은 고딕 when there is none to read (it used to say Aptos whatever the file used)
+describe('echoFontFamily', () => {
+  it("prefers the cell's font, then the workbook's Normal font, then 맑은 고딕", () => {
+    expect(DEFAULT_FONT_FAMILY).toBe('맑은 고딕')
+    const blank = toSelectionFormat({}, 'General')
+    expect(echoFontFamily(blank, undefined)).toBe('맑은 고딕')
+    expect(echoFontFamily(null, undefined)).toBe('맑은 고딕')
+    expect(echoFontFamily(blank, 'Calibri')).toBe('Calibri')
+    expect(echoFontFamily(toSelectionFormat({ ff: 'Arial' }, 'General'), 'Calibri')).toBe('Arial')
   })
 })
