@@ -1697,10 +1697,21 @@ export function Home({
     void window.aiOffice.toggleStar(path).then(refresh)
   }
 
+  /** a short line that says a quiet action happened (0.17 리뷰 v2 shell #28) */
+  const [toast, setToast] = useState<string | null>(null)
+  useEffect(() => {
+    if (!toast) return
+    const handle = window.setTimeout(() => setToast(null), 2500)
+    return () => window.clearTimeout(handle)
+  }, [toast])
+
   const removeRecent = (paths: string[]) => {
     setRowMenu(null)
     setSelected(new Set())
-    void window.aiOffice.removeRecent(paths).then(refresh)
+    void window.aiOffice.removeRecent(paths).then(() => {
+      refresh()
+      setToast(t('toastRemovedFromList', { n: paths.length }))
+    })
   }
 
   /** the Starred view's bulk action: drop the stars, keep the recents entries */
@@ -2406,6 +2417,7 @@ export function Home({
       <button
         className="folder-more-btn"
         aria-label={t('folderMoreActions', { name: entry.name })}
+        data-tip={t('folderMoreActions', { name: entry.name })}
         aria-expanded={menuOpenAt('tree', entry.path)}
         onClick={(e) => {
           e.stopPropagation()
@@ -2639,7 +2651,7 @@ export function Home({
             {canCreate && (
               <button
                 className="folder-add-btn folder-new-btn"
-                data-tip={t('newFolder')}
+                data-tip={t('newFolderTip')}
                 aria-label={t('newFolder')}
                 onClick={() => startCreateFolder(createIn)}
               >
@@ -2820,7 +2832,9 @@ export function Home({
                   role="menuitem"
                   onClick={() => {
                     setRowMenu(null)
-                    void navigator.clipboard.writeText(entry.path)
+                    void navigator.clipboard
+                      .writeText(entry.path)
+                      .then(() => setToast(t('toastPathCopied')))
                   }}
                 >
                   {t('copyPath')}
@@ -4057,6 +4071,11 @@ export function Home({
           once at launch; the main process keeps Home in front meanwhile */}
       <LaunchRecoveryList />
       <DropToOpenOverlay />
+      {toast && (
+        <div className="home-toast" role="status" data-home-toast="">
+          {toast}
+        </div>
+      )}
     </div>
   )
 }

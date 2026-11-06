@@ -554,3 +554,15 @@ describe('0.17 review v2: an empty filter on a non-empty recent list', () => {
     expect(host.textContent).not.toContain('새로 만들거나 파일을 열어')
   })
 })
+
+describe('0.17 review v2: quiet row actions say they happened', () => {
+  it('confirms "remove from list" with a short line', async () => {
+    await renderHome()
+    await click(host.querySelector('.more-btn'))
+    const remove = Array.from(host.querySelectorAll<HTMLButtonElement>('.row-menu button')).find(
+      (b) => b.textContent?.includes('목록에서'),
+    )
+    await click(remove)
+    expect(host.querySelector('[data-home-toast]')?.textContent).toContain('목록에서 뺐습니다')
+  })
+})
