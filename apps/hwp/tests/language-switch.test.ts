@@ -9,7 +9,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { languageSwitchPlan } from '../src/renderer/language-switch'
+import { languageSwitchPlan, reopenNoticeAfter } from '../src/renderer/language-switch'
 import { strings } from '../src/renderer/i18n/strings'
 
 const clean = {
@@ -41,6 +41,13 @@ describe('what a UI language change does to an open Hangul tab', () => {
     expect(languageSwitchPlan({ ...clean, ready: false })).toBe('later')
   })
 
+  it('takes the notice down when the language comes back to the one the tab was opened with', () => {
+    // ko → vi with unsaved edits says "applies when reopened"; back to ko there is nothing to apply
+    expect(reopenNoticeAfter(languageSwitchPlan({ ...clean, dirty: true }))).toBe('show')
+    expect(reopenNoticeAfter(languageSwitchPlan({ ...clean, to: 'ko', dirty: true }))).toBe('clear')
+    expect(reopenNoticeAfter('reload')).toBe('clear')
+  })
+
   it('says so in every UI language', () => {
     for (const [lang, words] of Object.entries(strings)) {
       expect((words as Record<string, string>).languageOnReopen, lang).toBeTruthy()
@@ -53,5 +60,8 @@ describe('what a UI language change does to an open Hangul tab', () => {
     expect(app).toMatch(/\}, \[bootGen\]\)/)
     expect(app).toContain('reloadRef.current')
     expect(app).toContain("key: 'languageOnReopen'")
+    // the effect does not stop before a change back to the booted language
+    expect(app).not.toContain('if (!from || from === to) return')
+    expect(app).toContain('reopenNoticeAfter(')
   })
 })

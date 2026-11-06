@@ -14,7 +14,7 @@
  */
 
 import { installDialogTheme } from './dialog-theme.mjs'
-import { styleDisplayName, studioLocaleNow } from './studio-locales.mjs'
+import { installLocaleLayout, styleDisplayName, studioLocaleNow } from './studio-locales.mjs'
 
 export const AGENT_PLUGIN_ID = 'ieum-agent'
 /** The size of a picture's credit line put in under it, in points. */
@@ -3016,6 +3016,8 @@ export const agentPlugin = {
     // when the plugin comes up, not when the AI panel opens: a settings dialog
     // can be opened on a document the panel never touched.
     installDialogTheme()
+    // the style bar's widths in the added languages (studio-locales.mjs)
+    installLocaleLayout()
 
     // the unsaved state as the editor sets it, in the same task as the edit: the app's close
     // prompt reads its copy of this, and a key typed just before closing must be in it

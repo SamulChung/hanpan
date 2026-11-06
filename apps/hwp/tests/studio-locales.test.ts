@@ -20,7 +20,9 @@ import {
 import {
   APP_STRINGS,
   EXTRA_LOCALES,
+  LOCALE_LAYOUT_CSS,
   aboutText,
+  installLocaleLayout,
   diffTitleText,
   styleDisplayName,
   studioLocaleOf,
@@ -247,6 +249,25 @@ describe('studio text with no catalog key', () => {
     expect(index).toMatch(
       /registerCatalog\(locale as Locale, \{ \.\.\.enCatalog, \.\.\.APP_STRINGS\.en, \.\.\.catalog, \.\.\.APP_STRINGS\[locale as keyof typeof APP_STRINGS\] \}/,
     )
+  })
+
+  it("names the cell's vertical-writing options as Hangul does, not 'Door flat'", () => {
+    // 셀 속성 > 세로 쓰기: Hangul's 영문 눕힘/영문 세움 (Latin letters turned or upright);
+    // rhwp wrote 문 눕힘/문 세움, which its English catalog took for a door
+    const flat = 'dialog.tableCellProps.buildCellTab.label.x872cd2'
+    const upright = 'dialog.tableCellProps.buildCellTab.label.xd9f9d6'
+    expect(APP_STRINGS.ko[flat]).toBe('영문 눕힘(Q)')
+    expect(APP_STRINGS.ko[upright]).toBe('영문 세움(U)')
+    expect(APP_STRINGS.en[flat]).toBe('Latin text sideways(Q)')
+    expect(APP_STRINGS.en[upright]).toBe('Latin text upright(U)')
+    for (const [key, text] of Object.entries(APP_STRINGS.en)) expect(text, key).not.toMatch(/Door/)
+  })
+
+  it.skipIf(!fetched)("finds the keys it corrects in rhwp's catalogs", () => {
+    const en = read('src/i18n/locales/en.ts')
+    for (const key of Object.keys(APP_STRINGS.en).filter((k) => !k.startsWith('hanpan.'))) {
+      expect(en, key).toContain(`"${key}":`)
+    }
   })
 
   it('keeps every placeholder of the Korean text in each language', () => {
@@ -540,5 +561,31 @@ describe('a compare item title', () => {
 
   it('keeps a title it does not know', () => {
     expect(diffTitleText('무엇인가 다른 것', 'en')).toBe('무엇인가 다른 것')
+  })
+})
+
+describe('the style bar in Vietnamese (0.17 recheck: "Bình thường" and "Bộ phông" ran under the arrows)', () => {
+  it('widens the style and font-set boxes the way rhwp widens them for English', () => {
+    // "Bình thường" is 69px and "Bộ phông" 49px at the bar's font; a box keeps about 40px for its
+    // padding and arrow on Windows (100px still cut the name), so 112px and 84px hold them
+    expect(LOCALE_LAYOUT_CSS).toMatch(
+      /html\[lang='vi'\] \.sb-field-grid \{[^}]*112px 84px 136px 86px 86px/,
+    )
+    expect(LOCALE_LAYOUT_CSS).toMatch(
+      /html\[lang='vi'\] \.sb-field-grid \{[^}]*minmax\(68px, 112px\)/,
+    )
+    expect(LOCALE_LAYOUT_CSS).toMatch(/text-overflow: ellipsis/)
+    // rhwp's `#style-name { width: 88px }` outranks the grid's `.sb-combo { width: 100% }`
+    expect(LOCALE_LAYOUT_CSS).toMatch(/html\[lang='vi'\] #style-name \{\s*width: 100%;/)
+  })
+
+  it('goes into the editor page once, and the plugin puts it there', () => {
+    installLocaleLayout(document)
+    installLocaleLayout(document)
+    const styles = document.querySelectorAll('style#ieum-locale-layout')
+    expect(styles).toHaveLength(1)
+    expect(styles[0]!.textContent).toBe(LOCALE_LAYOUT_CSS)
+    const plugin = readFileSync(join(process.cwd(), 'studio-plugin/agent-plugin.mjs'), 'utf8')
+    expect(plugin).toMatch(/activate\(host\) \{[\s\S]{0,600}installLocaleLayout\(\)/)
   })
 })

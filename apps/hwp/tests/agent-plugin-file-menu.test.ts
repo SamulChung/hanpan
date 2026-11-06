@@ -8,6 +8,7 @@ import {
   agentPlugin,
   type AgentPluginHost,
 } from '../studio-plugin/agent-plugin.mjs'
+import { APP_FILE_COMMANDS } from '../studio-plugin/hancom-keys.mjs'
 
 const LABELS = {
   open: '열기…',
@@ -103,6 +104,12 @@ describe('the File menu of the embedded editor', () => {
       commands.get(id)?.execute(undefined as never)
     }
     expect(fired).toEqual(['open', 'save', 'saveAs', 'pdf', 'docx', 'png', 'pngPage', 'print'])
+  })
+
+  it("registers every command the editor's file keys are sent to", () => {
+    const { plugin, commands } = editor()
+    plugin.installFileMenu(LABELS)
+    for (const id of Object.values(APP_FILE_COMMANDS)) expect(commands.has(id), id).toBe(true)
   })
 
   it('puts the items back once when asked again, without registering twice', () => {

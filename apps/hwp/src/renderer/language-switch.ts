@@ -30,3 +30,12 @@ export function languageSwitchPlan(s: LanguageSwitchState): 'none' | 'reload' | 
   if (!s.ready || s.dirty || s.restored || s.passwordProtected || s.untitledCopy) return 'later'
   return 'reload'
 }
+
+/**
+ * The "applies when reopened" notice after a language change: shown while the editor waits for
+ * the next open, taken down otherwise. Back in the language the tab was opened with (plan
+ * 'none'), the editor already speaks it, so a notice left from an earlier change is stale.
+ */
+export function reopenNoticeAfter(plan: ReturnType<typeof languageSwitchPlan>): 'show' | 'clear' {
+  return plan === 'later' ? 'show' : 'clear'
+}
