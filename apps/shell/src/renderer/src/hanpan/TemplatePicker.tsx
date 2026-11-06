@@ -32,6 +32,7 @@ export interface HanpanApi extends Partial<MarkdownConverterApi>, Partial<MyForm
   newMap?(topic: string): Promise<{ ok: true } | { ok: false; error: string }>
   /** a tab's "내 양식으로 저장…": open this dialog ready to save that tab; returns unsubscribe */
   onSaveMyFormRequest?(listener: (tabId: string) => void): () => void
+  onOpenTemplatesRequest?(listener: () => void): () => void
 }
 
 declare global {

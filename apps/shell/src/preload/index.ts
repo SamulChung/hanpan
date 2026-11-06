@@ -884,6 +884,12 @@ contextBridge.exposeInMainWorld('hanpanApi', {
   importMyForm: () => ipcRenderer.invoke('hanpan:my-forms-import'),
   openMyForm: (id: string) => ipcRenderer.invoke('hanpan:my-forms-open', id),
   deleteMyForm: (id: string) => ipcRenderer.invoke('hanpan:my-forms-delete', id),
+  /** the tab strip's "+" menu asked for 한판 양식 (0.17 리뷰 v2 shell #38) */
+  onOpenTemplatesRequest: (listener: () => void) => {
+    const handler = () => listener()
+    ipcRenderer.on('hanpan:templates-open-request', handler)
+    return () => ipcRenderer.removeListener('hanpan:templates-open-request', handler)
+  },
   onSaveMyFormRequest: (listener: (tabId: string) => void) => {
     const handler = (_event: unknown, tabId: unknown) => {
       if (typeof tabId === 'string') listener(tabId)

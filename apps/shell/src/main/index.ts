@@ -45,7 +45,11 @@ import {
   windowHandleArg,
   type ShareAnswer,
 } from './share/system-share'
-import { configureDesignWindow, openDesignWithOutline } from './hanpan/design-window'
+import {
+  configureDesignWindow,
+  openDesignWindow,
+  openDesignWithOutline,
+} from './hanpan/design-window'
 import { registerGonguPictureIpc } from './hanpan/gongu-pictures'
 import { tabStripOverlay } from './title-bar-overlay'
 import { shellWindowBackground } from './window-background'
@@ -1123,6 +1127,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: '思维导图',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan 模板…',
+    menuNewDesign: '设计',
     menuNewPdf: 'AI PDF',
     menuExportPdf: '导出为 PDF…',
     menuExportImages: '导出为图片…',
@@ -1291,6 +1297,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Mind Map',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Export as PDF…',
     menuExportImages: 'Export as Images…',
@@ -1460,6 +1468,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Sơ đồ tư duy',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Mẫu Hanpan…',
+    menuNewDesign: 'Thiết kế',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Xuất dưới dạng PDF…',
     menuExportImages: 'Xuất dưới dạng hình ảnh…',
@@ -1634,6 +1644,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'マインドマップ',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'PDF として書き出す…',
     menuExportImages: '画像としてエクスポート…',
@@ -1809,6 +1821,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI 웹 문서',
     menuNewMindmap: '마인드맵',
     menuNewHwp: 'AI 한글',
+    menuNewTemplates: '한판 양식…',
+    menuNewDesign: '디자인',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'PDF로 내보내기…',
     menuExportImages: '이미지로 내보내기…',
@@ -1981,6 +1995,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Carte mentale',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Exporter en PDF…',
     menuExportImages: 'Exporter en images…',
@@ -2157,6 +2173,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Mindmap',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Als PDF exportieren…',
     menuExportImages: 'Als Bilder exportieren…',
@@ -2333,6 +2351,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Mapa mental',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Exportar como PDF…',
     menuExportImages: 'Exportar como imágenes…',
@@ -2508,6 +2528,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'แผนที่ความคิด',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'ส่งออกเป็น PDF…',
     menuExportImages: 'ส่งออกเป็นรูปภาพ…',
@@ -2679,6 +2701,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Peta pikiran',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Ekspor sebagai PDF…',
     menuExportImages: 'Ekspor sebagai gambar…',
@@ -2854,6 +2878,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Интеллект-карта',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Экспортировать в PDF…',
     menuExportImages: 'Экспорт в изображения…',
@@ -3028,6 +3054,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'خريطة ذهنية',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'تصدير بتنسيق PDF…',
     menuExportImages: 'تصدير كصور…',
@@ -3199,6 +3227,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Mapa mental',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Exportar como PDF…',
     menuExportImages: 'Exportar como imagens…',
@@ -3374,6 +3404,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Mappa mentale',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Esporta come PDF…',
     menuExportImages: 'Esporta come immagini…',
@@ -3549,6 +3581,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Mapa myśli',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Eksportuj jako PDF…',
     menuExportImages: 'Eksportuj jako obrazy…',
@@ -3723,6 +3757,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Myšlenková mapa',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Exportovat jako PDF…',
     menuExportImages: 'Exportovat jako obrázky…',
@@ -3896,6 +3932,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Mindmap',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Exporteren als PDF…',
     menuExportImages: 'Exporteren als afbeeldingen…',
@@ -4072,6 +4110,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'Peta minda',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Eksport sebagai PDF…',
     menuExportImages: 'Eksport sebagai imej…',
@@ -4245,6 +4285,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'מפת חשיבה',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'ייצוא כ-PDF…',
     menuExportImages: 'ייצוא כתמונות…',
@@ -4417,6 +4459,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: 'माइंड मैप',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'PDF के रूप में निर्यात…',
     menuExportImages: 'छवियों के रूप में निर्यात…',
@@ -4590,6 +4634,8 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewMindmap: '心智圖',
     menuNewHwp: 'AI HWP',
+    menuNewTemplates: 'Hanpan templates…',
+    menuNewDesign: 'Design',
     menuNewPdf: 'AI PDF',
     menuExportPdf: '匯出為 PDF…',
     menuExportImages: '匯出為圖片…',
@@ -8094,31 +8140,7 @@ function registerTabsIpc(): void {
       // enabled:false so pre-Sonoma macOS / Windows (no 'header' support) degrade
       // to an inert label instead of a clickable no-op item
       { label: tm('menuSectionNew'), type: 'header', enabled: false },
-      {
-        label: tm('menuNewDoc'),
-        icon: menuIcons().docx,
-        click: () => newDocTab(),
-      },
-      {
-        label: tm('menuNewSheet'),
-        icon: menuIcons().xlsx,
-        click: () => void newSheetTab(),
-      },
-      {
-        label: tm('menuNewSlide'),
-        icon: menuIcons().pptx,
-        click: () => newSlideTab(),
-      },
-      {
-        label: tm('menuNewMarkdown'),
-        icon: menuIcons().md,
-        click: () => newMarkdownTab(),
-      },
-      {
-        label: tm('menuNewHtml'),
-        icon: menuIcons().html,
-        click: () => newHtmlTab(),
-      },
+      // Home's order: the mind map, AI 한글, PPT and 한판 양식 first (0.17 리뷰 v2 shell #38)
       {
         label: tm('menuNewMindmap'),
         icon: menuIcons().mindmap,
@@ -8133,6 +8155,46 @@ function registerTabsIpc(): void {
             },
           ]
         : []),
+      {
+        label: tm('menuNewSlide'),
+        icon: menuIcons().pptx,
+        click: () => newSlideTab(),
+      },
+      ...(koreanDocsOn()
+        ? [
+            {
+              label: tm('menuNewTemplates'),
+              click: () => {
+                const win = shellWindow
+                if (!win || win.isDestroyed()) return
+                tabManager?.openHomeTab()
+                win.webContents.send('hanpan:templates-open-request')
+              },
+            },
+          ]
+        : []),
+      { type: 'separator' },
+      {
+        label: tm('menuNewDoc'),
+        icon: menuIcons().docx,
+        click: () => newDocTab(),
+      },
+      {
+        label: tm('menuNewSheet'),
+        icon: menuIcons().xlsx,
+        click: () => void newSheetTab(),
+      },
+      { label: tm('menuNewDesign'), click: () => openDesignWindow() },
+      {
+        label: tm('menuNewMarkdown'),
+        icon: menuIcons().md,
+        click: () => newMarkdownTab(),
+      },
+      {
+        label: tm('menuNewHtml'),
+        icon: menuIcons().html,
+        click: () => newHtmlTab(),
+      },
       {
         label: tm('menuNewPhoto'),
         icon: menuIcons().photo,

@@ -2030,6 +2030,14 @@ export function Home({
       }),
     [],
   )
+  useEffect(
+    () =>
+      window.hanpanApi?.onOpenTemplatesRequest?.(() => {
+        setFormSaveTabId(undefined)
+        setTemplatesOpen(true)
+      }),
+    [],
+  )
   // 0.17: the widgets and the app card arrangement ("홈 꾸미기")
   const [homeLayout, updateHomeLayout] = useHomeLayout()
   const [customizeOpen, setCustomizeOpen] = useState(false)
