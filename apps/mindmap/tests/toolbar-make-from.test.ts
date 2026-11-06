@@ -91,6 +91,7 @@ function props(onMakeFromDocument: () => void, disabled = false): ToolbarProps {
     onToggleHiddenPart: none,
     onZoomReset: none,
     onMakeFromDocument,
+    mapSaved: true,
     onOpen: none,
     onPrint: none,
   }
@@ -140,6 +141,21 @@ describe('the make-from-document button', () => {
       props(() => {}),
     )
     expect(button.getAttribute('aria-label')).toBe('Make Another Document from This')
+  })
+
+  it('carries its name as text beside the icon, not only as a tooltip', async () => {
+    const button = await render('ko', props(() => {}))
+    expect(button.textContent).toBe('다른 문서 만들기')
+  })
+
+  it('on a map never saved, says to save first instead of opening a window that cannot be used', async () => {
+    const asked = vi.fn()
+    const button = await render('ko', { ...props(asked), mapSaved: false })
+    expect(button.getAttribute('aria-disabled')).toBe('true')
+    expect(button.dataset.tip).toBe('먼저 지도를 저장하세요. 저장한 지도로 다른 문서를 만들 수 있습니다.')
+    // still pressable, so the reason is told; the handler decides what pressing does
+    button.click()
+    expect(asked).toHaveBeenCalledTimes(1)
   })
 
   it('is off while the map is not ready', async () => {

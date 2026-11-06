@@ -1693,3 +1693,19 @@ textarea.mm-field {
     flex-direction: column;
   }
 }
+
+/* "make another document from this one": the icon with its name beside it */
+.mm-tool.mm-make-from {
+  width: auto;
+  gap: 4px;
+  padding: 0 8px;
+}
+
+.mm-tool.mm-make-from[aria-disabled='true'] {
+  opacity: 0.55;
+}
+
+.mm-make-from-label {
+  font-size: 12px;
+  white-space: nowrap;
+}
