@@ -405,6 +405,7 @@ import { startRendererWatchdog } from './renderer-watchdog'
 import { memoryFigures, startCrashWatch, startLowMemoryWatch } from './crash-watch'
 import {
   capStatPaths,
+  isScratchDocument,
   matchesExtFamily,
   normalizeRecentQuery,
   pageRecentPaths,
@@ -4605,7 +4606,10 @@ function ensureFileIndexer(): FileIndexer | null {
   }
   fileIndexer = new FileIndexer(fileIndexStore, extractWorkerPath, {
     roots: () => folderRootPaths().filter((root) => existsSync(root)),
-    extraPaths: () => [...readRecentFiles(), ...readStarredFiles()],
+    extraPaths: () => [
+      ...readRecentFiles().filter((path) => !isScratchDocument(path)),
+      ...readStarredFiles(),
+    ],
   })
   return fileIndexer
 }
@@ -9285,7 +9289,9 @@ app.whenReady().then(async () => {
         }))
       },
       recent: async () =>
-        readRecentFiles().map((path) => ({ path, title: basename(path), missing: false })),
+        readRecentFiles()
+          .filter((path) => !isScratchDocument(path))
+          .map((path) => ({ path, title: basename(path), missing: false })),
       stat: async (path) => {
         const entry = statPathEntries([path], new Set<string>())[0]
         return entry && !entry.missing ? { sizeBytes: entry.sizeBytes } : null

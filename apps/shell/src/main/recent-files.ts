@@ -1,7 +1,27 @@
 import { statSync } from 'node:fs'
-import { basename, extname } from 'node:path'
+import { tmpdir } from 'node:os'
+import { basename, dirname, extname, relative, isAbsolute } from 'node:path'
 import type { RecentEntry, RecentPage, RecentQuery } from '../shared/home-api'
 import { OPEN_EXTS } from '../../../graphics/src/shared/kinds'
+
+/**
+ * Scratch folders that tests make under the temp folder. A file in one is never
+ * a person's document: the CLI's empty-package test hands
+ * `ieumoffice-empty-package-<random>/empty.docx` to a running app through its control
+ * endpoint, and 0.16 then kept it in recents and brought it back as an
+ * "empty.docx" tab after a restart.
+ */
+const SCRATCH_DIR_PREFIXES = ['ieumoffice-empty-package-', 'genoffice-test-'] as const
+
+/** A file directly in a test scratch folder under the temp folder (`tmpRoot`). */
+export function isScratchDocument(path: string, tmpRoot: string = tmpdir()): boolean {
+  if (!path) return false
+  const dir = dirname(path)
+  const folder = basename(dir)
+  if (!SCRATCH_DIR_PREFIXES.some((prefix) => folder.startsWith(prefix))) return false
+  const inside = relative(tmpRoot, dir)
+  return inside !== '' && !inside.startsWith('..') && !isAbsolute(inside)
+}
 
 const RECENT_PAGE_DEFAULT = 50
 const RECENT_PAGE_MAX = 200
@@ -101,14 +121,15 @@ export function pageRecentPaths(
   starredPaths: ReadonlySet<string>,
 ): RecentPage {
   const { offset, limit, ext } = normalizeRecentQuery(raw)
+  const listed = paths.filter((p) => !isScratchDocument(p))
   // stat only the returned page: statting the whole list blocked main on long recents
   const filtered = ext
-    ? paths.filter((p) => matchesExtFamily(extname(p).slice(1).toLowerCase(), ext))
-    : paths
+    ? listed.filter((p) => matchesExtFamily(extname(p).slice(1).toLowerCase(), ext))
+    : listed
   const page = limit === 0 ? [] : filtered.slice(offset, offset + limit)
   return {
     entries: statPathEntries(page, starredPaths),
     total: filtered.length,
-    totalAll: paths.length,
+    totalAll: listed.length,
   }
 }
