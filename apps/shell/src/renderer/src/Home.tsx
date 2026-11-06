@@ -1103,6 +1103,32 @@ function DropToOpenOverlay(): ReactElement | null {
 
 // ── Main component ──────────────────────────────────────
 
+/** 한판 양식 card: a ruled form page with a red seal */
+function TemplatesBadge() {
+  return (
+    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true" data-badge="templates">
+      <rect
+        x="6"
+        y="3"
+        width="22"
+        height="28"
+        rx="3"
+        fill="#fff"
+        stroke="#3b5ba5"
+        strokeWidth="1.6"
+      />
+      <path
+        d="M10 10h14M10 14.5h14M10 19h9"
+        stroke="#3b5ba5"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+      <circle cx="23" cy="25" r="4.6" fill="none" stroke="#d1383d" strokeWidth="1.8" />
+      <path d="M21 25h4" stroke="#d1383d" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 export function Home({
   connection,
   aiSettings,
@@ -2059,7 +2085,8 @@ export function Home({
         ? [
             {
               key: 'templates',
-              badge: <FileBadge ext="hwp" size={34} />,
+              // a form with a seal, not AI 한글's "가" (0.17 리뷰 v2 shell #29)
+              badge: <TemplatesBadge />,
               title: t('hpTemplatesCard'),
               sub: t('hpTemplatesCardSub'),
               ai: false,

@@ -566,3 +566,17 @@ describe('0.17 review v2: quiet row actions say they happened', () => {
     expect(host.querySelector('[data-home-toast]')?.textContent).toContain('목록에서 뺐습니다')
   })
 })
+
+describe('0.17 review v2: starting a mind map with an empty box', () => {
+  it('says to type a topic first', async () => {
+    const newMap = vi.fn(async () => ({ ok: true }))
+    window.hanpanApi = { ...window.hanpanApi!, newMap } as typeof window.hanpanApi
+    await renderHome()
+    await click(host.querySelector('[data-hanpan="start-go"]'))
+    expect(host.querySelector('[data-hanpan="start-note"]')?.textContent).toContain('먼저 주제를')
+    expect(host.querySelector('[data-hanpan="start-topic"]')?.getAttribute('aria-invalid')).toBe(
+      'true',
+    )
+    expect(newMap).not.toHaveBeenCalled()
+  })
+})
