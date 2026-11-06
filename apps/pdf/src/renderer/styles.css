@@ -6645,3 +6645,40 @@ button.ai-overview-term-page:hover {
 .pdf-cert-npki {
   color: var(--text-muted);
 }
+
+/* 인쇄 창: 첫 쪽 미리 보기와 다음 단계 안내 */
+.pdf-print-preview {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.pdf-print-preview-page {
+  flex: none;
+  width: 120px;
+  min-height: 90px;
+  background: var(--pdf-prop-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.pdf-print-preview-page canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.pdf-print-preview-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 220px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.pdf-print-preview-text strong {
+  color: var(--text);
+  font-weight: 600;
+}

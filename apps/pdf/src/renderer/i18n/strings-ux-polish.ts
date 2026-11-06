@@ -17,10 +17,9 @@ const uxPolishStrings = {
   formBannerClose: 'Close',
   // 인쇄 창
   printPreview: 'Preview',
-  printPrinter: 'Printer',
-  printPrinterSystem: 'Choose in the system print dialog',
-  printCopies: 'Copies',
-  printSummary: '{pages} pages × {copies} copies',
+  printSummary: '{pages} pages to print',
+  printNextStepHint:
+    'Choose the printer and the number of copies in the print window that opens next.',
 } as const
 
 const localizedUxPolishStrings = {
@@ -35,10 +34,8 @@ const localizedUxPolishStrings = {
     formBannerOpen: '양식 채우기',
     formBannerClose: '닫기',
     printPreview: '미리 보기',
-    printPrinter: '프린터',
-    printPrinterSystem: '시스템 인쇄 창에서 고르기',
-    printCopies: '매수',
-    printSummary: '{pages}쪽 × {copies}부',
+    printSummary: '{pages}쪽을 인쇄합니다',
+    printNextStepHint: '프린터와 매수는 다음에 열리는 인쇄 창에서 고릅니다.',
   },
   vi: {
     splitDlgPrompt: 'Cứ bao nhiêu trang thì tách sang tệp mới?',
@@ -51,10 +48,8 @@ const localizedUxPolishStrings = {
     formBannerOpen: 'Điền biểu mẫu',
     formBannerClose: 'Đóng',
     printPreview: 'Xem trước',
-    printPrinter: 'Máy in',
-    printPrinterSystem: 'Chọn trong hộp thoại in của hệ thống',
-    printCopies: 'Số bản',
-    printSummary: '{pages} trang × {copies} bản',
+    printSummary: 'Sẽ in {pages} trang',
+    printNextStepHint: 'Chọn máy in và số bản trong cửa sổ in mở ra tiếp theo.',
   },
 } satisfies Record<string, Record<keyof typeof uxPolishStrings, string>>
 

@@ -81,6 +81,8 @@ type Arrange =
 const PASTE_OFFSET_PTS = 12
 /** Auto-detect stops here so a long scanned form cannot flood the document with fields */
 const DETECT_FIELD_CAP = 300
+/** Raster width (CSS px) of the page drawn in the print dialog's preview */
+const PRINT_PREVIEW_W = 120
 
 /** Field names still taken once pending widget removals are applied (a fully removed field frees its name) */
 function liveFieldNames(
@@ -146,6 +148,7 @@ import { PasswordDialog } from './PasswordDialog'
 import { PropertiesDialog } from './PropertiesDialog'
 import { InlineModal } from './InlineModal'
 import { splitFileCount } from './split-preview'
+import { printPreviewTarget } from './print-preview'
 import { shouldShowFormBanner } from './form-banner'
 import { shouldFoldAiForBilingual } from './bilingual/fold-ai'
 import { documentLooksBlank } from './blank-document'
@@ -12279,6 +12282,34 @@ export default function App() {
             {printDlg && (
               <InlineModal label={t('print')} onCancel={() => setPrintDlg(false)}>
                 <div className="pdf-modal-title">{t('print')}</div>
+                {(() => {
+                  const target = printPreviewTarget({
+                    mode: printMode,
+                    current: printCurrentPage,
+                    input: printInput,
+                    pageCount,
+                  })
+                  const origIdx = target ? visList[target.firstPage - 1] : undefined
+                  return (
+                    <div className="pdf-print-preview">
+                      <div className="pdf-print-preview-page" aria-label={t('printPreview')}>
+                        {doc && origIdx !== undefined && !isBlankPage(origIdx) && (
+                          <PdfThumb
+                            doc={doc}
+                            pageNo={origIdx + 1}
+                            rotationDelta={rotDelta(origIdx)}
+                            visible
+                            rasterW={PRINT_PREVIEW_W}
+                          />
+                        )}
+                      </div>
+                      <div className="pdf-print-preview-text">
+                        {target && <strong>{t('printSummary', { pages: target.count })}</strong>}
+                        <span>{t('printNextStepHint')}</span>
+                      </div>
+                    </div>
+                  )
+                })()}
                 <label className="pdf-modal-row">
                   <input
                     type="radio"

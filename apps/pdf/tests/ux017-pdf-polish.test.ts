@@ -12,6 +12,7 @@ import { markupButtonAction, selectionPopupPosition } from '../src/renderer/mark
 import { shouldShowFormBanner } from '../src/renderer/form-banner'
 import { pageLooksBlank } from '../src/renderer/blank-document'
 import { shouldFoldAiForBilingual } from '../src/renderer/bilingual/fold-ai'
+import { printPreviewTarget } from '../src/renderer/print-preview'
 import { FormFieldProps } from '../src/renderer/FormDesignLayer'
 import { strings } from '../src/renderer/i18n/strings'
 
@@ -234,5 +235,30 @@ describe('P5 번역 나란히', () => {
   it('접기 질문이 무엇을 묻는지 말한다', () => {
     expect(strings.ko.blCollapseAsk).toContain('번역 칸을 접어')
     expect(strings.ko.blCollapse).toBe('번역 칸 접기')
+  })
+})
+
+describe('P4 인쇄 창의 미리 보기', () => {
+  it('고른 범위의 첫 쪽과 쪽 수를 알려 준다', () => {
+    expect(printPreviewTarget({ mode: 'all', current: 3, input: '', pageCount: 5 })).toEqual({
+      firstPage: 1,
+      count: 5,
+    })
+    expect(printPreviewTarget({ mode: 'current', current: 3, input: '', pageCount: 5 })).toEqual({
+      firstPage: 3,
+      count: 1,
+    })
+    expect(printPreviewTarget({ mode: 'custom', current: 3, input: '2-4', pageCount: 5 })).toEqual({
+      firstPage: 2,
+      count: 3,
+    })
+    expect(printPreviewTarget({ mode: 'custom', current: 3, input: '9', pageCount: 5 })).toBeNull()
+  })
+
+  it('인쇄 창에 미리 보기와 다음 단계 안내를 둔다', () => {
+    expect(APP).toContain('className="pdf-print-preview"')
+    expect(APP).toContain("t('printSummary'")
+    expect(APP).toContain("t('printNextStepHint')")
+    expect(strings.ko.printNextStepHint).toContain('프린터')
   })
 })
