@@ -90,7 +90,9 @@ body.overlay-title-bar .tab-bar-drag-spacer {
   padding: 0 8px 6px 12px;
   /* Chrome tabs shrink under pressure but never grow past 240px */
   flex: 0 1 240px;
-  min-width: 104px;
+  /* 0.17 리뷰 v2 #11: wide enough to tell tabs apart (about six characters);
+   * past that the strip scrolls and the "all tabs" list takes over */
+  min-width: 136px;
   border-radius: 10px 10px 0 0;
   cursor: pointer;
   color: var(--tabstrip-text);
@@ -551,4 +553,28 @@ body.overlay-title-bar .tab-bar-drag-spacer {
 .tab-split-hint.for-stack {
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+/* "+" stays at the strip's right edge while the tabs scroll under it
+ * (0.17 리뷰 v2 #11): after the shared button rule, which sets relative */
+.tab-strip > .tab-new-btn {
+  position: sticky;
+  right: 0;
+  z-index: 1;
+  background: var(--tabstrip-bg);
+  box-shadow: -10px 0 8px -6px var(--tabstrip-bg);
+}
+
+.tab-strip > .tab-new-btn:hover {
+  background: color-mix(in srgb, var(--tabstrip-bg) 88%, #000);
+}
+
+/* keyboard focus on a tab (role=tab, #31): a ring on the plate, not the browser default */
+.tab-item:focus {
+  outline: none;
+}
+
+.tab-item:focus-visible .tab-plate {
+  outline: 2px solid var(--accent, #0f7fff);
+  outline-offset: -2px;
 }
