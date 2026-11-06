@@ -11,7 +11,7 @@ type Words = Partial<Record<AiConnectPath, { title?: string; body?: string }>>
 const KO: Words = {
   'claude-code': {
     title: 'Claude를 써요',
-    body: 'Claude 계정으로 로그인해서 씁니다. Claude 무료 계정은 연결되지 않으니, 그때는 뒤로 가서 "아직 없어요"를 고르면 됩니다.',
+    body: 'Claude 계정으로 로그인해서 씁니다. Claude 무료 계정은 연결되지 않으니, 그럴 때는 "아직 없어요"를 고르세요.',
   },
   chatgpt: { body: 'ChatGPT 계정으로 로그인해서 씁니다. 무료 계정은 쓸 수 있는 양이 적습니다.' },
   codex: { body: 'ChatGPT 계정으로 로그인해서 씁니다. 무료 계정은 쓸 수 있는 양이 적습니다.' },
@@ -23,7 +23,7 @@ const KO: Words = {
 const EN: Words = {
   'claude-code': {
     title: 'I use Claude',
-    body: 'Sign in with your Claude account. A free Claude account cannot connect; in that case go back and pick "Not yet".',
+    body: 'Sign in with your Claude account. A free Claude account cannot connect; in that case pick "Neither yet".',
   },
   chatgpt: { body: 'Sign in with your ChatGPT account. Free accounts get a smaller allowance.' },
   codex: { body: 'Sign in with your ChatGPT account. Free accounts get a smaller allowance.' },
