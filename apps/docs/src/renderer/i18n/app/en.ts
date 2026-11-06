@@ -483,6 +483,7 @@ export const en = {
   appMatchCase: 'Match case',
   appWholeWord: 'Whole words only',
   appNoResults: 'No results',
+  appReplacedCount: 'Replaced {count}',
   appPrevMatch: 'Previous (Shift+Enter)',
   appNextMatch: 'Next (Enter)',
   appCloseEsc: 'Close (Esc)',

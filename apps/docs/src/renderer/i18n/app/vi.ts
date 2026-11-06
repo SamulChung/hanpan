@@ -486,6 +486,7 @@ export const vi = {
   appMatchCase: 'Khớp chữ hoa/chữ thường',
   appWholeWord: 'Chỉ khớp toàn bộ từ',
   appNoResults: 'Không có kết quả',
+  appReplacedCount: 'Đã thay {count}',
   appPrevMatch: 'Kết quả trước (Shift+Enter)',
   appNextMatch: 'Kết quả tiếp theo (Enter)',
   appCloseEsc: 'Đóng (Esc)',

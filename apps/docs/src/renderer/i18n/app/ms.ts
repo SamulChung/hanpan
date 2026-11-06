@@ -492,6 +492,7 @@ export const ms = {
   appMatchCase: 'Padankan huruf besar/kecil',
   appWholeWord: 'Perkataan penuh sahaja',
   appNoResults: 'Tiada hasil',
+  appReplacedCount: '{count} diganti',
   appPrevMatch: 'Sebelumnya (Shift+Enter)',
   appNextMatch: 'Berikutnya (Enter)',
   appCloseEsc: 'Tutup (Esc)',

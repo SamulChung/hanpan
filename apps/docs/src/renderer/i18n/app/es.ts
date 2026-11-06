@@ -494,6 +494,7 @@ export const es = {
   appMatchCase: 'Coincidir mayúsculas y minúsculas',
   appWholeWord: 'Solo palabras completas',
   appNoResults: 'Sin resultados',
+  appReplacedCount: '{count} reemplazado(s)',
   appPrevMatch: 'Anterior (Mayús+Entrar)',
   appNextMatch: 'Siguiente (Entrar)',
   appCloseEsc: 'Cerrar (Esc)',

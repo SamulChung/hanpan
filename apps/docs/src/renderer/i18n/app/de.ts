@@ -500,6 +500,7 @@ export const de = {
   appMatchCase: 'Groß-/Kleinschreibung beachten',
   appWholeWord: 'Nur ganzes Wort suchen',
   appNoResults: 'Keine Ergebnisse',
+  appReplacedCount: '{count} ersetzt',
   appPrevMatch: 'Zurück (Umschalt+Eingabetaste)',
   appNextMatch: 'Weiter (Eingabetaste)',
   appCloseEsc: 'Schließen (Esc)',

@@ -494,6 +494,7 @@ export const it = {
   appMatchCase: 'Maiuscole/minuscole',
   appWholeWord: 'Solo parole intere',
   appNoResults: 'Nessun risultato',
+  appReplacedCount: '{count} sostituito/i',
   appPrevMatch: 'Precedente (Maiusc+Invio)',
   appNextMatch: 'Successivo (Invio)',
   appCloseEsc: 'Chiudi (Esc)',

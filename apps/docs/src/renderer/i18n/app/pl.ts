@@ -493,6 +493,7 @@ export const pl = {
   appMatchCase: 'Uwzględnij wielkość liter',
   appWholeWord: 'Tylko całe wyrazy',
   appNoResults: 'Brak wyników',
+  appReplacedCount: 'Zastąpiono: {count}',
   appPrevMatch: 'Poprzedni (Shift+Enter)',
   appNextMatch: 'Następny (Enter)',
   appCloseEsc: 'Zamknij (Esc)',

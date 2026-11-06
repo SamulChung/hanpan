@@ -500,6 +500,7 @@ export const zh = {
   appMatchCase: '区分大小写',
   appWholeWord: '全字匹配',
   appNoResults: '无结果',
+  appReplacedCount: '已替换 {count} 处',
   appPrevMatch: '上一个 (Shift+Enter)',
   appNextMatch: '下一个 (Enter)',
   appCloseEsc: '关闭 (Esc)',

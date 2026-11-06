@@ -488,6 +488,7 @@ export const hi = {
   appMatchCase: 'अक्षर के आकार का मिलान करें',
   appWholeWord: 'केवल पूर्ण शब्द',
   appNoResults: 'कोई परिणाम नहीं',
+  appReplacedCount: '{count} बदले गए',
   appPrevMatch: 'पिछला (Shift+Enter)',
   appNextMatch: 'अगला (Enter)',
   appCloseEsc: 'बंद करें (Esc)',

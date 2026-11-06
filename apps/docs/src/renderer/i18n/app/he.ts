@@ -480,6 +480,7 @@ export const he = {
   appMatchCase: 'התאמת אותיות רישיות/קטנות',
   appWholeWord: 'מילים שלמות בלבד',
   appNoResults: 'אין תוצאות',
+  appReplacedCount: 'הוחלפו {count}',
   appPrevMatch: 'הקודם (Shift+Enter)',
   appNextMatch: 'הבא (Enter)',
   appCloseEsc: 'סגירה (Esc)',

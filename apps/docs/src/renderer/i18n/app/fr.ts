@@ -498,6 +498,7 @@ export const fr = {
   appMatchCase: 'Respecter la casse',
   appWholeWord: 'Mot entier',
   appNoResults: 'Aucun résultat',
+  appReplacedCount: '{count} remplacé(s)',
   appPrevMatch: 'Précédent (Maj+Entrée)',
   appNextMatch: 'Suivant (Entrée)',
   appCloseEsc: 'Fermer (Échap)',

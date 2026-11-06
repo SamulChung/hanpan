@@ -482,6 +482,7 @@ export const ar = {
   appMatchCase: 'مطابقة حالة الأحرف',
   appWholeWord: 'الكلمة بأكملها فقط',
   appNoResults: 'لا توجد نتائج',
+  appReplacedCount: 'تم استبدال {count}',
   appPrevMatch: 'السابق (Shift+Enter)',
   appNextMatch: 'التالي (Enter)',
   appCloseEsc: 'إغلاق (Esc)',

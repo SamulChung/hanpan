@@ -489,6 +489,7 @@ export const id = {
   appMatchCase: 'Cocokkan huruf besar/kecil',
   appWholeWord: 'Hanya kata utuh',
   appNoResults: 'Tidak ada hasil',
+  appReplacedCount: '{count} diganti',
   appPrevMatch: 'Sebelumnya (Shift+Enter)',
   appNextMatch: 'Berikutnya (Enter)',
   appCloseEsc: 'Tutup (Esc)',

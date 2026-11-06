@@ -498,6 +498,7 @@ export const nl = {
   appMatchCase: 'Identieke hoofdletters/kleine letters',
   appWholeWord: 'Alleen hele woorden',
   appNoResults: 'Geen resultaten',
+  appReplacedCount: '{count} vervangen',
   appPrevMatch: 'Vorige (Shift+Enter)',
   appNextMatch: 'Volgende (Enter)',
   appCloseEsc: 'Sluiten (Esc)',

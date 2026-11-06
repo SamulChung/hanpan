@@ -486,6 +486,7 @@ export const th = {
   appMatchCase: 'ตรงตามตัวพิมพ์ใหญ่-เล็ก',
   appWholeWord: 'ทั้งคำเท่านั้น',
   appNoResults: 'ไม่พบผลลัพธ์',
+  appReplacedCount: 'แทนที่ {count} รายการ',
   appPrevMatch: 'ก่อนหน้า (Shift+Enter)',
   appNextMatch: 'ถัดไป (Enter)',
   appCloseEsc: 'ปิด (Esc)',

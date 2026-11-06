@@ -489,6 +489,7 @@ export const pt = {
   appMatchCase: 'Diferenciar maiúsculas de minúsculas',
   appWholeWord: 'Somente palavras inteiras',
   appNoResults: 'Sem resultados',
+  appReplacedCount: '{count} substituído(s)',
   appPrevMatch: 'Anterior (Shift+Enter)',
   appNextMatch: 'Próximo (Enter)',
   appCloseEsc: 'Fechar (Esc)',

@@ -493,6 +493,7 @@ export const ru = {
   appMatchCase: 'Учитывать регистр',
   appWholeWord: 'Только слово целиком',
   appNoResults: 'Нет результатов',
+  appReplacedCount: 'Заменено: {count}',
   appPrevMatch: 'Назад (Shift+Enter)',
   appNextMatch: 'Далее (Enter)',
   appCloseEsc: 'Закрыть (Esc)',

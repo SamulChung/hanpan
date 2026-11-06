@@ -511,6 +511,7 @@ export const ko = {
   appMatchCase: '대/소문자 구분',
   appWholeWord: '단어 단위로',
   appNoResults: '결과 없음',
+  appReplacedCount: '{count}개를 바꿨습니다',
   appPrevMatch: '이전 (Shift+Enter)',
   appNextMatch: '다음 (Enter)',
   appCloseEsc: '닫기 (Esc)',

@@ -488,6 +488,7 @@ export const cs = {
   appMatchCase: 'Rozlišovat velikost písmen',
   appWholeWord: 'Pouze celá slova',
   appNoResults: 'Žádné výsledky',
+  appReplacedCount: 'Nahrazeno: {count}',
   appPrevMatch: 'Předchozí (Shift+Enter)',
   appNextMatch: 'Další (Enter)',
   appCloseEsc: 'Zavřít (Esc)',
