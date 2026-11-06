@@ -485,6 +485,8 @@ import { runTabDocumentAction, type TabDocumentAction } from './tab-document-act
 import { duplicateDocumentFile } from './tab-duplicate'
 import { closeTabsInOrder, createRecentlyClosedTracker } from './tab-lifecycle'
 import { handleTabShortcut } from './tab-shortcuts'
+import { settingsMenuItem } from './settings-menu'
+import { installDefaultDialogTitle } from './dialog-title'
 import { readSplitMemory, writeSplitMemory, type SplitMemory } from './split-memory'
 import { SPLIT_EVEN_RATIO, decideSplitDrop, paneRects, splitDropZone } from './split-layout'
 import { configureGenerateWindow } from './generate/generate-window'
@@ -1746,8 +1748,8 @@ const tMain = createI18n({
     untitledSheet: '제목 없는 스프레드시트',
     untitledDoc: '제목 없는 문서',
     untitledDeck: '제목 없는 프레젠테이션',
-    untitledMarkdown: '제목 없는 Markdown',
-    untitledHtml: '제목 없는 HTML',
+    untitledMarkdown: '제목 없는 마크다운',
+    untitledHtml: '제목 없는 웹 문서',
     untitledMindmap: '제목 없는 마인드맵',
     untitledHwp: '제목 없는 한글 문서',
     untitledPdf: '제목 없는 PDF',
@@ -4581,6 +4583,9 @@ const tMain = createI18n({
 const tm = (key: Parameters<typeof tMain>[1], params?: Parameters<typeof tMain>[2]) =>
   tMain(currentLang(), key, params)
 
+// 제목 없는 메시지 상자(편집기의 저장 확인 창 포함)는 "Hanpan" 대신 화면 언어의 제품 이름을 쓴다
+installDefaultDialogTitle(dialog, () => productName(currentLang()))
+
 let saveDirFallbackNoticed = false
 
 /** once per run: tell the user new files land outside <Documents>/<product>, and why */
@@ -5092,6 +5097,7 @@ function installTabShortcuts(): void {
         activeKind: () => manager.list().find((tab) => tab.active)?.kind,
         cycle: (direction) => manager.cycleTab(direction),
         closeActive: () => manager.closeActiveTab(),
+        openSettings: () => openSettingsFromMenu(),
       })
       if (handled) event.preventDefault()
     })
@@ -7594,6 +7600,8 @@ function registerTabsIpc(): void {
           !!tabManager?.canDetachTab(front.id),
         click: () => front && void shareTabFromShell(front.id),
       },
+      { type: 'separator' },
+      settingsMenuItem(currentLang(), () => openSettingsFromMenu()),
     )
     Menu.buildFromTemplate(appMenuPopupTemplate(menus, appMenuLabels(currentLang()))).popup({
       window: shellWindow,
@@ -9154,6 +9162,17 @@ app.on('second-instance', (_event, argv, _cwd, additionalData) => {
 installNavigationGuard(app)
 installContextMenu(app, () => contextMenuLabels(currentLang()))
 registerAiIpc()
+/** ☰ 메뉴 "설정…"과 Ctrl+,: 홈을 앞으로 가져와 설정의 일반 항목을 연다 */
+function openSettingsFromMenu(): void {
+  const win = shellWindow
+  if (!win || win.isDestroyed()) return
+  if (win.isMinimized()) win.restore()
+  win.show()
+  win.focus()
+  tabManager?.openHomeTab()
+  win.webContents.send(HOME_CHANNELS.openSettings, { section: 'general' })
+}
+
 ipcMain.handle('ai:open-model-settings', () => {
   const win = shellWindow
   if (!win || win.isDestroyed()) return

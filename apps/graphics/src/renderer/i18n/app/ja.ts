@@ -15,7 +15,10 @@ export const ja = {
   quickCenter: 'アートボードの中央に配置',
   quickExportPngSvg: 'PNG・SVG で書き出し',
   quickDone: '完了しました。',
-  quickRefused: 'アプリは今これを実行できませんでした：',
+  quickNoDocument: '先に画像を開くか新規作成してください。',
+  quickFailed:
+    'この操作はできませんでした。変更する画像かレイヤーを選んでから、もう一度お試しください。',
+  quickExportFailed: '書き出せませんでした。別のフォルダーか名前でもう一度お試しください。',
   quickExported: 'コピーを保存しました。',
   exportDialogTitle: '書き出し',
   exportFormat: '形式',

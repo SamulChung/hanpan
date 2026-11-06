@@ -11,8 +11,10 @@ import {
   dialog,
   ipcMain,
   nativeImage,
+  screen,
   shell,
   type IpcMainInvokeEvent,
+  type Rectangle,
 } from 'electron'
 import { readFile, writeFile } from 'node:fs/promises'
 import { basename, extname, join } from 'node:path'
@@ -293,6 +295,29 @@ export function openDesignWithOutline(outline: string): void {
   openDesignWindow()
 }
 
+/** 보통 크기와 가장 작은 크기: 작업 영역이 더 작으면 그 안에 맞춘다 */
+const DESIGN_SIZE = { width: 1360, height: 880, minWidth: 960, minHeight: 600 }
+
+/**
+ * The board's window inside a screen's work area (0.17 리뷰 #8): its usual
+ * 1360×880 where that fits, otherwise the work area itself, centered.
+ */
+export function designWindowBounds(area: Rectangle): Rectangle & {
+  minWidth: number
+  minHeight: number
+} {
+  const width = Math.min(DESIGN_SIZE.width, area.width)
+  const height = Math.min(DESIGN_SIZE.height, area.height)
+  return {
+    x: area.x + Math.round((area.width - width) / 2),
+    y: area.y + Math.round((area.height - height) / 2),
+    width,
+    height,
+    minWidth: Math.min(DESIGN_SIZE.minWidth, width),
+    minHeight: Math.min(DESIGN_SIZE.minHeight, height),
+  }
+}
+
 export function openDesignWindow(): void {
   const d = deps
   if (!d) throw new Error('the design window is not configured')
@@ -302,11 +327,14 @@ export function openDesignWindow(): void {
     return
   }
   const lang = d.lang()
+  // the screen the shell window is on (the primary one when there is none)
+  const parent = d.parentWindow()
+  const display =
+    parent && !parent.isDestroyed()
+      ? screen.getDisplayMatching(parent.getBounds())
+      : screen.getPrimaryDisplay()
   const next = new BrowserWindow({
-    width: 1360,
-    height: 880,
-    minWidth: 960,
-    minHeight: 640,
+    ...designWindowBounds(display.workArea),
     show: false,
     autoHideMenuBar: true,
     title: d.title(lang),
@@ -321,6 +349,8 @@ export function openDesignWindow(): void {
   next.removeMenu()
   next.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
   next.once('ready-to-show', () => next.show())
+  // the window keeps the title in the UI language, not the page's own <title>
+  next.on('page-title-updated', (event) => event.preventDefault())
   next.on('closed', () => {
     if (win === next) win = null
     designPath = null

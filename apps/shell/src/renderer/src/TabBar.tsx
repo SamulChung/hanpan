@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, PointerEvent as ReactPointerEvent, ReactElement } from 'react'
 import type { SplitHint, SplitViewState } from '../../shared/split-view-api'
 import type { TabsApi, TabSummary } from '../../shared/tabs-api'
@@ -6,6 +6,7 @@ import { TEAR_OFF_SLACK, insertionIndexForX, isBeyondBand } from '../../shared/t
 import { notifyFilesChanged } from './file-events'
 import { productName } from '@genoffice/i18n'
 import { useI18n } from './locale'
+import { tabLabels } from './tab-labels'
 import iconDocx from './assets/file-docx.svg'
 import iconXlsx from './assets/file-xlsx.svg'
 import iconPptx from './assets/file-pptx.svg'
@@ -125,6 +126,8 @@ interface TabBarProps {
 export function TabBar({ split }: TabBarProps) {
   const { t, lang } = useI18n()
   const [tabs, setTabs] = useState<TabSummary[]>([])
+  // 0.17 리뷰 #15: 같은 이름은 번호로 나누고 번호는 말줄임에 잘리지 않게
+  const labels = useMemo(() => tabLabels(tabs), [tabs])
   // where a tab drag would split the window (main sends it while dragging)
   const [splitHint, setSplitHint] = useState<SplitHint | null>(null)
   const stripRef = useRef<HTMLDivElement>(null)
@@ -442,6 +445,7 @@ export function TabBar({ split }: TabBarProps) {
           <div className="tab-dock-indicator" style={{ left: dockX }} aria-hidden="true" />
         )}
         {tabs.map((tab, index) => {
+          const label = labels.get(tab.id) ?? { base: tab.title, tail: '', ext: '' }
           // a tab that sits in a split pane keeps a marker: pane a on the
           // left of its plate, pane b on the right; the focus pane's tab is
           // still the one with the ordinary active plate
@@ -560,7 +564,15 @@ export function TabBar({ split }: TabBarProps) {
                 />
               ) : (
                 <span className="tab-title">
-                  {tab.kind === 'home' ? productName(lang) : tab.title}
+                  {tab.kind === 'home' ? (
+                    productName(lang)
+                  ) : (
+                    <>
+                      <span className="tab-title-base">{label.base}</span>
+                      {label.tail && <span className="tab-title-tail">{label.tail}</span>}
+                      {label.ext && <span className="tab-title-ext">{label.ext}</span>}
+                    </>
+                  )}
                 </span>
               )}
               {tab.closable && (

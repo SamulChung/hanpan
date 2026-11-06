@@ -2,12 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { AiConnectGuide, AiMark, aiSubscriptionProviderName } from '@genoffice/ui'
 import { FREE_AI_PROVIDERS, freeAiConnected } from '@genoffice/ai-provider/browser'
 import appIcon from './assets/app-icon.png'
-import { FirstConnectionDialog } from './FirstConnectionNotice'
 import { FreeAiCards, useAiSettings as useFreeAiSettings } from './FreeAiCards'
 import { FREE_AI_PROVIDER_NAMES } from './free-ai-cards'
+import { onboardingConnectText } from './hanpan/onboarding-connect-words'
 import { useI18n } from './locale'
 import {
-  ONBOARDING_CONNECT_STEP,
   ONBOARDING_STEPS,
   isLastOnboardingStep,
   nextOnboardingStep,
@@ -23,9 +22,6 @@ interface OnboardingProps {
   onDone: () => Promise<boolean>
   /** the live subscription connection: the connect step shows it and acts on it */
   connection: SubscriptionConnection
-  /** a subscription can be used and the first-connection notice was not acknowledged yet */
-  noticeDue: boolean
-  onNoticeAcknowledge: () => void
 }
 
 /* exact vectors from the design spec:
@@ -59,19 +55,15 @@ function SlideArt({ step }: { step: OnboardingStepId }) {
   )
 }
 
-export function Onboarding({
-  onDone,
-  connection,
-  noticeDue,
-  onNoticeAcknowledge,
-}: OnboardingProps) {
+export function Onboarding({ onDone, connection }: OnboardingProps) {
   const { t, lang } = useI18n()
   const [index, setIndex] = useState(0)
   const [submitting, setSubmitting] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
   const isLast = isLastOnboardingStep(index)
-  // the notice waits for the step that is about the connection
-  const noticeOpen = noticeDue && index >= ONBOARDING_CONNECT_STEP
+  // 0.17 리뷰 #4: the first run opens no notice above itself; the first-connection
+  // notice (what leaves the PC, skills, Codex history) waits for the first AI use
+  // on Home or in an editor
   const freeSettings = useFreeAiSettings()
   const freeConnected = FREE_AI_PROVIDERS.some(
     (provider) => freeSettings !== null && freeAiConnected(freeSettings, provider),
@@ -115,19 +107,16 @@ export function Onboarding({
   // step makes its card buttons inert, which blurs them) — pull focus back onto
   // the card so it never drops to body
   useEffect(() => {
-    if (noticeOpen) return
     const card = cardRef.current
     const active = document.activeElement
     if (card && (!(active instanceof HTMLElement) || !card.contains(active))) card.focus()
-  }, [index, noticeOpen])
+  }, [index])
 
   // keyboard handling: Escape skips, Enter / ArrowRight advance, ArrowLeft goes
   // back, and Tab is trapped inside the dialog (aria-modal). Enter is ignored
   // when a button is focused so the native click doesn't double-fire.
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      // the notice above owns the keyboard while it is open
-      if (noticeOpen) return
       if (event.key === 'Escape') {
         finish()
         return
@@ -197,7 +186,7 @@ export function Onboarding({
               // no subscription: the free connections open right here
               freeContent={<FreeAiCards t={t} compact />}
               freeConnected={freeConnected}
-              codexNotice
+              pathText={(path, part) => onboardingConnectText(lang, path, part)}
               renderAfterCard={(provider) =>
                 connection.failed[provider] && (
                   <p className="onb-connect-failed" role="alert" data-provider={provider}>
@@ -286,7 +275,6 @@ export function Onboarding({
           </div>
         </div>
       </div>
-      {noticeOpen && <FirstConnectionDialog onAcknowledge={onNoticeAcknowledge} />}
     </div>
   )
 }

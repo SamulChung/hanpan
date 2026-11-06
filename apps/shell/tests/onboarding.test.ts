@@ -70,8 +70,6 @@ function connectionOf(
 interface RenderOptions {
   onDone?: () => Promise<boolean>
   connection?: SubscriptionConnection
-  noticeDue?: boolean
-  onNoticeAcknowledge?: () => void
   lang?: 'en' | 'ko'
 }
 
@@ -84,8 +82,6 @@ function renderOnboarding(options: RenderOptions = {}): void {
         createElement(Onboarding, {
           onDone: options.onDone ?? vi.fn(async () => true),
           connection: options.connection ?? connectionOf(statuses('not-installed', 'signed-out')),
-          noticeDue: options.noticeDue ?? false,
-          onNoticeAcknowledge: options.onNoticeAcknowledge ?? vi.fn(),
         }),
       ),
     )
@@ -215,9 +211,8 @@ describe('Onboarding', () => {
     await click('.onb-slide[data-step="connect"] [data-path="chatgpt"]')
     await click('.onb-slide[data-step="connect"] [data-action="guide-alternate"]')
     expect(cards()).toEqual([['codex', 'signed-out']])
-    expect(step.querySelector('.ai-sub-codex')!.textContent).toBe(
-      aiSubscriptionText('en', 'codexNotice'),
-    )
+    // 0.17 리뷰 #4: no Codex policy line on the first run (Settings still shows it)
+    expect(step.querySelector('.ai-sub-codex')).toBeNull()
     await click('.onb-slide[data-step="connect"] [data-provider="codex"] [data-action="login"]')
     expect(connection.login).toHaveBeenCalledWith('codex')
   })
@@ -289,33 +284,22 @@ describe('Onboarding', () => {
     }
   })
 
-  it('keeps the first-connection notice for the connect step and reports its acknowledgement', async () => {
-    const onNoticeAcknowledge = vi.fn()
-    const onDone = vi.fn(async () => true)
+  // 0.17 리뷰 #4: the privacy notice (skills, Codex history) waits for the first AI use;
+  // it never covers the first-run connect step
+  it('does not open the first-connection notice during the first run', async () => {
     renderOnboarding({
-      onDone,
-      noticeDue: true,
-      onNoticeAcknowledge,
       connection: connectionOf(statuses('ready', 'signed-out')),
     })
-    expect(host.querySelector('.first-notice')).toBeNull()
-
-    await click('.onb-next')
-    const notice = host.querySelector<HTMLElement>('.first-notice')!
-    expect(notice.textContent).toContain(aiSubscriptionText('en', 'noticeSend'))
-    expect(notice.textContent).toContain(aiSubscriptionText('en', 'noticeTraining'))
-    expect(notice.textContent).toContain(aiSubscriptionText('en', 'noticeCodexHistory'))
-
-    // the notice owns the keyboard: the onboarding behind it neither skips nor advances
+    for (let step = 0; step < ONBOARDING_STEPS.length; step++) {
+      expect(host.querySelector('.first-notice')).toBeNull()
+      if (step < ONBOARDING_STEPS.length - 1) await click('.onb-next')
+    }
+    // the keys still move the onboarding: nothing above it owns them
     await act(async () => {
-      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }))
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
       await Promise.resolve()
     })
     expect(activeStep()).toBe('connect')
-    expect(onDone).not.toHaveBeenCalled()
-
-    await click('.first-notice .ai-sub-btn')
-    expect(onNoticeAcknowledge).toHaveBeenCalledTimes(1)
   })
 
   it('carries no credits offer, community call, star hint or statistics notice', async () => {
@@ -409,4 +393,33 @@ describe('Hanpan first-run copy', () => {
       expect(lead.textContent).not.toMatch(/유료|구독|paid|subscription/i)
     },
   )
+
+  // 0.17 리뷰 #4: step 1 says free; the connect step must not then ask for a paid plan
+  it.each(['ko', 'en'] as const)(
+    'the connect step asks for no paid plan, in the question or an opened way (%s)',
+    async (lang) => {
+      const [, asked] = await allSteps(lang)
+      expect(asked).not.toMatch(
+        /유료|구독|요금제가 있어야|Pro 또는 Max|paid|subscription|Pro or Max/i,
+      )
+      act(() => root.unmount())
+      root = createRoot(host)
+      // Claude already works: its way opens by itself
+      renderOnboarding({ lang, connection: connectionOf(statuses('ready', 'signed-out')) })
+      await click('.onb-next')
+      const opened = host.querySelector<HTMLElement>('.onb-slide[data-step="connect"]')!
+      expect(opened.querySelector('.ai-sub-guide-open')).not.toBeNull()
+      expect(opened.textContent).not.toMatch(
+        /유료|구독|요금제가 있어야|Pro 또는 Max|paid|subscription|Pro or Max/i,
+      )
+    },
+  )
+
+  it('offers the PC model on the "not yet" way (ko)', async () => {
+    await allSteps('ko')
+    const free = host.querySelector<HTMLElement>(
+      '.onb-slide[data-step="connect"] [data-path="free"]',
+    )!
+    expect(free.textContent).toContain('PC')
+  })
 })

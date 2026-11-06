@@ -24,6 +24,7 @@ import {
   type ShortcutKind,
   type ShortcutTarget,
 } from '../../shared/home-layout'
+import { useDialogKeys } from './dialog-keys'
 import { homeCustomText, type HomeCustomStringKey } from './i18n/strings-home-custom'
 import './home-widgets.css'
 
@@ -772,16 +773,6 @@ export function HomeWidgets({
   )
 }
 
-function useEscape(onClose: () => void): void {
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
-}
-
 /** "위젯 추가": every widget type, with what it does */
 export function WidgetGallery({
   layout,
@@ -795,7 +786,7 @@ export function WidgetGallery({
   onClose: () => void
 }) {
   const text: Text = (key) => homeCustomText(lang, key)
-  useEscape(onClose)
+  const dialogRef = useDialogKeys(onClose)
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
@@ -804,6 +795,7 @@ export function WidgetGallery({
         aria-modal="true"
         aria-label={text('addWidget')}
         data-widget-gallery=""
+        ref={dialogRef}
         onClick={(event) => event.stopPropagation()}
       >
         <h3>{text('addWidget')}</h3>
@@ -878,7 +870,7 @@ export function HomeCustomizePanel({
     setThemeState(next)
     void Promise.resolve(window.aiOffice.setTheme?.(next)).catch(() => undefined)
   }
-  useEscape(onClose)
+  const dialogRef = useDialogKeys(onClose)
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -888,6 +880,7 @@ export function HomeCustomizePanel({
         aria-modal="true"
         aria-label={text('customize')}
         data-home-custom="panel"
+        ref={dialogRef}
         onClick={(event) => event.stopPropagation()}
       >
         <h3>{text('customize')}</h3>

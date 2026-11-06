@@ -6,6 +6,7 @@
  * the HWP file the law publishes, so they offer HWP only.
  */
 import { useEffect, useMemo, useState } from 'react'
+import { useDialogKeys } from '../dialog-keys'
 import { useI18n } from '../locale'
 import type { MarkdownConverterApi } from './MarkdownConverter'
 import { MyFormsSection, type MyFormsApi } from './MyForms'
@@ -76,6 +77,7 @@ export function TemplatePicker(p: {
   const [templates, setTemplates] = useState<TemplateSummary[]>([])
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
+  const dialogRef = useDialogKeys(p.onClose)
   // the user's own forms, when this build's preload offers them
   const [myFormsApi] = useState(() => myFormsApiOf(window.hanpanApi))
 
@@ -116,7 +118,7 @@ export function TemplatePicker(p: {
         role="dialog"
         aria-modal="true"
         aria-label={t('hpTemplatesTitle')}
-        onKeyDown={(e) => e.key === 'Escape' && p.onClose()}
+        ref={dialogRef}
       >
         <div className="hp-tpl-head">
           <h2>{t('hpTemplatesTitle')}</h2>

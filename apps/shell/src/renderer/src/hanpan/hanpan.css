@@ -455,7 +455,7 @@
 }
 
 .hp-cards .quick-cards.hp-secondary {
-  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(184px, 1fr));
   gap: 8px;
 }
 
@@ -485,6 +485,9 @@
 .hp-secondary .hp-pair {
   display: flex;
   min-width: 0;
+  /* 0.17 리뷰 #2: a pair holds two buttons, so it takes two columns; in one column
+     the name was cut to "A." or "." */
+  grid-column: span 2;
 }
 .hp-secondary .hp-pair > .quick-card.hp-compact {
   flex: 1;

@@ -43,15 +43,19 @@ export interface QuickDeps {
   ): Promise<Uint8Array>
 }
 
-/** what the bar says afterwards; null when there is nothing to say (canceled) */
+/**
+ * what the bar says afterwards; null when there is nothing to say (canceled).
+ * Failures carry a plain message only: the app's own refusal text is English
+ * developer wording ("command `x` is not available…"), so it goes to the console.
+ */
 export interface QuickResult {
   ok: boolean
   messageKey: StringKey | null
-  detail?: string
 }
 
 const DONE: QuickResult = { ok: true, messageKey: 'quickDone' }
 const CANCELED: QuickResult = { ok: true, messageKey: null }
+const NO_DOCUMENT: QuickResult = { ok: false, messageKey: 'quickNoDocument' }
 
 function errorText(error: unknown): string {
   return error instanceof Error ? error.message : String(error)
@@ -106,7 +110,10 @@ async function exportWithDialog(kind: GraphicsKind, deps: QuickDeps): Promise<Qu
     defaultName: `${baseName(title)}.${choice.format}`,
     format: choice.format,
   })
-  if (!result.ok) return { ok: false, messageKey: 'quickRefused', detail: result.error }
+  if (!result.ok) {
+    console.warn('quick export failed:', result.error)
+    return { ok: false, messageKey: 'quickExportFailed' }
+  }
   if ('canceled' in result) return CANCELED
   return { ok: true, messageKey: 'quickExported' }
 }
@@ -114,6 +121,9 @@ async function exportWithDialog(kind: GraphicsKind, deps: QuickDeps): Promise<Qu
 async function run(id: QuickActionId, deps: QuickDeps): Promise<QuickResult> {
   const execute = (command: string, params: object = {}) =>
     deps.adapter.api.execute(command, params)
+  // every action works on an open document: without one the app only answers
+  // with a developer error, so nothing is sent
+  if (!(await deps.adapter.docInfo()).hasDocument) return NO_DOCUMENT
   switch (id) {
     case 'removeBackground':
       await execute('layer.removeBackground')
@@ -147,7 +157,8 @@ export async function runQuickAction(id: QuickActionId, deps: QuickDeps): Promis
   try {
     return await run(id, deps)
   } catch (error) {
-    return { ok: false, messageKey: 'quickRefused', detail: errorText(error) }
+    console.warn(`quick action ${id} failed:`, errorText(error))
+    return { ok: false, messageKey: 'quickFailed' }
   } finally {
     unlock()
   }

@@ -15,7 +15,10 @@ export const nl = {
   quickCenter: 'Centreren op tekengebied',
   quickExportPngSvg: 'Exporteren als PNG of SVG',
   quickDone: 'Klaar.',
-  quickRefused: 'De app kon dit nu niet doen:',
+  quickNoDocument: 'Open of maak eerst een afbeelding.',
+  quickFailed:
+    'Dat lukte niet. Selecteer de afbeelding of laag die je wilt wijzigen en probeer het opnieuw.',
+  quickExportFailed: 'Exporteren mislukt. Probeer een andere map of naam.',
   quickExported: 'Kopie opgeslagen.',
   exportDialogTitle: 'Exporteren',
   exportFormat: 'Indeling',

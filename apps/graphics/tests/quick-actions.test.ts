@@ -4,7 +4,10 @@ import { keepRatio } from '../src/renderer/quick/resize'
 import type { GraphicsAdapter } from '../src/renderer/adapters'
 
 /** An app whose commands are scripted by id; records what ran. */
-function fakeApp(handlers: Record<string, (params: Record<string, unknown>) => unknown> = {}) {
+function fakeApp(
+  handlers: Record<string, (params: Record<string, unknown>) => unknown> = {},
+  hasDocument = true,
+) {
   const executed: Array<[string, Record<string, unknown>]> = []
   const placed: string[] = []
   const adapter = {
@@ -22,7 +25,10 @@ function fakeApp(handlers: Record<string, (params: Record<string, unknown>) => u
       placed.push(name)
     }),
     exportBytes: vi.fn(async () => new Uint8Array([1, 2, 3])),
-    docInfo: async () => ({ hasDocument: true, dirty: false, title: 'logo.svg' }),
+    docInfo: async () =>
+      hasDocument
+        ? { hasDocument: true, dirty: false, title: 'logo.svg' }
+        : { hasDocument: false, dirty: false, title: null },
   } as unknown as GraphicsAdapter
   return { adapter, executed, placed }
 }
@@ -49,7 +55,7 @@ describe('the quick actions', () => {
     expect(QUICK_ACTIONS.illust).toEqual(['traceImage', 'centerOnArtboard', 'exportPngSvg'])
   })
 
-  it('removeBackground runs layer.removeBackground and reports the app refusal reason', async () => {
+  it('removeBackground runs layer.removeBackground; a refusal gets a plain message, not the app text', async () => {
     const ok = fakeApp()
     expect(await runQuickAction('removeBackground', deps(ok.adapter))).toMatchObject({
       ok: true,
@@ -63,8 +69,31 @@ describe('the quick actions', () => {
     })
     expect(await runQuickAction('removeBackground', deps(refused.adapter))).toEqual({
       ok: false,
-      messageKey: 'quickRefused',
-      detail: 'select a pixel layer first',
+      messageKey: 'quickFailed',
+    })
+  })
+
+  // 0.17 리뷰 #3: 문서 없이 누르면 앱에 명령을 보내지 않고 사람 말로 알린다
+  it.each([...QUICK_ACTIONS.photo, ...QUICK_ACTIONS.illust])(
+    '%s without an open document sends the app nothing and asks for a picture first',
+    async (id) => {
+      const app = fakeApp({}, false)
+      const d = deps(app.adapter)
+      expect(await runQuickAction(id, d)).toEqual({ ok: false, messageKey: 'quickNoDocument' })
+      expect(app.executed).toEqual([])
+      expect(d.pickImage).not.toHaveBeenCalled()
+      expect(d.askExport).not.toHaveBeenCalled()
+    },
+  )
+
+  it('a failed export says so plainly, without the main process error text', async () => {
+    const app = fakeApp()
+    const d = deps(app.adapter, {
+      exportFile: vi.fn(async () => ({ ok: false as const, error: 'EACCES: permission denied' })),
+    })
+    expect(await runQuickAction('exportPngSvg', d)).toEqual({
+      ok: false,
+      messageKey: 'quickExportFailed',
     })
   })
 

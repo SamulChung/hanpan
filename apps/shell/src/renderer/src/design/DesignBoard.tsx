@@ -12,6 +12,7 @@
  * `.hpdesign` file (pictures inside), exported as PNG, JPG or PDF, or copied
  * as a picture to paste into a HWP, Word or PowerPoint tab.
  */
+import { DesignFileMenu } from './DesignFileMenu'
 import {
   useCallback,
   useEffect,
@@ -1730,6 +1731,24 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
       onPointerCancel={endDrag}
     >
       <header className="dz-top">
+        {/* 저장·열기는 다른 편집기처럼 파일 메뉴에 모은다 */}
+        <DesignFileMenu
+          lang={p.lang}
+          canPrint={!!p.api.print}
+          actions={{
+            newDesign: () => {
+              const f = FORMATS.find((x) => x.id === formatId) ?? FORMATS[0]!
+              startNew(blankDoc(f))
+            },
+            open: () => void open(),
+            save: () => void save(),
+            saveAs: () => void save('saveAs'),
+            exportPng: () => void exportPicture('png'),
+            exportJpg: () => void exportPicture('jpg'),
+            exportPdf: () => void exportPdf(),
+            print: () => setPrintOpen(true),
+          }}
+        />
         <div className="dz-name">
           <input
             value={doc.name}
@@ -1897,15 +1916,6 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
               </div>
             )}
           </span>
-          <button type="button" onClick={() => void save()} title="Ctrl+S">
-            {w.save}
-          </button>
-          <button type="button" onClick={() => void save('saveAs')} title="Ctrl+Shift+S">
-            {w.saveAs}
-          </button>
-          <button type="button" onClick={() => void open()}>
-            {w.open}
-          </button>
         </div>
       </header>
       <div className="dz-main">

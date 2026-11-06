@@ -257,9 +257,30 @@ body.overlay-title-bar .tab-bar-drag-spacer {
 
 .tab-title {
   flex: 1 1 auto;
+  display: flex;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* the name ellipsizes; its number (and the extension after it) always shows */
+.tab-title-base {
+  min-width: 1.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* after the number: the first to give way in a narrow tab */
+.tab-title-ext {
+  flex-shrink: 100;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.tab-title-tail {
+  flex: none;
+  white-space: pre;
 }
 
 .tab-close {

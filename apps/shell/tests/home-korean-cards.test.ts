@@ -239,3 +239,42 @@ describe('a tab menu asking to save a document as one of 내 양식', () => {
     expect(select?.value).toBe('t2')
   })
 })
+
+// 0.17 리뷰 #18·#19 (홈 사이드바와 1366×768 검색)
+describe('Home for an office user', () => {
+  afterEach(() => {
+    delete (window as { aiOfficeAgent?: unknown }).aiOfficeAgent
+  })
+
+  it('names the folder agent by what it does, not "에이전트"', async () => {
+    ;(window as { aiOfficeAgent?: unknown }).aiOfficeAgent = { open: vi.fn() }
+    await renderHome('ko')
+    const item = host.querySelector<HTMLElement>('[data-nav="agent"]')!
+    expect(item.textContent).toContain('AI 폴더 작업')
+    expect(item.textContent).not.toContain('에이전트')
+    expect(item.title).toContain('고급')
+  })
+
+  it('brings the search results into view when a search starts', async () => {
+    const scrolled = vi.fn()
+    Element.prototype.scrollIntoView = scrolled
+    await renderHome('ko')
+    const input = host.querySelector<HTMLInputElement>('.file-search input')!
+    await act(async () => {
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!
+      setter.call(input, '주간')
+      input.dispatchEvent(new Event('input', { bubbles: true }))
+      await Promise.resolve()
+    })
+    expect(scrolled).toHaveBeenCalledTimes(1)
+    expect(scrolled.mock.calls[0]![0]).toMatchObject({ block: 'start' })
+    // typing on does not scroll again
+    await act(async () => {
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!
+      setter.call(input, '주간 업무')
+      input.dispatchEvent(new Event('input', { bubbles: true }))
+      await Promise.resolve()
+    })
+    expect(scrolled).toHaveBeenCalledTimes(1)
+  })
+})

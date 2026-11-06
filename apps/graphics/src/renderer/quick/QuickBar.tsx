@@ -1,4 +1,4 @@
-/** The quick-action buttons above the app (design 6-5): off while the AI or another action runs. */
+/** The quick-action buttons above the app (design 6-5): off while the AI or another action runs, and while no document is open. */
 import type { ReactElement } from 'react'
 import type { GraphicsKind } from '../../shared/kinds'
 import { useI18n, type StringKey } from '../i18n/locale'
@@ -16,10 +16,13 @@ const LABELS: Record<QuickActionId, StringKey> = {
 export function QuickBar({
   kind,
   disabled,
+  hasDocument,
   onRun,
 }: {
   kind: GraphicsKind
   disabled: boolean
+  /** every action works on an open document: off, with the reason, until there is one */
+  hasDocument: boolean
   onRun: (id: QuickActionId) => void
 }): ReactElement {
   const { t } = useI18n()
@@ -31,7 +34,8 @@ export function QuickBar({
           type="button"
           className="gx-quick-btn"
           data-quick={id}
-          disabled={disabled}
+          disabled={disabled || !hasDocument}
+          title={hasDocument ? undefined : t('quickNoDocument')}
           onClick={() => onRun(id)}
         >
           {t(LABELS[id])}
