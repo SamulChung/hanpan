@@ -107,6 +107,55 @@ body {
   padding: 8px 12px;
   border-bottom: 1px solid var(--border);
 }
+/* 파일 메뉴 (0.17 리뷰 #8) */
+.dz-file {
+  position: relative;
+}
+.dz-file-button {
+  font-weight: 600;
+}
+.dz-file-button[aria-expanded='true'] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.dz-file-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface, #fff);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 16%);
+}
+.dz-file-menu button {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  border: none;
+  background: none;
+  text-align: start;
+  white-space: nowrap;
+}
+.dz-file-menu button:hover,
+.dz-file-menu button:focus-visible {
+  background: var(--accent-soft, rgb(0 0 0 / 6%));
+}
+.dz-file-menu kbd {
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 12px;
+}
+.dz-file-menu hr {
+  width: 100%;
+  margin: 4px 0;
+  border: none;
+  border-top: 1px solid var(--border);
+}
 .dz-name input {
   width: 200px;
   font-weight: 600;
