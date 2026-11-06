@@ -632,6 +632,24 @@ describe('the theme panel', () => {
     expect(container.querySelector('.mm-theme-panel')).toBeNull()
   })
 
+  it('Escape closes the theme panel and the icon panel', async () => {
+    await openWith(plainSheet())
+    const escape = async (): Promise<void> => {
+      await act(async () => {
+        window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+      })
+      await settle()
+    }
+    await click('[data-action="theme"]')
+    expect(container.querySelector('.mm-theme-panel')).not.toBeNull()
+    await escape()
+    expect(container.querySelector('.mm-theme-panel')).toBeNull()
+    await click('[data-action="icons"]')
+    expect(container.querySelector('.mm-icon-panel')).not.toBeNull()
+    await escape()
+    expect(container.querySelector('.mm-icon-panel')).toBeNull()
+  })
+
   it('picking writes the theme to the sheet: the map is drawn with it, is unsaved, and the save carries it', async () => {
     const { fake } = await openWith(plainSheet())
     await click('[data-action="theme"]')
