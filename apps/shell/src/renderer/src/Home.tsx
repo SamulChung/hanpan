@@ -1167,7 +1167,7 @@ export function Home({
   // that starts brings its box and results up (once, not on every key)
   useEffect(() => {
     if (!searchActive) return
-    searchInputRef.current?.closest('section')?.scrollIntoView?.({ block: 'start' })
+    searchInputRef.current?.closest('.file-search-group')?.scrollIntoView?.({ block: 'start' })
   }, [searchActive])
   // modified-column sort (WPS-style header popover), shared by the global and folder tables
   const [fileSort, setFileSort] = useState<'recent' | 'oldest'>('recent')
