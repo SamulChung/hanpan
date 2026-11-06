@@ -200,4 +200,8 @@ export const ja = {
   presentInTab: 'このタブで',
   presentFullscreen: '全画面',
   presentNewTab: '新しいタブ',
+  emptyPageTitle: '空の Web ページです',
+  emptyPageBody: 'AI パネルで作りたいページを説明するか、基本の枠を挿入して編集してください。',
+  emptyPageAskAi: 'AI に説明する',
+  emptyPageSource: 'HTML ソースを表示',
 } satisfies Record<keyof typeof zh, string>

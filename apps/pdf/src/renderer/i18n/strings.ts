@@ -2253,7 +2253,7 @@ export const strings = {
     highlight: '형광펜',
     underline: '밑줄',
     strikeout: '취소선',
-    aiOpenAssistant: 'AI 어시스턴트 열기',
+    aiOpenAssistant: 'AI 도우미 열기',
     aiNewChat: '새 대화',
     aiCollapsePanel: '패널 접기',
     aiEmptyTitle: '이 PDF에 대해 질문하기',

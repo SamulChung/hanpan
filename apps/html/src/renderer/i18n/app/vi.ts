@@ -200,4 +200,8 @@ export const vi = {
   presentInTab: 'Trong thẻ này',
   presentFullscreen: 'Toàn màn hình',
   presentNewTab: 'Thẻ mới',
+  emptyPageTitle: 'Trang web trống',
+  emptyPageBody: 'Mô tả trang bạn muốn trong ngăn AI, hoặc chèn khung cơ bản rồi chỉnh sửa.',
+  emptyPageAskAi: 'Mô tả cho AI',
+  emptyPageSource: 'Xem mã HTML',
 } satisfies Record<keyof typeof zh, string>

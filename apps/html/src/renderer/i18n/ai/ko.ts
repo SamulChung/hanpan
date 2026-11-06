@@ -61,7 +61,7 @@ export const ko = {
   aiUnknownError: 'AI 요청이 실패했습니다. 다시 시도하세요',
   aiWorkedSteps: '완료 · {n}단계',
   aiWorking: '작업 중',
-  aiOpenAssistant: 'AI 어시스턴트 열기',
+  aiOpenAssistant: 'AI 도우미 열기',
   aiToolOutline: '문서 구조 읽기',
   aiToolCheckPages: '인쇄 쪽 나눔 확인',
   aiToolReadSource: '소스 읽기',

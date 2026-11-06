@@ -201,4 +201,8 @@ export const ru = {
   presentInTab: 'В этой вкладке',
   presentFullscreen: 'Во весь экран',
   presentNewTab: 'Новая вкладка',
+  emptyPageTitle: 'This web page is empty',
+  emptyPageBody: 'Describe the page you want in the AI pane, or insert a starter page and edit it.',
+  emptyPageAskAi: 'Describe it to AI',
+  emptyPageSource: 'View HTML source',
 } satisfies Record<keyof typeof zh, string>

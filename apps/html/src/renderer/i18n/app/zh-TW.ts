@@ -196,4 +196,8 @@ export const zhTW = {
   presentInTab: '在目前分頁',
   presentFullscreen: '全螢幕',
   presentNewTab: '新分頁',
+  emptyPageTitle: '這是一個空白網頁',
+  emptyPageBody: '在 AI 面板中描述想要的頁面，或插入基本框架後直接編輯。',
+  emptyPageAskAi: '向 AI 描述',
+  emptyPageSource: '檢視 HTML 原始碼',
 } satisfies Record<keyof typeof zh, string>

@@ -85,6 +85,7 @@ import {
   type InsertKind,
 } from './document/insert-presets'
 import { isDocEmpty } from './document/blank'
+import { EmptyPageHint } from './components/EmptyPageHint'
 import { documentSkeleton } from './document/skeleton'
 import { pageAtScroll, readPageSetup, sheetPeriod } from './document/page-setup'
 import { moveTarget } from './document/move-target'
@@ -2069,6 +2070,13 @@ export default function App() {
                   onLoad={onPreviewLoad}
                   draft={draftHtml}
                 />
+                {canvasMode === 'edit' && !draftHtml && isDocEmpty(textRef.current) && (
+                  <EmptyPageHint
+                    onAskAi={() => setAiOpen(true)}
+                    onSkeleton={insertSkeleton}
+                    onSource={() => setView('source')}
+                  />
+                )}
                 {canvasMode === 'present' && (
                   <button
                     type="button"

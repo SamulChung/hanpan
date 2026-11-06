@@ -198,4 +198,8 @@ export const cs = {
   replace: 'Nahradit',
   replaceAll: 'Nahradit vše',
   findTip: 'Najít a nahradit (⌘F)',
+  emptyPageTitle: 'This web page is empty',
+  emptyPageBody: 'Describe the page you want in the AI pane, or insert a starter page and edit it.',
+  emptyPageAskAi: 'Describe it to AI',
+  emptyPageSource: 'View HTML source',
 } satisfies Record<keyof typeof zh, string>

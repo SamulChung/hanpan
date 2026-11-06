@@ -200,4 +200,8 @@ export const en = {
   presentInTab: 'In this tab',
   presentFullscreen: 'Fullscreen',
   presentNewTab: 'New tab',
+  emptyPageTitle: 'This web page is empty',
+  emptyPageBody: 'Describe the page you want in the AI pane, or insert a starter page and edit it.',
+  emptyPageAskAi: 'Describe it to AI',
+  emptyPageSource: 'View HTML source',
 } satisfies Record<keyof typeof zh, string>
