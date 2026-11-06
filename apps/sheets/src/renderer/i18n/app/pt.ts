@@ -1584,4 +1584,5 @@ export const pt = {
   appPngExportFailed: 'Falha ao exportar a imagem.',
   appFilePrint: 'Imprimir…',
   appSheetNamePrefix: 'Sheet',
+  appColorOptions: 'Opções de {label}',
 } satisfies Record<keyof typeof zh, string>

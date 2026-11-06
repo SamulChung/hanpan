@@ -1543,4 +1543,5 @@ export const ms = {
   appPngExportFailed: 'Eksport imej gagal.',
   appFilePrint: 'Cetak…',
   appSheetNamePrefix: 'Sheet',
+  appColorOptions: 'Pilihan {label}',
 } satisfies Record<keyof typeof zh, string>

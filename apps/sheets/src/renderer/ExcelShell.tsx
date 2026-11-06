@@ -42,6 +42,7 @@ import { sheetContextMenuAction } from './sheet-context-menu'
 import { useAiDock } from './ai/use-ai-dock'
 
 import { ColorDropdown } from './ColorDropdown'
+import { useRibbonFit } from './ribbon-fit'
 import { FormatCellsDialog } from './FormatCellsDialog'
 import { AllowEditRangesDialog } from './AllowEditRangesDialog'
 import { ProtectSheetDialog } from './ProtectSheetDialog'
@@ -76,7 +77,7 @@ import {
   accountingStyle,
   COMMA_STYLE,
   PERCENT_STYLE,
-  RIBBON_CURRENCY_SYMBOL,
+  ribbonCurrency,
 } from './excel-format-shortcuts'
 import { isModalOpen, resolveGlobalShortcut } from './global-shortcuts'
 import { stepFontSize } from './font-size-ladder'
@@ -2000,6 +2001,10 @@ function Ribbon({
   readonly onIsSelectionInPivot: () => boolean
 }): React.JSX.Element {
   const { t, lang } = useI18n()
+  const currency = ribbonCurrency(lang)
+  // the Home band takes a denser layout when its labels do not fit the window
+  const homeBandRef = useRef<HTMLDivElement>(null)
+  useRibbonFit(homeBandRef, [lang, activeTab])
   const [fontColor, setFontColor] = useState('#C00000')
   const [fillColor, setFillColor] = useState('#FFF2CC')
   const [borderColor, setBorderColor] = useState('#000000')
@@ -2288,7 +2293,7 @@ function Ribbon({
         {selectedShape && (
           <RibbonGroup label={t('appGroupShapeStyles')}>
             <ColorDropdown
-              label="Shape fill"
+              label={t('appShapeFill')}
               data-tip={t('appShapeFill')}
               split={hasPaint(selectedShape.fillColor)}
               display={
@@ -2302,7 +2307,7 @@ function Ribbon({
               onPick={(hex) => onCommand(`shape-fill:${hex ?? 'none'}`)}
             />
             <ColorDropdown
-              label="Shape outline"
+              label={t('appShapeOutline')}
               data-tip={t('appShapeOutline')}
               split={hasPaint(selectedShape.lineColor)}
               display={
@@ -2464,7 +2469,7 @@ function Ribbon({
               {t('appShapes')}
               <CaretIcon />
               <ShapeGallerySelect
-                label="Shapes"
+                label={t('appShapes')}
                 onPick={(prst) => onCommand(`insert-shape:${prst}`)}
               />
             </span>
@@ -2899,7 +2904,7 @@ function Ribbon({
             </span>
             <MenuSelect
               cover
-              label="AutoSum"
+              label={t('appAutoSum')}
               options={autoSumOptions(t)}
               onPick={(value) => onCommand(`autofn:${value}`)}
             />
@@ -3445,8 +3450,8 @@ function Ribbon({
     ? fontSizes
     : [...fontSizes, echoSize].sort((a, b) => a - b)
   return (
-    <div className="ribbon" data-ribbon-body="">
-      <RibbonGroup label={aiSubscriptionText(lang, 'aiAssistant')}>
+    <div className="ribbon" data-ribbon-body="" ref={homeBandRef}>
+      <RibbonGroup label={aiSubscriptionText(lang, 'aiAssistant')} name="ai">
         <button
           className={`ribbon-tool as-button large ai-entry ${aiOpen ? 'active' : ''}`}
           data-tip={t('aiOpenAssistant')}
@@ -3517,7 +3522,7 @@ function Ribbon({
           </span>
         </button>
       </RibbonGroup>
-      <RibbonGroup label={t('appGroupClipboard')}>
+      <RibbonGroup label={t('appGroupClipboard')} name="clipboard">
         <button
           className="ribbon-tool as-button large"
           data-tip={t('appPasteTitle')}
@@ -3566,12 +3571,12 @@ function Ribbon({
           </button>
         </div>
       </RibbonGroup>
-      <RibbonGroup label={t('appGroupFont')}>
+      <RibbonGroup label={t('appGroupFont')} name="font">
         <div className="ribbon-rows">
           <div className="inline-tools">
             <EditableMenuSelect
               className="select-like font-name"
-              label="Font family"
+              label={t('appFontFamilyTip')}
               data-tip={t('appFontFamilyTip')}
               value={echoFamily}
               options={familyOptions}
@@ -3589,7 +3594,7 @@ function Ribbon({
             />
             <EditableMenuSelect
               className="select-like font-size"
-              label="Font size"
+              label={t('appFontSizeTip')}
               data-tip={t('appFontSizeTip')}
               value={String(echoSize)}
               options={sizeOptions.map((size) => ({ value: String(size), label: String(size) }))}
@@ -3668,7 +3673,7 @@ function Ribbon({
               <ToolSymbol symbol="x₂" />
             </button>
             <ColorDropdown
-              label="Font color"
+              label={t('appFontColor')}
               data-tip={t('appFontColor')}
               split
               display={
@@ -3684,7 +3689,7 @@ function Ribbon({
               }}
             />
             <ColorDropdown
-              label="Fill color"
+              label={t('appFillColor')}
               data-tip={t('appFillColor')}
               split
               display={
@@ -3702,11 +3707,11 @@ function Ribbon({
             />
             <MenuSelect
               className="select-like compact"
-              label="Borders"
+              label={t('appBorders')}
               data-tip={t('appBorders')}
               display={
                 <>
-                  <ToolSymbol symbol="⊡" /> {t('appBorders')}
+                  <ToolSymbol symbol="⊡" /> <span className="tool-label">{t('appBorders')}</span>
                 </>
               }
               options={[
@@ -3726,7 +3731,7 @@ function Ribbon({
               onPick={(value) => onCommand(`border:${value}:${borderColor}`)}
             />
             <ColorDropdown
-              label="Border color"
+              label={t('appBorderColor')}
               data-tip={t('appBorderColor')}
               display={
                 <span className="swatch-letter">
@@ -3742,7 +3747,7 @@ function Ribbon({
           </div>
         </div>
       </RibbonGroup>
-      <RibbonGroup label={t('appGroupAlignment')}>
+      <RibbonGroup label={t('appGroupAlignment')} name="alignment">
         <div className="ribbon-rows">
           <div className="inline-tools alignment-tools">
             <button
@@ -3776,7 +3781,7 @@ function Ribbon({
             </button>
             <MenuSelect
               className="select-like compact"
-              label="Orientation"
+              label={t('dlgFcOrientation')}
               data-tip={t('dlgFcOrientation')}
               display={<ToolSymbol symbol="⤴" />}
               options={[
@@ -3830,11 +3835,11 @@ function Ribbon({
             </button>
             <MenuSelect
               className="select-like compact"
-              label="Merge cells"
+              label={t('appMergeCells')}
               data-tip={t('appMergeCells')}
               display={
                 <>
-                  <ToolSymbol symbol="⇔" /> {t('appMerge')}
+                  <ToolSymbol symbol="⇔" /> <span className="tool-label">{t('appMerge')}</span>
                 </>
               }
               options={[
@@ -3848,16 +3853,18 @@ function Ribbon({
           </div>
         </div>
       </RibbonGroup>
-      <RibbonGroup label={t('appGroupNumber')}>
+      <RibbonGroup label={t('appGroupNumber')} name="number">
         <div className="ribbon-rows">
           <NumberFormatSelect pattern={selectionFormat?.numberFormat ?? ''} onCommand={onCommand} />
           <div className="inline-tools">
             <button
               data-tip={t('appCurrency')}
               aria-label={t('appCurrency')}
-              onClick={() => onCommand(`format:${accountingStyle(RIBBON_CURRENCY_SYMBOL)}`)}
+              onClick={() =>
+                onCommand(`format:${accountingStyle(currency.symbol, currency.decimals)}`)
+              }
             >
-              $
+              {currency.symbol}
             </button>
             <button
               data-tip={t('appPercentTitle')}
@@ -3890,7 +3897,7 @@ function Ribbon({
           </div>
         </div>
       </RibbonGroup>
-      <RibbonGroup label={t('appGroupStyles')}>
+      <RibbonGroup label={t('appGroupStyles')} name="styles">
         <div className="styles-stack">
           <button
             className="styles-row as-button"
@@ -3898,16 +3905,16 @@ function Ribbon({
             onClick={() => onCommand('cf-open')}
           >
             <ToolSymbol symbol="▤" />
-            {t('appConditionalFormatting')}
+            <span className="tool-label">{t('appConditionalFormatting')}</span>
             <CaretIcon />
           </button>
           <div className="styles-row as-button" data-tip={t('appFormatAsTableTitle')}>
             <ToolSymbol symbol="▦" />
-            {t('appFormatAsTable')}
+            <span className="tool-label">{t('appFormatAsTable')}</span>
             <CaretIcon />
             <MenuSelect
               cover
-              label="Format as Table"
+              label={t('appFormatAsTable')}
               options={[
                 { value: 'TableStyleLight1', label: t('appTableStyleLight1') },
                 { value: 'TableStyleLight9', label: t('appTableStyleLight9') },
@@ -3921,11 +3928,11 @@ function Ribbon({
           </div>
           <div className="styles-row as-button" data-tip={t('appCellStylesTitle')}>
             <ToolSymbol symbol="🎨" />
-            {t('appCellStyles')}
+            <span className="tool-label">{t('appCellStyles')}</span>
             <CaretIcon />
             <MenuSelect
               cover
-              label="Cell Styles"
+              label={t('appCellStyles')}
               options={[
                 { value: 'good', label: t('appStyleGood') },
                 { value: 'bad', label: t('appStyleBad') },
@@ -3947,7 +3954,7 @@ function Ribbon({
           </div>
         </div>
       </RibbonGroup>
-      <RibbonGroup label={t('appGroupCells')}>
+      <RibbonGroup label={t('appGroupCells')} name="cells">
         <div className="ribbon-rows">
           <button
             className="styles-row as-button"
@@ -3956,7 +3963,8 @@ function Ribbon({
             onClick={() => onCommand('format-cells')}
           >
             <ToolSymbol symbol="🎨" />
-            {t('appFormatCells')} {platformShortcuts('⌘1')}
+            <span className="tool-label">{t('appFormatCells')}</span>
+            <span className="tool-kbd">{platformShortcuts('⌘1')}</span>
             <CaretIcon />
           </button>
           <div className="inline-tools cell-tools">
@@ -4006,11 +4014,11 @@ function Ribbon({
             </button>
             <MenuSelect
               className="select-like compact"
-              label="Format"
+              label={t('appFormatMenu')}
               data-tip={t('appFormatMenu')}
               display={
                 <>
-                  <ToolSymbol symbol="⇳" /> {t('appFormatMenu')}
+                  <ToolSymbol symbol="⇳" /> <span className="tool-label">{t('appFormatMenu')}</span>
                 </>
               }
               options={[
@@ -4024,101 +4032,99 @@ function Ribbon({
           </div>
         </div>
       </RibbonGroup>
-      <RibbonGroup label={t('appGroupEditing')}>
-        <div className="ribbon-rows">
-          <div className="inline-tools">
-            <MenuSelect
-              className="select-like compact"
-              label="AutoSum"
-              data-tip={t('appAutoSumTitle')}
-              display={
-                <>
-                  <ToolSymbol symbol="Σ" /> {t('appAutoSum')}
-                </>
-              }
-              options={autoSumOptions(t)}
-              onPick={(value) => onCommand(`autofn:${value}`)}
-            />
-            <MenuSelect
-              className="select-like compact"
-              label="Sort & Filter"
-              data-tip={t('appGroupSortFilter')}
-              display={
-                <>
-                  <ToolSymbol symbol="⇅" /> {t('appGroupSortFilter')}
-                </>
-              }
-              options={[
-                { value: 'sort:asc', label: t('appSortAToZ') },
-                { value: 'sort:desc', label: t('appSortZToA') },
-                { value: 'sort-custom-open', label: t('appCustomSort') },
-                { value: 'filter-toggle', label: t('appFilter') },
-                { value: 'filter-clear', label: t('appClearFilterTitle') },
-                { value: 'filter-reapply', label: t('appReapplyTitle') },
-              ]}
-              onPick={(value) => onCommand(value)}
-            />
-            <MenuSelect
-              className="select-like compact"
-              label="Fill"
-              data-tip={t('appFillMenu')}
-              display={
-                <>
-                  <ToolSymbol symbol="↓" /> {t('appFillMenu')}
-                </>
-              }
-              options={[
-                { value: 'fill-down', label: t('appFillDown') },
-                { value: 'fill-right', label: t('appFillRight') },
-                { value: 'fill-up', label: t('appFillUp') },
-                { value: 'fill-left', label: t('appFillLeft') },
-                { value: 'fill-series-open', label: t('appFillSeries') },
-                { value: 'flash-fill', label: t('appFlashFill') },
-              ]}
-              onPick={(value) => onCommand(value)}
-            />
-            <MenuSelect
-              className="select-like compact"
-              label="Clear"
-              data-tip={t('appClear')}
-              display={
-                <>
-                  <ToolSymbol symbol="⌫" /> {t('appClear')}
-                </>
-              }
-              options={[
-                { value: 'all', label: t('appClearAll') },
-                { value: 'formats', label: t('appClearFormats') },
-                { value: 'contents', label: t('appClearContents') },
-                { value: 'comments', label: t('appClearComments') },
-                { value: 'hyperlinks', label: t('appClearHyperlinks') },
-              ]}
-              onPick={(value) => onCommand(`clear-${value}`)}
-            />
-          </div>
-          <div className="inline-tools">
-            <button
-              className="labeled"
-              data-tip={t('appFindTitle')}
-              onClick={() => onCommand('find')}
-            >
-              <ToolSymbol symbol="🔍" /> {t('appFind')}
-            </button>
-            <button
-              className="labeled"
-              data-tip={t('appReplace')}
-              onClick={() => onCommand('replace')}
-            >
-              <ToolSymbol symbol="⇄" /> {t('appReplace')}
-            </button>
-            <button
-              className="labeled"
-              data-tip={`${t('appGoTo')} ${platformShortcuts('⌘G')}`}
-              onClick={() => onCommand('goto-open')}
-            >
-              <ToolSymbol symbol="⌖" /> {t('appGoTo')}
-            </button>
-          </div>
+      <RibbonGroup label={t('appGroupEditing')} name="editing">
+        {/* three rows in columns, as Excel lays the group out: narrower than two long rows */}
+        <div className="inline-tools editing-grid">
+          <MenuSelect
+            className="select-like compact"
+            label={t('appAutoSum')}
+            data-tip={t('appAutoSumTitle')}
+            display={
+              <>
+                <ToolSymbol symbol="Σ" /> <span className="tool-label">{t('appAutoSum')}</span>
+              </>
+            }
+            options={autoSumOptions(t)}
+            onPick={(value) => onCommand(`autofn:${value}`)}
+          />
+          <MenuSelect
+            className="select-like compact"
+            label={t('appFillMenu')}
+            data-tip={t('appFillMenu')}
+            display={
+              <>
+                <ToolSymbol symbol="↓" /> <span className="tool-label">{t('appFillMenu')}</span>
+              </>
+            }
+            options={[
+              { value: 'fill-down', label: t('appFillDown') },
+              { value: 'fill-right', label: t('appFillRight') },
+              { value: 'fill-up', label: t('appFillUp') },
+              { value: 'fill-left', label: t('appFillLeft') },
+              { value: 'fill-series-open', label: t('appFillSeries') },
+              { value: 'flash-fill', label: t('appFlashFill') },
+            ]}
+            onPick={(value) => onCommand(value)}
+          />
+          <MenuSelect
+            className="select-like compact"
+            label={t('appClear')}
+            data-tip={t('appClear')}
+            display={
+              <>
+                <ToolSymbol symbol="⌫" /> <span className="tool-label">{t('appClear')}</span>
+              </>
+            }
+            options={[
+              { value: 'all', label: t('appClearAll') },
+              { value: 'formats', label: t('appClearFormats') },
+              { value: 'contents', label: t('appClearContents') },
+              { value: 'comments', label: t('appClearComments') },
+              { value: 'hyperlinks', label: t('appClearHyperlinks') },
+            ]}
+            onPick={(value) => onCommand(`clear-${value}`)}
+          />
+          <MenuSelect
+            className="select-like compact"
+            label={t('appGroupSortFilter')}
+            data-tip={t('appGroupSortFilter')}
+            display={
+              <>
+                <ToolSymbol symbol="⇅" />{' '}
+                <span className="tool-label">{t('appGroupSortFilter')}</span>
+              </>
+            }
+            options={[
+              { value: 'sort:asc', label: t('appSortAToZ') },
+              { value: 'sort:desc', label: t('appSortZToA') },
+              { value: 'sort-custom-open', label: t('appCustomSort') },
+              { value: 'filter-toggle', label: t('appFilter') },
+              { value: 'filter-clear', label: t('appClearFilterTitle') },
+              { value: 'filter-reapply', label: t('appReapplyTitle') },
+            ]}
+            onPick={(value) => onCommand(value)}
+          />
+          <button
+            className="labeled"
+            data-tip={t('appFindTitle')}
+            onClick={() => onCommand('find')}
+          >
+            <ToolSymbol symbol="🔍" /> <span className="tool-label">{t('appFind')}</span>
+          </button>
+          <button
+            className="labeled"
+            data-tip={t('appReplace')}
+            onClick={() => onCommand('replace')}
+          >
+            <ToolSymbol symbol="⇄" /> <span className="tool-label">{t('appReplace')}</span>
+          </button>
+          <button
+            className="labeled"
+            data-tip={`${t('appGoTo')} ${platformShortcuts('⌘G')}`}
+            onClick={() => onCommand('goto-open')}
+          >
+            <ToolSymbol symbol="⌖" /> <span className="tool-label">{t('appGoTo')}</span>
+          </button>
         </div>
       </RibbonGroup>
     </div>
@@ -4489,7 +4495,7 @@ function NumberFormatSelect({
   return (
     <MenuSelect
       className="select-like"
-      label="Number format"
+      label={t('appCtxNumberFormat')}
       data-tip={pattern || t('dlgFcNumGeneral')}
       value={current}
       display={localized(current)}
@@ -4507,14 +4513,20 @@ function NumberFormatSelect({
 
 function RibbonGroup({
   label,
+  name,
   children,
 }: {
   readonly label: string
+  /// styles.css hooks: `ribbon-group-<name>` (the Home tab's narrow-window rules)
+  readonly name?: string
   readonly children: React.ReactNode
 }): React.JSX.Element {
   // No visible group captions — the label stays for assistive tech.
   return (
-    <section className="ribbon-group" aria-label={label}>
+    <section
+      className={name ? `ribbon-group ribbon-group-${name}` : 'ribbon-group'}
+      aria-label={label}
+    >
       <div className="ribbon-group-content">{children}</div>
     </section>
   )

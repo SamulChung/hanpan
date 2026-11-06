@@ -1560,4 +1560,5 @@ export const ru = {
   appPngExportFailed: 'Не удалось экспортировать изображение.',
   appFilePrint: 'Печать…',
   appSheetNamePrefix: 'Sheet',
+  appColorOptions: 'Параметры: {label}',
 } satisfies Record<keyof typeof zh, string>

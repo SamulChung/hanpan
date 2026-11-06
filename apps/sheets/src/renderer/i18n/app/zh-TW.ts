@@ -1446,4 +1446,5 @@ export const zhTW = {
   appPngExportFailed: '匯出圖片失敗。',
   appFilePrint: '列印…',
   appSheetNamePrefix: 'Sheet',
+  appColorOptions: '{label}選項',
 } satisfies Record<keyof typeof zh, string>

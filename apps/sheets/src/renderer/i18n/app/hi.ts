@@ -1540,4 +1540,5 @@ export const hi = {
   appPngExportFailed: 'छवि निर्यात विफल रहा।',
   appFilePrint: 'प्रिंट करें…',
   appSheetNamePrefix: 'Sheet',
+  appColorOptions: '{label} विकल्प',
 } satisfies Record<keyof typeof zh, string>

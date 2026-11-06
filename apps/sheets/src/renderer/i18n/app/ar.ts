@@ -1501,4 +1501,5 @@ export const ar = {
   appPngExportFailed: 'فشل تصدير الصورة.',
   appFilePrint: 'طباعة…',
   appSheetNamePrefix: 'Sheet',
+  appColorOptions: 'خيارات {label}',
 } satisfies Record<keyof typeof zh, string>

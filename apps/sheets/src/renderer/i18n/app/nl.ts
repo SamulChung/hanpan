@@ -1581,4 +1581,5 @@ export const nl = {
   appPngExportFailed: 'Exporteren als afbeelding mislukt.',
   appFilePrint: 'Afdrukken…',
   appSheetNamePrefix: 'Sheet',
+  appColorOptions: 'Opties voor {label}',
 } satisfies Record<keyof typeof zh, string>
