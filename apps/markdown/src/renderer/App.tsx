@@ -77,6 +77,7 @@ import { addQueueAnchor, clearQueueAnchors, removeQueueAnchors } from './editor/
 import { DOCX_MAX_IMAGE_PX, exportDocxBytes } from './export/docxExport'
 import { decodeImageDataUrl, toDocxImage } from './export/exportImage'
 import { buildPrintHtml } from './export/printHtml'
+import { exportedFileLabel } from './export-offer'
 import { diagramSvgToPng, renderDiagram } from './editor/diagrams'
 import type { DiagramLanguage } from './editor/diagrams'
 import type { ExportFormat, SaveMode } from '../shared/ipc'
@@ -179,6 +180,16 @@ export default function App() {
     key: StringKey
     params?: Record<string, string | number>
   } | null>(null)
+  // after an export: the written file (or image folder) for the status bar's buttons
+  const [exportOffer, setExportOffer] = useState<{ path: string; folder: boolean } | null>(null)
+  useEffect(() => {
+    if (!exportOffer) return
+    const timer = window.setTimeout(() => {
+      setExportOffer(null)
+      setImageExportStatus(null)
+    }, 20_000)
+    return () => window.clearTimeout(timer)
+  }, [exportOffer])
   const [slashState, setSlashState] = useState<SlashMenuState | null>(null)
   const [fmOpen, setFmOpen] = useState(false)
   const [fmText, setFmText] = useState('')
@@ -826,6 +837,16 @@ export default function App() {
         (filePathRef.current
           ? filePathRef.current.replace(/^.*[/\\]/, '').replace(/\.(md|markdown)$/i, '')
           : deriveAutoFileName(current)) || 'Untitled'
+      setExportOffer(null)
+      // a written file is offered in the status bar instead of opening a new tab
+      const offerFile = (result: { ok: boolean; path?: string; canceled?: boolean }) => {
+        if (!result.ok || result.canceled || !result.path) return
+        setImageExportStatus({
+          key: 'exportDone',
+          params: { name: exportedFileLabel(result.path) },
+        })
+        setExportOffer({ path: result.path, folder: false })
+      }
       if (format === 'png') {
         if (exportingImagesRef.current) return false
         exportingImagesRef.current = true
@@ -851,8 +872,9 @@ export default function App() {
           }
           setImageExportStatus({
             key: 'appExportImagesDone',
-            params: { count: result.count ?? 0, dir: result.path },
+            params: { count: result.count ?? 0, dir: exportedFileLabel(result.path) },
           })
+          if (result.path) setExportOffer({ path: result.path, folder: true })
           return true
         } catch (err) {
           setImageExportStatus({
@@ -873,6 +895,7 @@ export default function App() {
             ...(outPath ? { outPath } : {}),
           })
           if (!result.ok) console.error('[markdown] pdf export failed:', result.error)
+          else if (!outPath) offerFile(result)
           return result.ok && !('canceled' in result)
         }
         const loadImage = async (src: string) => {
@@ -891,6 +914,7 @@ export default function App() {
             suggestedName,
           })
           if (!result.ok) console.error('[markdown] odt export failed:', result.error)
+          else offerFile(result)
           return result.ok && !('canceled' in result)
         }
         const result = await window.markdownApi.exportDocx({
@@ -899,6 +923,7 @@ export default function App() {
           mode: format === 'docs' ? 'openInDocs' : 'dialog',
         })
         if (!result.ok) console.error('[markdown] docx export failed:', result.error)
+        else if (format === 'docx') offerFile(result)
         return result.ok && !('canceled' in result)
       } catch (err) {
         console.error('[markdown] export failed:', err)
@@ -1512,6 +1537,30 @@ export default function App() {
               {imageExportStatus && (
                 <span className="status-item status-export" role="status">
                   {t(imageExportStatus.key, imageExportStatus.params)}
+                </span>
+              )}
+              {imageExportStatus && exportOffer && (
+                <span className="status-item status-export-actions">
+                  {!exportOffer.folder && (
+                    <button
+                      type="button"
+                      className="status-link"
+                      onClick={() => void window.markdownApi.openExported(exportOffer.path)}
+                    >
+                      {t('exportOpen')}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="status-link"
+                    onClick={() =>
+                      void (exportOffer.folder
+                        ? window.markdownApi.openExported(exportOffer.path)
+                        : window.markdownApi.revealExported(exportOffer.path))
+                    }
+                  >
+                    {t('exportReveal')}
+                  </button>
                 </span>
               )}
               {fileName && <span className="status-item status-file">{fileName}</span>}
