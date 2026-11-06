@@ -587,6 +587,7 @@ import {
   detachedSetFileFor,
   detachedWebContentsFor,
   detachedSetTitleFor,
+  retitleUntitledDetached,
   detachedDocumentFor,
   detachedWindowForWebContents,
   dockBandFor,
@@ -6432,6 +6433,10 @@ function registerHomeIpc(): void {
     persistLang(lang)
     // tabs still named "untitled" in the old language take the new language's name
     tabManager?.retitleUntitled((kind) => untitledTabTitle(kind, before))
+    retitleUntitledDetached(
+      (kind) => untitledTabTitle(kind, before),
+      (kind) => untitledTabTitle(kind, lang),
+    )
     // the switcher lives on the home page, so the home menu is the active one
     buildHomeMenu()
     installDockMenu()

@@ -23,6 +23,12 @@ describe('a UI language change', () => {
     )
   })
 
+  it('renames the untitled detached windows the same way', () => {
+    expect(handler).toMatch(
+      /persistLang\(lang\)[\s\S]*retitleUntitledDetached\(\s*\(kind\) => untitledTabTitle\(kind, before\),\s*\(kind\) => untitledTabTitle\(kind, lang\),?\s*\)/,
+    )
+  })
+
   it('names a new tab and an old one the same way', () => {
     // the tab manager gets its names from the same function the rename compares with
     expect(index).toMatch(/\(kind\) => untitledTabTitle\(kind, currentLang\(\)\)/)
