@@ -14,7 +14,10 @@ const certSignStrings = {
   certRefresh: 'Refresh',
   certExpiredTag: 'expired',
   certSystemEmpty:
-    'No signing certificate with an exportable private key was found in the system store',
+    'This computer has no signing certificate it can use here. Choose a certificate file (.pfx / .p12) instead.',
+  certChooseFileInstead: 'Choose a certificate file…',
+  certNpkiNote:
+    'Korean joint certificates (the NPKI folder with signCert.der / signPri.key) are not supported yet. Export the certificate as a .pfx / .p12 file to use it.',
   certSystemHint: 'The key is read from the store for this signature only and is not kept',
   certStoreNoTools:
     'The NSS tools are needed to read this store (Ubuntu: sudo apt install libnss3-tools)',
@@ -353,7 +356,11 @@ const localizedCertSignStrings = {
     certSourceFile: '인증서 파일(.p12 / .pfx)',
     certRefresh: '새로 고침',
     certExpiredTag: '만료됨',
-    certSystemEmpty: '시스템 저장소에서 개인 키를 내보낼 수 있는 서명용 인증서를 찾지 못했습니다',
+    certSystemEmpty:
+      '이 PC의 인증서 저장소에 쓸 수 있는 서명용 인증서가 없습니다. 인증서 파일(.pfx / .p12)을 고르세요.',
+    certChooseFileInstead: '인증서 파일 고르기…',
+    certNpkiNote:
+      '공동인증서(NPKI 폴더의 signCert.der·signPri.key)는 아직 지원하지 않습니다. 쓰려면 .pfx / .p12 파일로 내보내 주세요.',
     certSystemHint: '키는 이번 서명에만 저장소에서 읽어 오며 보관하지 않습니다',
     certStoreNoTools:
       '이 저장소를 읽으려면 NSS 도구가 필요합니다(Ubuntu: sudo apt install libnss3-tools)',
@@ -468,7 +475,11 @@ const localizedCertSignStrings = {
     certSourceFile: 'Tệp chứng thư (.p12 / .pfx)',
     certRefresh: 'Làm mới',
     certExpiredTag: 'hết hạn',
-    certSystemEmpty: 'Không tìm thấy chứng thư ký nào có khóa riêng xuất được trong kho hệ thống',
+    certSystemEmpty:
+      'Máy tính này không có chứng thư ký dùng được ở đây. Hãy chọn tệp chứng thư (.pfx / .p12).',
+    certChooseFileInstead: 'Chọn tệp chứng thư…',
+    certNpkiNote:
+      'Chứng thư chung của Hàn Quốc (thư mục NPKI với signCert.der / signPri.key) chưa được hỗ trợ. Hãy xuất chứng thư ra tệp .pfx / .p12 để dùng.',
     certSystemHint: 'Khóa chỉ được đọc từ kho cho lần ký này và không được lưu giữ',
     certStoreNoTools: 'Cần công cụ NSS để đọc kho này (Ubuntu: sudo apt install libnss3-tools)',
     certStorePassword: 'Mật khẩu kho',
