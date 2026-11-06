@@ -38,8 +38,20 @@ describe('Home file creation is atomic', () => {
   })
 
   it('publishes a blank PDF through a temporary file', () => {
-    expect(newPdfTab).toContain('await atomicWriteFile(filePath, await blankPdfBuffer())')
+    expect(newPdfTab).toContain('await atomicWriteFile(filePath, bytes)')
     expect(newPdfTab).not.toMatch(/writeFileSync\(filePath/)
+  })
+
+  // "New PDF" left 제목 없는 PDF 4.pdf in Documents\Hanpan before anything was typed (0.17
+  // acceptance): without a folder the person picked, the blank is an untitled copy in a temp
+  // folder, whose first save asks where it goes, like the other editors' untitled documents
+  it('keeps a new PDF out of the documents folder until its first save', () => {
+    expect(newPdfTab).toMatch(/const pending = takePendingDir\('pdf'\)/)
+    expect(newPdfTab).toContain("join(app.getPath('temp'), 'genoffice-imports', randomUUID())")
+    expect(newPdfTab).toMatch(/openTemplateCopy\(\{\s*editor: 'pdf'/)
+    // only a folder the person picked still gets the file at once
+    expect(newPdfTab).toMatch(/if \(pending\) \{[\s\S]*?markPdfUntitledPath\(filePath\)/)
+    expect(newPdfTab).not.toContain("newFileDir('pdf')")
   })
 
   it('publishes a duplicate through a temporary file', () => {
