@@ -7,6 +7,7 @@ import { OPEN_EXTS } from '../../graphics/src/shared/kinds'
 import { LAUNCHABLE_EXTS } from '../src/main/launch-paths'
 import { TREE_FILE_EXTENSIONS } from '../src/main/folder-tree'
 import { OPENABLE_DOC_RE } from '@genoffice/electron-utils/drop-open'
+import { HOME_FILTER_GROUPS } from '../src/shared/home-filter-groups'
 
 /**
  * The AI Photo and AI Illustration tabs (decision 0093) are hosted like the
@@ -160,8 +161,9 @@ describe('Home', () => {
   it('lists the formats, icons and filters', () => {
     expect(literal(home, 'OPEN_LOCAL_EXTENSIONS')).toContain('.psd')
     expect(literal(home, 'OPEN_LOCAL_EXTENSIONS')).toContain('.svg')
-    expect(home).toContain("{ key: 'photo', label: 'filterPhoto' },")
-    expect(home).toContain("{ key: 'illust', label: 'filterIllust' },")
+    // Hanpan's Home lists pictures under the "mind maps & images" tab (0.17 #12)
+    expect(home).toContain("{ key: 'others', label: 'hpFilterOthers' },")
+    expect(HOME_FILTER_GROUPS.others).toEqual(expect.arrayContaining(['png', 'psd', 'svg']))
     for (const lang of LANGS) {
       for (const key of [
         'newPhoto',

@@ -411,6 +411,7 @@ import {
   pageRecentPaths,
   statPathEntries,
 } from './recent-files'
+import { HOME_FILTER_GROUPS } from '../shared/home-filter-groups'
 import { isMoveSource, isUserVisibleFile, type FileTargetSources } from './file-targets'
 import {
   DOCX_RE,
@@ -4623,6 +4624,8 @@ const SEARCH_EXT_FAMILY: Record<string, readonly string[]> = {
   hwp: ['hwp', 'hwpx'],
   photo: OPEN_EXTS.photo,
   illust: OPEN_EXTS.illust,
+  // Hanpan's grouped Home tabs
+  ...HOME_FILTER_GROUPS,
 }
 
 /** one recursive watcher per tree root; follows the save-folder setting and the added folders */

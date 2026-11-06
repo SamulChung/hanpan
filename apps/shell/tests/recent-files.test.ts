@@ -80,3 +80,18 @@ describe('capStatPaths', () => {
     expect(capped.at(-1)).toBe(`/f${STAT_PATHS_MAX - 1}.docx`)
   })
 })
+
+describe('the Hanpan file tab groups', () => {
+  it('puts every word-processing kind under documents', () => {
+    for (const ext of ['docx', 'doc', 'odt', 'hwp', 'hwpx', 'md', 'txt', 'html', 'htm', 'epub'])
+      expect(matchesExtFamily(ext, 'documents'), ext).toBe(true)
+    expect(matchesExtFamily('xlsx', 'documents')).toBe(false)
+    expect(matchesExtFamily('pdf', 'documents')).toBe(false)
+  })
+
+  it('puts mind maps and pictures under others', () => {
+    for (const ext of ['xmind', 'png', 'psd', 'svg', 'vectorcraft'])
+      expect(matchesExtFamily(ext, 'others'), ext).toBe(true)
+    expect(matchesExtFamily('docx', 'others')).toBe(false)
+  })
+})

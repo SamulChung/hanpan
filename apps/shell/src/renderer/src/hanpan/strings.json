@@ -191,5 +191,20 @@
     "ko": "홈의 마인드맵에서 시작해 보세요. 정리한 내용을 한글 보고서나 발표 자료로 이어서 만들 수 있습니다.",
     "en": "Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.",
     "vi": "Hãy bắt đầu từ sơ đồ tư duy ở Trang chủ: nội dung bạn sắp xếp có thể chuyển tiếp thành báo cáo HWP hoặc bài trình chiếu."
+  },
+  "hpFilterDocuments": {
+    "ko": "문서",
+    "en": "Documents",
+    "vi": "Tài liệu"
+  },
+  "hpFilterOthers": {
+    "ko": "마인드맵·그림",
+    "en": "Mind maps & images",
+    "vi": "Sơ đồ & hình ảnh"
+  },
+  "hpConvChip": {
+    "ko": "변환기",
+    "en": "Converter",
+    "vi": "Chuyển đổi"
   }
 }

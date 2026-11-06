@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os'
 import { basename, dirname, extname, relative, isAbsolute } from 'node:path'
 import type { RecentEntry, RecentPage, RecentQuery } from '../shared/home-api'
 import { OPEN_EXTS } from '../../../graphics/src/shared/kinds'
+import { HOME_FILTER_GROUPS } from '../shared/home-filter-groups'
 
 /**
  * Scratch folders that tests make under the temp folder. A file in one is never
@@ -106,6 +107,8 @@ export const EXT_FAMILY: Record<string, readonly string[]> = {
   hwp: ['hwp', 'hwpx'],
   photo: OPEN_EXTS.photo,
   illust: OPEN_EXTS.illust,
+  // Hanpan's grouped Home tabs
+  ...HOME_FILTER_GROUPS,
 }
 
 /** Family-aware extension match for sidebar filters (recents and starred share it). */

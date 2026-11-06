@@ -34,7 +34,7 @@ test('the Markdown converter writes HWP, Word and PDF in one press', async () =>
   try {
     // the converter writes to Documents\한판 변환 by default: point Documents at a temp folder
     await app.evaluate(({ app: electronApp }, dir) => electronApp.setPath('documents', dir), out)
-    await page.locator('.quick-card[data-new="md-convert"]').click()
+    await page.locator('[data-new="md-convert"]').click()
     const dialog = page.locator('[data-hanpan="md-converter"]')
     await expect(dialog).toBeVisible()
     await expect(dialog).toContainText(out)

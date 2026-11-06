@@ -157,3 +157,55 @@ describe('Home cards and the Korean document features switch', () => {
     expect(koreanCards()).toEqual([false, false, false])
   })
 })
+
+// 0.17 #12 (draft for the 11/10 review): the duplicate card pairs become one
+// card each that still reaches both features, and the file tabs shrink to six.
+describe('Home cleanup', () => {
+  const openTools = vi.fn()
+  beforeEach(() => {
+    window.aiOfficePdfToolsHome = {
+      open: openTools,
+    } as unknown as typeof window.aiOfficePdfToolsHome
+    window.hanpanApi = {
+      ...window.hanpanApi!,
+      mdFolder: async () => '',
+      mdPickFile: async () => null,
+      mdPickFolder: async () => null,
+      mdConvert: async () => ({ ok: true }),
+      mdShowFolder: async () => undefined,
+    } as unknown as typeof window.hanpanApi
+  })
+
+  it.each([
+    ['pdf', 'pdf-tools'],
+    ['md', 'md-convert'],
+  ])('shows %s and %s as one card', async (main, extra) => {
+    await renderHome('ko')
+    const cards = Array.from(host.querySelectorAll('.hp-secondary > *'))
+    const pair = cards.find((el) => el.querySelector(`[data-new="${main}"]`))!
+    expect(pair, main).toBeTruthy()
+    expect(pair.querySelector(`[data-new="${extra}"]`), extra).not.toBeNull()
+    expect(cards.filter((el) => el.matches(`[data-new="${extra}"]`))).toHaveLength(0)
+  })
+
+  it('still opens the PDF tools and the Markdown converter from the merged cards', async () => {
+    await renderHome('ko')
+    await act(async () => host.querySelector<HTMLButtonElement>('[data-new="pdf-tools"]')!.click())
+    expect(openTools).toHaveBeenCalledTimes(1)
+    await act(async () => host.querySelector<HTMLButtonElement>('[data-new="md-convert"]')!.click())
+    expect(host.querySelector('[data-hanpan="md-converter"]')).not.toBeNull()
+  })
+
+  it('offers six file tabs', async () => {
+    await renderHome('ko')
+    const pills = host.querySelector('.filter-pills')!
+    expect(Array.from(pills.querySelectorAll('.filter-pill')).map((b) => b.textContent)).toEqual([
+      '전체',
+      '문서',
+      '스프레드시트',
+      '프레젠테이션',
+      'PDF',
+      '마인드맵·그림',
+    ])
+  })
+})
