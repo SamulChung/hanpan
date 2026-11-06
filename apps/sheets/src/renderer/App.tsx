@@ -69,6 +69,10 @@ import {
 import { isNumericIdentifierText } from './cell-warning'
 import { consumePendingUndoCarry, undoStackDepth } from './undo-carry'
 import { createSaveGate, shouldRunSaveTick } from './save-scheduler'
+import { createReloadInputGuard, type ReloadInputGuard } from './reload-input-guard'
+import { installEscapePopupGuard } from './escape-popup-guard'
+import { installUniverChromeLabels } from './univer-chrome-labels'
+import { selectionClientRect } from './selection-client-rect'
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import {
   useAutoSavePref,
@@ -111,7 +115,7 @@ import {
 } from '@univerjs/core'
 import { FormulaExecutedStateType } from '@univerjs/engine-formula'
 import { FindReplaceController, IFindReplaceService } from '@univerjs/find-replace'
-import { ILayoutService } from '@univerjs/ui'
+import { ILayoutService, ISidebarService } from '@univerjs/ui'
 import { UniverSheetsConditionalFormattingPreset } from '@univerjs/preset-sheets-conditional-formatting'
 import UniverPresetSheetsConditionalFormattingEnUS from '@univerjs/preset-sheets-conditional-formatting/locales/en-US'
 import '@univerjs/preset-sheets-conditional-formatting/lib/index.css'
@@ -428,9 +432,11 @@ import { installStatusBarFileStats } from './statusbar-file-stats'
 import {
   installStatusBarStatsFilter,
   readStatusBarFuncs,
+  subscribeStatusBarState,
   toggleStatusBarFunc,
   writeStatusBarFuncs,
   type StatusBarFunc,
+  type StatusBarState,
   type StatusBarStatsFilter,
 } from './status-bar-stats'
 import { applyUniverLocale, insertRowsBelowLocale, numberAsTextAlertLocale } from './univer-locales'
@@ -695,6 +701,24 @@ export function App({
   const autoSaveRef = useRef(autoSave)
   autoSaveRef.current = autoSave
   const saveGateRef = useRef(createSaveGate())
+  // 저장 뒤 다시 열기 동안 격자 입력을 막는 문지기(reload-input-guard.ts)
+  const reloadInputGuardRef = useRef<ReloadInputGuard | null>(null)
+  useEffect(() => {
+    const guard = createReloadInputGuard(window, {
+      onBlocked: () => setMessage(t('appReloadInputPaused')),
+    })
+    reloadInputGuardRef.current = guard
+    // 패널 안 드롭다운의 Esc가 패널까지 닫지 않게(X7)
+    const escapePopupGuard = installEscapePopupGuard(window, document)
+    // 시트 탭 줄 단추·작업창 닫기 단추의 이름(X10·X11)
+    const chromeLabels = installUniverChromeLabels(document, (key) => t(key))
+    return () => {
+      escapePopupGuard.dispose()
+      chromeLabels.dispose()
+      guard.dispose()
+      if (reloadInputGuardRef.current === guard) reloadInputGuardRef.current = null
+    }
+  }, [])
   // AutoSave tick (docs/slides parity): every 30 s and on window blur, flush
   // pending edits of the open workbook. The journal is read at tick time so
   // the interval stays stable; demo mode has no backing file and is skipped.
@@ -796,6 +820,10 @@ export function App({
   )
   const statusBarFuncsRef = useRef(statusBarFuncs)
   const statusBarStatsFilterRef = useRef<StatusBarStatsFilter | null>(null)
+  // 선택 범위 집계(Univer 통계 상태)를 우리 상태 표시줄이 그린다(X2)
+  const [statusBarState, setStatusBarState] = useState<StatusBarState | null>(null)
+  // Univer 작업창(데이터 유효성·조건부 서식 등)이 열려 있는지(X21: AI 창 자동 접기)
+  const [taskPaneOpen, setTaskPaneOpen] = useState(false)
   const toggleStatusBarStat = (func: StatusBarFunc): void => {
     const next = toggleStatusBarFunc(statusBarFuncsRef.current, func)
     statusBarFuncsRef.current = next
@@ -1130,6 +1158,7 @@ export function App({
       setMessage,
       openLazyWorkbook,
       setPendingEdits,
+      holdInput: () => reloadInputGuardRef.current?.hold() ?? (() => undefined),
       readCells: (addresses, sheetId) => readCellsImpl(readContext(), addresses, sheetId),
       stashViewRestore: (view) => {
         viewRestoreRef.current = view
@@ -2043,12 +2072,15 @@ export function App({
           formulaBar: true,
           footer: {
             sheetBar: true,
+            // the statistic bar also registers IStatusBarService, which the
+            // app status bar reads; styles.css hides Univer's own copy (X2)
             statisticBar: true,
             menus: true,
             // zoom lives in the custom full-width status bar (unified with docs/slides)
             zoomSlider: false,
           },
-          statusBarStatistic: true,
+          // 집계는 우리 상태 표시줄이 그린다(Univer 막대는 좁다고 보면 한 항목만, ko 이름표는 영어)
+          statusBarStatistic: false,
           // OOXML resolves style defaults as cell over row over column; the
           // render skeleton defaults to column-wins unless this flag is set.
           sheets: { isRowStylePrecedeColumnStyle: true },
@@ -2318,6 +2350,14 @@ export function App({
       runtime,
       () => statusBarFuncsRef.current,
     )
+    const statusBarStateSubscription = subscribeStatusBarState(runtime, setStatusBarState)
+    const taskPaneSubscription = (
+      runtime.univer.__getInjector().get(ISidebarService) as unknown as {
+        sidebarOptions$: {
+          subscribe(next: (options: { visible?: boolean }) => void): { unsubscribe(): void }
+        }
+      }
+    ).sidebarOptions$.subscribe((options) => setTaskPaneOpen(options.visible === true))
     // Footer statistics on streamed workbooks aggregate the real file, not
     // the loaded window (a whole-column count read 191 on a 185k-row file).
     const statusBarFileStatsDisposable = installStatusBarFileStats({
@@ -3509,6 +3549,8 @@ export function App({
           const finalRangeKey = activeRangeKey()
           if (!gesture.selectionChanged && finalRangeKey === gesture.initialRangeKey) return
           const viewport = gridHost.getBoundingClientRect()
+          // 범위 옆에 두려고 선택 사각형도 넘긴다(X8)
+          const selection = selectionClientRect(runtime, bounds)
           setAiSelectionAskAnchor({
             pointer,
             bounds: {
@@ -3517,6 +3559,7 @@ export function App({
               right: viewport.right,
               bottom: viewport.bottom,
             },
+            ...(selection ? { selection } : {}),
           })
         } catch {
           setAiSelectionAskAnchor(null)
@@ -3638,6 +3681,8 @@ export function App({
       nullResultDisposable.dispose()
       copyMaterializeDisposable.dispose()
       statusBarFileStatsDisposable.dispose()
+      statusBarStateSubscription.dispose()
+      taskPaneSubscription.unsubscribe()
       statusBarStatsFilterRef.current?.dispose()
       statusBarStatsFilterRef.current = null
       dataValidationChromeDisposable.dispose()
@@ -5498,6 +5543,8 @@ export function App({
         onIsCellEditing={isCellEditing}
         zoomPercent={zoomPercent}
         statusBarFuncs={statusBarFuncs}
+        statusBarState={statusBarState}
+        taskPaneOpen={taskPaneOpen}
         onToggleStatusBarFunc={toggleStatusBarStat}
         canSave={pendingEdits > 0 || workbookFile?.unsavedNew === true}
         onSave={() => void handleSave('save')}

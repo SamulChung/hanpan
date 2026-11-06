@@ -26,6 +26,7 @@ function render(over: { saveDisabled?: boolean; busy?: boolean } = {}) {
     onConvert: vi.fn(),
     onConvertDialog: vi.fn(),
     onPrint: vi.fn(),
+    onExportImages: vi.fn(),
   }
   const host = document.createElement('div')
   document.body.append(host)
@@ -78,6 +79,7 @@ describe('PDF File menu', () => {
       zh.fileMenuExportPptx,
       zh.fileMenuExportMd,
       zh.fileMenuExportEpub,
+      zh.fileMenuExportImages,
       zh.fileMenuPrint,
     ])
   })
@@ -105,6 +107,8 @@ describe('PDF File menu', () => {
     expect(r.onConvertDialog).toHaveBeenLastCalledWith('md')
     press(zh.fileMenuExportEpub)
     expect(r.onConvertDialog).toHaveBeenLastCalledWith('epub')
+    press(zh.fileMenuExportImages)
+    expect(r.onExportImages).toHaveBeenCalledOnce()
     press(zh.fileMenuPrint)
     expect(r.onPrint).toHaveBeenCalledOnce()
   })
@@ -125,6 +129,9 @@ describe('PDF File menu', () => {
     expect(app).toMatch(/onConvert=\{\(format\) => void convertTo\(format\)\}/)
     expect(app).toMatch(/onConvertDialog=\{openConvertDialog\}/)
     expect(app).toMatch(/onPrint=\{openPrintDlg\}/)
+    // the spreadsheet File menu has an image export too (UI/UX review P10)
+    expect(app).toMatch(/onExportImages=\{\(\) => void exportImages\(true\)\}/)
+    expect(strings.ko.fileMenuExportImages).toBe('이미지(PNG)로 내보내기…')
     expect(app).toMatch(/onOpen=\{\(\) =>\s+void window\.pdfApi\s*\.openFileDialog\(\)/)
     expect(app).toMatch(/onSaveAs=\{\(\) =>\s+void window\.pdfApi\s*\.saveAsDialog\(\)/)
     const preload = readFileSync(resolve(__dirname, '../src/preload/index.ts'), 'utf8')

@@ -1909,6 +1909,19 @@ button.check-item:hover {
   flex-shrink: 0;
 }
 
+/* 선택 범위 집계: 평균·개수·합계 (Excel 상태 표시줄) */
+.status-stats {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-right: 10px;
+  white-space: nowrap;
+}
+
+.status-stat {
+  font-variant-numeric: tabular-nums;
+}
+
 .zoom-btn {
   border: none;
   background: none;
@@ -2522,6 +2535,22 @@ textarea:focus {
   background: var(--surface);
   box-shadow: var(--shadow-panel);
   font-size: 11px;
+}
+
+/* 차트 옆에 뜨는 편집 창: 상자 안 작은 창 대신(X4) */
+.chart-editor-float {
+  position: fixed;
+  /* 대화상자(.dialog-backdrop 40)보다 아래 */
+  z-index: 30;
+  display: flex;
+}
+
+.chart-editor-float .chart-editor {
+  position: static;
+  max-width: none;
+  max-height: inherit;
+  width: 100%;
+  font-size: 12px;
 }
 
 .chart-editor label {
@@ -6196,23 +6225,26 @@ body > div:has([data-u-comp='find-replace-dialog']) {
   display: none !important;
 }
 
+/* 허용 항목(X13): 다단(columns)에 높이 제한을 걸면 넘친 항목이 가로 단으로
+   밀려 가로 스크롤이 생겼다. 2열 격자로 두고 글씨는 대화상자 본문과 같게. */
 .protect-sheet-allow {
   list-style: none;
   margin: 0 0 10px;
   padding: 6px 10px;
-  max-height: 220px;
-  overflow-y: auto;
   border: 1px solid var(--border);
   border-radius: 6px;
-  columns: 2;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 12px;
+  font-size: 12px;
 }
 
 .protect-sheet-allow label {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 0;
-  break-inside: avoid;
+  padding: 2px 0;
+  font-size: inherit;
 }
 
 /* Table Design tab: name box, option checks and the styles gallery. Swatch
@@ -7434,4 +7466,39 @@ body:has(.note-pictures-pane) .threaded-comments-pane {
 
 .ribbon[data-fit='2'] .ribbon-group {
   padding: 2px 4px;
+}
+
+/* 수식 탭(X6): 1366에서 넘치면 함수 범주 단추부터 아이콘만, 더 좁으면 이름 정의·
+   수식 분석·계산 묶음의 큰 단추도 아이콘만 남긴다(이름은 풍선 도움말과 화면 읽기에 남음). */
+.ribbon[data-fit]
+  .ribbon-group-fnlib
+  .ribbon-tool.large:nth-child(n + 3)
+  > span:not(.tool-icon-row),
+.ribbon[data-fit='2'] .ribbon-group-names .ribbon-tool.large > span:not(.tool-icon-row),
+.ribbon[data-fit='2'] .ribbon-group-audit .ribbon-tool.large > span:not(.tool-icon-row),
+.ribbon[data-fit='2'] .ribbon-group-calc .ribbon-tool.large > span:not(.tool-icon-row) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.ribbon[data-fit] .ribbon-group-fnlib .ribbon-tool.large:nth-child(n + 3) {
+  min-width: 34px;
+}
+
+/* 함수 인수 힌트(X20): Univer는 머리글에 overflow-wrap:anywhere를 줘서
+   "tab / le_array"처럼 인수 이름 가운데서 끊겼다. 인수 하나(이름+쉼표)를
+   한 덩어리로 두어 인수 사이에서만 줄을 바꾼다. */
+[class*='univer-w-[250px]'] > [style*='overflow-wrap: anywhere'] > div > span {
+  display: inline-block;
+}
+
+/* Univer의 시트 탭 줄 통계(영어 "Count: 12", 좁다고 보면 한 항목만)는 숨긴다.
+   선택 범위 집계는 앱 상태 표시줄(.status-stats)이 앱 언어로 그린다(X2).
+   IStatusBarService를 등록하는 statisticBar 자체는 켜 둬야 한다. */
+[data-range-selector] > div:has(> .univer-gap-x-2 .univer-truncate.univer-cursor-pointer) {
+  display: none !important;
 }

@@ -185,3 +185,30 @@ describe('system short date', () => {
     }
   })
 })
+
+describe('Korean defaults in the Format Cells number tab (X5)', () => {
+  it('ko starts currency at ₩ and lists Korean dates first', () => {
+    const ko = numfmtOptionsOf('General', 'ko')
+    expect(ko.symbol).toBe('₩')
+    expect(numfmtPattern({ ...ko, category: 'currency', decimals: 0 })).toBe('₩#,##0')
+    const dates = datePatterns('ko')
+    expect(dates[0]).toBe('yyyy"년" m"월" d"일"')
+    expect(dates).toContain('m"월" d"일"')
+    // Chinese 年/月/日 forms are for zh/ja users, not Korean ones
+    expect(dates.some((pattern) => pattern.includes('年'))).toBe(false)
+    expect(numfmtPreview(dates[0]!, 46333)).toBe('2026년 11월 7일')
+  })
+
+  it('keeps an existing Korean date pattern classified as a date', () => {
+    expect(numfmtOptionsOf('yyyy"년" m"월" d"일"', 'ko')).toMatchObject({
+      category: 'date',
+      datePattern: 'yyyy"년" m"월" d"일"',
+    })
+  })
+
+  it('other languages keep their defaults', () => {
+    expect(numfmtOptionsOf('General', 'en').symbol).toBe('$')
+    expect(numfmtOptionsOf('General').symbol).toBe('$')
+    expect(datePatterns('zh')).toContain('yyyy"年"m"月"d"日"')
+  })
+})

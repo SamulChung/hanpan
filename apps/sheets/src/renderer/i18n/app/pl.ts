@@ -289,6 +289,7 @@ export const pl = {
     'Tabel przestawnych/tabel nie można zapisać razem z nowymi arkuszami i zmianami wierszy/kolumn — najpierw zapisz strukturę, a potem dodaj tabele przestawne/tabele.',
   appSaveSecondCanceled:
     'Druga faza zapisu została anulowana — struktura jest zapisana; tabele przestawne/tabele/zdefiniowane nazwy nie zostały jeszcze zapisane.',
+  appReloadInputPaused: 'Reloading the saved workbook — typing resumes in a moment.',
   appSavedTwoPhase: 'Zapisano.',
   appSaveSecondFailed:
     'Struktura została zapisana, ale druga faza (tabele przestawne/tabele/zdefiniowane nazwy) nie powiodła się: {reason}',
@@ -1353,6 +1354,20 @@ export const pl = {
   appIncreaseDecimal: 'Zwiększ liczbę miejsc dziesiętnych',
   appDecreaseDecimal: 'Zmniejsz liczbę miejsc dziesiętnych',
   appGroupStyles: 'Style',
+  appCfMenuHighlight: 'Highlight Cells Rules…',
+  appCfMenuTopBottom: 'Top/Bottom Rules…',
+  appCfMenuDataBars: 'Data Bars…',
+  appCfMenuColorScales: 'Color Scales…',
+  appCfMenuIconSets: 'Icon Sets…',
+  appCfMenuFormula: 'Use a Formula…',
+  appCfMenuClearSelection: 'Clear Rules from Selected Cells',
+  appCfMenuClearSheet: 'Clear Rules from Entire Sheet',
+  appCfMenuManage: 'Manage Rules…',
+  appSheetBarAdd: 'New sheet',
+  appCloseSidebar: 'Close pane',
+  appSheetBarNext: 'Next sheets',
+  appSheetBarAll: 'All sheets',
+  appSheetBarPrev: 'Previous sheets',
   appConditionalFormatting: 'Formatowanie warunkowe',
   appFormatAsTable: 'Formatuj jako tabelę',
   appFormatAsTableTitle:
