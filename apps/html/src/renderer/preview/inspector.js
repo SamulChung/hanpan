@@ -1058,6 +1058,7 @@
           // Slides); an unchanged run goes out as a cancel and produces no history step
           e.preventDefault()
           finishEdit(true)
+          post({ type: 'gx:keyCommand', command: 'dismiss' })
         } else if (e.key === 'Enter' && mod) {
           e.preventDefault()
           finishEdit(true)
