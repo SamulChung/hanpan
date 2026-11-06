@@ -618,7 +618,7 @@ export default function App() {
   const fitPresented = useCallback(() => {
     // the fullscreen bounds arrive after the event, so fit once the view has resized
     presentAt.current = 0
-    window.setTimeout(() => activeController()?.presentStep(0), 80)
+    window.setTimeout(() => activeController()?.presentStep(presentAt.current), 80)
   }, [activeController])
 
   /** The next or the previous step of the presentation, kept within the map's main topics. */

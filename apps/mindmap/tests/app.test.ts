@@ -803,6 +803,10 @@ describe('presentation mode', () => {
       await settle()
     }
     await key('F5')
+    // the fit after the screen went full arrives a moment later
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 200))
+    })
     expect(container.querySelector('[data-hint="present"]')!.textContent).toBe(
       '→ or Space: next branch · ←: back · Esc: end',
     )
