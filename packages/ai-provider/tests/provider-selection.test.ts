@@ -404,7 +404,11 @@ describe('accountDefaultProvider', () => {
 
   it('never counts a server entry as an account: the PC model lives there', () => {
     const settings = settingsWith('auto')
-    settings.providers.custom = { apiKey: '', model: 'exaone', baseUrl: 'http://127.0.0.1:11434/v1' }
+    settings.providers.custom = {
+      apiKey: '',
+      model: 'exaone',
+      baseUrl: 'http://127.0.0.1:11434/v1',
+    }
     expect(accountDefaultProvider(settings, statuses('signed-out', 'signed-out'))).toBeNull()
   })
 
