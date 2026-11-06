@@ -765,6 +765,8 @@ export interface AddBlankSlideOp {
   fitWidthPx: number
   /** Land the new slide before sourceIndex instead of after (insert at position 0) */
   before?: boolean
+  /** The ribbon's New Slide: use a layout with placeholders (see new-slide-layout.ts) */
+  withPlaceholders?: boolean
 }
 
 /** New blank page (with a specific layout): inserted after slide sourceIndex, rels pointing at layoutPath. */
@@ -1173,6 +1175,8 @@ export interface ExportImagesOp {
   baseName: string
   /** base64 per page PNG (without the data: prefix), in page order */
   pngsBase64: string[]
+  /** File extension of the encoded pages; JPEG when 'jpg' (default 'png') */
+  ext?: 'png' | 'jpg'
 }
 
 export interface ExportImagesResult {
@@ -1714,6 +1718,8 @@ export interface SlidesApi {
   pickExportDir: () => Promise<string | null>
   /** Write each page PNG to disk as <baseName>-01.png …; returns the written paths */
   exportImages: (op: ExportImagesOp) => Promise<ExportImagesResult>
+  /** Open a folder images were exported to in this session (other paths are refused) */
+  revealExportFolder: (dir: string) => Promise<boolean>
   /** Export as PDF: shows the save dialog for the target path, cancel returns null */
   pickExportPdfPath: (defaultName: string) => Promise<string | null>
   /** Save as Picture: save dialog + write of the selection PNG */
@@ -1758,6 +1764,8 @@ export interface SlidesApi {
   onAiSettingsChanged: (handler: () => void) => () => void
   /** shell only: switch to Home and open Settings › AI Model (rejects in standalone) */
   openAiModelSettings: () => Promise<void>
+  /** shell only: switch to Home and open Settings › Integrations (rejects in standalone) */
+  openIntegrationSettings: () => Promise<void>
   aiStream: (request: AiStreamRequest) => Promise<void>
   aiStreamCancel: (requestId: string) => Promise<void>
   /** Subscription connections (Claude, Codex): statuses, sign-in, install. Every call may reject while no handler is registered — read that as `checking` */

@@ -99,6 +99,20 @@ describe('editor Gongu picture channels', () => {
     expect(gonguImageSearch).toHaveBeenLastCalledWith('a', 'new-key', { page: 1, perPage: 20 })
   })
 
+  it('answers no-key without a request, so the picker can ask before the first search', async () => {
+    key = ''
+    expect(await call(GONGU_PICTURE_CHANNELS.search, '', 1)).toEqual({ ok: false, error: 'no-key' })
+    expect(gonguImageSearch).not.toHaveBeenCalled()
+    // with a key, the empty probe is the library's no-request empty answer
+    key = 'the-key'
+    gonguImageSearch.mockResolvedValue({ ok: true, value: { works: [] } })
+    expect(await call(GONGU_PICTURE_CHANNELS.search, '', 1)).toEqual({
+      ok: true,
+      works: [],
+      total: null,
+    })
+  })
+
   it('clamps the words and the page number the page sends', async () => {
     gonguImageSearch.mockResolvedValue({ ok: true, value: { works: [] } })
     await call(GONGU_PICTURE_CHANNELS.search, 'x'.repeat(500), 99999)

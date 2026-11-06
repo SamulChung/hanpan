@@ -409,6 +409,7 @@ const api: SlidesApi = {
   redo: () => ipcRenderer.invoke('slides:redo'),
   pickExportDir: () => ipcRenderer.invoke('slides:pick-export-dir'),
   exportImages: (op: ExportImagesOp) => ipcRenderer.invoke('slides:export-images', op),
+  revealExportFolder: (dir: string) => ipcRenderer.invoke('slides:reveal-export-folder', dir),
   pickExportPdfPath: (defaultName: string) =>
     ipcRenderer.invoke('slides:pick-export-pdf-path', defaultName),
   savePicture: (op: SavePictureOp) => ipcRenderer.invoke('slides:save-picture', op),
@@ -464,6 +465,7 @@ const api: SlidesApi = {
     return () => ipcRenderer.removeListener('ai:settings-changed', listener)
   },
   openAiModelSettings: () => ipcRenderer.invoke('ai:open-model-settings'),
+  openIntegrationSettings: () => ipcRenderer.invoke('ai:open-model-settings', 'integrations'),
   aiStream: (request: AiStreamRequest) => ipcRenderer.invoke('ai:stream', request),
   aiStreamCancel: (requestId: string) => ipcRenderer.invoke('ai:stream-cancel', requestId),
   aiSubscription: subscriptionApi,

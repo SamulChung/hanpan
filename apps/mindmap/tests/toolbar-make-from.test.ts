@@ -91,6 +91,7 @@ function props(onMakeFromDocument: () => void, disabled = false): ToolbarProps {
     onToggleHiddenPart: none,
     onZoomReset: none,
     onMakeFromDocument,
+    mapSaved: true,
     onOpen: none,
     onPrint: none,
   }
@@ -142,6 +143,21 @@ describe('the make-from-document button', () => {
     expect(button.getAttribute('aria-label')).toBe('Make Another Document from This')
   })
 
+  it('carries its name as text beside the icon, not only as a tooltip', async () => {
+    const button = await render('ko', props(() => {}))
+    expect(button.textContent).toBe('다른 문서 만들기')
+  })
+
+  it('on a map never saved, says to save first instead of opening a window that cannot be used', async () => {
+    const asked = vi.fn()
+    const button = await render('ko', { ...props(asked), mapSaved: false })
+    expect(button.getAttribute('aria-disabled')).toBe('true')
+    expect(button.dataset.tip).toBe('먼저 지도를 저장하세요. 저장한 지도로 다른 문서를 만들 수 있습니다.')
+    // still pressable, so the reason is told; the handler decides what pressing does
+    button.click()
+    expect(asked).toHaveBeenCalledTimes(1)
+  })
+
   it('is off while the map is not ready', async () => {
     const button = await render(
       'en',
@@ -174,4 +190,33 @@ describe('the File menu in the toolbar', () => {
     expect(onExport).toHaveBeenCalledWith('pdf')
     expect(onPrint).toHaveBeenCalledTimes(1)
   })
+
+  it('shows the shortcut of each item that has one, as the slide editor does', async () => {
+    await render('ko', props(() => {}))
+    await act(async () => {
+      container.querySelector<HTMLButtonElement>('[data-action="file-menu"]')!.click()
+    })
+    const kbd = (id: string) =>
+      container.querySelector(`[data-file="${id}"] .mm-file-kbd`)?.textContent ?? null
+    expect(kbd('open')).toBe('Ctrl+O')
+    expect(kbd('save')).toBe('Ctrl+S')
+    expect(kbd('save-as')).toBe('Ctrl+Shift+S')
+    expect(kbd('print')).toBe('Ctrl+P')
+    expect(kbd('export-png')).toBeNull()
+    expect(container.querySelector('[data-file="export-png"]')!.textContent).toBe(
+      '이미지로 내보내기…',
+    )
+  })
 })
+
+describe('the ribbon tab names', () => {
+  it('say what the tabs hold: layout and theme under Design, the look of a topic under Format; the layout menu is named', async () => {
+    await render('ko', props(() => {}))
+    const name = (tab: string) =>
+      container.querySelector(`[data-ribbon-tab="${tab}"]`)!.textContent
+    expect(name('format')).toBe('디자인')
+    expect(name('style')).toBe('서식')
+    expect(container.querySelector('.mm-layout .mm-layout-label')!.textContent).toBe('배치')
+  })
+})
+

@@ -9394,7 +9394,8 @@ function openSettingsFromMenu(): void {
   win.webContents.send(HOME_CHANNELS.openSettings, { section: 'general' })
 }
 
-ipcMain.handle('ai:open-model-settings', () => {
+// an editor may ask for Settings → Integrations instead (the Gongu picker's "key needed" note)
+ipcMain.handle('ai:open-model-settings', (_event, section?: unknown) => {
   const win = shellWindow
   if (!win || win.isDestroyed()) return
   // the request may come from a detached window or while the shell is minimized
@@ -9402,7 +9403,9 @@ ipcMain.handle('ai:open-model-settings', () => {
   win.show()
   win.focus()
   tabManager?.openHomeTab()
-  win.webContents.send(HOME_CHANNELS.openSettings, { section: 'aiModel' })
+  win.webContents.send(HOME_CHANNELS.openSettings, {
+    section: section === 'integrations' ? 'integrations' : 'aiModel',
+  })
 })
 registerProjectIpc()
 registerDocsIpc()

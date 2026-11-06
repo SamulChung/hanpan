@@ -22,12 +22,32 @@ export interface FileMenuProps {
   onPrint(): void
 }
 
-type FileItem = { id: string; label: StringKey; needsMap: boolean; run(p: FileMenuProps): void }
+type FileItem = {
+  id: string
+  label: StringKey
+  needsMap: boolean
+  /** the shortcut the app's File menu gives the same command, as [key, with Shift] */
+  keys?: readonly [string, boolean]
+  run(p: FileMenuProps): void
+}
+
+const IS_MAC = typeof navigator !== 'undefined' && /mac/i.test(navigator.platform)
+
+/** A shortcut as the platform writes it: Ctrl+Shift+S, or ⇧⌘S on a Mac. */
+function shortcutText([key, shift]: readonly [string, boolean]): string {
+  return IS_MAC ? `${shift ? '⇧' : ''}⌘${key}` : `Ctrl+${shift ? 'Shift+' : ''}${key}`
+}
 
 const ITEMS: readonly FileItem[] = [
-  { id: 'open', label: 'fileOpen', needsMap: false, run: (p) => p.onOpen() },
-  { id: 'save', label: 'fileSave', needsMap: true, run: (p) => p.onSave() },
-  { id: 'save-as', label: 'saveAs', needsMap: true, run: (p) => p.onSaveAs() },
+  { id: 'open', label: 'fileOpen', needsMap: false, keys: ['O', false], run: (p) => p.onOpen() },
+  { id: 'save', label: 'fileSave', needsMap: true, keys: ['S', false], run: (p) => p.onSave() },
+  {
+    id: 'save-as',
+    label: 'saveAs',
+    needsMap: true,
+    keys: ['S', true],
+    run: (p) => p.onSaveAs(),
+  },
   { id: 'export-png', label: 'exportPng', needsMap: true, run: (p) => p.onExport('png') },
   { id: 'export-pdf', label: 'exportPdf', needsMap: true, run: (p) => p.onExport('pdf') },
   {
@@ -36,7 +56,13 @@ const ITEMS: readonly FileItem[] = [
     needsMap: true,
     run: (p) => p.onExport('markdown'),
   },
-  { id: 'print', label: 'filePrint', needsMap: true, run: (p) => p.onPrint() },
+  {
+    id: 'print',
+    label: 'filePrint',
+    needsMap: true,
+    keys: ['P', false],
+    run: (p) => p.onPrint(),
+  },
 ]
 
 /** Items after which a separator stands: open | save, save as | exports | print */
@@ -86,7 +112,8 @@ export function FileMenu(p: FileMenuProps) {
                   item.run(p)
                 }}
               >
-                {t(item.label)}
+                <span className="mm-file-label">{t(item.label)}</span>
+                {item.keys && <span className="mm-file-kbd">{shortcutText(item.keys)}</span>}
               </button>
               {SEPARATED_AFTER.has(item.id) && <div className="mm-file-sep" role="separator" />}
             </Fragment>

@@ -18,6 +18,9 @@ export interface GonguPickerStrings {
   insert: string
   inserting: string
   noKey: string
+  /** where the key comes from and where it goes, shown with noKey before any search */
+  noKeyHint: string
+  openSettings: string
   footer: string
   pictureFailed: string
   year: string
@@ -48,6 +51,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     insert: '插入',
     inserting: '正在插入…',
     noKey: '没有 Gongu 密钥。请在“设置 → 集成 → Gongu 图片”中输入密钥。',
+    noKeyHint:
+      'Gongu 图片需要韩国公共数据门户（data.go.kr）的免费密钥。请在“设置 → 集成 → Gongu 图片”中输入。',
+    openSettings: '打开集成设置',
     footer: 'Gongu 作品由韩国著作权委员会提供。插入图片的出处会自动写上。',
     pictureFailed: '无法获取图片。请稍后再试。',
     year: '创作年份',
@@ -77,6 +83,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     insert: 'Insert',
     inserting: 'Inserting…',
     noKey: 'There is no Gongu key. Enter one under Settings → Integrations → "Gongu pictures".',
+    noKeyHint:
+      'Gongu pictures need a free key from the Korean public data portal (data.go.kr). Put it under Settings → Integrations → "Gongu pictures".',
+    openSettings: 'Open integration settings',
     footer:
       'Gongu works are provided by the Korea Copyright Commission. The credit for an inserted picture is written for you.',
     pictureFailed: 'Could not get the picture. Try again in a moment.',
@@ -108,6 +117,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     insert: '挿入',
     inserting: '挿入中…',
     noKey: 'Gongu のキーがありません。「設定 → 連携 → Gongu の画像」でキーを入力してください。',
+    noKeyHint:
+      'Gongu の画像には韓国の公共データポータル（data.go.kr）の無料キーが必要です。「設定 → 連携 → Gongu の画像」に入力してください。',
+    openSettings: '連携設定を開く',
     footer:
       'Gongu の作品は韓国著作権委員会が提供しています。挿入した画像の出典は自動で記載されます。',
     pictureFailed: '画像を取得できませんでした。しばらくしてからもう一度お試しください。',
@@ -139,7 +151,10 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     more: '더 보기',
     insert: '넣기',
     inserting: '넣는 중…',
-    noKey: '공유마당 키가 없습니다. 설정 → 연동의 "공유마당 그림"에서 키를 넣으세요.',
+    noKey: '공유마당 그림을 찾으려면 키가 필요합니다.',
+    noKeyHint:
+      '키는 공공데이터포털(data.go.kr)에서 무료로 받습니다. 받은 키를 설정 → 연동의 "공유마당 그림"에 넣으면 바로 쓸 수 있습니다.',
+    openSettings: '연동 설정 열기',
     footer:
       '공유마당 저작물은 한국저작권위원회가 제공합니다. 넣은 그림의 출처는 자동으로 적힙니다.',
     pictureFailed: '그림을 받지 못했습니다. 잠시 뒤 다시 시도하세요.',
@@ -170,6 +185,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     insert: 'Insérer',
     inserting: 'Insertion…',
     noKey: 'Aucune clé Gongu. Saisissez-en une dans Paramètres → Intégrations → « Images Gongu ».',
+    noKeyHint:
+      'Gongu pictures need a free key from the Korean public data portal (data.go.kr). Put it under Settings → Integrations → "Gongu pictures".',
+    openSettings: 'Open integration settings',
     footer:
       "Les œuvres de Gongu sont fournies par la Commission coréenne du droit d'auteur. Le crédit d'une image insérée est écrit automatiquement.",
     pictureFailed: "Impossible de récupérer l'image. Réessayez dans un instant.",
@@ -205,6 +223,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     inserting: 'Wird eingefügt…',
     noKey:
       'Kein Gongu-Schlüssel vorhanden. Geben Sie ihn unter Einstellungen → Integrationen → „Gongu-Bilder“ ein.',
+    noKeyHint:
+      'Gongu pictures need a free key from the Korean public data portal (data.go.kr). Put it under Settings → Integrations → "Gongu pictures".',
+    openSettings: 'Open integration settings',
     footer:
       'Gongu-Werke stellt die Koreanische Urheberrechtskommission bereit. Die Quellenangabe eines eingefügten Bildes wird automatisch geschrieben.',
     pictureFailed: 'Das Bild konnte nicht geladen werden. Versuchen Sie es gleich noch einmal.',
@@ -241,6 +262,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     inserting: 'Insertando…',
     noKey:
       'No hay clave de Gongu. Introdúzcala en Configuración → Integraciones → «Imágenes de Gongu».',
+    noKeyHint:
+      'Gongu pictures need a free key from the Korean public data portal (data.go.kr). Put it under Settings → Integrations → "Gongu pictures".',
+    openSettings: 'Open integration settings',
     footer:
       'Las obras de Gongu las proporciona la Comisión de Derechos de Autor de Corea. El crédito de una imagen insertada se escribe automáticamente.',
     pictureFailed: 'No se pudo obtener la imagen. Inténtelo de nuevo en un momento.',
@@ -274,6 +298,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     insert: 'แทรก',
     inserting: 'กำลังแทรก…',
     noKey: 'ยังไม่มีคีย์ Gongu ใส่คีย์ได้ที่ การตั้งค่า → การเชื่อมต่อ → "รูปภาพ Gongu"',
+    noKeyHint:
+      'Gongu pictures need a free key from the Korean public data portal (data.go.kr). Put it under Settings → Integrations → "Gongu pictures".',
+    openSettings: 'Open integration settings',
     footer:
       'ผลงานใน Gongu จัดให้โดยคณะกรรมการลิขสิทธิ์เกาหลี ระบบจะเขียนที่มาของรูปภาพที่แทรกให้โดยอัตโนมัติ',
     pictureFailed: 'รับรูปภาพไม่ได้ ลองใหม่อีกครั้งในอีกสักครู่',
@@ -304,6 +331,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     insert: 'Sisipkan',
     inserting: 'Menyisipkan…',
     noKey: 'Belum ada kunci Gongu. Masukkan di Pengaturan → Integrasi → "Gambar Gongu".',
+    noKeyHint:
+      'Gongu pictures need a free key from the Korean public data portal (data.go.kr). Put it under Settings → Integrations → "Gongu pictures".',
+    openSettings: 'Open integration settings',
     footer:
       'Karya Gongu disediakan oleh Komisi Hak Cipta Korea. Kredit gambar yang disisipkan ditulis otomatis.',
     pictureFailed: 'Gambar tidak dapat diambil. Coba lagi sebentar lagi.',
@@ -334,6 +364,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     insert: 'Вставить',
     inserting: 'Вставка…',
     noKey: 'Нет ключа Gongu. Введите его в разделе «Настройки → Интеграции → Изображения Gongu».',
+    noKeyHint:
+      'Gongu pictures need a free key from the Korean public data portal (data.go.kr). Put it under Settings → Integrations → "Gongu pictures".',
+    openSettings: 'Open integration settings',
     footer:
       'Произведения Gongu предоставляет Комиссия по авторскому праву Кореи. Источник вставленного изображения указывается автоматически.',
     pictureFailed: 'Не удалось получить изображение. Попробуйте ещё раз чуть позже.',
@@ -365,6 +398,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     insert: 'إدراج',
     inserting: 'جارٍ الإدراج…',
     noKey: 'لا يوجد مفتاح Gongu. أدخِله من الإعدادات ← التكاملات ← "صور Gongu".',
+    noKeyHint:
+      'Gongu pictures need a free key from the Korean public data portal (data.go.kr). Put it under Settings → Integrations → "Gongu pictures".',
+    openSettings: 'Open integration settings',
     footer: 'أعمال Gongu مقدَّمة من هيئة حقوق المؤلف الكورية. يُكتب مصدر الصورة المدرجة تلقائيًا.',
     pictureFailed: 'تعذّر جلب الصورة. حاول مرة أخرى بعد قليل.',
     year: 'السنة',
@@ -395,6 +431,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     insert: 'Inserir',
     inserting: 'Inserindo…',
     noKey: 'Não há chave do Gongu. Insira-a em Configurações → Integrações → "Imagens do Gongu".',
+    noKeyHint:
+      'Gongu pictures need a free key from the Korean public data portal (data.go.kr). Put it under Settings → Integrations → "Gongu pictures".',
+    openSettings: 'Open integration settings',
     footer:
       'As obras do Gongu são fornecidas pela Comissão de Direitos Autorais da Coreia. O crédito da imagem inserida é escrito automaticamente.',
     pictureFailed: 'Não foi possível obter a imagem. Tente de novo em instantes.',
@@ -428,6 +467,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     insert: 'Inserisci',
     inserting: 'Inserimento…',
     noKey: 'Nessuna chiave Gongu. Inseriscila in Impostazioni → Integrazioni → "Immagini Gongu".',
+    noKeyHint:
+      'Gongu pictures need a free key from the Korean public data portal (data.go.kr). Put it under Settings → Integrations → "Gongu pictures".',
+    openSettings: 'Open integration settings',
     footer:
       "Le opere di Gongu sono fornite dalla Commissione coreana per il diritto d'autore. Il credito dell'immagine inserita viene scritto automaticamente.",
     pictureFailed: "Impossibile ottenere l'immagine. Riprova tra poco.",
@@ -461,6 +503,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     insert: 'Wstaw',
     inserting: 'Wstawianie…',
     noKey: 'Brak klucza Gongu. Wpisz go w Ustawienia → Integracje → „Obrazy Gongu”.',
+    noKeyHint:
+      'Gongu pictures need a free key from the Korean public data portal (data.go.kr). Put it under Settings → Integrations → "Gongu pictures".',
+    openSettings: 'Open integration settings',
     footer:
       'Dzieła Gongu udostępnia Koreańska Komisja Praw Autorskich. Źródło wstawionego obrazu jest wpisywane automatycznie.',
     pictureFailed: 'Nie udało się pobrać obrazu. Spróbuj ponownie za chwilę.',
@@ -493,6 +538,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     insert: 'Vložit',
     inserting: 'Vkládání…',
     noKey: 'Chybí klíč Gongu. Zadejte ho v Nastavení → Integrace → „Obrázky Gongu“.',
+    noKeyHint:
+      'Gongu pictures need a free key from the Korean public data portal (data.go.kr). Put it under Settings → Integrations → "Gongu pictures".',
+    openSettings: 'Open integration settings',
     footer:
       'Díla Gongu poskytuje Korejská komise pro autorská práva. Zdroj vloženého obrázku se zapíše automaticky.',
     pictureFailed: 'Obrázek se nepodařilo získat. Zkuste to za chvíli znovu.',
@@ -525,6 +573,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     inserting: 'Invoegen…',
     noKey:
       'Er is geen Gongu-sleutel. Voer er een in bij Instellingen → Integraties → "Gongu-afbeeldingen".',
+    noKeyHint:
+      'Gongu pictures need a free key from the Korean public data portal (data.go.kr). Put it under Settings → Integrations → "Gongu pictures".',
+    openSettings: 'Open integration settings',
     footer:
       'Gongu-werken worden aangeboden door de Koreaanse auteursrechtcommissie. De bronvermelding van een ingevoegde afbeelding wordt automatisch geschreven.',
     pictureFailed: 'De afbeelding kon niet worden opgehaald. Probeer het zo meteen opnieuw.',
@@ -556,6 +607,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     insert: 'Sisipkan',
     inserting: 'Menyisipkan…',
     noKey: 'Tiada kunci Gongu. Masukkan dalam Tetapan → Integrasi → "Gambar Gongu".',
+    noKeyHint:
+      'Gongu pictures need a free key from the Korean public data portal (data.go.kr). Put it under Settings → Integrations → "Gongu pictures".',
+    openSettings: 'Open integration settings',
     footer:
       'Karya Gongu disediakan oleh Suruhanjaya Hak Cipta Korea. Kredit gambar yang disisipkan ditulis secara automatik.',
     pictureFailed: 'Gambar tidak dapat diambil. Cuba lagi sebentar lagi.',
@@ -587,6 +641,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     insert: 'הוספה',
     inserting: 'מוסיף…',
     noKey: 'אין מפתח Gongu. הזינו אותו בהגדרות ← שילובים ← "תמונות Gongu".',
+    noKeyHint:
+      'Gongu pictures need a free key from the Korean public data portal (data.go.kr). Put it under Settings → Integrations → "Gongu pictures".',
+    openSettings: 'Open integration settings',
     footer:
       'יצירות Gongu מסופקות על ידי ועדת זכויות היוצרים של קוריאה. הקרדיט לתמונה שנוספה נכתב אוטומטית.',
     pictureFailed: 'לא ניתן היה להביא את התמונה. נסו שוב בעוד רגע.',
@@ -617,6 +674,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     insert: 'डालें',
     inserting: 'डाला जा रहा है…',
     noKey: 'कोई Gongu कुंजी नहीं है। सेटिंग्स → इंटीग्रेशन → "Gongu चित्र" में कुंजी डालें।',
+    noKeyHint:
+      'Gongu pictures need a free key from the Korean public data portal (data.go.kr). Put it under Settings → Integrations → "Gongu pictures".',
+    openSettings: 'Open integration settings',
     footer:
       'Gongu की कृतियाँ कोरिया कॉपीराइट आयोग उपलब्ध कराता है। डाले गए चित्र का स्रोत अपने आप लिखा जाता है।',
     pictureFailed: 'चित्र नहीं मिल सका। थोड़ी देर बाद फिर कोशिश करें।',
@@ -647,6 +707,9 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     insert: '插入',
     inserting: '正在插入…',
     noKey: '沒有 Gongu 金鑰。請在「設定 → 整合 → Gongu 圖片」中輸入金鑰。',
+    noKeyHint:
+      'Gongu pictures need a free key from the Korean public data portal (data.go.kr). Put it under Settings → Integrations → "Gongu pictures".',
+    openSettings: 'Open integration settings',
     footer: 'Gongu 作品由韓國著作權委員會提供。插入圖片的出處會自動寫上。',
     pictureFailed: '無法取得圖片。請稍後再試。',
     year: '創作年份',
@@ -667,7 +730,8 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
   vi: {
     title: 'Hình ảnh Gongu',
     find: 'Tìm trong Gongu',
-    placeholder: 'Tên tác phẩm hoặc tác giả (vd: 호랑이, 김홍도)',
+    placeholder:
+      'Tên tác phẩm hoặc tác giả bằng tiếng Hàn (vd: 호랑이 = con hổ, 김홍도 = Kim Hong-do)',
     search: 'Tìm',
     searching: 'Đang tìm…',
     noResults: 'Không tìm thấy hình ảnh. Hãy thử một từ trong tên tác phẩm hoặc tên tác giả.',
@@ -675,7 +739,10 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     more: 'Xem thêm',
     insert: 'Chèn',
     inserting: 'Đang chèn…',
-    noKey: 'Chưa có khóa Gongu. Hãy nhập khóa trong Cài đặt → Tích hợp → "Hình ảnh Gongu".',
+    noKey: 'Cần có khóa để tìm hình ảnh Gongu.',
+    noKeyHint:
+      'Khóa được cấp miễn phí trên Cổng dữ liệu công Hàn Quốc (data.go.kr). Nhập khóa vào Cài đặt → Tích hợp → "Hình ảnh Gongu" là dùng được ngay.',
+    openSettings: 'Mở cài đặt tích hợp',
     footer:
       'Tác phẩm Gongu do Ủy ban Bản quyền Hàn Quốc cung cấp. Nguồn của hình được chèn sẽ được ghi tự động.',
     pictureFailed: 'Không lấy được hình ảnh. Hãy thử lại sau giây lát.',

@@ -244,7 +244,14 @@ export function Group({
   /** identity for width measurement + collapse bookkeeping */
   groupId?: string
   /** present on collapsible groups; `collapsed` switches to the dropdown form */
-  collapse?: { collapsed: boolean; open: boolean; onToggle: () => void; icon: ReactNode }
+  collapse?: {
+    collapsed: boolean
+    open: boolean
+    onToggle: () => void
+    icon: ReactNode
+    /** a line above the folded buttons, e.g. why they are all greyed out */
+    hint?: string
+  }
 }) {
   if (collapse?.collapsed) {
     return (
@@ -265,6 +272,11 @@ export function Group({
             </button>
             {collapse.open && (
               <div className="rb-drop rb-collapse-panel" onMouseDown={(e) => e.stopPropagation()}>
+                {collapse.hint && (
+                  <div className="rb-collapse-hint" role="note">
+                    {collapse.hint}
+                  </div>
+                )}
                 {children}
               </div>
             )}

@@ -149,6 +149,8 @@ export interface ToolbarProps {
   onExport(format: ExportFormat): void
   /** "make another document from this one": the shell's make window with this map */
   onMakeFromDocument(): void
+  /** the map is in a file: only then can another document be made from it */
+  mapSaved: boolean
   /** Hanpan: send the map to a HWP / PPT / Word document */
   onSendTo?(target: SendTarget): void
   /** Hanpan: sync with the documents made from this map */
@@ -397,6 +399,7 @@ export function Toolbar(p: ToolbarProps) {
                 data-tip={p.layoutExact ? t('tbLayout') : t('layoutStandIn')}
               >
                 <IconLayout />
+                <span className="mm-layout-label">{t('tbLayout')}</span>
                 <Dropdown
                   className="mm-layout-pick"
                   value={p.layout}
@@ -525,14 +528,20 @@ export function Toolbar(p: ToolbarProps) {
           <span className="rb-sep" />
           <div className="ribbon-group">
             <div className="ribbon-group-items">
-              <ToolButton
-                action="make-from-document"
-                label={t('tbMakeFromDocument')}
+              <button
+                type="button"
+                className="rb-btn mm-tool mm-make-from"
+                data-action="make-from-document"
+                data-tip={p.mapSaved ? t('tbMakeFromDocument') : t('makeFromNeedsSave')}
+                aria-label={t('tbMakeFromDocument')}
+                aria-disabled={p.mapSaved ? undefined : true}
                 disabled={p.disabled}
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={p.onMakeFromDocument}
               >
                 <IconMakeFrom />
-              </ToolButton>
+                <span className="mm-make-from-label">{t('makeFromShort')}</span>
+              </button>
               {p.onSendTo && (
                 <SendMenu
                   disabled={p.disabled}
@@ -600,33 +609,6 @@ function Big(p: {
     >
       <span className="rb-big-icon">{p.children}</span>
       <span>{p.label}</span>
-    </button>
-  )
-}
-
-function ToolButton(p: {
-  action: string
-  label: string
-  kbd?: string
-  active?: boolean
-  disabled: boolean
-  onClick(): void
-  children: ReactNode
-}) {
-  return (
-    <button
-      type="button"
-      className={`rb-btn mm-tool${p.active ? ' active' : ''}`}
-      data-action={p.action}
-      data-tip={p.label}
-      data-tip-kbd={p.kbd}
-      aria-label={p.label}
-      aria-pressed={p.active ? true : undefined}
-      disabled={p.disabled}
-      onMouseDown={(e) => e.preventDefault()}
-      onClick={p.onClick}
-    >
-      {p.children}
     </button>
   )
 }

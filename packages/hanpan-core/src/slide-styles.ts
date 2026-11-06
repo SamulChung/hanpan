@@ -1,8 +1,8 @@
 /**
- * Ten slide styles for "send this map to PowerPoint", after the 슬라이드 스타일
- * 10선 of the 코칭창업론 handbook (sogang-coaching-ai-handbook.vercel.app/#styles):
- * Steve Jobs, McKinsey, Toss, BCG, TED, Google Material, Notion, Airbnb, Canva
- * modern, startup pitch deck. Each style lays out the whole deck itself — a
+ * Ten slide styles for "send this map to PowerPoint". They are named by what
+ * they look like (one big line, answer-first report, plain-word cards, …) and
+ * never after a real person or company: the app is free and used commercially.
+ * The ids are older and stay as they are, since saved choices use them. Each style lays out the whole deck itself — a
  * cover, a contents slide where the style uses one, one slide per branch and a
  * closing slide — as slide-engine ops, so the deck opens already designed and
  * stays fully editable.
@@ -40,16 +40,16 @@ export interface SlideStyleInfo {
 }
 
 export const SLIDE_STYLES: readonly SlideStyleInfo[] = [
-  { id: 'jobs', name: { ko: '스티브 잡스 스타일', en: 'Steve Jobs' }, description: { ko: '대형 한 문장 · 넓은 여백 · 강한 키비주얼. 비전과 핵심 제안을 강하게', en: 'One big line, wide space. For a vision or a key proposal' } },
-  { id: 'mckinsey', name: { ko: '맥킨지 스타일', en: 'McKinsey' }, description: { ko: '결론 우선 · 논리 구조 · 표·차트 중심. 시장분석·문제정의·실행계획', en: 'Answer first, logical structure. For analysis and plans' } },
-  { id: 'toss', name: { ko: '토스 스타일', en: 'Toss' }, description: { ko: '쉬운 말 · 친근한 톤 · 카드형 구성. 고객 관점 소개·서비스 설명', en: 'Plain words, friendly cards. For explaining a service' } },
-  { id: 'bcg', name: { ko: 'BCG 그룹컨설팅 스타일', en: 'BCG consulting' }, description: { ko: '프레임워크 · 도식화 · 인사이트. 사업모델·경쟁전략·포지셔닝', en: 'Frameworks and matrices. For strategy and positioning' } },
-  { id: 'ted', name: { ko: 'TED 스타일', en: 'TED' }, description: { ko: '스토리텔링 · 감정 연결 · 단순한 비주얼. 자기 브랜딩·영감형 발표', en: 'Storytelling, simple visuals. For inspiring talks' } },
-  { id: 'material', name: { ko: '구글 머티리얼 스타일', en: 'Google Material' }, description: { ko: '컬러 포인트 · 아이콘 · 명확한 정보 구조. 학습 자료·프로세스 설명', en: 'Colour points, clear structure. For lessons and processes' } },
-  { id: 'notion', name: { ko: '노션 스타일', en: 'Notion' }, description: { ko: '모듈형 블록 · 절제된 미니멀 · 정리감. 강의 노트·워크숍·로드맵', en: 'Modular blocks, minimal. For notes, workshops, roadmaps' } },
-  { id: 'airbnb', name: { ko: '에어비앤비 스타일', en: 'Airbnb' }, description: { ko: '따뜻한 톤 · 공감형 메시지 · 경험 중심. 브랜드 스토리·고객 여정', en: 'Warm, empathetic, experience-led. For brand stories' } },
-  { id: 'canva', name: { ko: '캔바 모던 스타일', en: 'Canva modern' }, description: { ko: '템플릿 친화 · 빠른 제작 · 균형 레이아웃. 팀 과제·행사 안내·홍보', en: 'Template-friendly, balanced. For team work and events' } },
-  { id: 'pitch', name: { ko: '스타트업 피치덱 스타일', en: 'Startup pitch deck' }, description: { ko: '문제-해결-성과 · 숫자 강조 · 투자자 시선. 제안서·사업계획·데모데이', en: 'Problem, solution, traction. For pitches and plans' } },
+  { id: 'jobs', name: { ko: '큰 글자 한 줄 메시지', en: 'One big line' }, description: { ko: '대형 한 문장 · 넓은 여백 · 강한 키비주얼. 비전과 핵심 제안을 강하게', en: 'One big line, wide space. For a vision or a key proposal' } },
+  { id: 'mckinsey', name: { ko: '결론 먼저 보고서', en: 'Answer-first report' }, description: { ko: '결론 우선 · 논리 구조 · 표·차트 중심. 시장분석·문제정의·실행계획', en: 'Answer first, logical structure. For analysis and plans' } },
+  { id: 'toss', name: { ko: '쉬운 말 카드형', en: 'Plain-word cards' }, description: { ko: '쉬운 말 · 친근한 톤 · 카드형 구성. 고객 관점 소개·서비스 설명', en: 'Plain words, friendly cards. For explaining a service' } },
+  { id: 'bcg', name: { ko: '컨설팅 프레임워크형', en: 'Consulting frameworks' }, description: { ko: '프레임워크 · 도식화 · 인사이트. 사업모델·경쟁전략·포지셔닝', en: 'Frameworks and matrices. For strategy and positioning' } },
+  { id: 'ted', name: { ko: '이야기 중심 발표', en: 'Story-led talk' }, description: { ko: '스토리텔링 · 감정 연결 · 단순한 비주얼. 자기 브랜딩·영감형 발표', en: 'Storytelling, simple visuals. For inspiring talks' } },
+  { id: 'material', name: { ko: '색 포인트 정보형', en: 'Colour-accent explainer' }, description: { ko: '컬러 포인트 · 아이콘 · 명확한 정보 구조. 학습 자료·프로세스 설명', en: 'Colour points, clear structure. For lessons and processes' } },
+  { id: 'notion', name: { ko: '블록형 미니멀', en: 'Minimal blocks' }, description: { ko: '모듈형 블록 · 절제된 미니멀 · 정리감. 강의 노트·워크숍·로드맵', en: 'Modular blocks, minimal. For notes, workshops, roadmaps' } },
+  { id: 'airbnb', name: { ko: '따뜻한 경험 이야기', en: 'Warm journey story' }, description: { ko: '따뜻한 톤 · 공감형 메시지 · 경험 중심. 브랜드 스토리·고객 여정', en: 'Warm, empathetic, experience-led. For brand stories' } },
+  { id: 'canva', name: { ko: '균형 잡힌 템플릿형', en: 'Balanced template' }, description: { ko: '템플릿 친화 · 빠른 제작 · 균형 레이아웃. 팀 과제·행사 안내·홍보', en: 'Template-friendly, balanced. For team work and events' } },
+  { id: 'pitch', name: { ko: '투자 제안 피치덱', en: 'Investor pitch deck' }, description: { ko: '문제-해결-성과 · 숫자 강조 · 투자자 시선. 제안서·사업계획·데모데이', en: 'Problem, solution, traction. For pitches and plans' } },
 ]
 
 export function isSlideStyleId(value: unknown): value is SlideStyleId {
@@ -362,7 +362,7 @@ function listSlide(c: Ctx, plan: SlidePlan, groups: Group[], look: Look): Op[] {
   return ops
 }
 
-// ---- 1. Steve Jobs: black stage, one big line, one huge number ----
+// ---- 1. One big line: black stage, one big line, one huge number ----
 
 const JOBS = { bg: '#000000', ink: '#F5F5F7', gray: '#86868B', dim: '#424245' }
 
@@ -440,7 +440,7 @@ const jobs: Style = {
   ],
 }
 
-// ---- 2. McKinsey: action titles, numbered argument rows, one key figure ----
+// ---- 2. Answer-first report: action titles, numbered argument rows, one key figure ----
 
 const MCK = { navy: '#051C2C', navy2: '#0B2A40', blue: '#2251FF', cyan: '#00A9F4', text: '#2A3640', gray: '#5E6B76', rule: '#D3D8DD', tint: '#F0F3F7' }
 
@@ -544,7 +544,7 @@ const mckinsey: Style = {
   },
 }
 
-// ---- 3. Toss: plain words, roomy grey cards, one blue ----
+// ---- 3. Plain-word cards: plain words, roomy grey cards, one blue ----
 
 const TOSS = { blue: '#3182F6', blue50: '#E8F3FF', grey100: '#F2F4F6', grey600: '#6B7684', ink: '#191F28' }
 
@@ -644,7 +644,7 @@ const toss: Style = {
   },
 }
 
-// ---- 4. BCG: frameworks — value chain, 2×2 matrix, comparison ----
+// ---- 4. Consulting frameworks: frameworks — value chain, 2×2 matrix, comparison ----
 
 const BCG = { dark: '#197A56', mid: '#21945F', green: '#29BA74', light: '#D4EFDF', pale: '#EEF7F1', ink: '#1F2A24', gray: '#6E6F73', rule: '#C9CDD1' }
 const BCG_CHAIN = [BCG.dark, '#1C8659', BCG.mid, '#25A768', BCG.green]
@@ -811,7 +811,7 @@ const bcg: Style = {
   },
 }
 
-// ---- 5. TED: dark stage, red accent, a story told in a few lines ----
+// ---- 5. Story-led talk: dark stage, red accent, a story told in a few lines ----
 
 const TED = { red: '#E62B1E', ink: '#FFFFFF', gray: '#A6A6A6', rule: '#2E2E2E', from: '#050505', to: '#1C1C1C' }
 
@@ -882,7 +882,7 @@ const ted: Style = {
   },
 }
 
-// ---- 6. Google Material: four colours, tonal cards, clear steps ----
+// ---- 6. Colour-accent explainer: four colours, tonal cards, clear steps ----
 
 const MAT = {
   colors: ['#1A73E8', '#EA4335', '#F9AB00', '#1E8E3E'],
@@ -984,7 +984,7 @@ const material: Style = {
   },
 }
 
-// ---- 7. Notion: a quiet page — icon, title, toggles, callout ----
+// ---- 7. Minimal blocks: a quiet page — icon, title, toggles, callout ----
 
 const NOTION = {
   ink: '#37352F',
@@ -1109,7 +1109,7 @@ const notion: Style = {
   },
 }
 
-// ---- 8. Airbnb: warm, a journey told step by step ----
+// ---- 8. Warm journey story: warm, a journey told step by step ----
 
 const AIR = { rausch: '#FF385C', ink: '#222222', gray: '#6A6A6A', warm: '#FFEEE9', blush: '#FFE3DC', peach: '#FFD2C4', sand: '#F7EDE6', line: '#FFC2B4', page: '#FFFCFA' }
 
@@ -1198,7 +1198,7 @@ const airbnb: Style = {
   },
 }
 
-// ---- 9. Canva modern: pastel cards, round shapes, a balanced grid ----
+// ---- 9. Balanced template: pastel cards, round shapes, a balanced grid ----
 
 const CANVA = {
   ink: '#1F1B2E',
@@ -1307,7 +1307,7 @@ const canva: Style = {
   },
 }
 
-// ---- 10. Startup pitch deck: headline, big numbers, one rising chart ----
+// ---- 10. Investor pitch deck: headline, big numbers, one rising chart ----
 
 const PITCH = { navy: '#0B1B3F', blue: '#2563EB', blue2: '#1E40AF', light: '#DBEAFE', orange: '#F97316', gray: '#64748B', panel: '#F5F8FC', rule: '#E2E8F0' }
 

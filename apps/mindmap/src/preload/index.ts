@@ -82,6 +82,7 @@ const exporting: MindmapExportApi = {
   exportPdf: (request) => ipcRenderer.invoke(MINDMAP_CHANNELS.exportPdf, request),
   exportMarkdown: (request) => ipcRenderer.invoke(MINDMAP_CHANNELS.exportMarkdown, request),
   print: (request) => ipcRenderer.invoke(MINDMAP_CHANNELS.print, request),
+  listPrinters: () => ipcRenderer.invoke(MINDMAP_CHANNELS.printers),
 }
 
 // ---- the AI panel's bridge: the panel and the attachment handlers are T12's ----
