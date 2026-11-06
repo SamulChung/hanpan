@@ -864,3 +864,25 @@ describe('rhwp Hangul-key patches', () => {
     }
   })
 })
+
+describe('rhwp load-timing patch', () => {
+  // the studio's status line after a document opens, as the pinned release has it
+  const source = [
+    '    const elapsed = performance.now() - startTime;',
+    "    await initializeDocument(docInfo, t('ui.sbMessage.filePagesTimed', { p1: fileName, p2: docInfo.pageCount, p3: elapsed.toFixed(1) }), {",
+    '      suppressDialogs: options.suppressDialogs,',
+  ].join('\n')
+
+  it('shows the name and pages without the load time, and logs the time instead', () => {
+    const patched = applyPatch('studio-hide-load-timing', source)
+    expect(patched).not.toContain('filePagesTimed')
+    expect(patched).toContain(
+      "t('ui.sbMessage.filePages', { p1: fileName, p2: docInfo.pageCount })",
+    )
+    expect(patched).toMatch(/console\.(debug|info)\([^)]*elapsed\.toFixed\(1\)/)
+  })
+
+  it('is in the studio build', () => {
+    expect(STUDIO_PATCHES).toContain('studio-hide-load-timing')
+  })
+})
