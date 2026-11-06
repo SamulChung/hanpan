@@ -5,6 +5,7 @@ export const it = {
   failed: 'Impossibile avviare l’app.',
   retry: 'Riprova',
   notInstalled: 'Questa installazione non include questa app.',
+  editorLangOnReopen: "The editor's language changes when this tab is opened again.",
   saveFailed: 'Salvataggio non riuscito. Il documento resta non salvato.',
   layeredSaveNotice: 'Salvataggio in PSD per conservare livelli e dati di modifica.',
   openFailed: "Impossibile aprire il file. Aprilo di nuovo dall'app.",

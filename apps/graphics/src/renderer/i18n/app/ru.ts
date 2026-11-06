@@ -5,6 +5,7 @@ export const ru = {
   failed: 'Не удалось запустить приложение.',
   retry: 'Повторить',
   notInstalled: 'Эта установка не содержит это приложение.',
+  editorLangOnReopen: "The editor's language changes when this tab is opened again.",
   saveFailed: 'Не удалось сохранить. Документ остаётся несохранённым.',
   layeredSaveNotice: 'Сохраняется в PSD, чтобы не потерять слои и данные правки.',
   openFailed: 'Не удалось открыть файл. Откройте его снова в приложении.',

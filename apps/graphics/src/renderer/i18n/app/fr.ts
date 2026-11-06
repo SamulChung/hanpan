@@ -5,6 +5,7 @@ export const fr = {
   failed: 'L’application n’a pas pu démarrer.',
   retry: 'Réessayer',
   notInstalled: 'Cette installation ne contient pas cette application.',
+  editorLangOnReopen: "The editor's language changes when this tab is opened again.",
   saveFailed: 'Enregistrement impossible. Le document reste marqué comme non enregistré.',
   layeredSaveNotice:
     'Enregistrement au format PSD pour conserver les calques et les données de modification.',

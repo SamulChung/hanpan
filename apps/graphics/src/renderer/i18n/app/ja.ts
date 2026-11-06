@@ -5,6 +5,7 @@ export const ja = {
   failed: 'アプリを起動できませんでした。',
   retry: '再試行',
   notInstalled: 'このインストールにはこのアプリが含まれていません。',
+  editorLangOnReopen: 'エディターの言語は、このタブを開き直すと切り替わります。',
   saveFailed: '保存できませんでした。ドキュメントは未保存のままです。',
   layeredSaveNotice: 'レイヤーと編集情報を残すため、PSD で保存します。',
   openFailed: 'ファイルを開けませんでした。アプリからもう一度開いてください。',

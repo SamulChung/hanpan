@@ -5,6 +5,7 @@ export const ar = {
   failed: 'تعذّر تشغيل التطبيق.',
   retry: 'إعادة المحاولة',
   notInstalled: 'لا يتضمن هذا التثبيت هذا التطبيق.',
+  editorLangOnReopen: "The editor's language changes when this tab is opened again.",
   saveFailed: 'تعذّر الحفظ. يبقى المستند غير محفوظ.',
   layeredSaveNotice: 'يُحفظ بصيغة PSD للإبقاء على الطبقات وبيانات التحرير.',
   openFailed: 'تعذّر فتح الملف. افتحه مرة أخرى من التطبيق.',

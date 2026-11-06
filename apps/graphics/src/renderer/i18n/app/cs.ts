@@ -5,6 +5,7 @@ export const cs = {
   failed: 'Aplikaci se nepodařilo spustit.',
   retry: 'Zkusit znovu',
   notInstalled: 'Tato instalace tuto aplikaci neobsahuje.',
+  editorLangOnReopen: "The editor's language changes when this tab is opened again.",
   saveFailed: 'Uložení se nezdařilo. Dokument zůstává neuložený.',
   layeredSaveNotice: 'Ukládá se jako PSD, aby zůstaly vrstvy a data úprav.',
   openFailed: 'Soubor se nepodařilo otevřít. Otevřete ho znovu v aplikaci.',

@@ -5,6 +5,7 @@ export const en = {
   failed: 'The app could not start.',
   retry: 'Try again',
   notInstalled: 'This installation does not include this app.',
+  editorLangOnReopen: "The editor's language changes when this tab is opened again.",
   saveFailed: 'Could not save. The document stays marked as unsaved.',
   layeredSaveNotice: 'Saving as PSD to keep the layers and editing data.',
   openFailed: 'Could not open the file. Open it again from the app.',

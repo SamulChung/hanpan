@@ -5,6 +5,7 @@ export const es = {
   failed: 'No se pudo iniciar la aplicación.',
   retry: 'Reintentar',
   notInstalled: 'Esta instalación no incluye esta aplicación.',
+  editorLangOnReopen: "The editor's language changes when this tab is opened again.",
   saveFailed: 'No se pudo guardar. El documento sigue marcado como no guardado.',
   layeredSaveNotice: 'Se guarda como PSD para conservar las capas y los datos de edición.',
   openFailed: 'No se pudo abrir el archivo. Ábralo de nuevo desde la aplicación.',

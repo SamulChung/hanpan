@@ -5,6 +5,7 @@ export const th = {
   failed: 'ไม่สามารถเริ่มแอปได้',
   retry: 'ลองอีกครั้ง',
   notInstalled: 'การติดตั้งนี้ไม่มีแอปนี้',
+  editorLangOnReopen: "The editor's language changes when this tab is opened again.",
   saveFailed: 'บันทึกไม่ได้ เอกสารยังคงเป็นยังไม่ได้บันทึก',
   layeredSaveNotice: 'บันทึกเป็น PSD เพื่อเก็บเลเยอร์และข้อมูลการแก้ไขไว้',
   openFailed: 'เปิดไฟล์ไม่ได้ โปรดเปิดอีกครั้งจากแอป',

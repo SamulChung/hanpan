@@ -5,6 +5,7 @@ export const nl = {
   failed: 'De app kon niet starten.',
   retry: 'Opnieuw proberen',
   notInstalled: 'Deze installatie bevat deze app niet.',
+  editorLangOnReopen: "The editor's language changes when this tab is opened again.",
   saveFailed: 'Opslaan mislukt. Het document blijft gemarkeerd als niet opgeslagen.',
   layeredSaveNotice: 'Opslaan als PSD om de lagen en bewerkingsgegevens te behouden.',
   openFailed: 'Het bestand kon niet worden geopend. Open het opnieuw vanuit de app.',

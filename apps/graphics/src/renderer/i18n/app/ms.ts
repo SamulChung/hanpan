@@ -5,6 +5,7 @@ export const ms = {
   failed: 'Aplikasi tidak dapat dimulakan.',
   retry: 'Cuba lagi',
   notInstalled: 'Pemasangan ini tidak termasuk aplikasi ini.',
+  editorLangOnReopen: "The editor's language changes when this tab is opened again.",
   saveFailed: 'Tidak dapat menyimpan. Dokumen kekal bertanda belum disimpan.',
   layeredSaveNotice: 'Disimpan sebagai PSD untuk mengekalkan lapisan dan data suntingan.',
   openFailed: 'Fail tidak dapat dibuka. Buka semula dari aplikasi.',
