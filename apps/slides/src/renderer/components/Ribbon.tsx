@@ -1329,6 +1329,9 @@ export function Ribbon({
   const [tableHover, setTableHover] = useState({ r: 0, c: 0 })
   const [tableDialogOpen, setTableDialogOpen] = useState(false)
   const [layoutOpen, setLayoutOpen] = useState(false)
+  // Design tab: the theme picked in this window, outlined in the gallery (the file does
+  // not record which built-in preset it came from)
+  const [appliedThemeId, setAppliedThemeId] = useState<string | null>(null)
   // responsive-collapse state (see the collapse effect below)
   const [collapsedGroups, setCollapsedGroups] = useState<string[]>([])
   const [collapseOpen, setCollapseOpen] = useState<string | null>(null)
@@ -2114,10 +2117,14 @@ export function Ribbon({
                 {THEME_PRESETS.map((tp) => (
                   <button
                     key={tp.id}
-                    className="theme-card"
+                    className={`theme-card${appliedThemeId === tp.id ? ' active' : ''}`}
+                    aria-pressed={appliedThemeId === tp.id}
                     disabled={!hasDoc}
                     data-tip={t('ribbonApplyThemeTip', { name: themeDisplayName(tp, t) })}
-                    onClick={() => onApplyTheme(tp)}
+                    onClick={() => {
+                      setAppliedThemeId(tp.id)
+                      onApplyTheme(tp)
+                    }}
                     style={{ background: `#${tp.colors.lt1}`, color: `#${tp.colors.dk1}` }}
                   >
                     <span className="theme-card-aa" style={{ fontFamily: tp.majorFont }}>
