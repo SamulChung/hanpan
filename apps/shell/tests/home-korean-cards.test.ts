@@ -209,3 +209,33 @@ describe('Home cleanup', () => {
     ])
   })
 })
+
+describe('a tab menu asking to save a document as one of 내 양식', () => {
+  it('opens the forms dialog with that document picked', async () => {
+    let ask: ((tabId: string) => void) | undefined
+    window.hanpanApi = {
+      ...window.hanpanApi!,
+      myForms: async () => [],
+      myFormSources: async () => [
+        { tabId: 't1', title: '출장 보고.hwpx', type: 'hwpx' },
+        { tabId: 't2', title: '회의록.docx', type: 'docx' },
+      ],
+      saveMyForm: async () => ({ ok: false, error: 'unsaved-changes' }),
+      importMyForm: async () => ({ ok: false, error: 'canceled' }),
+      openMyForm: async () => ({ ok: true }),
+      deleteMyForm: async () => true,
+      onSaveMyFormRequest: (listener) => {
+        ask = listener
+        return () => (ask = undefined)
+      },
+    }
+    await renderHome('ko')
+    expect(host.querySelector('[data-section="my-forms"]')).toBeNull()
+    await act(async () => {
+      ask!('t2')
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+    const select = host.querySelector<HTMLSelectElement>('[data-my-form-save] select')
+    expect(select?.value).toBe('t2')
+  })
+})

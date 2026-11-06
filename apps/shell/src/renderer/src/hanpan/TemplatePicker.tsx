@@ -29,6 +29,8 @@ export interface HanpanApi extends Partial<MarkdownConverterApi>, Partial<MyForm
   openDesign?(): Promise<void>
   /** a new mind map with `topic` as its central topic */
   newMap?(topic: string): Promise<{ ok: true } | { ok: false; error: string }>
+  /** a tab's "내 양식으로 저장…": open this dialog ready to save that tab; returns unsubscribe */
+  onSaveMyFormRequest?(listener: (tabId: string) => void): () => void
 }
 
 declare global {
@@ -65,7 +67,11 @@ function myFormsApiOf(api: HanpanApi | undefined): MyFormsApi | null {
   return api as MyFormsApi
 }
 
-export function TemplatePicker(p: { onClose(): void }) {
+export function TemplatePicker(p: {
+  onClose(): void
+  /** opened from a tab's "내 양식으로 저장…": that document is the one to save */
+  saveTabId?: string
+}) {
   const { t } = useI18n()
   const [templates, setTemplates] = useState<TemplateSummary[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -129,7 +135,9 @@ export function TemplatePicker(p: { onClose(): void }) {
           </p>
         )}
         <div className="hp-tpl-body">
-          {myFormsApi && <MyFormsSection api={myFormsApi} onOpened={p.onClose} />}
+          {myFormsApi && (
+            <MyFormsSection api={myFormsApi} onOpened={p.onClose} saveTabId={p.saveTabId} />
+          )}
           {groups.map(([category, list]) => (
             <section key={category}>
               <h3>{category}</h3>

@@ -40,10 +40,14 @@ function installApi(over: Partial<HanpanApi> = {}): HanpanApi {
   return api
 }
 
-async function render(): Promise<void> {
+async function render(saveTabId?: string): Promise<void> {
   await act(async () => {
     root.render(
-      createElement(LocaleProvider, { initial: 'ko' }, createElement(TemplatePicker, { onClose })),
+      createElement(
+        LocaleProvider,
+        { initial: 'ko' },
+        createElement(TemplatePicker, { onClose, saveTabId }),
+      ),
     )
   })
   await act(async () => {})
@@ -177,5 +181,28 @@ describe('내 양식 in the forms dialog', () => {
       '양식으로 저장할 수 있는 열린 문서(워드·한글)가 없습니다.',
     )
     expect(mySection().querySelector('[data-my-form-save] button')).toBeNull()
+  })
+
+  it('opens ready to save the tab chosen from the tab menu (내 양식으로 저장…)', async () => {
+    installApi({
+      myFormSources: vi.fn(async () => [
+        { tabId: 't1', title: '출장 보고.hwpx', type: 'hwpx' },
+        { tabId: 't2', title: '회의록.docx', type: 'docx' },
+      ]),
+    })
+    await render('t2')
+    const save = mySection().querySelector<HTMLElement>('[data-my-form-save]')!
+    expect(save.querySelector('select')!.value).toBe('t2')
+    const input = save.querySelector<HTMLInputElement>('input')!
+    expect(input.value).toBe('회의록')
+    expect(document.activeElement).toBe(input)
+  })
+
+  it('falls back to the first document when the chosen tab is not one of them', async () => {
+    installApi()
+    await render('gone')
+    const save = mySection().querySelector<HTMLElement>('[data-my-form-save]')!
+    expect(save.querySelector('select')!.value).toBe('t1')
+    expect(save.querySelector<HTMLInputElement>('input')!.value).toBe('출장 보고')
   })
 })

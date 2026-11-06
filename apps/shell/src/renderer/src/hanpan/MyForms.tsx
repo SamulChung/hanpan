@@ -4,7 +4,7 @@
  * 열린 워드·한글 문서를 이름을 붙여 양식으로 저장하는 줄도 여기 있다.
  * 화면은 탭 id·양식 id·이름만 넘긴다(경로는 메인 프로세스가 정한다).
  */
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useI18n, type StringKey } from '../locale'
 
 export interface MyFormSummary {
@@ -42,7 +42,12 @@ const ERROR_KEYS: Record<string, StringKey> = {
 /** 탭 제목에서 확장자를 뺀 것: 양식 이름의 처음 값 */
 const stem = (title: string) => title.replace(/\.(docx|hwpx?)$/i, '')
 
-export function MyFormsSection(p: { api: MyFormsApi; onOpened(): void }) {
+export function MyFormsSection(p: {
+  api: MyFormsApi
+  onOpened(): void
+  /** the tab to save (from the tab menu): picked in the list, the name field focused */
+  saveTabId?: string
+}) {
   const { t } = useI18n()
   const { api } = p
   const [forms, setForms] = useState<MyFormSummary[]>([])
@@ -53,6 +58,16 @@ export function MyFormsSection(p: { api: MyFormsApi; onOpened(): void }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
+  const nameInput = useRef<HTMLInputElement>(null)
+  const { saveTabId } = p
+  const [focusName, setFocusName] = useState(false)
+  // the name field exists once the list of documents is in
+  useEffect(() => {
+    if (!focusName || !nameInput.current) return
+    nameInput.current.focus()
+    nameInput.current.select()
+    setFocusName(false)
+  }, [focusName, sources])
 
   const refresh = useCallback(
     () =>
@@ -69,13 +84,16 @@ export function MyFormsSection(p: { api: MyFormsApi; onOpened(): void }) {
       .myFormSources()
       .then((list) => {
         setSources(list)
-        if (list[0]) {
-          setSource(list[0].tabId)
-          setName(stem(list[0].title))
+        const wanted = list.find((s) => s.tabId === saveTabId)
+        const first = wanted ?? list[0]
+        if (first) {
+          setSource(first.tabId)
+          setName(stem(first.title))
         }
+        if (wanted) setFocusName(true)
       })
       .catch(() => setSources([]))
-  }, [api, refresh])
+  }, [api, refresh, saveTabId])
 
   const explain = (code: string) => {
     if (code === 'canceled') return
@@ -168,6 +186,7 @@ export function MyFormsSection(p: { api: MyFormsApi; onOpened(): void }) {
             <label>
               {t('hpMyFormsName')}
               <input
+                ref={nameInput}
                 type="text"
                 value={name}
                 maxLength={80}

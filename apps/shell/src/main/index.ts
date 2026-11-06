@@ -14,6 +14,7 @@ import { basename, dirname, extname, join, resolve } from 'node:path'
 import {
   BrowserWindow,
   Menu,
+  ShareMenu,
   app,
   clipboard,
   dialog,
@@ -31,7 +32,14 @@ import type { MenuItemConstructorOptions, NativeImage, WebContents } from 'elect
 import { atomicWriteFile } from './atomic-write'
 import { setupHanpan } from './hanpan/setup'
 import { createMyFormsStore, type MyFormType } from './hanpan/my-forms'
-import { registerMyFormsIpc, type MyFormSource } from './hanpan/my-forms-ipc'
+import { MY_FORMS_CHANNELS, registerMyFormsIpc, type MyFormSource } from './hanpan/my-forms-ipc'
+import {
+  canShareTab,
+  createWindowsShare,
+  shareTab,
+  windowHandleArg,
+  type ShareAnswer,
+} from './share/system-share'
 import { configureDesignWindow, openDesignWithOutline } from './hanpan/design-window'
 import { tabStripOverlay } from './title-bar-overlay'
 import { shellWindowBackground } from './window-background'
@@ -1019,6 +1027,13 @@ const tMain = createI18n({
     menuTabSave: '保存',
     menuTabSaveAs: '另存为…',
     menuTabPrint: '打印…',
+    menuTabShare: '共享…',
+    menuTabSaveMyForm: '另存为我的模板…',
+    shareSaveFirst: '共享前需要先保存',
+    shareSaveFirstDetail: '未保存的更改不会包含在共享的文件中。将先保存文档，然后打开共享窗口。',
+    shareSaveAndShare: '保存并共享',
+    shareFailed: '无法打开共享窗口',
+    shareFileMissing: '找不到该文件，无法共享',
     menuTabRename: '重命名',
     menuTabDuplicate: '创建副本（复制已保存的文件）',
     menuTabSplitBeside: '左右分屏',
@@ -1172,6 +1187,14 @@ const tMain = createI18n({
     menuTabSave: 'Save',
     menuTabSaveAs: 'Save As…',
     menuTabPrint: 'Print…',
+    menuTabShare: 'Share…',
+    menuTabSaveMyForm: 'Save as My Form…',
+    shareSaveFirst: 'Save before sharing',
+    shareSaveFirstDetail:
+      'Unsaved changes are not part of the shared file. The document is saved first, then the share window opens.',
+    shareSaveAndShare: 'Save and Share',
+    shareFailed: 'Could not open the share window',
+    shareFileMissing: 'The file cannot be found, so it cannot be shared',
     menuTabRename: 'Rename',
     menuTabDuplicate: 'Duplicate (copy the saved file)',
     menuTabSplitBeside: 'Split side by side',
@@ -1333,6 +1356,14 @@ const tMain = createI18n({
     menuTabSave: 'Lưu',
     menuTabSaveAs: 'Lưu thành…',
     menuTabPrint: 'In…',
+    menuTabShare: 'Chia sẻ…',
+    menuTabSaveMyForm: 'Lưu làm mẫu của tôi…',
+    shareSaveFirst: 'Cần lưu trước khi chia sẻ',
+    shareSaveFirstDetail:
+      'Các thay đổi chưa lưu không có trong tệp được chia sẻ. Tài liệu sẽ được lưu trước, sau đó cửa sổ chia sẻ sẽ mở.',
+    shareSaveAndShare: 'Lưu và chia sẻ',
+    shareFailed: 'Không thể mở cửa sổ chia sẻ',
+    shareFileMissing: 'Không tìm thấy tệp nên không thể chia sẻ',
     menuTabRename: 'Đổi tên',
     menuTabDuplicate: 'Nhân bản (sao chép file đã lưu)',
     menuTabSplitBeside: 'Chia đôi màn hình',
@@ -1494,6 +1525,14 @@ const tMain = createI18n({
     menuTabSave: '保存',
     menuTabSaveAs: '名前を付けて保存…',
     menuTabPrint: '印刷…',
+    menuTabShare: '共有…',
+    menuTabSaveMyForm: 'マイフォームとして保存…',
+    shareSaveFirst: '共有する前に保存してください',
+    shareSaveFirstDetail:
+      '保存されていない変更は共有するファイルに含まれません。文書を保存してから共有ウィンドウを開きます。',
+    shareSaveAndShare: '保存して共有',
+    shareFailed: '共有ウィンドウを開けませんでした',
+    shareFileMissing: 'ファイルが見つからないため共有できません',
     menuTabRename: '名前を変更',
     menuTabDuplicate: '複製（保存済みファイルのコピー）',
     menuTabSplitBeside: '左右に分割',
@@ -1657,6 +1696,14 @@ const tMain = createI18n({
     menuTabSave: '저장',
     menuTabSaveAs: '다른 이름으로 저장…',
     menuTabPrint: '인쇄…',
+    menuTabShare: '공유하기…',
+    menuTabSaveMyForm: '내 양식으로 저장…',
+    shareSaveFirst: '공유하기 전에 저장해야 합니다',
+    shareSaveFirstDetail:
+      '저장하지 않은 변경 내용은 공유하는 파일에 들어가지 않습니다. 문서를 먼저 저장한 뒤 공유 창을 엽니다.',
+    shareSaveAndShare: '저장하고 공유',
+    shareFailed: '공유 창을 열지 못했습니다',
+    shareFileMissing: '파일을 찾을 수 없어 공유할 수 없습니다',
     menuTabRename: '이름 바꾸기',
     menuTabDuplicate: '복제(저장된 파일 복사)',
     menuTabSplitBeside: '나란히 분할',
@@ -1818,6 +1865,14 @@ const tMain = createI18n({
     menuTabSave: 'Enregistrer',
     menuTabSaveAs: 'Enregistrer sous…',
     menuTabPrint: 'Imprimer…',
+    menuTabShare: 'Partager…',
+    menuTabSaveMyForm: 'Enregistrer comme mon modèle…',
+    shareSaveFirst: 'Enregistrez avant de partager',
+    shareSaveFirstDetail:
+      'Les modifications non enregistrées ne figurent pas dans le fichier partagé. Le document est d’abord enregistré, puis la fenêtre de partage s’ouvre.',
+    shareSaveAndShare: 'Enregistrer et partager',
+    shareFailed: 'Impossible d’ouvrir la fenêtre de partage',
+    shareFileMissing: 'Le fichier est introuvable et ne peut donc pas être partagé',
     menuTabRename: 'Renommer',
     menuTabDuplicate: 'Dupliquer (copier le fichier enregistré)',
     menuTabSplitBeside: 'Afficher côte à côte',
@@ -1982,6 +2037,14 @@ const tMain = createI18n({
     menuTabSave: 'Speichern',
     menuTabSaveAs: 'Speichern unter…',
     menuTabPrint: 'Drucken…',
+    menuTabShare: 'Teilen…',
+    menuTabSaveMyForm: 'Als eigene Vorlage speichern…',
+    shareSaveFirst: 'Vor dem Teilen speichern',
+    shareSaveFirstDetail:
+      'Nicht gespeicherte Änderungen sind nicht in der geteilten Datei enthalten. Das Dokument wird zuerst gespeichert, dann öffnet sich das Teilen-Fenster.',
+    shareSaveAndShare: 'Speichern und teilen',
+    shareFailed: 'Das Teilen-Fenster konnte nicht geöffnet werden',
+    shareFileMissing: 'Die Datei wurde nicht gefunden und kann daher nicht geteilt werden',
     menuTabRename: 'Umbenennen',
     menuTabDuplicate: 'Duplizieren (gespeicherte Datei kopieren)',
     menuTabSplitBeside: 'Nebeneinander teilen',
@@ -2146,6 +2209,14 @@ const tMain = createI18n({
     menuTabSave: 'Guardar',
     menuTabSaveAs: 'Guardar como…',
     menuTabPrint: 'Imprimir…',
+    menuTabShare: 'Compartir…',
+    menuTabSaveMyForm: 'Guardar como mi plantilla…',
+    shareSaveFirst: 'Guarde antes de compartir',
+    shareSaveFirstDetail:
+      'Los cambios sin guardar no forman parte del archivo compartido. Primero se guarda el documento y después se abre la ventana para compartir.',
+    shareSaveAndShare: 'Guardar y compartir',
+    shareFailed: 'No se pudo abrir la ventana para compartir',
+    shareFileMissing: 'No se encuentra el archivo, por lo que no se puede compartir',
     menuTabRename: 'Cambiar nombre',
     menuTabDuplicate: 'Duplicar (copiar archivo guardado)',
     menuTabSplitBeside: 'Dividir en paralelo',
@@ -2310,6 +2381,14 @@ const tMain = createI18n({
     menuTabSave: 'บันทึก',
     menuTabSaveAs: 'บันทึกเป็น…',
     menuTabPrint: 'พิมพ์…',
+    menuTabShare: 'แชร์…',
+    menuTabSaveMyForm: 'บันทึกเป็นแบบฟอร์มของฉัน…',
+    shareSaveFirst: 'ต้องบันทึกก่อนแชร์',
+    shareSaveFirstDetail:
+      'การเปลี่ยนแปลงที่ยังไม่บันทึกจะไม่อยู่ในไฟล์ที่แชร์ ระบบจะบันทึกเอกสารก่อน แล้วจึงเปิดหน้าต่างแชร์',
+    shareSaveAndShare: 'บันทึกและแชร์',
+    shareFailed: 'ไม่สามารถเปิดหน้าต่างแชร์ได้',
+    shareFileMissing: 'ไม่พบไฟล์ จึงแชร์ไม่ได้',
     menuTabRename: 'เปลี่ยนชื่อ',
     menuTabDuplicate: 'ทำสำเนา (คัดลอกไฟล์ที่บันทึกไว้)',
     menuTabSplitBeside: 'แบ่งหน้าต่างเคียงข้างกัน',
@@ -2468,6 +2547,14 @@ const tMain = createI18n({
     menuTabSave: 'Simpan',
     menuTabSaveAs: 'Simpan sebagai…',
     menuTabPrint: 'Cetak…',
+    menuTabShare: 'Bagikan…',
+    menuTabSaveMyForm: 'Simpan sebagai formulir saya…',
+    shareSaveFirst: 'Simpan sebelum membagikan',
+    shareSaveFirstDetail:
+      'Perubahan yang belum disimpan tidak termasuk dalam file yang dibagikan. Dokumen disimpan terlebih dahulu, lalu jendela berbagi terbuka.',
+    shareSaveAndShare: 'Simpan dan bagikan',
+    shareFailed: 'Jendela berbagi tidak dapat dibuka',
+    shareFileMissing: 'File tidak ditemukan sehingga tidak dapat dibagikan',
     menuTabRename: 'Ganti nama',
     menuTabDuplicate: 'Duplikat (salin berkas tersimpan)',
     menuTabSplitBeside: 'Bagi berdampingan',
@@ -2631,6 +2718,14 @@ const tMain = createI18n({
     menuTabSave: 'Сохранить',
     menuTabSaveAs: 'Сохранить как…',
     menuTabPrint: 'Печать…',
+    menuTabShare: 'Поделиться…',
+    menuTabSaveMyForm: 'Сохранить как мой шаблон…',
+    shareSaveFirst: 'Сохраните перед отправкой',
+    shareSaveFirstDetail:
+      'Несохранённые изменения не попадут в отправляемый файл. Сначала документ будет сохранён, затем откроется окно «Поделиться».',
+    shareSaveAndShare: 'Сохранить и поделиться',
+    shareFailed: 'Не удалось открыть окно «Поделиться»',
+    shareFileMissing: 'Файл не найден, поэтому им нельзя поделиться',
     menuTabRename: 'Переименовать',
     menuTabDuplicate: 'Создать копию (сохранённый файл)',
     menuTabSplitBeside: 'Разделить экран',
@@ -2794,6 +2889,14 @@ const tMain = createI18n({
     menuTabSave: 'حفظ',
     menuTabSaveAs: 'حفظ باسم…',
     menuTabPrint: 'طباعة…',
+    menuTabShare: 'مشاركة…',
+    menuTabSaveMyForm: 'حفظ كنموذج خاص بي…',
+    shareSaveFirst: 'احفظ قبل المشاركة',
+    shareSaveFirstDetail:
+      'التغييرات غير المحفوظة ليست جزءًا من الملف المُشارك. يُحفظ المستند أولًا ثم تُفتح نافذة المشاركة.',
+    shareSaveAndShare: 'حفظ ومشاركة',
+    shareFailed: 'تعذّر فتح نافذة المشاركة',
+    shareFileMissing: 'تعذّر العثور على الملف، لذا لا يمكن مشاركته',
     menuTabRename: 'تغيير الاسم',
     menuTabDuplicate: 'تكرار (نسخ الملف المحفوظ)',
     menuTabSplitBeside: 'تقسيم جنبًا إلى جنب',
@@ -2952,6 +3055,14 @@ const tMain = createI18n({
     menuTabSave: 'Salvar',
     menuTabSaveAs: 'Salvar como…',
     menuTabPrint: 'Imprimir…',
+    menuTabShare: 'Compartilhar…',
+    menuTabSaveMyForm: 'Salvar como meu modelo…',
+    shareSaveFirst: 'Salve antes de compartilhar',
+    shareSaveFirstDetail:
+      'As alterações não salvas não fazem parte do arquivo compartilhado. O documento é salvo primeiro e depois a janela de compartilhamento é aberta.',
+    shareSaveAndShare: 'Salvar e compartilhar',
+    shareFailed: 'Não foi possível abrir a janela de compartilhamento',
+    shareFileMissing: 'O arquivo não foi encontrado, por isso não pode ser compartilhado',
     menuTabRename: 'Renomear',
     menuTabDuplicate: 'Duplicar (copiar arquivo salvo)',
     menuTabSplitBeside: 'Dividir lado a lado',
@@ -3115,6 +3226,14 @@ const tMain = createI18n({
     menuTabSave: 'Salva',
     menuTabSaveAs: 'Salva con nome…',
     menuTabPrint: 'Stampa…',
+    menuTabShare: 'Condividi…',
+    menuTabSaveMyForm: 'Salva come mio modello…',
+    shareSaveFirst: 'Salva prima di condividere',
+    shareSaveFirstDetail:
+      'Le modifiche non salvate non fanno parte del file condiviso. Il documento viene prima salvato, poi si apre la finestra di condivisione.',
+    shareSaveAndShare: 'Salva e condividi',
+    shareFailed: 'Impossibile aprire la finestra di condivisione',
+    shareFileMissing: 'Il file non è stato trovato, quindi non può essere condiviso',
     menuTabRename: 'Rinomina',
     menuTabDuplicate: 'Duplica (copia il file salvato)',
     menuTabSplitBeside: 'Affianca',
@@ -3278,6 +3397,14 @@ const tMain = createI18n({
     menuTabSave: 'Zapisz',
     menuTabSaveAs: 'Zapisz jako…',
     menuTabPrint: 'Drukuj…',
+    menuTabShare: 'Udostępnij…',
+    menuTabSaveMyForm: 'Zapisz jako mój szablon…',
+    shareSaveFirst: 'Zapisz przed udostępnieniem',
+    shareSaveFirstDetail:
+      'Niezapisane zmiany nie trafią do udostępnianego pliku. Najpierw dokument zostanie zapisany, a potem otworzy się okno udostępniania.',
+    shareSaveAndShare: 'Zapisz i udostępnij',
+    shareFailed: 'Nie można otworzyć okna udostępniania',
+    shareFileMissing: 'Nie znaleziono pliku, więc nie można go udostępnić',
     menuTabRename: 'Zmień nazwę',
     menuTabDuplicate: 'Powiel (skopiuj zapisany plik)',
     menuTabSplitBeside: 'Podziel obok siebie',
@@ -3441,6 +3568,14 @@ const tMain = createI18n({
     menuTabSave: 'Uložit',
     menuTabSaveAs: 'Uložit jako…',
     menuTabPrint: 'Tisk…',
+    menuTabShare: 'Sdílet…',
+    menuTabSaveMyForm: 'Uložit jako moji šablonu…',
+    shareSaveFirst: 'Před sdílením uložte',
+    shareSaveFirstDetail:
+      'Neuložené změny nejsou součástí sdíleného souboru. Dokument se nejprve uloží a potom se otevře okno sdílení.',
+    shareSaveAndShare: 'Uložit a sdílet',
+    shareFailed: 'Okno sdílení se nepodařilo otevřít',
+    shareFileMissing: 'Soubor nebyl nalezen, proto ho nelze sdílet',
     menuTabRename: 'Přejmenovat',
     menuTabDuplicate: 'Duplikovat (zkopírovat uložený soubor)',
     menuTabSplitBeside: 'Rozdělit vedle sebe',
@@ -3601,6 +3736,14 @@ const tMain = createI18n({
     menuTabSave: 'Opslaan',
     menuTabSaveAs: 'Opslaan als…',
     menuTabPrint: 'Afdrukken…',
+    menuTabShare: 'Delen…',
+    menuTabSaveMyForm: 'Opslaan als mijn sjabloon…',
+    shareSaveFirst: 'Sla op voordat u deelt',
+    shareSaveFirstDetail:
+      'Niet-opgeslagen wijzigingen zitten niet in het gedeelde bestand. Het document wordt eerst opgeslagen, daarna opent het deelvenster.',
+    shareSaveAndShare: 'Opslaan en delen',
+    shareFailed: 'Het deelvenster kon niet worden geopend',
+    shareFileMissing: 'Het bestand is niet gevonden en kan daarom niet worden gedeeld',
     menuTabRename: 'Naam wijzigen',
     menuTabDuplicate: 'Dupliceren (opgeslagen bestand kopiëren)',
     menuTabSplitBeside: 'Naast elkaar splitsen',
@@ -3765,6 +3908,14 @@ const tMain = createI18n({
     menuTabSave: 'Simpan',
     menuTabSaveAs: 'Simpan sebagai…',
     menuTabPrint: 'Cetak…',
+    menuTabShare: 'Kongsi…',
+    menuTabSaveMyForm: 'Simpan sebagai borang saya…',
+    shareSaveFirst: 'Simpan sebelum berkongsi',
+    shareSaveFirstDetail:
+      'Perubahan yang belum disimpan tiada dalam fail yang dikongsi. Dokumen disimpan dahulu, kemudian tetingkap kongsi dibuka.',
+    shareSaveAndShare: 'Simpan dan kongsi',
+    shareFailed: 'Tetingkap kongsi tidak dapat dibuka',
+    shareFileMissing: 'Fail tidak ditemui, jadi ia tidak boleh dikongsi',
     menuTabRename: 'Namakan semula',
     menuTabDuplicate: 'Duplikasi (salin fail yang disimpan)',
     menuTabSplitBeside: 'Pisahkan bersebelahan',
@@ -3927,6 +4078,14 @@ const tMain = createI18n({
     menuTabSave: 'שמירה',
     menuTabSaveAs: 'שמירה בשם…',
     menuTabPrint: 'הדפסה…',
+    menuTabShare: 'שיתוף…',
+    menuTabSaveMyForm: 'שמירה כתבנית שלי…',
+    shareSaveFirst: 'יש לשמור לפני השיתוף',
+    shareSaveFirstDetail:
+      'שינויים שלא נשמרו אינם חלק מהקובץ המשותף. המסמך יישמר תחילה ואז ייפתח חלון השיתוף.',
+    shareSaveAndShare: 'שמירה ושיתוף',
+    shareFailed: 'לא ניתן לפתוח את חלון השיתוף',
+    shareFileMissing: 'הקובץ לא נמצא ולכן אי אפשר לשתף אותו',
     menuTabRename: 'שינוי שם',
     menuTabDuplicate: 'שכפול (העתקת הקובץ השמור)',
     menuTabSplitBeside: 'פיצול זה לצד זה',
@@ -4086,6 +4245,14 @@ const tMain = createI18n({
     menuTabSave: 'सहेजें',
     menuTabSaveAs: 'इस रूप में सहेजें…',
     menuTabPrint: 'प्रिंट करें…',
+    menuTabShare: 'साझा करें…',
+    menuTabSaveMyForm: 'मेरे फ़ॉर्म के रूप में सहेजें…',
+    shareSaveFirst: 'साझा करने से पहले सहेजें',
+    shareSaveFirstDetail:
+      'बिना सहेजे बदलाव साझा की गई फ़ाइल में शामिल नहीं होते। पहले दस्तावेज़ सहेजा जाएगा, फिर साझा करने की विंडो खुलेगी।',
+    shareSaveAndShare: 'सहेजें और साझा करें',
+    shareFailed: 'साझा करने की विंडो नहीं खुल सकी',
+    shareFileMissing: 'फ़ाइल नहीं मिली, इसलिए इसे साझा नहीं किया जा सकता',
     menuTabRename: 'नाम बदलें',
     menuTabDuplicate: 'प्रतिलिपि बनाएँ (सहेजी गई फ़ाइल की कॉपी)',
     menuTabSplitBeside: 'अगल-बगल विभाजित करें',
@@ -4249,6 +4416,13 @@ const tMain = createI18n({
     menuTabSave: '儲存',
     menuTabSaveAs: '另存新檔…',
     menuTabPrint: '列印…',
+    menuTabShare: '分享…',
+    menuTabSaveMyForm: '另存為我的範本…',
+    shareSaveFirst: '分享前需要先儲存',
+    shareSaveFirstDetail: '未儲存的變更不會包含在分享的檔案中。將先儲存文件，再開啟分享視窗。',
+    shareSaveAndShare: '儲存並分享',
+    shareFailed: '無法開啟分享視窗',
+    shareFileMissing: '找不到檔案，無法分享',
     menuTabRename: '重新命名',
     menuTabDuplicate: '建立複本（複製已儲存的檔案）',
     menuTabSplitBeside: '左右分屏',
@@ -7278,7 +7452,75 @@ function tabMenuActions(): TabMenuActions {
     move: (id, toIndex) => tabManager?.reorderTab(id, toIndex),
     closeTabs: (ids) => void (tabManager && closeTabsInOrder(tabManager, ids)),
     reopenClosed: () => recentlyClosed.reopenNext(openDocumentPath, existsSync),
+    share: (id) => void shareTabFromShell(id),
+    // the forms dialog lives on Home: show Home and let it open the dialog with this tab picked
+    saveMyForm: (id) => {
+      if (!tabManager || !shellWindow || shellWindow.isDestroyed()) return
+      tabManager.activateTab('home')
+      shellWindow.webContents.send(MY_FORMS_CHANNELS.saveRequest, id)
+    },
   }
+}
+
+// ---- 공유하기: the system share sheet (decision 0095) ----
+
+/** win-share.exe: packaged under resources/share, next to the source in a dev run */
+function shareHelperPath(): string | null {
+  const candidates = [
+    process.resourcesPath ? join(process.resourcesPath, 'share', 'win-share.exe') : '',
+    resolve(import.meta.dirname, '../../src/main/share/win-share.exe'),
+  ]
+  return candidates.find((candidate) => candidate && existsSync(candidate)) ?? null
+}
+
+const windowsShare = createWindowsShare({
+  helperPath: shareHelperPath,
+  // stdin stays open: the helper leaves when it closes (this app quitting)
+  spawn: (command, args) =>
+    spawn(command, args, { stdio: ['pipe', 'pipe', 'ignore'], windowsHide: true }),
+})
+
+function openShareSheet(win: BrowserWindow, files: string[]): Promise<ShareAnswer> {
+  if (process.platform === 'darwin') {
+    new ShareMenu({ filePaths: files }).popup({ window: win })
+    return Promise.resolve({ ok: true })
+  }
+  return windowsShare(windowHandleArg(win.getNativeWindowHandle()), files)
+}
+
+async function shareTabFromShell(id: string): Promise<void> {
+  const win = shellWindow
+  if (!win || win.isDestroyed() || !tabManager) return
+  const result = await shareTab(
+    {
+      platform: process.platform,
+      document: async (tabId) =>
+        (await tabManager?.openDocuments())?.find((doc) => doc.id === tabId),
+      fileExists: existsSync,
+      confirmSave: async () =>
+        (
+          await dialog.showMessageBox(win, {
+            type: 'question',
+            message: tm('shareSaveFirst'),
+            detail: tm('shareSaveFirstDetail'),
+            buttons: [tm('shareSaveAndShare'), tm('btnCancel')],
+            defaultId: 0,
+            cancelId: 1,
+          })
+        ).response === 0,
+      save: (tabId) => tabMenuActions().save(tabId),
+      share: (files) => openShareSheet(win, files),
+      reportFailure: (kind, detail) => {
+        void dialog.showMessageBox(win, {
+          type: 'warning',
+          message: tm(kind === 'missing' ? 'shareFileMissing' : 'shareFailed'),
+          detail,
+        })
+      },
+    },
+    id,
+  )
+  if (result === 'failed') console.warn(`[share] tab ${id}: the share sheet did not open`)
 }
 
 function registerTabsIpc(): void {
@@ -7309,6 +7551,19 @@ function registerTabsIpc(): void {
         : item.type === 'separator'
           ? { type: 'separator' }
           : { label: item.label, enabled: item.enabled, click: () => item.click() },
+    )
+    // 공유하기… for the tab in front, under the window's menus
+    const front = tabManager?.list().find((tab) => tab.active)
+    menus.push(
+      { type: 'separator' },
+      {
+        label: tm('menuTabShare'),
+        enabled:
+          !!front &&
+          canShareTab(process.platform, front.kind) &&
+          !!tabManager?.canDetachTab(front.id),
+        click: () => front && void shareTabFromShell(front.id),
+      },
     )
     Menu.buildFromTemplate(appMenuPopupTemplate(menus, appMenuLabels(currentLang()))).popup({
       window: shellWindow,
@@ -7387,6 +7642,7 @@ function registerTabsIpc(): void {
       canDetach: tabManager.canDetachTab(id),
       fileExists: !!tab.filePath && existsSync(tab.filePath),
       canReopen: recentlyClosed.getEntries().length > 0,
+      canShare: canShareTab(process.platform, tab.kind),
       tm,
       actions: tabMenuActions(),
     })

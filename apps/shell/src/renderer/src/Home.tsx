@@ -1949,6 +1949,16 @@ export function Home({
 
   // Hanpan: the template picker
   const [templatesOpen, setTemplatesOpen] = useState(false)
+  // the document a tab's "내 양식으로 저장…" asked to save (the dialog opens with it picked)
+  const [formSaveTabId, setFormSaveTabId] = useState<string | undefined>()
+  useEffect(
+    () =>
+      window.hanpanApi?.onSaveMyFormRequest?.((tabId) => {
+        setFormSaveTabId(tabId)
+        setTemplatesOpen(true)
+      }),
+    [],
+  )
   const [converterOpen, setConverterOpen] = useState(false)
   const hp = window.hanpanApi
   const converterApi: MarkdownConverterApi | null =
@@ -2194,7 +2204,17 @@ export function Home({
             )
           })}
         </div>
-        {templatesOpen && <TemplatePicker onClose={() => setTemplatesOpen(false)} />}
+        {templatesOpen && (
+          <TemplatePicker
+            // a new request while the dialog is open starts it over with the new document
+            key={formSaveTabId ?? ''}
+            saveTabId={formSaveTabId}
+            onClose={() => {
+              setTemplatesOpen(false)
+              setFormSaveTabId(undefined)
+            }}
+          />
+        )}
         {converterOpen && converterApi && (
           <MarkdownConverter api={converterApi} onClose={() => setConverterOpen(false)} />
         )}
