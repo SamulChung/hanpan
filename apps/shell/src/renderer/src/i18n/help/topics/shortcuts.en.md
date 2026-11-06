@@ -6,13 +6,13 @@ Every editor has its own key bindings, and only a few of them work everywhere. T
 
 ### Anywhere in Hanpan (tabs and windows)
 
-| Action | Windows / Linux | macOS |
-| --- | --- | --- |
-| Next tab / previous tab | Ctrl+Tab / Ctrl+Shift+Tab | ⌃Tab / ⌃⇧Tab |
-| Close the current tab (on Home: the window, asking first if documents are open) | Ctrl+W | ⌘W |
-| Open Settings — on Home | Ctrl+, | ⌘, |
-| Open the user guide | F1 | F1 |
-| Pick a tab in the tab strip — when a tab has focus | ← / →, Enter, Delete (close) | ← / →, Enter, Delete (close) |
+| Action                                                                          | Windows / Linux              | macOS                        |
+| ------------------------------------------------------------------------------- | ---------------------------- | ---------------------------- |
+| Next tab / previous tab                                                         | Ctrl+Tab / Ctrl+Shift+Tab    | ⌃Tab / ⌃⇧Tab                 |
+| Close the current tab (on Home: the window, asking first if documents are open) | Ctrl+W                       | ⌘W                           |
+| Open Settings — on Home                                                         | Ctrl+,                       | ⌘,                           |
+| Open the user guide                                                             | F1                           | F1                           |
+| Pick a tab in the tab strip — when a tab has focus                              | ← / →, Enter, Delete (close) | ← / →, Enter, Delete (close) |
 
 ### Every editor
 

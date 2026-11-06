@@ -76,7 +76,8 @@ export const vi = {
   usageWindowFiveHour: 'Giới hạn 5 giờ',
   usageWindowSevenDay: 'Giới hạn 7 ngày',
   noticeTitle: 'Trước khi dùng AI bằng gói đăng ký của bạn',
-  noticeSummary: 'Tài liệu và cuộc trò chuyện được gửi tới Anthropic hoặc OpenAI bằng tài khoản của bạn.',
+  noticeSummary:
+    'Tài liệu và cuộc trò chuyện được gửi tới Anthropic hoặc OpenAI bằng tài khoản của bạn.',
   noticeMore: 'Chi tiết',
   noticeSend:
     'Nội dung tài liệu và cuộc trò chuyện được gửi đến Anthropic hoặc OpenAI bằng chính tài khoản của bạn. Mỗi yêu cầu còn kèm tên, tiêu đề và mô tả của mọi kỹ năng đặt ở "AI tự quyết định"; kỹ năng đang dùng và các tệp kỹ năng mà AI đọc cũng được gửi kèm.',

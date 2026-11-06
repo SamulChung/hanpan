@@ -51,7 +51,6 @@ function fmtElapsed(sec: number): string {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
 }
 
-
 export function PresenterView({
   slides,
   images,

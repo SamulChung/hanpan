@@ -21,7 +21,12 @@ const BORROWED = [
 describe('slide style names', () => {
   it('borrow no person or company name, in Korean or English', () => {
     for (const style of SLIDE_STYLES) {
-      for (const text of [style.name.ko, style.name.en, style.description.ko, style.description.en]) {
+      for (const text of [
+        style.name.ko,
+        style.name.en,
+        style.description.ko,
+        style.description.en,
+      ]) {
         for (const pattern of BORROWED) expect(text, `${style.id}: ${text}`).not.toMatch(pattern)
       }
     }
@@ -29,7 +34,16 @@ describe('slide style names', () => {
 
   it('keeps all ten styles under their ids, each with its own name', () => {
     expect(SLIDE_STYLES.map((s) => s.id)).toEqual([
-      'jobs', 'mckinsey', 'toss', 'bcg', 'ted', 'material', 'notion', 'airbnb', 'canva', 'pitch',
+      'jobs',
+      'mckinsey',
+      'toss',
+      'bcg',
+      'ted',
+      'material',
+      'notion',
+      'airbnb',
+      'canva',
+      'pitch',
     ])
     expect(new Set(SLIDE_STYLES.map((s) => s.name.ko)).size).toBe(10)
     expect(new Set(SLIDE_STYLES.map((s) => s.name.en)).size).toBe(10)

@@ -189,7 +189,16 @@ describe('the topic being added or named', () => {
   it('is brought fully into view when it lands partly outside the map', async () => {
     const { mind, root } = await mount()
     const rect = (left: number, top: number, width: number, height: number) =>
-      ({ left, top, right: left + width, bottom: top + height, width, height, x: left, y: top }) as DOMRect
+      ({
+        left,
+        top,
+        right: left + width,
+        bottom: top + height,
+        width,
+        height,
+        x: left,
+        y: top,
+      }) as DOMRect
     vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (
       this: HTMLElement,
     ) {

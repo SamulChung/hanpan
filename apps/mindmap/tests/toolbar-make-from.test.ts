@@ -144,7 +144,10 @@ describe('the make-from-document button', () => {
   })
 
   it('carries its name as text beside the icon, not only as a tooltip', async () => {
-    const button = await render('ko', props(() => {}))
+    const button = await render(
+      'ko',
+      props(() => {}),
+    )
     expect(button.textContent).toBe('다른 문서 만들기')
   })
 
@@ -152,7 +155,9 @@ describe('the make-from-document button', () => {
     const asked = vi.fn()
     const button = await render('ko', { ...props(asked), mapSaved: false })
     expect(button.getAttribute('aria-disabled')).toBe('true')
-    expect(button.dataset.tip).toBe('먼저 지도를 저장하세요. 저장한 지도로 다른 문서를 만들 수 있습니다.')
+    expect(button.dataset.tip).toBe(
+      '먼저 지도를 저장하세요. 저장한 지도로 다른 문서를 만들 수 있습니다.',
+    )
     // still pressable, so the reason is told; the handler decides what pressing does
     button.click()
     expect(asked).toHaveBeenCalledTimes(1)
@@ -192,7 +197,10 @@ describe('the File menu in the toolbar', () => {
   })
 
   it('shows the shortcut of each item that has one, as the slide editor does', async () => {
-    await render('ko', props(() => {}))
+    await render(
+      'ko',
+      props(() => {}),
+    )
     await act(async () => {
       container.querySelector<HTMLButtonElement>('[data-action="file-menu"]')!.click()
     })
@@ -211,12 +219,13 @@ describe('the File menu in the toolbar', () => {
 
 describe('the ribbon tab names', () => {
   it('say what the tabs hold: layout and theme under Design, the look of a topic under Format; the layout menu is named', async () => {
-    await render('ko', props(() => {}))
-    const name = (tab: string) =>
-      container.querySelector(`[data-ribbon-tab="${tab}"]`)!.textContent
+    await render(
+      'ko',
+      props(() => {}),
+    )
+    const name = (tab: string) => container.querySelector(`[data-ribbon-tab="${tab}"]`)!.textContent
     expect(name('format')).toBe('디자인')
     expect(name('style')).toBe('서식')
     expect(container.querySelector('.mm-layout .mm-layout-label')!.textContent).toBe('배치')
   })
 })
-

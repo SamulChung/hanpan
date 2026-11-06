@@ -554,8 +554,10 @@ export const strings = {
     onbBody3: '无授权费用，无广告，无水印。',
     hpOnbTitle: '欢迎使用 Hanpan',
     hpOnbSubtitle: '免费的韩语 AI 办公套件',
-    hpOnbBody: '用 AI Word、AI Excel、AI PowerPoint 和 AI Hangul 制作文档，PDF、思维导图、设计板、AI Photo 和 AI Illustration 也都能在同一处使用。',
-    hpOnbConnectBody: 'AI 可以使用你登录的 Claude 或 ChatGPT 账号，也可以使用这台电脑上安装的 AI 模型（PC 模型）。如果有 PC 模型，Hanpan 启动时会自动找到并连接。',
+    hpOnbBody:
+      '用 AI Word、AI Excel、AI PowerPoint 和 AI Hangul 制作文档，PDF、思维导图、设计板、AI Photo 和 AI Illustration 也都能在同一处使用。',
+    hpOnbConnectBody:
+      'AI 可以使用你登录的 Claude 或 ChatGPT 账号，也可以使用这台电脑上安装的 AI 模型（PC 模型）。如果有 PC 模型，Hanpan 启动时会自动找到并连接。',
     hpOnbDoneNotConnected: 'AI 尚未连接。你随时可以在“设置 → AI”中用账号登录或连接 PC 模型。',
     hpOnbDoneBody: '从主页的思维导图开始吧。整理好的内容可以接着做成 HWP 报告或演示文稿。',
     onbBack: '上一步',
@@ -743,7 +745,8 @@ export const strings = {
     hpTemplatesFormsNote:
       'These are the official forms exactly as Korean law publishes them. Before you hand one in, check on law.go.kr that it is still the current version.',
     hpMyForms: 'My templates',
-    hpMyFormsEmpty: 'No templates of your own yet. Save an open document as a template or add a file.',
+    hpMyFormsEmpty:
+      'No templates of your own yet. Save an open document as a template or add a file.',
     hpMyFormsAdd: 'Add template',
     hpMyFormsSave: 'Save as my template',
     hpMyFormsSource: 'Open document',
@@ -751,11 +754,12 @@ export const strings = {
     hpMyFormsNoSource: 'No open Word or HWP document to save as a template.',
     hpMyFormsOpen: 'Open as new document',
     hpMyFormsDelete: 'Delete',
-    hpMyFormsDeleteConfirm: 'Delete the template \'{name}\'? It goes to the Recycle Bin.',
+    hpMyFormsDeleteConfirm: "Delete the template '{name}'? It goes to the Recycle Bin.",
     hpMyFormsDeleteYes: 'Delete',
     hpMyFormsCancel: 'Cancel',
-    hpMyFormsSaved: 'Saved the template \'{name}\'.',
-    hpMyFormsUnsupported: 'This file type is not supported. Only Word (.docx) and HWP (.hwp, .hwpx) files can be templates.',
+    hpMyFormsSaved: "Saved the template '{name}'.",
+    hpMyFormsUnsupported:
+      'This file type is not supported. Only Word (.docx) and HWP (.hwp, .hwpx) files can be templates.',
     hpMyFormsEmptyName: 'Enter a template name.',
     hpMyFormsSaveFirst: 'Save the document first, then try again.',
     hpMyFormsTooLarge: 'The file is too large. Templates can be up to 50 MB.',
@@ -912,7 +916,8 @@ export const strings = {
     rootUnusable: 'The default save location is unavailable, so folders cannot be shown.',
     pickSaveDir: 'Choose a save location',
     deleteModalTitle: 'Delete Files',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: 'Move "{name}" to the Trash?',
     deleteConfirmMany: 'Move these {n} files to the Trash?',
@@ -929,7 +934,8 @@ export const strings = {
     setUpdateDownloading: 'Downloading update ({percent}%)',
     setUpdateRestart: 'Restart & install',
     setAutoUpdateCheck: 'Check for updates automatically',
-    setAutoUpdateCheckDesc: 'When off, GenOffice no longer checks for new versions at launch or in the background. You can still check with Check for Updates at the bottom of the ☰ menu.',
+    setAutoUpdateCheckDesc:
+      'When off, GenOffice no longer checks for new versions at launch or in the background. You can still check with Check for Updates at the bottom of the ☰ menu.',
     updateChannel: 'Update Channel',
     channelStable: 'Stable',
     channelBeta: 'Beta',
@@ -951,7 +957,8 @@ export const strings = {
       'Delete all saved AI readings and translations? Getting them back means using AI again.',
     setResultStoreDeleteFailed: 'Could not delete them. Try again.',
     setSearchRerank: 'Re-rank search results with AI (sent online)',
-    setSearchRerankDesc: 'Sends excerpts of the top 20 file-search results to an online AI (Jev by TypeSafe) and reorders them by relevance. Off by default; when on, the excerpts leave this PC.',
+    setSearchRerankDesc:
+      'Sends excerpts of the top 20 file-search results to an online AI (Jev by TypeSafe) and reorders them by relevance. Off by default; when on, the excerpts leave this PC.',
     setAiInternetTools: 'Let AI use internet tools',
     setAiInternetToolsDesc:
       'Web search, reading web pages, fetching pictures by address, and making and analyzing images. Off: the editors’ AI works without them. On: an address that has not appeared in the conversation is asked about before it is fetched. The AI conversation itself is not affected.',
@@ -1211,7 +1218,8 @@ export const strings = {
       'GenOffice is provided as is, without warranties of any kind, under the Apache License 2.0. AI-generated content can be wrong: check it before you use it. Making sure you have the right to use it is up to you.',
     viewOnGitHub: 'View on GitHub',
     setFeedback: 'Send feedback',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: 'Change',
     today: 'Today',
@@ -1246,7 +1254,8 @@ export const strings = {
       'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: 'Back',
     onbConnectTitle: 'Connect an AI',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',
@@ -1255,7 +1264,8 @@ export const strings = {
     setFreeDesc:
       'No subscription? Connect a free AI and start right away. Free use has a daily limit.',
     freeBadge: 'Free',
-    freeOpenRouterDesc: 'Connect with one button. OpenRouter is a service that lets one account use AI models from many companies: sign up or sign in in your browser and allow access.',
+    freeOpenRouterDesc:
+      'Connect with one button. OpenRouter is a service that lets one account use AI models from many companies: sign up or sign in in your browser and allow access.',
     freeGeminiDesc:
       'Make a key with your Google account and paste it here. Only for people aged 18 or older.',
     freeConnectBrowser: 'Connect in browser',
@@ -1445,11 +1455,12 @@ export const strings = {
     hpMyFormsNoSource: 'Không có tài liệu Word hoặc HWP đang mở để lưu thành mẫu.',
     hpMyFormsOpen: 'Mở thành tài liệu mới',
     hpMyFormsDelete: 'Xóa',
-    hpMyFormsDeleteConfirm: 'Xóa mẫu \'{name}\'? Mẫu sẽ được chuyển vào Thùng rác.',
+    hpMyFormsDeleteConfirm: "Xóa mẫu '{name}'? Mẫu sẽ được chuyển vào Thùng rác.",
     hpMyFormsDeleteYes: 'Xóa',
     hpMyFormsCancel: 'Hủy',
-    hpMyFormsSaved: 'Đã lưu mẫu \'{name}\'.',
-    hpMyFormsUnsupported: 'Không hỗ trợ loại tệp này. Chỉ tệp Word (.docx) và HWP (.hwp, .hwpx) mới dùng làm mẫu được.',
+    hpMyFormsSaved: "Đã lưu mẫu '{name}'.",
+    hpMyFormsUnsupported:
+      'Không hỗ trợ loại tệp này. Chỉ tệp Word (.docx) và HWP (.hwp, .hwpx) mới dùng làm mẫu được.',
     hpMyFormsEmptyName: 'Hãy nhập tên mẫu.',
     hpMyFormsSaveFirst: 'Hãy lưu tài liệu trước rồi thử lại.',
     hpMyFormsTooLarge: 'Tệp quá lớn. Mẫu tối đa 50 MB.',
@@ -1605,7 +1616,8 @@ export const strings = {
     rootUnusable: 'Vị trí lưu mặc định không khả dụng, do đó không thể hiển thị thư mục.',
     pickSaveDir: 'Chọn vị trí lưu',
     deleteModalTitle: 'Xóa tệp',
-    deleteOpenTabs: 'Đang mở trong thẻ: {names}. Khi xóa, thẻ đó sẽ được đóng trước và sẽ hỏi nếu có thay đổi chưa lưu.',
+    deleteOpenTabs:
+      'Đang mở trong thẻ: {names}. Khi xóa, thẻ đó sẽ được đóng trước và sẽ hỏi nếu có thay đổi chưa lưu.',
     deleteCloseTabs: 'Đóng thẻ và xóa',
     deleteConfirmOne: 'Chuyển "{name}" vào Thùng rác?',
     deleteConfirmMany: 'Chuyển {n} tệp này vào Thùng rác?',
@@ -1623,7 +1635,8 @@ export const strings = {
     setUpdateDownloading: 'Đang tải bản cập nhật ({percent}%)',
     setUpdateRestart: 'Khởi động lại và cài đặt',
     setAutoUpdateCheck: 'Tự động kiểm tra cập nhật',
-    setAutoUpdateCheckDesc: 'Khi tắt, GenOffice không còn kiểm tra phiên bản mới khi khởi động hoặc chạy nền. Bạn vẫn có thể kiểm tra bằng mục Kiểm tra bản cập nhật ở cuối menu ☰.',
+    setAutoUpdateCheckDesc:
+      'Khi tắt, GenOffice không còn kiểm tra phiên bản mới khi khởi động hoặc chạy nền. Bạn vẫn có thể kiểm tra bằng mục Kiểm tra bản cập nhật ở cuối menu ☰.',
     updateChannel: 'Kênh cập nhật',
     channelStable: 'Ổn định',
     channelBeta: 'Beta',
@@ -1645,7 +1658,8 @@ export const strings = {
       'Xóa tất cả kết quả đọc bằng AI và bản dịch đã lưu? Muốn có lại sẽ phải dùng AI lần nữa.',
     setResultStoreDeleteFailed: 'Không xóa được. Hãy thử lại.',
     setSearchRerank: 'Dùng AI sắp xếp lại kết quả tìm kiếm (gửi ra ngoài)',
-    setSearchRerankDesc: 'Gửi đoạn trích của 20 kết quả tìm tệp đầu tiên tới một AI trực tuyến (Jev của TypeSafe) để sắp xếp lại theo mức độ liên quan. Mặc định tắt; khi bật, các đoạn trích sẽ rời khỏi máy tính này.',
+    setSearchRerankDesc:
+      'Gửi đoạn trích của 20 kết quả tìm tệp đầu tiên tới một AI trực tuyến (Jev của TypeSafe) để sắp xếp lại theo mức độ liên quan. Mặc định tắt; khi bật, các đoạn trích sẽ rời khỏi máy tính này.',
     setAiInternetTools: 'Cho phép AI dùng công cụ internet',
     setAiInternetToolsDesc:
       'Tìm kiếm web, đọc trang web, lấy hình theo địa chỉ, tạo và phân tích hình ảnh. Khi tắt, AI trong trình soạn thảo làm việc mà không có chúng. Khi bật, địa chỉ chưa xuất hiện trong cuộc trò chuyện sẽ được hỏi trước khi tải. Bản thân cuộc trò chuyện với AI không bị ảnh hưởng.',
@@ -1679,7 +1693,8 @@ export const strings = {
     aiPanelStartCollapsed: 'Thu gọn',
     aiPanelStartLast: 'Trạng thái gần nhất',
     setAuthorName: 'Tên người dùng',
-    setAuthorNameDesc: 'Hiển thị là tác giả của nhận xét và thay đổi được theo dõi trong AI Word, AI Excel và AI PPT. Để trống để dùng tên tài khoản máy tính.',
+    setAuthorNameDesc:
+      'Hiển thị là tác giả của nhận xét và thay đổi được theo dõi trong AI Word, AI Excel và AI PPT. Để trống để dùng tên tài khoản máy tính.',
     settings: 'Cài đặt',
     setSecAccount: 'Tài khoản',
     setSecGeneral: 'Chung',
@@ -1750,7 +1765,8 @@ export const strings = {
       'Hình ảnh được đưa trực tiếp cho AI mà bạn đang trò chuyện. Không cần khóa riêng.',
     setAiVideoNoneHint:
       'Phân tích video và âm thanh cần một nhà cung cấp theo khóa có hỗ trợ video. Hãy chọn một nhà cung cấp ở đây và nhập khóa để sử dụng.',
-    intgDevToggle: 'Dành cho nhà phát triển: dùng Hanpan từ công cụ lập trình AI (Claude Code, Codex…)',
+    intgDevToggle:
+      'Dành cho nhà phát triển: dùng Hanpan từ công cụ lập trình AI (Claude Code, Codex…)',
     intgHeroTitle: 'Sử dụng GenOffice từ trợ lý AI của bạn',
     intgHeroDesc:
       'Sau khi kết nối, Claude Code, Codex, Cursor, Claude Desktop và các trợ lý tương tự có thể tạo, chuyển đổi, đọc và chỉnh sửa các tệp Word, Excel, PowerPoint, PDF và Markdown cho bạn. Mọi thứ đều chạy trên máy tính này; không có gì được tải lên.',
@@ -1871,7 +1887,8 @@ export const strings = {
     setAiSearchSerplyHint: 'Serply cung cấp cả tìm kiếm web và hình ảnh bằng key của bạn.',
     setAiSearchTavilyHint:
       'Tavily cung cấp tìm kiếm web bằng khóa của bạn; tìm kiếm hình ảnh sẽ chuyển sang dùng các nguồn miễn phí.',
-    setAiSearchParallelHint: 'Để trống khóa để dùng miễn phí dịch vụ tìm kiếm web (Parallel), có giới hạn. Nhập khóa để dùng tài khoản Parallel của bạn. Tìm hình ảnh dùng nguồn khác.',
+    setAiSearchParallelHint:
+      'Để trống khóa để dùng miễn phí dịch vụ tìm kiếm web (Parallel), có giới hạn. Nhập khóa để dùng tài khoản Parallel của bạn. Tìm hình ảnh dùng nguồn khác.',
     setAiCapImage: 'Tạo hình ảnh',
     setAiCapAnalysis: 'Phân tích hình ảnh',
     setAiCapVideo: 'Phân tích video',
@@ -1904,7 +1921,8 @@ export const strings = {
       'GenOffice được cung cấp theo nguyên trạng, không có bất kỳ bảo đảm nào, theo Apache License 2.0. Nội dung do AI tạo có thể sai, hãy kiểm tra trước khi dùng. Việc xác nhận bạn có quyền sử dụng nội dung đó là trách nhiệm của bạn.',
     viewOnGitHub: 'Xem trên GitHub',
     setFeedback: 'Gửi phản hồi',
-    setFeedbackDesc: 'Gửi góp ý bằng ứng dụng thư. Thư chỉ ghi phiên bản và hệ điều hành, không bao giờ có nội dung tài liệu.',
+    setFeedbackDesc:
+      'Gửi góp ý bằng ứng dụng thư. Thư chỉ ghi phiên bản và hệ điều hành, không bao giờ có nội dung tài liệu.',
     feedbackOpen: 'Viết thư',
     setChange: 'Thay đổi',
     today: 'Hôm nay',
@@ -1939,7 +1957,8 @@ export const strings = {
       'Hãy bắt đầu từ sơ đồ tư duy ở Trang chủ: nội dung bạn sắp xếp có thể chuyển tiếp thành báo cáo HWP hoặc bài trình chiếu.',
     onbBack: 'Quay lại',
     onbConnectTitle: 'Kết nối AI',
-    onbSkipAsk: 'Bỏ qua hướng dẫn? Bạn có thể xem lại trong Cài đặt → Chung → Xem lại hướng dẫn ban đầu.',
+    onbSkipAsk:
+      'Bỏ qua hướng dẫn? Bạn có thể xem lại trong Cài đặt → Chung → Xem lại hướng dẫn ban đầu.',
     onbSkipKeep: 'Tiếp tục xem',
     setOnboardingAgain: 'Xem lại hướng dẫn ban đầu',
     setOnboardingAgainOpen: 'Xem',
@@ -1948,7 +1967,8 @@ export const strings = {
     setFreeDesc:
       'Chưa có gói đăng ký? Hãy kết nối một AI miễn phí và bắt đầu ngay. Dùng miễn phí có giới hạn mỗi ngày.',
     freeBadge: 'Miễn phí',
-    freeOpenRouterDesc: 'Kết nối chỉ với một nút bấm. OpenRouter là dịch vụ cho phép một tài khoản dùng AI của nhiều công ty: đăng ký hoặc đăng nhập trong trình duyệt rồi cho phép truy cập.',
+    freeOpenRouterDesc:
+      'Kết nối chỉ với một nút bấm. OpenRouter là dịch vụ cho phép một tài khoản dùng AI của nhiều công ty: đăng ký hoặc đăng nhập trong trình duyệt rồi cho phép truy cập.',
     freeGeminiDesc:
       'Tạo khóa bằng tài khoản Google của bạn rồi dán vào đây. Chỉ dành cho người từ 18 tuổi trở lên.',
     freeConnectBrowser: 'Kết nối trong trình duyệt',
@@ -2133,7 +2153,8 @@ export const strings = {
     hpTemplatesFormsNote:
       '韓国の法令に付いている公式の書式そのままです。提出する前に、国家法令情報センター（law.go.kr）で最新版か確かめてください。',
     hpMyForms: 'マイテンプレート',
-    hpMyFormsEmpty: 'まだ自分のテンプレートはありません。開いている文書をテンプレートとして保存するか、ファイルを追加してください。',
+    hpMyFormsEmpty:
+      'まだ自分のテンプレートはありません。開いている文書をテンプレートとして保存するか、ファイルを追加してください。',
     hpMyFormsAdd: 'テンプレートを追加',
     hpMyFormsSave: 'マイテンプレートとして保存',
     hpMyFormsSource: '開いている文書',
@@ -2145,7 +2166,8 @@ export const strings = {
     hpMyFormsDeleteYes: '削除',
     hpMyFormsCancel: 'キャンセル',
     hpMyFormsSaved: 'テンプレート「{name}」を保存しました。',
-    hpMyFormsUnsupported: 'この形式には対応していません。テンプレートにできるのは Word（.docx）と HWP（.hwp、.hwpx）ファイルだけです。',
+    hpMyFormsUnsupported:
+      'この形式には対応していません。テンプレートにできるのは Word（.docx）と HWP（.hwp、.hwpx）ファイルだけです。',
     hpMyFormsEmptyName: 'テンプレート名を入力してください。',
     hpMyFormsSaveFirst: '先に文書を保存してから、もう一度お試しください。',
     hpMyFormsTooLarge: 'ファイルが大きすぎます。テンプレートは 50 MB までです。',
@@ -2305,7 +2327,8 @@ export const strings = {
     pickSaveDir: '保存先を選び直す',
     // Delete confirmation dialog
     deleteModalTitle: 'ファイルの削除',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: '「{name}」をゴミ箱に移動しますか？',
     deleteConfirmMany: '次の {n} 個のファイルをゴミ箱に移動しますか？',
@@ -2612,7 +2635,8 @@ export const strings = {
       'GenOffice は Apache License 2.0 に基づき「現状のまま」提供され、いかなる保証もありません。AI が作成した内容は誤っている場合があるため、確認してからご利用ください。その内容を使用する権利があるかどうかの確認は、利用者の責任です。',
     viewOnGitHub: 'GitHub で見る',
     setFeedback: 'フィードバックを送る',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: '変更',
     // Dates
@@ -2639,13 +2663,18 @@ export const strings = {
     onbBody3: 'ライセンス料なし、広告なし、透かしなし。',
     hpOnbTitle: 'Hanpan へようこそ',
     hpOnbSubtitle: '無料で使える韓国語 AI オフィス',
-    hpOnbBody: 'AI Word・AI Excel・AI PowerPoint・AI Hangul で文書を作り、PDF・マインドマップ・デザインボード・AI Photo・AI Illustration までひとつの場所で使えます。',
-    hpOnbConnectBody: 'AI は、お使いの Claude・ChatGPT アカウントでサインインするか、この PC にインストールされた AI モデル（PC モデル）で使います。PC モデルがあれば、Hanpan の起動時に自動で見つけて接続します。',
-    hpOnbDoneNotConnected: 'AI はまだ接続されていません。設定 → AI で、いつでもアカウントでサインインしたり PC モデルを接続したりできます。',
-    hpOnbDoneBody: 'ホームのマインドマップから始めてみましょう。整理した内容を、そのまま HWP の報告書やスライドに仕上げられます。',
+    hpOnbBody:
+      'AI Word・AI Excel・AI PowerPoint・AI Hangul で文書を作り、PDF・マインドマップ・デザインボード・AI Photo・AI Illustration までひとつの場所で使えます。',
+    hpOnbConnectBody:
+      'AI は、お使いの Claude・ChatGPT アカウントでサインインするか、この PC にインストールされた AI モデル（PC モデル）で使います。PC モデルがあれば、Hanpan の起動時に自動で見つけて接続します。',
+    hpOnbDoneNotConnected:
+      'AI はまだ接続されていません。設定 → AI で、いつでもアカウントでサインインしたり PC モデルを接続したりできます。',
+    hpOnbDoneBody:
+      'ホームのマインドマップから始めてみましょう。整理した内容を、そのまま HWP の報告書やスライドに仕上げられます。',
     onbBack: '戻る',
     onbConnectTitle: 'AI を接続',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',
@@ -2851,11 +2880,12 @@ export const strings = {
     hpMyFormsNoSource: '양식으로 저장할 수 있는 열린 문서(워드·한글)가 없습니다.',
     hpMyFormsOpen: '새 문서로 열기',
     hpMyFormsDelete: '삭제',
-    hpMyFormsDeleteConfirm: '\'{name}\' 양식을 지울까요? 휴지통으로 옮겨집니다.',
+    hpMyFormsDeleteConfirm: "'{name}' 양식을 지울까요? 휴지통으로 옮겨집니다.",
     hpMyFormsDeleteYes: '지우기',
     hpMyFormsCancel: '취소',
-    hpMyFormsSaved: '\'{name}\' 양식을 저장했습니다.',
-    hpMyFormsUnsupported: '지원하지 않는 형식입니다. 워드(.docx)와 한글(.hwp, .hwpx) 파일만 양식으로 쓸 수 있습니다.',
+    hpMyFormsSaved: "'{name}' 양식을 저장했습니다.",
+    hpMyFormsUnsupported:
+      '지원하지 않는 형식입니다. 워드(.docx)와 한글(.hwp, .hwpx) 파일만 양식으로 쓸 수 있습니다.',
     hpMyFormsEmptyName: '양식 이름을 적어 주세요.',
     hpMyFormsSaveFirst: '문서를 먼저 저장한 뒤 다시 시도하세요.',
     hpMyFormsTooLarge: '파일이 너무 큽니다. 50MB까지 양식으로 쓸 수 있습니다.',
@@ -3014,7 +3044,8 @@ export const strings = {
     pickSaveDir: '저장 위치 다시 선택',
     // Delete confirmation dialog
     deleteModalTitle: '파일 삭제',
-    deleteOpenTabs: '탭에 열려 있는 파일: {names}. 지우면 그 탭을 먼저 닫습니다. 저장하지 않은 내용이 있으면 묻습니다.',
+    deleteOpenTabs:
+      '탭에 열려 있는 파일: {names}. 지우면 그 탭을 먼저 닫습니다. 저장하지 않은 내용이 있으면 묻습니다.',
     deleteCloseTabs: '탭 닫고 삭제',
     deleteConfirmOne: '"{name}"을(를) 휴지통으로 이동하시겠습니까?',
     deleteConfirmMany: '다음 {n}개 파일을 휴지통으로 이동하시겠습니까?',
@@ -3054,7 +3085,8 @@ export const strings = {
       '보관된 AI 읽기 결과와 번역본을 모두 지울까요? 다시 만들려면 AI를 다시 써야 합니다.',
     setResultStoreDeleteFailed: '지우지 못했습니다. 다시 시도해 주세요.',
     setSearchRerank: 'AI로 검색 결과 다시 정렬(외부 전송)',
-    setSearchRerankDesc: '파일 검색 상위 20개 결과의 발췌문을 외부 AI(TypeSafe의 Jev)로 보내 관련 있는 순서로 다시 정렬합니다. 기본은 꺼짐이며, 켜면 발췌문이 이 PC 밖으로 전송됩니다.',
+    setSearchRerankDesc:
+      '파일 검색 상위 20개 결과의 발췌문을 외부 AI(TypeSafe의 Jev)로 보내 관련 있는 순서로 다시 정렬합니다. 기본은 꺼짐이며, 켜면 발췌문이 이 PC 밖으로 전송됩니다.',
     setAiInternetTools: 'AI가 인터넷 도구 쓰기',
     setAiInternetToolsDesc:
       '웹 검색, 웹 페이지 읽기, 주소로 그림 가져오기, 이미지 만들기와 분석입니다. 끄면 편집기의 AI가 이 도구 없이 일합니다. 켜 두어도 대화에 없던 주소는 가져오기 전에 묻습니다. AI 대화 자체는 그대로입니다.',
@@ -3276,7 +3308,8 @@ export const strings = {
     setAiSearchSerplyHint: 'Serply는 내 키로 웹 검색과 이미지 검색을 모두 제공합니다.',
     setAiSearchTavilyHint:
       'Tavily는 내 키로 웹 검색을 제공합니다. 이미지 검색은 무료 소스로 대체됩니다.',
-    setAiSearchParallelHint: '키를 비워 두면 웹 검색 서비스(Parallel)를 무료로 쓸 수 있습니다(사용량 제한). 키를 넣으면 내 Parallel 계정을 씁니다. 그림 검색은 다른 곳을 씁니다.',
+    setAiSearchParallelHint:
+      '키를 비워 두면 웹 검색 서비스(Parallel)를 무료로 쓸 수 있습니다(사용량 제한). 키를 넣으면 내 Parallel 계정을 씁니다. 그림 검색은 다른 곳을 씁니다.',
     setAiCapImage: '이미지 생성',
     setAiCapAnalysis: '이미지 분석',
     setAiCapVideo: '동영상 분석',
@@ -3290,7 +3323,8 @@ export const strings = {
     setReadUrlNoToken: '토큰 없음',
     setReadUrlTokenSaved: '토큰 저장됨',
     setReadUrlClear: '지우기',
-    setAiSharedKeyHint: '같은 제공업체의 키와 서버 주소는 모든 기능이 함께 쓰므로 한 번만 넣으면 됩니다.',
+    setAiSharedKeyHint:
+      '같은 제공업체의 키와 서버 주소는 모든 기능이 함께 쓰므로 한 번만 넣으면 됩니다.',
     setGithub: '오픈 소스',
     setBasedOn: '오픈 소스 프로젝트 {{GenOffice}}(Apache License 2.0)를 바탕으로 만들었습니다.',
     setLicenses: '오픈소스 라이선스',
@@ -3307,7 +3341,8 @@ export const strings = {
       'GenOffice는 Apache License 2.0에 따라 있는 그대로 제공되며, 어떤 보증도 하지 않습니다. AI가 만든 내용은 틀릴 수 있으니 확인한 뒤 쓰세요. 그 내용을 쓸 권리가 있는지 확인하는 일은 쓰는 사람의 몫입니다.',
     viewOnGitHub: 'GitHub에서 보기',
     setFeedback: '의견 보내기',
-    setFeedbackDesc: '메일 앱으로 의견을 보냅니다. 버전과 운영체제만 메일에 적히고, 문서 내용은 들어가지 않습니다.',
+    setFeedbackDesc:
+      '메일 앱으로 의견을 보냅니다. 버전과 운영체제만 메일에 적히고, 문서 내용은 들어가지 않습니다.',
     feedbackOpen: '메일 쓰기',
     setChange: '변경',
     // Dates
@@ -3344,7 +3379,8 @@ export const strings = {
       '홈의 마인드맵에서 시작해 보세요. 정리한 내용을 한글 보고서나 발표 자료로 이어서 만들 수 있습니다.',
     onbBack: '이전',
     onbConnectTitle: 'AI 연결',
-    onbSkipAsk: '안내를 건너뛸까요? 나중에 설정 → 일반의 "처음 안내 다시 보기"로 다시 볼 수 있습니다.',
+    onbSkipAsk:
+      '안내를 건너뛸까요? 나중에 설정 → 일반의 "처음 안내 다시 보기"로 다시 볼 수 있습니다.',
     onbSkipKeep: '계속 보기',
     setOnboardingAgain: '처음 안내 다시 보기',
     setOnboardingAgainOpen: '보기',
@@ -3353,7 +3389,8 @@ export const strings = {
     setFreeDesc:
       '구독이 없어도 무료 AI를 연결해 바로 쓸 수 있습니다. 하루에 쓸 수 있는 양에 한도가 있습니다.',
     freeBadge: '무료',
-    freeOpenRouterDesc: '버튼 한 번으로 연결합니다. OpenRouter는 여러 회사의 AI를 한 계정으로 쓰게 해 주는 서비스입니다. 브라우저에서 가입하거나 로그인한 뒤 허용을 누르면 끝납니다.',
+    freeOpenRouterDesc:
+      '버튼 한 번으로 연결합니다. OpenRouter는 여러 회사의 AI를 한 계정으로 쓰게 해 주는 서비스입니다. 브라우저에서 가입하거나 로그인한 뒤 허용을 누르면 끝납니다.',
     freeGeminiDesc: 'Google 계정으로 키를 만들어 여기에 붙여넣습니다. 18세 이상만 쓸 수 있습니다.',
     freeConnectBrowser: '브라우저로 연결',
     freeWaiting:
@@ -3537,7 +3574,8 @@ export const strings = {
     hpTemplatesFormsNote:
       'Ce sont les formulaires officiels tels que la loi coréenne les publie. Avant d’en remettre un, vérifiez sur law.go.kr qu’il s’agit toujours de la version en vigueur.',
     hpMyForms: 'Mes modèles',
-    hpMyFormsEmpty: 'Vous n’avez pas encore de modèle. Enregistrez un document ouvert comme modèle ou ajoutez un fichier.',
+    hpMyFormsEmpty:
+      'Vous n’avez pas encore de modèle. Enregistrez un document ouvert comme modèle ou ajoutez un fichier.',
     hpMyFormsAdd: 'Ajouter un modèle',
     hpMyFormsSave: 'Enregistrer dans mes modèles',
     hpMyFormsSource: 'Document ouvert',
@@ -3549,7 +3587,8 @@ export const strings = {
     hpMyFormsDeleteYes: 'Supprimer',
     hpMyFormsCancel: 'Annuler',
     hpMyFormsSaved: 'Modèle « {name} » enregistré.',
-    hpMyFormsUnsupported: 'Ce type de fichier n’est pas pris en charge. Seuls les fichiers Word (.docx) et HWP (.hwp, .hwpx) peuvent servir de modèles.',
+    hpMyFormsUnsupported:
+      'Ce type de fichier n’est pas pris en charge. Seuls les fichiers Word (.docx) et HWP (.hwp, .hwpx) peuvent servir de modèles.',
     hpMyFormsEmptyName: 'Saisissez un nom de modèle.',
     hpMyFormsSaveFirst: 'Enregistrez d’abord le document, puis réessayez.',
     hpMyFormsTooLarge: 'Le fichier est trop volumineux. Un modèle peut faire jusqu’à 50 Mo.',
@@ -3711,7 +3750,8 @@ export const strings = {
     pickSaveDir: "Choisir un emplacement d'enregistrement",
     // Delete confirmation dialog
     deleteModalTitle: 'Supprimer les fichiers',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: 'Déplacer « {name} » vers la corbeille ?',
     deleteConfirmMany: 'Déplacer ces {n} fichiers vers la corbeille ?',
@@ -4021,7 +4061,8 @@ export const strings = {
       'GenOffice est fourni « en l’état », sans aucune garantie, selon l’Apache License 2.0. Le contenu généré par l’IA peut être erroné : vérifiez-le avant de l’utiliser. Il vous appartient de vous assurer que vous avez le droit de l’utiliser.',
     viewOnGitHub: 'Voir sur GitHub',
     setFeedback: 'Envoyer un commentaire',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: 'Modifier',
     // Dates
@@ -4048,13 +4089,18 @@ export const strings = {
     onbBody3: 'Pas de licence. Pas de publicité. Pas de filigrane.',
     hpOnbTitle: 'Bienvenue dans Hanpan',
     hpOnbSubtitle: 'Une suite bureautique coréenne avec IA, gratuite',
-    hpOnbBody: 'Créez des documents avec AI Word, AI Excel, AI PowerPoint et AI Hangul, et utilisez PDF, cartes mentales, tableau de design, AI Photo et AI Illustration au même endroit.',
-    hpOnbConnectBody: 'L’IA fonctionne avec le compte Claude ou ChatGPT avec lequel vous vous connectez, ou avec un modèle d’IA installé sur ce PC (le modèle PC). S’il y en a un, Hanpan le trouve et s’y connecte au démarrage.',
-    hpOnbDoneNotConnected: 'L’IA n’est pas encore connectée. Vous pouvez à tout moment vous connecter avec un compte ou connecter un modèle PC dans Paramètres → IA.',
-    hpOnbDoneBody: 'Commencez par une carte mentale sur l’accueil : ce que vous y organisez peut devenir un rapport HWP ou une présentation.',
+    hpOnbBody:
+      'Créez des documents avec AI Word, AI Excel, AI PowerPoint et AI Hangul, et utilisez PDF, cartes mentales, tableau de design, AI Photo et AI Illustration au même endroit.',
+    hpOnbConnectBody:
+      'L’IA fonctionne avec le compte Claude ou ChatGPT avec lequel vous vous connectez, ou avec un modèle d’IA installé sur ce PC (le modèle PC). S’il y en a un, Hanpan le trouve et s’y connecte au démarrage.',
+    hpOnbDoneNotConnected:
+      'L’IA n’est pas encore connectée. Vous pouvez à tout moment vous connecter avec un compte ou connecter un modèle PC dans Paramètres → IA.',
+    hpOnbDoneBody:
+      'Commencez par une carte mentale sur l’accueil : ce que vous y organisez peut devenir un rapport HWP ou une présentation.',
     onbBack: 'Retour',
     onbConnectTitle: 'Connectez une IA',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',
@@ -4253,19 +4299,22 @@ export const strings = {
     hpTemplatesFormsNote:
       'Das sind die amtlichen Formulare, genau wie das koreanische Recht sie veröffentlicht. Prüfen Sie vor dem Einreichen auf law.go.kr, ob es noch die aktuelle Fassung ist.',
     hpMyForms: 'Meine Vorlagen',
-    hpMyFormsEmpty: 'Noch keine eigenen Vorlagen. Speichern Sie ein geöffnetes Dokument als Vorlage oder fügen Sie eine Datei hinzu.',
+    hpMyFormsEmpty:
+      'Noch keine eigenen Vorlagen. Speichern Sie ein geöffnetes Dokument als Vorlage oder fügen Sie eine Datei hinzu.',
     hpMyFormsAdd: 'Vorlage hinzufügen',
     hpMyFormsSave: 'Als eigene Vorlage speichern',
     hpMyFormsSource: 'Geöffnetes Dokument',
     hpMyFormsName: 'Name der Vorlage',
-    hpMyFormsNoSource: 'Kein geöffnetes Word- oder HWP-Dokument, das als Vorlage gespeichert werden kann.',
+    hpMyFormsNoSource:
+      'Kein geöffnetes Word- oder HWP-Dokument, das als Vorlage gespeichert werden kann.',
     hpMyFormsOpen: 'Als neues Dokument öffnen',
     hpMyFormsDelete: 'Löschen',
     hpMyFormsDeleteConfirm: 'Vorlage „{name}“ löschen? Sie wird in den Papierkorb verschoben.',
     hpMyFormsDeleteYes: 'Löschen',
     hpMyFormsCancel: 'Abbrechen',
     hpMyFormsSaved: 'Vorlage „{name}“ gespeichert.',
-    hpMyFormsUnsupported: 'Dieser Dateityp wird nicht unterstützt. Nur Word- (.docx) und HWP-Dateien (.hwp, .hwpx) können als Vorlage dienen.',
+    hpMyFormsUnsupported:
+      'Dieser Dateityp wird nicht unterstützt. Nur Word- (.docx) und HWP-Dateien (.hwp, .hwpx) können als Vorlage dienen.',
     hpMyFormsEmptyName: 'Geben Sie einen Namen für die Vorlage ein.',
     hpMyFormsSaveFirst: 'Speichern Sie zuerst das Dokument und versuchen Sie es dann erneut.',
     hpMyFormsTooLarge: 'Die Datei ist zu groß. Vorlagen dürfen bis zu 50 MB groß sein.',
@@ -4430,7 +4479,8 @@ export const strings = {
     pickSaveDir: 'Speicherort wählen',
     // Delete confirmation dialog
     deleteModalTitle: 'Dateien löschen',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: '„{name}“ in den Papierkorb verschieben?',
     deleteConfirmMany: 'Diese {n} Dateien in den Papierkorb verschieben?',
@@ -4740,7 +4790,8 @@ export const strings = {
       'GenOffice wird gemäß der Apache License 2.0 ohne Mängelgewähr und ohne jegliche Garantie bereitgestellt. Von KI erzeugte Inhalte können falsch sein: Prüfen Sie sie vor der Verwendung. Ob Sie die Rechte zur Nutzung besitzen, müssen Sie selbst klären.',
     viewOnGitHub: 'Auf GitHub ansehen',
     setFeedback: 'Feedback senden',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: 'Ändern',
     // Dates
@@ -4767,13 +4818,18 @@ export const strings = {
     onbBody3: 'Keine Lizenzgebühren. Keine Werbung. Keine Wasserzeichen.',
     hpOnbTitle: 'Willkommen bei Hanpan',
     hpOnbSubtitle: 'Eine kostenlose koreanische Office-Suite mit KI',
-    hpOnbBody: 'Erstellen Sie Dokumente mit AI Word, AI Excel, AI PowerPoint und AI Hangul und nutzen Sie PDF, Mindmaps, das Design-Board, AI Photo und AI Illustration an einem Ort.',
-    hpOnbConnectBody: 'Die KI läuft über das Claude- oder ChatGPT-Konto, mit dem Sie sich anmelden, oder über ein auf diesem PC installiertes KI-Modell (das PC-Modell). Ist eines vorhanden, findet und verbindet Hanpan es beim Start.',
-    hpOnbDoneNotConnected: 'Die KI ist noch nicht verbunden. Unter Einstellungen → KI können Sie sich jederzeit mit einem Konto anmelden oder ein PC-Modell verbinden.',
-    hpOnbDoneBody: 'Beginnen Sie mit einer Mindmap auf der Startseite: Was Sie dort ordnen, wird zum HWP-Bericht oder zur Präsentation.',
+    hpOnbBody:
+      'Erstellen Sie Dokumente mit AI Word, AI Excel, AI PowerPoint und AI Hangul und nutzen Sie PDF, Mindmaps, das Design-Board, AI Photo und AI Illustration an einem Ort.',
+    hpOnbConnectBody:
+      'Die KI läuft über das Claude- oder ChatGPT-Konto, mit dem Sie sich anmelden, oder über ein auf diesem PC installiertes KI-Modell (das PC-Modell). Ist eines vorhanden, findet und verbindet Hanpan es beim Start.',
+    hpOnbDoneNotConnected:
+      'Die KI ist noch nicht verbunden. Unter Einstellungen → KI können Sie sich jederzeit mit einem Konto anmelden oder ein PC-Modell verbinden.',
+    hpOnbDoneBody:
+      'Beginnen Sie mit einer Mindmap auf der Startseite: Was Sie dort ordnen, wird zum HWP-Bericht oder zur Präsentation.',
     onbBack: 'Zurück',
     onbConnectTitle: 'KI verbinden',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',
@@ -4977,7 +5033,8 @@ export const strings = {
     hpTemplatesFormsNote:
       'Son los formularios oficiales tal como los publica la ley coreana. Antes de presentar uno, comprueba en law.go.kr que sigue siendo la versión vigente.',
     hpMyForms: 'Mis plantillas',
-    hpMyFormsEmpty: 'Aún no tienes plantillas propias. Guarda un documento abierto como plantilla o añade un archivo.',
+    hpMyFormsEmpty:
+      'Aún no tienes plantillas propias. Guarda un documento abierto como plantilla o añade un archivo.',
     hpMyFormsAdd: 'Añadir plantilla',
     hpMyFormsSave: 'Guardar como mi plantilla',
     hpMyFormsSource: 'Documento abierto',
@@ -4985,11 +5042,13 @@ export const strings = {
     hpMyFormsNoSource: 'No hay ningún documento Word o HWP abierto para guardar como plantilla.',
     hpMyFormsOpen: 'Abrir como documento nuevo',
     hpMyFormsDelete: 'Eliminar',
-    hpMyFormsDeleteConfirm: '¿Eliminar la plantilla «{name}»? Se moverá a la Papelera de reciclaje.',
+    hpMyFormsDeleteConfirm:
+      '¿Eliminar la plantilla «{name}»? Se moverá a la Papelera de reciclaje.',
     hpMyFormsDeleteYes: 'Eliminar',
     hpMyFormsCancel: 'Cancelar',
     hpMyFormsSaved: 'Plantilla «{name}» guardada.',
-    hpMyFormsUnsupported: 'Este tipo de archivo no es compatible. Solo los archivos Word (.docx) y HWP (.hwp, .hwpx) pueden usarse como plantillas.',
+    hpMyFormsUnsupported:
+      'Este tipo de archivo no es compatible. Solo los archivos Word (.docx) y HWP (.hwp, .hwpx) pueden usarse como plantillas.',
     hpMyFormsEmptyName: 'Escribe un nombre para la plantilla.',
     hpMyFormsSaveFirst: 'Guarda primero el documento y vuelve a intentarlo.',
     hpMyFormsTooLarge: 'El archivo es demasiado grande. Las plantillas pueden ocupar hasta 50 MB.',
@@ -5151,7 +5210,8 @@ export const strings = {
     pickSaveDir: 'Elegir ubicación de guardado',
     // Delete confirmation dialog
     deleteModalTitle: 'Eliminar archivos',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: '¿Mover "{name}" a la papelera?',
     deleteConfirmMany: '¿Mover estos {n} archivos a la papelera?',
@@ -5458,7 +5518,8 @@ export const strings = {
       'GenOffice se ofrece tal cual, sin garantías de ningún tipo, bajo la Apache License 2.0. El contenido generado por IA puede contener errores: revísalo antes de usarlo. Comprobar que tienes derecho a usarlo es responsabilidad tuya.',
     viewOnGitHub: 'Ver en GitHub',
     setFeedback: 'Enviar comentarios',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: 'Cambiar',
     // Dates
@@ -5485,13 +5546,18 @@ export const strings = {
     onbBody3: 'Sin licencias. Sin anuncios. Sin marcas de agua.',
     hpOnbTitle: 'Te damos la bienvenida a Hanpan',
     hpOnbSubtitle: 'Una suite ofimática coreana con IA, gratis',
-    hpOnbBody: 'Crea documentos con AI Word, AI Excel, AI PowerPoint y AI Hangul, y usa PDF, mapas mentales, el tablero de diseño, AI Photo y AI Illustration en un solo lugar.',
-    hpOnbConnectBody: 'La IA funciona con la cuenta de Claude o ChatGPT con la que inicias sesión, o con un modelo de IA instalado en este PC (el modelo del PC). Si hay uno, Hanpan lo detecta y se conecta al iniciarse.',
-    hpOnbDoneNotConnected: 'La IA aún no está conectada. Puedes iniciar sesión con una cuenta o conectar un modelo del PC cuando quieras en Configuración → IA.',
-    hpOnbDoneBody: 'Empieza con un mapa mental en Inicio: lo que organices ahí puede convertirse en un informe HWP o en una presentación.',
+    hpOnbBody:
+      'Crea documentos con AI Word, AI Excel, AI PowerPoint y AI Hangul, y usa PDF, mapas mentales, el tablero de diseño, AI Photo y AI Illustration en un solo lugar.',
+    hpOnbConnectBody:
+      'La IA funciona con la cuenta de Claude o ChatGPT con la que inicias sesión, o con un modelo de IA instalado en este PC (el modelo del PC). Si hay uno, Hanpan lo detecta y se conecta al iniciarse.',
+    hpOnbDoneNotConnected:
+      'La IA aún no está conectada. Puedes iniciar sesión con una cuenta o conectar un modelo del PC cuando quieras en Configuración → IA.',
+    hpOnbDoneBody:
+      'Empieza con un mapa mental en Inicio: lo que organices ahí puede convertirse en un informe HWP o en una presentación.',
     onbBack: 'Atrás',
     onbConnectTitle: 'Conecta una IA',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',
@@ -5695,11 +5761,12 @@ export const strings = {
     hpMyFormsNoSource: 'ไม่มีเอกสาร Word หรือ HWP ที่เปิดอยู่ให้บันทึกเป็นเทมเพลต',
     hpMyFormsOpen: 'เปิดเป็นเอกสารใหม่',
     hpMyFormsDelete: 'ลบ',
-    hpMyFormsDeleteConfirm: 'ลบเทมเพลต \'{name}\' หรือไม่ จะย้ายไปที่ถังรีไซเคิล',
+    hpMyFormsDeleteConfirm: "ลบเทมเพลต '{name}' หรือไม่ จะย้ายไปที่ถังรีไซเคิล",
     hpMyFormsDeleteYes: 'ลบ',
     hpMyFormsCancel: 'ยกเลิก',
-    hpMyFormsSaved: 'บันทึกเทมเพลต \'{name}\' แล้ว',
-    hpMyFormsUnsupported: 'ไม่รองรับไฟล์ชนิดนี้ ใช้เป็นเทมเพลตได้เฉพาะไฟล์ Word (.docx) และ HWP (.hwp, .hwpx)',
+    hpMyFormsSaved: "บันทึกเทมเพลต '{name}' แล้ว",
+    hpMyFormsUnsupported:
+      'ไม่รองรับไฟล์ชนิดนี้ ใช้เป็นเทมเพลตได้เฉพาะไฟล์ Word (.docx) และ HWP (.hwp, .hwpx)',
     hpMyFormsEmptyName: 'ใส่ชื่อเทมเพลต',
     hpMyFormsSaveFirst: 'บันทึกเอกสารก่อน แล้วลองอีกครั้ง',
     hpMyFormsTooLarge: 'ไฟล์ใหญ่เกินไป เทมเพลตมีขนาดได้ไม่เกิน 50 MB',
@@ -5858,7 +5925,8 @@ export const strings = {
     pickSaveDir: 'เลือกตำแหน่งบันทึกใหม่',
     // Delete confirmation dialog
     deleteModalTitle: 'ลบไฟล์',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: 'ย้าย "{name}" ไปยังถังขยะหรือไม่',
     deleteConfirmMany: 'ย้ายไฟล์ {n} ไฟล์นี้ไปยังถังขยะหรือไม่',
@@ -6152,7 +6220,8 @@ export const strings = {
       'GenOffice ให้บริการตามสภาพที่เป็นอยู่ โดยไม่มีการรับประกันใด ๆ ภายใต้ Apache License 2.0 เนื้อหาที่ AI สร้างอาจผิดพลาดได้ โปรดตรวจสอบก่อนใช้ และการตรวจสอบว่าคุณมีสิทธิ์ใช้เนื้อหานั้นเป็นความรับผิดชอบของคุณ',
     viewOnGitHub: 'ดูบน GitHub',
     setFeedback: 'ส่งข้อเสนอแนะ',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: 'เปลี่ยน',
     // Dates
@@ -6179,13 +6248,18 @@ export const strings = {
     onbBody3: 'ไม่มีค่าลิขสิทธิ์ ไม่มีโฆษณา ไม่มีลายน้ำ',
     hpOnbTitle: 'ยินดีต้อนรับสู่ Hanpan',
     hpOnbSubtitle: 'ชุดโปรแกรมสำนักงาน AI ภาษาเกาหลี ใช้ฟรี',
-    hpOnbBody: 'สร้างเอกสารด้วย AI Word, AI Excel, AI PowerPoint และ AI Hangul แล้วใช้ PDF แผนที่ความคิด บอร์ดออกแบบ AI Photo และ AI Illustration ได้ในที่เดียว',
-    hpOnbConnectBody: 'AI ทำงานผ่านบัญชี Claude หรือ ChatGPT ที่คุณลงชื่อเข้าใช้ หรือผ่านโมเดล AI ที่ติดตั้งในพีซีเครื่องนี้ (โมเดล PC) หากมี Hanpan จะค้นหาและเชื่อมต่อให้เมื่อเริ่มทำงาน',
-    hpOnbDoneNotConnected: 'ยังไม่ได้เชื่อมต่อ AI คุณลงชื่อเข้าใช้ด้วยบัญชีหรือเชื่อมต่อโมเดล PC ได้ทุกเมื่อที่ การตั้งค่า → AI',
-    hpOnbDoneBody: 'เริ่มจากแผนที่ความคิดในหน้าแรก สิ่งที่คุณจัดระเบียบไว้จะต่อยอดเป็นรายงาน HWP หรือสไลด์นำเสนอได้',
+    hpOnbBody:
+      'สร้างเอกสารด้วย AI Word, AI Excel, AI PowerPoint และ AI Hangul แล้วใช้ PDF แผนที่ความคิด บอร์ดออกแบบ AI Photo และ AI Illustration ได้ในที่เดียว',
+    hpOnbConnectBody:
+      'AI ทำงานผ่านบัญชี Claude หรือ ChatGPT ที่คุณลงชื่อเข้าใช้ หรือผ่านโมเดล AI ที่ติดตั้งในพีซีเครื่องนี้ (โมเดล PC) หากมี Hanpan จะค้นหาและเชื่อมต่อให้เมื่อเริ่มทำงาน',
+    hpOnbDoneNotConnected:
+      'ยังไม่ได้เชื่อมต่อ AI คุณลงชื่อเข้าใช้ด้วยบัญชีหรือเชื่อมต่อโมเดล PC ได้ทุกเมื่อที่ การตั้งค่า → AI',
+    hpOnbDoneBody:
+      'เริ่มจากแผนที่ความคิดในหน้าแรก สิ่งที่คุณจัดระเบียบไว้จะต่อยอดเป็นรายงาน HWP หรือสไลด์นำเสนอได้',
     onbBack: 'ย้อนกลับ',
     onbConnectTitle: 'เชื่อมต่อ AI',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',
@@ -6380,19 +6454,22 @@ export const strings = {
     hpTemplatesFormsNote:
       'Ini adalah formulir resmi persis seperti yang diterbitkan hukum Korea. Sebelum menyerahkannya, periksa di law.go.kr bahwa itu masih versi terbaru.',
     hpMyForms: 'Templat saya',
-    hpMyFormsEmpty: 'Belum ada templat milik Anda. Simpan dokumen yang terbuka sebagai templat atau tambahkan file.',
+    hpMyFormsEmpty:
+      'Belum ada templat milik Anda. Simpan dokumen yang terbuka sebagai templat atau tambahkan file.',
     hpMyFormsAdd: 'Tambah templat',
     hpMyFormsSave: 'Simpan sebagai templat saya',
     hpMyFormsSource: 'Dokumen yang terbuka',
     hpMyFormsName: 'Nama templat',
-    hpMyFormsNoSource: 'Tidak ada dokumen Word atau HWP terbuka yang dapat disimpan sebagai templat.',
+    hpMyFormsNoSource:
+      'Tidak ada dokumen Word atau HWP terbuka yang dapat disimpan sebagai templat.',
     hpMyFormsOpen: 'Buka sebagai dokumen baru',
     hpMyFormsDelete: 'Hapus',
-    hpMyFormsDeleteConfirm: 'Hapus templat \'{name}\'? Templat akan dipindahkan ke Recycle Bin.',
+    hpMyFormsDeleteConfirm: "Hapus templat '{name}'? Templat akan dipindahkan ke Recycle Bin.",
     hpMyFormsDeleteYes: 'Hapus',
     hpMyFormsCancel: 'Batal',
-    hpMyFormsSaved: 'Templat \'{name}\' disimpan.',
-    hpMyFormsUnsupported: 'Jenis file ini tidak didukung. Hanya file Word (.docx) dan HWP (.hwp, .hwpx) yang dapat dijadikan templat.',
+    hpMyFormsSaved: "Templat '{name}' disimpan.",
+    hpMyFormsUnsupported:
+      'Jenis file ini tidak didukung. Hanya file Word (.docx) dan HWP (.hwp, .hwpx) yang dapat dijadikan templat.',
     hpMyFormsEmptyName: 'Masukkan nama templat.',
     hpMyFormsSaveFirst: 'Simpan dokumen terlebih dahulu, lalu coba lagi.',
     hpMyFormsTooLarge: 'File terlalu besar. Ukuran templat maksimal 50 MB.',
@@ -6553,7 +6630,8 @@ export const strings = {
     pickSaveDir: 'Pilih lokasi penyimpanan',
     // Delete confirmation dialog
     deleteModalTitle: 'Hapus File',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: 'Pindahkan "{name}" ke tempat sampah?',
     deleteConfirmMany: 'Pindahkan {n} file ini ke tempat sampah?',
@@ -6856,7 +6934,8 @@ export const strings = {
       'GenOffice disediakan apa adanya, tanpa jaminan apa pun, berdasarkan Apache License 2.0. Konten buatan AI bisa salah, jadi periksa sebelum digunakan. Memastikan Anda berhak menggunakannya adalah tanggung jawab Anda.',
     viewOnGitHub: 'Lihat di GitHub',
     setFeedback: 'Kirim masukan',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: 'Ubah',
     // Dates
@@ -6883,13 +6962,18 @@ export const strings = {
     onbBody3: 'Tanpa biaya lisensi. Tanpa iklan. Tanpa watermark.',
     hpOnbTitle: 'Selamat datang di Hanpan',
     hpOnbSubtitle: 'Paket perkantoran AI berbahasa Korea yang gratis',
-    hpOnbBody: 'Buat dokumen dengan AI Word, AI Excel, AI PowerPoint, dan AI Hangul, serta gunakan PDF, peta pikiran, papan desain, AI Photo, dan AI Illustration di satu tempat.',
-    hpOnbConnectBody: 'AI berjalan dengan akun Claude atau ChatGPT yang Anda gunakan untuk masuk, atau dengan model AI yang terpasang di PC ini (model PC). Jika ada, Hanpan akan menemukan dan menghubungkannya saat dimulai.',
-    hpOnbDoneNotConnected: 'AI belum terhubung. Anda dapat masuk dengan akun atau menghubungkan model PC kapan saja di Pengaturan → AI.',
-    hpOnbDoneBody: 'Mulailah dari peta pikiran di Beranda: hal yang Anda susun di sana bisa dilanjutkan menjadi laporan HWP atau slide presentasi.',
+    hpOnbBody:
+      'Buat dokumen dengan AI Word, AI Excel, AI PowerPoint, dan AI Hangul, serta gunakan PDF, peta pikiran, papan desain, AI Photo, dan AI Illustration di satu tempat.',
+    hpOnbConnectBody:
+      'AI berjalan dengan akun Claude atau ChatGPT yang Anda gunakan untuk masuk, atau dengan model AI yang terpasang di PC ini (model PC). Jika ada, Hanpan akan menemukan dan menghubungkannya saat dimulai.',
+    hpOnbDoneNotConnected:
+      'AI belum terhubung. Anda dapat masuk dengan akun atau menghubungkan model PC kapan saja di Pengaturan → AI.',
+    hpOnbDoneBody:
+      'Mulailah dari peta pikiran di Beranda: hal yang Anda susun di sana bisa dilanjutkan menjadi laporan HWP atau slide presentasi.',
     onbBack: 'Kembali',
     onbConnectTitle: 'Hubungkan AI',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',
@@ -7088,7 +7172,8 @@ export const strings = {
     hpTemplatesFormsNote:
       'Это официальные бланки в том виде, в каком их публикует корейский закон. Перед подачей проверьте на law.go.kr, что это действующая редакция.',
     hpMyForms: 'Мои шаблоны',
-    hpMyFormsEmpty: 'Своих шаблонов пока нет. Сохраните открытый документ как шаблон или добавьте файл.',
+    hpMyFormsEmpty:
+      'Своих шаблонов пока нет. Сохраните открытый документ как шаблон или добавьте файл.',
     hpMyFormsAdd: 'Добавить шаблон',
     hpMyFormsSave: 'Сохранить как мой шаблон',
     hpMyFormsSource: 'Открытый документ',
@@ -7100,7 +7185,8 @@ export const strings = {
     hpMyFormsDeleteYes: 'Удалить',
     hpMyFormsCancel: 'Отмена',
     hpMyFormsSaved: 'Шаблон «{name}» сохранён.',
-    hpMyFormsUnsupported: 'Этот формат не поддерживается. Шаблоном могут быть только файлы Word (.docx) и HWP (.hwp, .hwpx).',
+    hpMyFormsUnsupported:
+      'Этот формат не поддерживается. Шаблоном могут быть только файлы Word (.docx) и HWP (.hwp, .hwpx).',
     hpMyFormsEmptyName: 'Введите название шаблона.',
     hpMyFormsSaveFirst: 'Сначала сохраните документ, затем повторите попытку.',
     hpMyFormsTooLarge: 'Файл слишком большой. Шаблон может быть не больше 50 МБ.',
@@ -7260,7 +7346,8 @@ export const strings = {
     pickSaveDir: 'Выбрать папку сохранения',
     // Delete confirmation dialog
     deleteModalTitle: 'Удаление файлов',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: 'Переместить «{name}» в корзину?',
     deleteConfirmMany: 'Переместить эти файлы ({n}) в корзину?',
@@ -7566,7 +7653,8 @@ export const strings = {
       'GenOffice предоставляется «как есть», без каких-либо гарантий, на условиях Apache License 2.0. Созданное ИИ содержимое может содержать ошибки — проверяйте его перед использованием. Убедиться, что у вас есть право его использовать, — ваша ответственность.',
     viewOnGitHub: 'Открыть на GitHub',
     setFeedback: 'Отправить отзыв',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: 'Изменить',
     // Dates
@@ -7593,13 +7681,18 @@ export const strings = {
     onbBody3: 'Без лицензий. Без рекламы. Без водяных знаков.',
     hpOnbTitle: 'Добро пожаловать в Hanpan',
     hpOnbSubtitle: 'Бесплатный корейский офисный пакет с ИИ',
-    hpOnbBody: 'Создавайте документы в AI Word, AI Excel, AI PowerPoint и AI Hangul и работайте с PDF, картами, доской дизайна, AI Photo и AI Illustration в одном месте.',
-    hpOnbConnectBody: 'ИИ работает через аккаунт Claude или ChatGPT, с которым вы входите, или через модель ИИ, установленную на этом ПК (модель ПК). Если она есть, Hanpan найдёт и подключит её при запуске.',
-    hpOnbDoneNotConnected: 'ИИ ещё не подключён. Войти с аккаунтом или подключить модель ПК можно в любой момент в разделе Настройки → ИИ.',
-    hpOnbDoneBody: 'Начните с карты на главной странице: то, что вы там упорядочите, можно превратить в отчёт HWP или презентацию.',
+    hpOnbBody:
+      'Создавайте документы в AI Word, AI Excel, AI PowerPoint и AI Hangul и работайте с PDF, картами, доской дизайна, AI Photo и AI Illustration в одном месте.',
+    hpOnbConnectBody:
+      'ИИ работает через аккаунт Claude или ChatGPT, с которым вы входите, или через модель ИИ, установленную на этом ПК (модель ПК). Если она есть, Hanpan найдёт и подключит её при запуске.',
+    hpOnbDoneNotConnected:
+      'ИИ ещё не подключён. Войти с аккаунтом или подключить модель ПК можно в любой момент в разделе Настройки → ИИ.',
+    hpOnbDoneBody:
+      'Начните с карты на главной странице: то, что вы там упорядочите, можно превратить в отчёт HWP или презентацию.',
     onbBack: 'Назад',
     onbConnectTitle: 'Подключите ИИ',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',
@@ -7805,11 +7898,12 @@ export const strings = {
     hpMyFormsNoSource: 'لا يوجد مستند Word أو HWP مفتوح لحفظه كقالب.',
     hpMyFormsOpen: 'فتح كمستند جديد',
     hpMyFormsDelete: 'حذف',
-    hpMyFormsDeleteConfirm: 'حذف القالب \'{name}\'؟ سيُنقل إلى سلة المحذوفات.',
+    hpMyFormsDeleteConfirm: "حذف القالب '{name}'؟ سيُنقل إلى سلة المحذوفات.",
     hpMyFormsDeleteYes: 'حذف',
     hpMyFormsCancel: 'إلغاء',
-    hpMyFormsSaved: 'تم حفظ القالب \'{name}\'.',
-    hpMyFormsUnsupported: 'نوع الملف غير مدعوم. يمكن استخدام ملفات Word (.docx) وHWP (.hwp، .hwpx) فقط كقوالب.',
+    hpMyFormsSaved: "تم حفظ القالب '{name}'.",
+    hpMyFormsUnsupported:
+      'نوع الملف غير مدعوم. يمكن استخدام ملفات Word (.docx) وHWP (.hwp، .hwpx) فقط كقوالب.',
     hpMyFormsEmptyName: 'أدخل اسم القالب.',
     hpMyFormsSaveFirst: 'احفظ المستند أولًا ثم حاول مرة أخرى.',
     hpMyFormsTooLarge: 'الملف كبير جدًا. الحد الأقصى للقالب 50 ميغابايت.',
@@ -7968,7 +8062,8 @@ export const strings = {
     pickSaveDir: 'اختيار موقع الحفظ',
     // Delete confirmation dialog
     deleteModalTitle: 'حذف الملفات',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: 'هل تريد نقل "{name}" إلى سلة المهملات؟',
     deleteConfirmMany: 'هل تريد نقل هذه الملفات ({n}) إلى سلة المهملات؟',
@@ -8263,7 +8358,8 @@ export const strings = {
       'يُقدَّم GenOffice كما هو، دون أي ضمانات، بموجب Apache License 2.0. قد يحتوي المحتوى الذي ينشئه الذكاء الاصطناعي على أخطاء، فتحقق منه قبل استخدامه. والتأكد من أن لديك حق استخدامه مسؤوليتك.',
     viewOnGitHub: 'عرض على GitHub',
     setFeedback: 'إرسال ملاحظات',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: 'تغيير',
     // Dates
@@ -8290,13 +8386,18 @@ export const strings = {
     onbBody3: 'بلا رسوم ترخيص، بلا إعلانات، بلا علامات مائية.',
     hpOnbTitle: 'مرحبًا بك في Hanpan',
     hpOnbSubtitle: 'حزمة مكتبية كورية مجانية بالذكاء الاصطناعي',
-    hpOnbBody: 'أنشئ المستندات باستخدام AI Word وAI Excel وAI PowerPoint وAI Hangul، واستخدم PDF والخرائط الذهنية ولوحة التصميم وAI Photo وAI Illustration في مكان واحد.',
-    hpOnbConnectBody: 'يعمل الذكاء الاصطناعي عبر حساب Claude أو ChatGPT الذي تسجّل الدخول به، أو عبر نموذج ذكاء اصطناعي مثبّت على هذا الكمبيوتر (نموذج الكمبيوتر). إن وُجد، يعثر عليه Hanpan ويتصل به عند بدء التشغيل.',
-    hpOnbDoneNotConnected: 'لم يتم ربط الذكاء الاصطناعي بعد. يمكنك في أي وقت تسجيل الدخول بحساب أو ربط نموذج الكمبيوتر من الإعدادات ← الذكاء الاصطناعي.',
-    hpOnbDoneBody: 'ابدأ من خريطة ذهنية في الصفحة الرئيسية: ما تنظّمه هناك يمكن أن يتحول إلى تقرير HWP أو عرض تقديمي.',
+    hpOnbBody:
+      'أنشئ المستندات باستخدام AI Word وAI Excel وAI PowerPoint وAI Hangul، واستخدم PDF والخرائط الذهنية ولوحة التصميم وAI Photo وAI Illustration في مكان واحد.',
+    hpOnbConnectBody:
+      'يعمل الذكاء الاصطناعي عبر حساب Claude أو ChatGPT الذي تسجّل الدخول به، أو عبر نموذج ذكاء اصطناعي مثبّت على هذا الكمبيوتر (نموذج الكمبيوتر). إن وُجد، يعثر عليه Hanpan ويتصل به عند بدء التشغيل.',
+    hpOnbDoneNotConnected:
+      'لم يتم ربط الذكاء الاصطناعي بعد. يمكنك في أي وقت تسجيل الدخول بحساب أو ربط نموذج الكمبيوتر من الإعدادات ← الذكاء الاصطناعي.',
+    hpOnbDoneBody:
+      'ابدأ من خريطة ذهنية في الصفحة الرئيسية: ما تنظّمه هناك يمكن أن يتحول إلى تقرير HWP أو عرض تقديمي.',
     onbBack: 'رجوع',
     onbConnectTitle: 'اربط ذكاءً اصطناعيًا',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',
@@ -8489,7 +8590,8 @@ export const strings = {
     hpTemplatesFormsNote:
       'Estes são os formulários oficiais tal como a lei coreana os publica. Antes de entregar um, confirme em law.go.kr que ainda é a versão em vigor.',
     hpMyForms: 'Meus modelos',
-    hpMyFormsEmpty: 'Você ainda não tem modelos próprios. Salve um documento aberto como modelo ou adicione um arquivo.',
+    hpMyFormsEmpty:
+      'Você ainda não tem modelos próprios. Salve um documento aberto como modelo ou adicione um arquivo.',
     hpMyFormsAdd: 'Adicionar modelo',
     hpMyFormsSave: 'Salvar como meu modelo',
     hpMyFormsSource: 'Documento aberto',
@@ -8497,11 +8599,12 @@ export const strings = {
     hpMyFormsNoSource: 'Não há documento Word ou HWP aberto para salvar como modelo.',
     hpMyFormsOpen: 'Abrir como novo documento',
     hpMyFormsDelete: 'Excluir',
-    hpMyFormsDeleteConfirm: 'Excluir o modelo \'{name}\'? Ele será movido para a Lixeira.',
+    hpMyFormsDeleteConfirm: "Excluir o modelo '{name}'? Ele será movido para a Lixeira.",
     hpMyFormsDeleteYes: 'Excluir',
     hpMyFormsCancel: 'Cancelar',
-    hpMyFormsSaved: 'Modelo \'{name}\' salvo.',
-    hpMyFormsUnsupported: 'Este tipo de arquivo não é compatível. Somente arquivos Word (.docx) e HWP (.hwp, .hwpx) podem ser modelos.',
+    hpMyFormsSaved: "Modelo '{name}' salvo.",
+    hpMyFormsUnsupported:
+      'Este tipo de arquivo não é compatível. Somente arquivos Word (.docx) e HWP (.hwp, .hwpx) podem ser modelos.',
     hpMyFormsEmptyName: 'Digite um nome para o modelo.',
     hpMyFormsSaveFirst: 'Salve o documento primeiro e tente novamente.',
     hpMyFormsTooLarge: 'O arquivo é grande demais. Os modelos podem ter até 50 MB.',
@@ -8659,7 +8762,8 @@ export const strings = {
       'O local de salvamento padrão está indisponível, por isso as pastas não podem ser exibidas.',
     pickSaveDir: 'Escolher local de salvamento',
     deleteModalTitle: 'Excluir arquivos',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: 'Mover "{name}" para a lixeira?',
     deleteConfirmMany: 'Mover estes {n} arquivos para a lixeira?',
@@ -8966,7 +9070,8 @@ export const strings = {
       'GenOffice é fornecido no estado em que se encontra, sem garantias de qualquer tipo, sob a Apache License 2.0. O conteúdo gerado por IA pode estar errado: confira antes de usar. Verificar se você tem o direito de usá-lo é responsabilidade sua.',
     viewOnGitHub: 'Ver no GitHub',
     setFeedback: 'Enviar comentários',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: 'Alterar',
     today: 'Hoje',
@@ -8991,13 +9096,18 @@ export const strings = {
     onbBody3: "Sem licenças. Sem anúncios. Sem marcas d'água.",
     hpOnbTitle: 'Boas-vindas ao Hanpan',
     hpOnbSubtitle: 'Uma suíte de escritório coreana com IA, gratuita',
-    hpOnbBody: 'Crie documentos com AI Word, AI Excel, AI PowerPoint e AI Hangul e use PDF, mapas mentais, o quadro de design, AI Photo e AI Illustration em um só lugar.',
-    hpOnbConnectBody: 'A IA funciona com a conta do Claude ou do ChatGPT com que você faz login, ou com um modelo de IA instalado neste PC (o modelo do PC). Se houver um, o Hanpan o encontra e se conecta a ele ao iniciar.',
-    hpOnbDoneNotConnected: 'A IA ainda não está conectada. Você pode fazer login com uma conta ou conectar um modelo do PC a qualquer momento em Configurações → IA.',
-    hpOnbDoneBody: 'Comece por um mapa mental no Início: o que você organizar ali pode virar um relatório HWP ou uma apresentação.',
+    hpOnbBody:
+      'Crie documentos com AI Word, AI Excel, AI PowerPoint e AI Hangul e use PDF, mapas mentais, o quadro de design, AI Photo e AI Illustration em um só lugar.',
+    hpOnbConnectBody:
+      'A IA funciona com a conta do Claude ou do ChatGPT com que você faz login, ou com um modelo de IA instalado neste PC (o modelo do PC). Se houver um, o Hanpan o encontra e se conecta a ele ao iniciar.',
+    hpOnbDoneNotConnected:
+      'A IA ainda não está conectada. Você pode fazer login com uma conta ou conectar um modelo do PC a qualquer momento em Configurações → IA.',
+    hpOnbDoneBody:
+      'Comece por um mapa mental no Início: o que você organizar ali pode virar um relatório HWP ou uma apresentação.',
     onbBack: 'Voltar',
     onbConnectTitle: 'Conecte uma IA',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',
@@ -9192,7 +9302,8 @@ export const strings = {
     hpTemplatesFormsNote:
       'Sono i moduli ufficiali così come li pubblica la legge coreana. Prima di consegnarne uno, verifica su law.go.kr che sia ancora la versione in vigore.',
     hpMyForms: 'I miei modelli',
-    hpMyFormsEmpty: 'Non hai ancora modelli personali. Salva un documento aperto come modello o aggiungi un file.',
+    hpMyFormsEmpty:
+      'Non hai ancora modelli personali. Salva un documento aperto come modello o aggiungi un file.',
     hpMyFormsAdd: 'Aggiungi modello',
     hpMyFormsSave: 'Salva come mio modello',
     hpMyFormsSource: 'Documento aperto',
@@ -9200,11 +9311,12 @@ export const strings = {
     hpMyFormsNoSource: 'Nessun documento Word o HWP aperto da salvare come modello.',
     hpMyFormsOpen: 'Apri come nuovo documento',
     hpMyFormsDelete: 'Elimina',
-    hpMyFormsDeleteConfirm: 'Eliminare il modello \'{name}\'? Verrà spostato nel Cestino.',
+    hpMyFormsDeleteConfirm: "Eliminare il modello '{name}'? Verrà spostato nel Cestino.",
     hpMyFormsDeleteYes: 'Elimina',
     hpMyFormsCancel: 'Annulla',
-    hpMyFormsSaved: 'Modello \'{name}\' salvato.',
-    hpMyFormsUnsupported: 'Questo tipo di file non è supportato. Solo i file Word (.docx) e HWP (.hwp, .hwpx) possono essere usati come modelli.',
+    hpMyFormsSaved: "Modello '{name}' salvato.",
+    hpMyFormsUnsupported:
+      'Questo tipo di file non è supportato. Solo i file Word (.docx) e HWP (.hwp, .hwpx) possono essere usati come modelli.',
     hpMyFormsEmptyName: 'Inserisci un nome per il modello.',
     hpMyFormsSaveFirst: 'Salva prima il documento, poi riprova.',
     hpMyFormsTooLarge: 'Il file è troppo grande. I modelli possono arrivare a 50 MB.',
@@ -9362,7 +9474,8 @@ export const strings = {
       'La posizione di salvataggio predefinita non è disponibile, quindi le cartelle non possono essere mostrate.',
     pickSaveDir: 'Scegli posizione di salvataggio',
     deleteModalTitle: 'Elimina file',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: 'Spostare "{name}" nel cestino?',
     deleteConfirmMany: 'Spostare questi {n} file nel cestino?',
@@ -9668,7 +9781,8 @@ export const strings = {
       'GenOffice è fornito così com’è, senza garanzie di alcun tipo, ai sensi della Apache License 2.0. I contenuti generati dall’IA possono essere errati: verificali prima di usarli. Accertarti di avere il diritto di usarli spetta a te.',
     viewOnGitHub: 'Vedi su GitHub',
     setFeedback: 'Invia feedback',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: 'Cambia',
     today: 'Oggi',
@@ -9693,13 +9807,18 @@ export const strings = {
     onbBody3: 'Nessuna licenza. Nessuna pubblicità. Nessuna filigrana.',
     hpOnbTitle: 'Benvenuto in Hanpan',
     hpOnbSubtitle: 'Una suite per ufficio coreana con IA, gratuita',
-    hpOnbBody: 'Crea documenti con AI Word, AI Excel, AI PowerPoint e AI Hangul e usa PDF, mappe mentali, la bacheca di design, AI Photo e AI Illustration in un unico posto.',
-    hpOnbConnectBody: 'L’IA funziona con l’account Claude o ChatGPT con cui accedi, oppure con un modello di IA installato su questo PC (il modello PC). Se c’è, Hanpan lo trova e lo collega all’avvio.',
-    hpOnbDoneNotConnected: 'L’IA non è ancora connessa. Puoi accedere con un account o collegare un modello PC in qualsiasi momento da Impostazioni → IA.',
-    hpOnbDoneBody: 'Inizia da una mappa mentale nella Home: ciò che organizzi lì può diventare una relazione HWP o una presentazione.',
+    hpOnbBody:
+      'Crea documenti con AI Word, AI Excel, AI PowerPoint e AI Hangul e usa PDF, mappe mentali, la bacheca di design, AI Photo e AI Illustration in un unico posto.',
+    hpOnbConnectBody:
+      'L’IA funziona con l’account Claude o ChatGPT con cui accedi, oppure con un modello di IA installato su questo PC (il modello PC). Se c’è, Hanpan lo trova e lo collega all’avvio.',
+    hpOnbDoneNotConnected:
+      'L’IA non è ancora connessa. Puoi accedere con un account o collegare un modello PC in qualsiasi momento da Impostazioni → IA.',
+    hpOnbDoneBody:
+      'Inizia da una mappa mentale nella Home: ciò che organizzi lì può diventare una relazione HWP o una presentazione.',
     onbBack: 'Indietro',
     onbConnectTitle: 'Collega un’IA',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',
@@ -9895,7 +10014,8 @@ export const strings = {
     hpTemplatesFormsNote:
       'To oficjalne formularze w postaci, w jakiej publikuje je koreańskie prawo. Przed złożeniem sprawdź na law.go.kr, czy to nadal aktualna wersja.',
     hpMyForms: 'Moje szablony',
-    hpMyFormsEmpty: 'Nie masz jeszcze własnych szablonów. Zapisz otwarty dokument jako szablon lub dodaj plik.',
+    hpMyFormsEmpty:
+      'Nie masz jeszcze własnych szablonów. Zapisz otwarty dokument jako szablon lub dodaj plik.',
     hpMyFormsAdd: 'Dodaj szablon',
     hpMyFormsSave: 'Zapisz jako mój szablon',
     hpMyFormsSource: 'Otwarty dokument',
@@ -9907,7 +10027,8 @@ export const strings = {
     hpMyFormsDeleteYes: 'Usuń',
     hpMyFormsCancel: 'Anuluj',
     hpMyFormsSaved: 'Zapisano szablon „{name}”.',
-    hpMyFormsUnsupported: 'Ten typ pliku nie jest obsługiwany. Szablonem mogą być tylko pliki Word (.docx) i HWP (.hwp, .hwpx).',
+    hpMyFormsUnsupported:
+      'Ten typ pliku nie jest obsługiwany. Szablonem mogą być tylko pliki Word (.docx) i HWP (.hwp, .hwpx).',
     hpMyFormsEmptyName: 'Wpisz nazwę szablonu.',
     hpMyFormsSaveFirst: 'Najpierw zapisz dokument, a potem spróbuj ponownie.',
     hpMyFormsTooLarge: 'Plik jest za duży. Szablon może mieć maksymalnie 50 MB.',
@@ -10065,7 +10186,8 @@ export const strings = {
       'Domyślna lokalizacja zapisu jest niedostępna, więc nie można wyświetlić folderów.',
     pickSaveDir: 'Wybierz lokalizację zapisu',
     deleteModalTitle: 'Usuwanie plików',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: 'Przenieść „{name}” do kosza?',
     deleteConfirmMany: 'Przenieść te pliki ({n}) do kosza?',
@@ -10368,7 +10490,8 @@ export const strings = {
       'GenOffice jest udostępniany w stanie „tak jak jest”, bez jakichkolwiek gwarancji, na licencji Apache License 2.0. Treści wygenerowane przez AI mogą zawierać błędy — sprawdź je przed użyciem. Upewnienie się, że masz prawo z nich korzystać, należy do Ciebie.',
     viewOnGitHub: 'Zobacz na GitHubie',
     setFeedback: 'Wyślij opinię',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: 'Zmień',
     today: 'Dzisiaj',
@@ -10393,13 +10516,18 @@ export const strings = {
     onbBody3: 'Bez opłat licencyjnych. Bez reklam. Bez znaków wodnych.',
     hpOnbTitle: 'Witamy w Hanpan',
     hpOnbSubtitle: 'Darmowy koreański pakiet biurowy z AI',
-    hpOnbBody: 'Twórz dokumenty w AI Word, AI Excel, AI PowerPoint i AI Hangul oraz korzystaj z PDF, map myśli, tablicy projektowej, AI Photo i AI Illustration w jednym miejscu.',
-    hpOnbConnectBody: 'AI działa na koncie Claude lub ChatGPT, którym się logujesz, albo na modelu AI zainstalowanym na tym komputerze (model PC). Jeśli taki jest, Hanpan znajdzie go i połączy przy uruchomieniu.',
-    hpOnbDoneNotConnected: 'AI nie jest jeszcze połączona. W każdej chwili możesz zalogować się kontem lub podłączyć model PC w Ustawienia → AI.',
-    hpOnbDoneBody: 'Zacznij od mapy myśli na stronie głównej: to, co tam uporządkujesz, zamienisz w raport HWP lub prezentację.',
+    hpOnbBody:
+      'Twórz dokumenty w AI Word, AI Excel, AI PowerPoint i AI Hangul oraz korzystaj z PDF, map myśli, tablicy projektowej, AI Photo i AI Illustration w jednym miejscu.',
+    hpOnbConnectBody:
+      'AI działa na koncie Claude lub ChatGPT, którym się logujesz, albo na modelu AI zainstalowanym na tym komputerze (model PC). Jeśli taki jest, Hanpan znajdzie go i połączy przy uruchomieniu.',
+    hpOnbDoneNotConnected:
+      'AI nie jest jeszcze połączona. W każdej chwili możesz zalogować się kontem lub podłączyć model PC w Ustawienia → AI.',
+    hpOnbDoneBody:
+      'Zacznij od mapy myśli na stronie głównej: to, co tam uporządkujesz, zamienisz w raport HWP lub prezentację.',
     onbBack: 'Wstecz',
     onbConnectTitle: 'Połącz AI',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',
@@ -10594,19 +10722,22 @@ export const strings = {
     hpTemplatesFormsNote:
       'Jsou to úřední formuláře přesně tak, jak je zveřejňuje korejské právo. Před podáním si na law.go.kr ověřte, že jde stále o platné znění.',
     hpMyForms: 'Moje šablony',
-    hpMyFormsEmpty: 'Zatím nemáte vlastní šablony. Uložte otevřený dokument jako šablonu nebo přidejte soubor.',
+    hpMyFormsEmpty:
+      'Zatím nemáte vlastní šablony. Uložte otevřený dokument jako šablonu nebo přidejte soubor.',
     hpMyFormsAdd: 'Přidat šablonu',
     hpMyFormsSave: 'Uložit jako vlastní šablonu',
     hpMyFormsSource: 'Otevřený dokument',
     hpMyFormsName: 'Název šablony',
-    hpMyFormsNoSource: 'Není otevřen žádný dokument Word ani HWP, který by šlo uložit jako šablonu.',
+    hpMyFormsNoSource:
+      'Není otevřen žádný dokument Word ani HWP, který by šlo uložit jako šablonu.',
     hpMyFormsOpen: 'Otevřít jako nový dokument',
     hpMyFormsDelete: 'Odstranit',
     hpMyFormsDeleteConfirm: 'Odstranit šablonu „{name}“? Přesune se do Koše.',
     hpMyFormsDeleteYes: 'Odstranit',
     hpMyFormsCancel: 'Zrušit',
     hpMyFormsSaved: 'Šablona „{name}“ byla uložena.',
-    hpMyFormsUnsupported: 'Tento typ souboru není podporován. Šablonou mohou být jen soubory Word (.docx) a HWP (.hwp, .hwpx).',
+    hpMyFormsUnsupported:
+      'Tento typ souboru není podporován. Šablonou mohou být jen soubory Word (.docx) a HWP (.hwp, .hwpx).',
     hpMyFormsEmptyName: 'Zadejte název šablony.',
     hpMyFormsSaveFirst: 'Nejprve dokument uložte a pak to zkuste znovu.',
     hpMyFormsTooLarge: 'Soubor je příliš velký. Šablona může mít nejvýše 50 MB.',
@@ -10762,7 +10893,8 @@ export const strings = {
     rootUnusable: 'Výchozí umístění pro ukládání není dostupné, složky proto nelze zobrazit.',
     pickSaveDir: 'Zvolit umístění pro ukládání',
     deleteModalTitle: 'Odstranit soubory',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: 'Přesunout „{name}“ do koše?',
     deleteConfirmMany: 'Přesunout těchto {n} souborů do koše?',
@@ -11016,7 +11148,8 @@ export const strings = {
       'GenOffice se poskytuje tak, jak je, bez jakýchkoli záruk, podle licence Apache License 2.0. Obsah vytvořený AI může být chybný, proto jej před použitím zkontrolujte. Ověřit, že máte právo jej používat, je vaší odpovědností.',
     viewOnGitHub: 'Zobrazit na GitHubu',
     setFeedback: 'Odeslat zpětnou vazbu',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: 'Změnit',
     today: 'Dnes',
@@ -11041,13 +11174,18 @@ export const strings = {
     onbBody3: 'Žádné licenční poplatky. Žádné reklamy. Žádné vodoznaky.',
     hpOnbTitle: 'Vítejte v aplikaci Hanpan',
     hpOnbSubtitle: 'Bezplatný korejský kancelářský balík s AI',
-    hpOnbBody: 'Vytvářejte dokumenty v AI Word, AI Excel, AI PowerPoint a AI Hangul a používejte PDF, myšlenkové mapy, návrhovou tabuli, AI Photo a AI Illustration na jednom místě.',
-    hpOnbConnectBody: 'AI běží přes účet Claude nebo ChatGPT, kterým se přihlásíte, nebo přes model AI nainstalovaný v tomto počítači (model PC). Pokud nějaký je, Hanpan ho při spuštění najde a připojí.',
-    hpOnbDoneNotConnected: 'AI zatím není připojena. Kdykoli se můžete přihlásit účtem nebo připojit model PC v Nastavení → AI.',
-    hpOnbDoneBody: 'Začněte myšlenkovou mapou na domovské obrazovce: co v ní uspořádáte, můžete převést na zprávu HWP nebo prezentaci.',
+    hpOnbBody:
+      'Vytvářejte dokumenty v AI Word, AI Excel, AI PowerPoint a AI Hangul a používejte PDF, myšlenkové mapy, návrhovou tabuli, AI Photo a AI Illustration na jednom místě.',
+    hpOnbConnectBody:
+      'AI běží přes účet Claude nebo ChatGPT, kterým se přihlásíte, nebo přes model AI nainstalovaný v tomto počítači (model PC). Pokud nějaký je, Hanpan ho při spuštění najde a připojí.',
+    hpOnbDoneNotConnected:
+      'AI zatím není připojena. Kdykoli se můžete přihlásit účtem nebo připojit model PC v Nastavení → AI.',
+    hpOnbDoneBody:
+      'Začněte myšlenkovou mapou na domovské obrazovce: co v ní uspořádáte, můžete převést na zprávu HWP nebo prezentaci.',
     onbBack: 'Zpět',
     onbConnectTitle: 'Připojte AI',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',
@@ -11288,7 +11426,8 @@ export const strings = {
     hpTemplatesFormsNote:
       'Dit zijn de officiële formulieren zoals de Koreaanse wet ze publiceert. Controleer voor het indienen op law.go.kr of het nog de geldende versie is.',
     hpMyForms: 'Mijn sjablonen',
-    hpMyFormsEmpty: 'Je hebt nog geen eigen sjablonen. Sla een geopend document op als sjabloon of voeg een bestand toe.',
+    hpMyFormsEmpty:
+      'Je hebt nog geen eigen sjablonen. Sla een geopend document op als sjabloon of voeg een bestand toe.',
     hpMyFormsAdd: 'Sjabloon toevoegen',
     hpMyFormsSave: 'Opslaan als eigen sjabloon',
     hpMyFormsSource: 'Geopend document',
@@ -11296,11 +11435,13 @@ export const strings = {
     hpMyFormsNoSource: 'Er is geen geopend Word- of HWP-document om als sjabloon op te slaan.',
     hpMyFormsOpen: 'Openen als nieuw document',
     hpMyFormsDelete: 'Verwijderen',
-    hpMyFormsDeleteConfirm: 'Sjabloon \'{name}\' verwijderen? Het wordt naar de Prullenbak verplaatst.',
+    hpMyFormsDeleteConfirm:
+      "Sjabloon '{name}' verwijderen? Het wordt naar de Prullenbak verplaatst.",
     hpMyFormsDeleteYes: 'Verwijderen',
     hpMyFormsCancel: 'Annuleren',
-    hpMyFormsSaved: 'Sjabloon \'{name}\' opgeslagen.',
-    hpMyFormsUnsupported: 'Dit bestandstype wordt niet ondersteund. Alleen Word- (.docx) en HWP-bestanden (.hwp, .hwpx) kunnen als sjabloon dienen.',
+    hpMyFormsSaved: "Sjabloon '{name}' opgeslagen.",
+    hpMyFormsUnsupported:
+      'Dit bestandstype wordt niet ondersteund. Alleen Word- (.docx) en HWP-bestanden (.hwp, .hwpx) kunnen als sjabloon dienen.',
     hpMyFormsEmptyName: 'Voer een sjabloonnaam in.',
     hpMyFormsSaveFirst: 'Sla het document eerst op en probeer het dan opnieuw.',
     hpMyFormsTooLarge: 'Het bestand is te groot. Sjablonen mogen maximaal 50 MB zijn.',
@@ -11458,7 +11599,8 @@ export const strings = {
       'De standaard opslaglocatie is niet beschikbaar, dus mappen kunnen niet worden getoond.',
     pickSaveDir: 'Opslaglocatie kiezen',
     deleteModalTitle: 'Bestanden verwijderen',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: '"{name}" naar de prullenbak verplaatsen?',
     deleteConfirmMany: 'Deze {n} bestanden naar de prullenbak verplaatsen?',
@@ -11762,7 +11904,8 @@ export const strings = {
       'GenOffice wordt geleverd zoals het is, zonder enige garantie, onder de Apache License 2.0. Door AI gemaakte inhoud kan fouten bevatten: controleer die voordat u hem gebruikt. Nagaan of u het recht hebt om hem te gebruiken, is uw eigen verantwoordelijkheid.',
     viewOnGitHub: 'Bekijken op GitHub',
     setFeedback: 'Feedback sturen',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: 'Wijzigen',
     today: 'Vandaag',
@@ -11787,13 +11930,18 @@ export const strings = {
     onbBody3: 'Geen licentiekosten. Geen advertenties. Geen watermerken.',
     hpOnbTitle: 'Welkom bij Hanpan',
     hpOnbSubtitle: 'Een gratis Koreaans officepakket met AI',
-    hpOnbBody: 'Maak documenten met AI Word, AI Excel, AI PowerPoint en AI Hangul, en gebruik PDF, mindmaps, het ontwerpbord, AI Photo en AI Illustration op één plek.',
-    hpOnbConnectBody: 'AI werkt via het Claude- of ChatGPT-account waarmee je je aanmeldt, of via een AI-model dat op deze pc is geïnstalleerd (het pc-model). Als er een is, vindt Hanpan het bij het opstarten en maakt verbinding.',
-    hpOnbDoneNotConnected: 'AI is nog niet verbonden. Je kunt je op elk moment aanmelden met een account of een pc-model verbinden via Instellingen → AI.',
-    hpOnbDoneBody: 'Begin met een mindmap op Start: wat je daar ordent, werk je verder uit tot een HWP-rapport of een presentatie.',
+    hpOnbBody:
+      'Maak documenten met AI Word, AI Excel, AI PowerPoint en AI Hangul, en gebruik PDF, mindmaps, het ontwerpbord, AI Photo en AI Illustration op één plek.',
+    hpOnbConnectBody:
+      'AI werkt via het Claude- of ChatGPT-account waarmee je je aanmeldt, of via een AI-model dat op deze pc is geïnstalleerd (het pc-model). Als er een is, vindt Hanpan het bij het opstarten en maakt verbinding.',
+    hpOnbDoneNotConnected:
+      'AI is nog niet verbonden. Je kunt je op elk moment aanmelden met een account of een pc-model verbinden via Instellingen → AI.',
+    hpOnbDoneBody:
+      'Begin met een mindmap op Start: wat je daar ordent, werk je verder uit tot een HWP-rapport of een presentatie.',
     onbBack: 'Terug',
     onbConnectTitle: 'Verbind een AI',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',
@@ -11989,7 +12137,8 @@ export const strings = {
     hpTemplatesFormsNote:
       'Ini ialah borang rasmi sebagaimana diterbitkan oleh undang-undang Korea. Sebelum menghantarnya, semak di law.go.kr bahawa ia masih versi terkini.',
     hpMyForms: 'Templat saya',
-    hpMyFormsEmpty: 'Belum ada templat anda sendiri. Simpan dokumen yang dibuka sebagai templat atau tambah fail.',
+    hpMyFormsEmpty:
+      'Belum ada templat anda sendiri. Simpan dokumen yang dibuka sebagai templat atau tambah fail.',
     hpMyFormsAdd: 'Tambah templat',
     hpMyFormsSave: 'Simpan sebagai templat saya',
     hpMyFormsSource: 'Dokumen yang dibuka',
@@ -11997,11 +12146,12 @@ export const strings = {
     hpMyFormsNoSource: 'Tiada dokumen Word atau HWP yang dibuka untuk disimpan sebagai templat.',
     hpMyFormsOpen: 'Buka sebagai dokumen baharu',
     hpMyFormsDelete: 'Padam',
-    hpMyFormsDeleteConfirm: 'Padam templat \'{name}\'? Templat akan dialihkan ke Tong Kitar Semula.',
+    hpMyFormsDeleteConfirm: "Padam templat '{name}'? Templat akan dialihkan ke Tong Kitar Semula.",
     hpMyFormsDeleteYes: 'Padam',
     hpMyFormsCancel: 'Batal',
-    hpMyFormsSaved: 'Templat \'{name}\' disimpan.',
-    hpMyFormsUnsupported: 'Jenis fail ini tidak disokong. Hanya fail Word (.docx) dan HWP (.hwp, .hwpx) boleh dijadikan templat.',
+    hpMyFormsSaved: "Templat '{name}' disimpan.",
+    hpMyFormsUnsupported:
+      'Jenis fail ini tidak disokong. Hanya fail Word (.docx) dan HWP (.hwp, .hwpx) boleh dijadikan templat.',
     hpMyFormsEmptyName: 'Masukkan nama templat.',
     hpMyFormsSaveFirst: 'Simpan dokumen dahulu, kemudian cuba lagi.',
     hpMyFormsTooLarge: 'Fail terlalu besar. Saiz templat maksimum ialah 50 MB.',
@@ -12158,7 +12308,8 @@ export const strings = {
     rootUnusable: 'Lokasi simpan lalai tidak tersedia, jadi folder tidak dapat dipaparkan.',
     pickSaveDir: 'Pilih lokasi simpan',
     deleteModalTitle: 'Padam Fail',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: 'Pindahkan "{name}" ke tong sampah?',
     deleteConfirmMany: 'Pindahkan {n} fail ini ke tong sampah?',
@@ -12465,7 +12616,8 @@ export const strings = {
       'GenOffice disediakan sebagaimana adanya, tanpa sebarang jaminan, di bawah Apache License 2.0. Kandungan yang dijana AI mungkin salah, jadi semaklah sebelum digunakan. Memastikan anda berhak menggunakannya ialah tanggungjawab anda.',
     viewOnGitHub: 'Lihat di GitHub',
     setFeedback: 'Hantar maklum balas',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: 'Tukar',
     today: 'Hari ini',
@@ -12490,13 +12642,18 @@ export const strings = {
     onbBody3: 'Tiada yuran lesen. Tiada iklan. Tiada tera air.',
     hpOnbTitle: 'Selamat datang ke Hanpan',
     hpOnbSubtitle: 'Suite pejabat AI Korea yang percuma',
-    hpOnbBody: 'Hasilkan dokumen dengan AI Word, AI Excel, AI PowerPoint dan AI Hangul, serta gunakan PDF, peta minda, papan reka bentuk, AI Photo dan AI Illustration di satu tempat.',
-    hpOnbConnectBody: 'AI berjalan menggunakan akaun Claude atau ChatGPT yang anda log masuk, atau model AI yang dipasang pada PC ini (model PC). Jika ada, Hanpan akan mencari dan menyambungkannya semasa dimulakan.',
-    hpOnbDoneNotConnected: 'AI belum disambungkan. Anda boleh log masuk dengan akaun atau menyambungkan model PC pada bila-bila masa di Tetapan → AI.',
-    hpOnbDoneBody: 'Mulakan dengan peta minda di Laman Utama: perkara yang anda susun di situ boleh diteruskan menjadi laporan HWP atau slaid pembentangan.',
+    hpOnbBody:
+      'Hasilkan dokumen dengan AI Word, AI Excel, AI PowerPoint dan AI Hangul, serta gunakan PDF, peta minda, papan reka bentuk, AI Photo dan AI Illustration di satu tempat.',
+    hpOnbConnectBody:
+      'AI berjalan menggunakan akaun Claude atau ChatGPT yang anda log masuk, atau model AI yang dipasang pada PC ini (model PC). Jika ada, Hanpan akan mencari dan menyambungkannya semasa dimulakan.',
+    hpOnbDoneNotConnected:
+      'AI belum disambungkan. Anda boleh log masuk dengan akaun atau menyambungkan model PC pada bila-bila masa di Tetapan → AI.',
+    hpOnbDoneBody:
+      'Mulakan dengan peta minda di Laman Utama: perkara yang anda susun di situ boleh diteruskan menjadi laporan HWP atau slaid pembentangan.',
     onbBack: 'Kembali',
     onbConnectTitle: 'Sambungkan AI',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',
@@ -12698,11 +12855,12 @@ export const strings = {
     hpMyFormsNoSource: 'אין מסמך Word או HWP פתוח לשמירה כתבנית.',
     hpMyFormsOpen: 'פתח כמסמך חדש',
     hpMyFormsDelete: 'מחק',
-    hpMyFormsDeleteConfirm: 'למחוק את התבנית \'{name}\'? היא תועבר לסל המחזור.',
+    hpMyFormsDeleteConfirm: "למחוק את התבנית '{name}'? היא תועבר לסל המחזור.",
     hpMyFormsDeleteYes: 'מחק',
     hpMyFormsCancel: 'ביטול',
-    hpMyFormsSaved: 'התבנית \'{name}\' נשמרה.',
-    hpMyFormsUnsupported: 'סוג הקובץ אינו נתמך. רק קובצי Word (.docx) ו-HWP (.hwp, .hwpx) יכולים לשמש כתבניות.',
+    hpMyFormsSaved: "התבנית '{name}' נשמרה.",
+    hpMyFormsUnsupported:
+      'סוג הקובץ אינו נתמך. רק קובצי Word (.docx) ו-HWP (.hwp, .hwpx) יכולים לשמש כתבניות.',
     hpMyFormsEmptyName: 'הזן שם לתבנית.',
     hpMyFormsSaveFirst: 'שמור את המסמך תחילה ונסה שוב.',
     hpMyFormsTooLarge: 'הקובץ גדול מדי. תבנית יכולה להיות עד 50MB.',
@@ -12858,7 +13016,8 @@ export const strings = {
     rootUnusable: 'מיקום השמירה המוגדר כברירת מחדל אינו זמין, ולכן לא ניתן להציג תיקיות.',
     pickSaveDir: 'בחירת מיקום שמירה',
     deleteModalTitle: 'מחיקת קבצים',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: 'להעביר את "{name}" לאשפה?',
     deleteConfirmMany: 'להעביר את {n} הקבצים האלה לאשפה?',
@@ -13148,7 +13307,8 @@ export const strings = {
       'GenOffice מסופק כפי שהוא, ללא אחריות מכל סוג, לפי Apache License 2.0. תוכן שנוצר בבינה מלאכותית עלול להיות שגוי, לכן יש לבדוק אותו לפני השימוש. הבדיקה שיש לך זכות להשתמש בו היא באחריותך.',
     viewOnGitHub: 'הצגה ב-GitHub',
     setFeedback: 'שליחת משוב',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: 'שינוי',
     today: 'היום',
@@ -13173,13 +13333,17 @@ export const strings = {
     onbBody3: 'ללא דמי רישיון, ללא פרסומות, ללא סימני מים.',
     hpOnbTitle: 'ברוכים הבאים ל-Hanpan',
     hpOnbSubtitle: 'חבילת משרד קוריאנית עם AI, בחינם',
-    hpOnbBody: 'יוצרים מסמכים עם AI Word, AI Excel, AI PowerPoint ו-AI Hangul, ועובדים עם PDF, מפות חשיבה, לוח העיצוב, AI Photo ו-AI Illustration במקום אחד.',
-    hpOnbConnectBody: 'ה-AI פועל דרך חשבון Claude או ChatGPT שאיתו מתחברים, או דרך מודל AI שמותקן במחשב הזה (מודל PC). אם יש כזה, Hanpan מוצא אותו ומתחבר אליו בהפעלה.',
-    hpOnbDoneNotConnected: 'ה-AI עדיין לא מחובר. אפשר בכל עת להתחבר עם חשבון או לחבר מודל PC בהגדרות ← AI.',
+    hpOnbBody:
+      'יוצרים מסמכים עם AI Word, AI Excel, AI PowerPoint ו-AI Hangul, ועובדים עם PDF, מפות חשיבה, לוח העיצוב, AI Photo ו-AI Illustration במקום אחד.',
+    hpOnbConnectBody:
+      'ה-AI פועל דרך חשבון Claude או ChatGPT שאיתו מתחברים, או דרך מודל AI שמותקן במחשב הזה (מודל PC). אם יש כזה, Hanpan מוצא אותו ומתחבר אליו בהפעלה.',
+    hpOnbDoneNotConnected:
+      'ה-AI עדיין לא מחובר. אפשר בכל עת להתחבר עם חשבון או לחבר מודל PC בהגדרות ← AI.',
     hpOnbDoneBody: 'התחילו ממפת חשיבה במסך הבית: מה שתסדרו שם יכול להמשיך לדוח HWP או למצגת.',
     onbBack: 'חזרה',
     onbConnectTitle: 'חיבור AI',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',
@@ -13365,7 +13529,8 @@ export const strings = {
     hpTemplatesFormsNote:
       'ये कोरियाई कानून द्वारा प्रकाशित आधिकारिक फ़ॉर्म हैं, बिना बदलाव के। जमा करने से पहले law.go.kr पर जाँच लें कि यह अब भी नवीनतम संस्करण है।',
     hpMyForms: 'मेरे टेम्पलेट',
-    hpMyFormsEmpty: 'अभी आपका कोई टेम्पलेट नहीं है। खुले दस्तावेज़ को टेम्पलेट के रूप में सहेजें या फ़ाइल जोड़ें।',
+    hpMyFormsEmpty:
+      'अभी आपका कोई टेम्पलेट नहीं है। खुले दस्तावेज़ को टेम्पलेट के रूप में सहेजें या फ़ाइल जोड़ें।',
     hpMyFormsAdd: 'टेम्पलेट जोड़ें',
     hpMyFormsSave: 'मेरे टेम्पलेट के रूप में सहेजें',
     hpMyFormsSource: 'खुला दस्तावेज़',
@@ -13373,11 +13538,12 @@ export const strings = {
     hpMyFormsNoSource: 'टेम्पलेट के रूप में सहेजने के लिए कोई खुला Word या HWP दस्तावेज़ नहीं है।',
     hpMyFormsOpen: 'नए दस्तावेज़ के रूप में खोलें',
     hpMyFormsDelete: 'हटाएँ',
-    hpMyFormsDeleteConfirm: 'टेम्पलेट \'{name}\' हटाएँ? यह रीसायकल बिन में जाएगा।',
+    hpMyFormsDeleteConfirm: "टेम्पलेट '{name}' हटाएँ? यह रीसायकल बिन में जाएगा।",
     hpMyFormsDeleteYes: 'हटाएँ',
     hpMyFormsCancel: 'रद्द करें',
-    hpMyFormsSaved: 'टेम्पलेट \'{name}\' सहेजा गया।',
-    hpMyFormsUnsupported: 'यह फ़ाइल प्रकार समर्थित नहीं है। केवल Word (.docx) और HWP (.hwp, .hwpx) फ़ाइलें टेम्पलेट बन सकती हैं।',
+    hpMyFormsSaved: "टेम्पलेट '{name}' सहेजा गया।",
+    hpMyFormsUnsupported:
+      'यह फ़ाइल प्रकार समर्थित नहीं है। केवल Word (.docx) और HWP (.hwp, .hwpx) फ़ाइलें टेम्पलेट बन सकती हैं।',
     hpMyFormsEmptyName: 'टेम्पलेट का नाम दर्ज करें।',
     hpMyFormsSaveFirst: 'पहले दस्तावेज़ सहेजें, फिर से प्रयास करें।',
     hpMyFormsTooLarge: 'फ़ाइल बहुत बड़ी है। टेम्पलेट अधिकतम 50 MB का हो सकता है।',
@@ -13535,7 +13701,8 @@ export const strings = {
     rootUnusable: 'डिफ़ॉल्ट सेव स्थान उपलब्ध नहीं है, इसलिए फ़ोल्डर नहीं दिखाए जा सकते।',
     pickSaveDir: 'सेव स्थान चुनें',
     deleteModalTitle: 'फ़ाइलें हटाएँ',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: '"{name}" को ट्रैश में ले जाएँ?',
     deleteConfirmMany: 'इन {n} फ़ाइलों को ट्रैश में ले जाएँ?',
@@ -13836,7 +14003,8 @@ export const strings = {
       'GenOffice को Apache License 2.0 के तहत "जैसा है" के आधार पर, बिना किसी वारंटी के प्रदान किया जाता है। AI द्वारा बनाई गई सामग्री गलत हो सकती है, इसलिए उपयोग से पहले जाँच लें। उसे उपयोग करने का अधिकार आपके पास है या नहीं, यह सुनिश्चित करना आपकी ज़िम्मेदारी है।',
     viewOnGitHub: 'GitHub पर देखें',
     setFeedback: 'फ़ीडबैक भेजें',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: 'बदलें',
     today: 'आज',
@@ -13861,13 +14029,18 @@ export const strings = {
     onbBody3: 'कोई लाइसेंस शुल्क नहीं। कोई विज्ञापन नहीं। कोई वॉटरमार्क नहीं।',
     hpOnbTitle: 'Hanpan में आपका स्वागत है',
     hpOnbSubtitle: 'मुफ़्त कोरियाई AI ऑफ़िस सुइट',
-    hpOnbBody: 'AI Word, AI Excel, AI PowerPoint और AI Hangul से दस्तावेज़ बनाएँ, और PDF, माइंड मैप, डिज़ाइन बोर्ड, AI Photo और AI Illustration एक ही जगह इस्तेमाल करें।',
-    hpOnbConnectBody: 'AI उस Claude या ChatGPT खाते से चलता है जिससे आप साइन इन करते हैं, या इस PC पर इंस्टॉल किए गए AI मॉडल (PC मॉडल) से। अगर ऐसा मॉडल है, तो Hanpan शुरू होते समय उसे ढूँढकर कनेक्ट कर देता है।',
-    hpOnbDoneNotConnected: 'AI अभी कनेक्ट नहीं है। आप कभी भी सेटिंग्स → AI में खाते से साइन इन कर सकते हैं या PC मॉडल कनेक्ट कर सकते हैं।',
-    hpOnbDoneBody: 'होम पर माइंड मैप से शुरू करें: वहाँ जो आप व्यवस्थित करेंगे, उसे आगे HWP रिपोर्ट या स्लाइड डेक में बदल सकते हैं।',
+    hpOnbBody:
+      'AI Word, AI Excel, AI PowerPoint और AI Hangul से दस्तावेज़ बनाएँ, और PDF, माइंड मैप, डिज़ाइन बोर्ड, AI Photo और AI Illustration एक ही जगह इस्तेमाल करें।',
+    hpOnbConnectBody:
+      'AI उस Claude या ChatGPT खाते से चलता है जिससे आप साइन इन करते हैं, या इस PC पर इंस्टॉल किए गए AI मॉडल (PC मॉडल) से। अगर ऐसा मॉडल है, तो Hanpan शुरू होते समय उसे ढूँढकर कनेक्ट कर देता है।',
+    hpOnbDoneNotConnected:
+      'AI अभी कनेक्ट नहीं है। आप कभी भी सेटिंग्स → AI में खाते से साइन इन कर सकते हैं या PC मॉडल कनेक्ट कर सकते हैं।',
+    hpOnbDoneBody:
+      'होम पर माइंड मैप से शुरू करें: वहाँ जो आप व्यवस्थित करेंगे, उसे आगे HWP रिपोर्ट या स्लाइड डेक में बदल सकते हैं।',
     onbBack: 'वापस',
     onbConnectTitle: 'AI कनेक्ट करें',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',
@@ -14224,7 +14397,8 @@ export const strings = {
     rootUnusable: '預設儲存位置無法使用，無法顯示資料夾。',
     pickSaveDir: '重新選擇儲存位置',
     deleteModalTitle: '刪除檔案',
-    deleteOpenTabs: 'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
+    deleteOpenTabs:
+      'Open in a tab: {names}. Deleting closes that tab first, and asks if it has unsaved changes.',
     deleteCloseTabs: 'Close tab and delete',
     deleteConfirmOne: '確定將「{name}」移至垃圾桶？',
     deleteConfirmMany: '確定將以下 {n} 個檔案移至垃圾桶？',
@@ -14507,7 +14681,8 @@ export const strings = {
       'GenOffice 依 Apache License 2.0 以「現狀」提供，不作任何保證。AI 產生的內容可能有誤，請確認後再使用。確認自己有權使用這些內容是使用者的責任。',
     viewOnGitHub: '在 GitHub 上查看',
     setFeedback: '傳送意見回饋',
-    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    setFeedbackDesc:
+      'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
     feedbackOpen: 'Write email',
     setChange: '變更',
     today: '今天',
@@ -14532,13 +14707,16 @@ export const strings = {
     onbBody3: '無授權費用，無廣告，無浮水印。',
     hpOnbTitle: '歡迎使用 Hanpan',
     hpOnbSubtitle: '免費的韓文 AI 辦公套件',
-    hpOnbBody: '用 AI Word、AI Excel、AI PowerPoint 和 AI Hangul 製作文件，PDF、心智圖、設計板、AI Photo 與 AI Illustration 也都能在同一處使用。',
-    hpOnbConnectBody: 'AI 可以使用你登入的 Claude 或 ChatGPT 帳號，也可以使用這台電腦上安裝的 AI 模型（PC 模型）。若有 PC 模型，Hanpan 啟動時會自動找到並連線。',
+    hpOnbBody:
+      '用 AI Word、AI Excel、AI PowerPoint 和 AI Hangul 製作文件，PDF、心智圖、設計板、AI Photo 與 AI Illustration 也都能在同一處使用。',
+    hpOnbConnectBody:
+      'AI 可以使用你登入的 Claude 或 ChatGPT 帳號，也可以使用這台電腦上安裝的 AI 模型（PC 模型）。若有 PC 模型，Hanpan 啟動時會自動找到並連線。',
     hpOnbDoneNotConnected: 'AI 尚未連線。你隨時可以在「設定 → AI」中以帳號登入或連接 PC 模型。',
     hpOnbDoneBody: '從首頁的心智圖開始吧。整理好的內容可以接著做成 HWP 報告或簡報。',
     onbBack: '上一步',
     onbConnectTitle: '連接 AI',
-    onbSkipAsk: 'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
+    onbSkipAsk:
+      'Skip the guide? You can see it again from Settings → General → Show the first-run guide again.',
     onbSkipKeep: 'Keep going',
     setOnboardingAgain: 'Show the first-run guide again',
     setOnboardingAgainOpen: 'Show',

@@ -6,13 +6,13 @@ Mỗi trình soạn thảo có tổ hợp phím riêng, và chỉ vài tổ hợ
 
 ### Ở mọi nơi trong Hanpan (thẻ và cửa sổ)
 
-| Hành động | Windows / Linux | macOS |
-| --- | --- | --- |
-| Thẻ tiếp theo / thẻ trước | Ctrl+Tab / Ctrl+Shift+Tab | ⌃Tab / ⌃⇧Tab |
-| Đóng thẻ hiện tại (ở Trang chủ: đóng cửa sổ, hỏi trước nếu còn tài liệu mở) | Ctrl+W | ⌘W |
-| Mở Cài đặt — ở Trang chủ | Ctrl+, | ⌘, |
-| Mở hướng dẫn sử dụng | F1 | F1 |
-| Chọn thẻ trên dải thẻ — khi thẻ đang được chọn | ← / →, Enter, Delete (đóng) | ← / →, Enter, Delete (đóng) |
+| Hành động                                                                   | Windows / Linux             | macOS                       |
+| --------------------------------------------------------------------------- | --------------------------- | --------------------------- |
+| Thẻ tiếp theo / thẻ trước                                                   | Ctrl+Tab / Ctrl+Shift+Tab   | ⌃Tab / ⌃⇧Tab                |
+| Đóng thẻ hiện tại (ở Trang chủ: đóng cửa sổ, hỏi trước nếu còn tài liệu mở) | Ctrl+W                      | ⌘W                          |
+| Mở Cài đặt — ở Trang chủ                                                    | Ctrl+,                      | ⌘,                          |
+| Mở hướng dẫn sử dụng                                                        | F1                          | F1                          |
+| Chọn thẻ trên dải thẻ — khi thẻ đang được chọn                              | ← / →, Enter, Delete (đóng) | ← / →, Enter, Delete (đóng) |
 
 ### Mọi trình soạn thảo
 

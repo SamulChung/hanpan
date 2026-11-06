@@ -244,19 +244,16 @@ export function FindPanel({
   )
 
   // the target field may not be mounted yet when the tab is switching: retry next frame
-  const focusTabInput = useCallback(
-    (which: FindTab) => {
-      // Find and Replace both start in the find field (Word: caret in "Find what")
-      const pick = () => (which === 'goto' ? gotoInputRef.current : inputRef.current)
-      const focus = (el: HTMLElement | null) => {
-        el?.focus()
-        if (el instanceof HTMLInputElement) el.select()
-        return !!el
-      }
-      if (!focus(pick())) requestAnimationFrame(() => focus(pick()))
-    },
-    [],
-  )
+  const focusTabInput = useCallback((which: FindTab) => {
+    // Find and Replace both start in the find field (Word: caret in "Find what")
+    const pick = () => (which === 'goto' ? gotoInputRef.current : inputRef.current)
+    const focus = (el: HTMLElement | null) => {
+      el?.focus()
+      if (el instanceof HTMLInputElement) el.select()
+      return !!el
+    }
+    if (!focus(pick())) requestAnimationFrame(() => focus(pick()))
+  }, [])
 
   useEffect(() => {
     focusTabInput(tab)
