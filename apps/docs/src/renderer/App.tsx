@@ -6399,13 +6399,22 @@ export function App() {
   useEffect(() => {
     const parsed = doc?.parsed
     const upserts = Object.values(styleUpserts)
-    if (!parsed || upserts.length === 0) {
+    // a theme picked in this session re-resolves the styles that reference theme
+    // slots, so Design > Themes / Fonts / Colors show in the editor right away
+    const theme =
+      themeFontsDirty || themeColorsDirty
+        ? {
+            fonts: themeFontsDirty ? themeFonts : null,
+            colors: themeColorsDirty ? themeColors : null,
+          }
+        : undefined
+    if (!parsed || (upserts.length === 0 && !theme)) {
       liveStylesRef.current = null
       setLiveStyles(null)
       return
     }
     let cancelled = false
-    previewFontSettings(parsed, upserts, defaultFonts)
+    previewFontSettings(parsed, upserts, defaultFonts, theme)
       .then((r) => {
         // a document switch or a save re-parse while resolving: their open path already set fresh styles
         if (cancelled || fileCtxRef.current.doc?.parsed !== parsed) return
@@ -6418,7 +6427,16 @@ export function App() {
     return () => {
       cancelled = true
     }
-  }, [doc, styleUpserts, defaultFonts, editor])
+  }, [
+    doc,
+    styleUpserts,
+    defaultFonts,
+    editor,
+    themeFonts,
+    themeFontsDirty,
+    themeColors,
+    themeColorsDirty,
+  ])
   // shallow-stable snapshot of every editor read the ribbon displays: caret moves
   // that change none of it keep the reference, so the memoized Ribbon skips
   const formatState = useShallowStable(

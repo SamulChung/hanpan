@@ -965,4 +965,9 @@ export const it = {
   ribbonMailingsMerged: '{n} documenti uniti',
   ribbonMailingsMergeFailed: 'Unione non riuscita',
   ribbonMailingsClose: 'Chiudi',
+  ribbonThemeFontOfficeKo: 'Office (Malgun Gothic)',
+  ribbonThemeFontMalgun: 'Malgun Gothic',
+  ribbonThemeFontPretendard: 'Pretendard',
+  ribbonThemeFontNoto: 'Noto Sans KR · Noto Serif KR',
+  ribbonThemeFontDotumBatang: 'Dotum · Batang',
 } satisfies Record<keyof typeof zh, string>

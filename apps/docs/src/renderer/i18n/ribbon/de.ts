@@ -963,4 +963,9 @@ export const de = {
   ribbonMailingsMerged: '{n} Dokumente zusammengeführt',
   ribbonMailingsMergeFailed: 'Die Zusammenführung ist fehlgeschlagen',
   ribbonMailingsClose: 'Schließen',
+  ribbonThemeFontOfficeKo: 'Office (Malgun Gothic)',
+  ribbonThemeFontMalgun: 'Malgun Gothic',
+  ribbonThemeFontPretendard: 'Pretendard',
+  ribbonThemeFontNoto: 'Noto Sans KR · Noto Serif KR',
+  ribbonThemeFontDotumBatang: 'Dotum · Batang',
 } satisfies Record<keyof typeof zh, string>

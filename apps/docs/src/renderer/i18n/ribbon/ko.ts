@@ -506,7 +506,7 @@ export const ko = {
   ribbonShapeCloudCallout: '구름 모양 설명선',
   // Design
   ribbonThemes: '테마',
-  ribbonThemesTip: '문서 테마(글꼴 + 색) 변경. 저장 후 Word에서 적용됨',
+  ribbonThemesTip: '문서 테마(글꼴 + 색) 변경. 테마 글꼴·색을 쓰는 글자가 바로 바뀝니다',
   ribbonFonts: '글꼴',
   ribbonThemeFontsTip: '테마 글꼴(제목 + 본문 글꼴 쌍) 변경',
   ribbonColors: '색',
@@ -966,4 +966,9 @@ export const ko = {
   ribbonMailingsMerged: '문서 {n}개를 병합했습니다',
   ribbonMailingsMergeFailed: '병합에 실패했습니다',
   ribbonMailingsClose: '닫기',
+  ribbonThemeFontOfficeKo: 'Office (맑은 고딕)',
+  ribbonThemeFontMalgun: '맑은 고딕',
+  ribbonThemeFontPretendard: 'Pretendard',
+  ribbonThemeFontNoto: '본고딕 · 본명조 (Noto)',
+  ribbonThemeFontDotumBatang: '돋움 · 바탕',
 } satisfies Record<keyof typeof zh, string>

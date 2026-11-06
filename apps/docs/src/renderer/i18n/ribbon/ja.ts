@@ -968,4 +968,9 @@ export const ja = {
   ribbonMailingsMerged: '{n} 個のドキュメントを差し込みました',
   ribbonMailingsMergeFailed: '差し込みに失敗しました',
   ribbonMailingsClose: '閉じる',
+  ribbonThemeFontOfficeKo: 'Office (Malgun Gothic)',
+  ribbonThemeFontMalgun: 'Malgun Gothic',
+  ribbonThemeFontPretendard: 'Pretendard',
+  ribbonThemeFontNoto: 'Noto Sans KR · Noto Serif KR',
+  ribbonThemeFontDotumBatang: 'Dotum · Batang',
 } satisfies Record<keyof typeof zh, string>

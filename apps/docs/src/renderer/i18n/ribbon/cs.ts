@@ -948,4 +948,9 @@ export const cs = {
   ribbonMailingsMerged: 'Sloučeno dokumentů: {n}',
   ribbonMailingsMergeFailed: 'Sloučení se nezdařilo',
   ribbonMailingsClose: 'Zavřít',
+  ribbonThemeFontOfficeKo: 'Office (Malgun Gothic)',
+  ribbonThemeFontMalgun: 'Malgun Gothic',
+  ribbonThemeFontPretendard: 'Pretendard',
+  ribbonThemeFontNoto: 'Noto Sans KR · Noto Serif KR',
+  ribbonThemeFontDotumBatang: 'Dotum · Batang',
 } satisfies Record<keyof typeof zh, string>

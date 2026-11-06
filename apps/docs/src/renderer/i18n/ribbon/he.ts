@@ -938,4 +938,9 @@ export const he = {
   ribbonMailingsMerged: 'מוזגו {n} מסמכים',
   ribbonMailingsMergeFailed: 'המיזוג נכשל',
   ribbonMailingsClose: 'סגירה',
+  ribbonThemeFontOfficeKo: 'Office (Malgun Gothic)',
+  ribbonThemeFontMalgun: 'Malgun Gothic',
+  ribbonThemeFontPretendard: 'Pretendard',
+  ribbonThemeFontNoto: 'Noto Sans KR · Noto Serif KR',
+  ribbonThemeFontDotumBatang: 'Dotum · Batang',
 } satisfies Record<keyof typeof zh, string>
