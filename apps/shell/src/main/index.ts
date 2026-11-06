@@ -1467,7 +1467,7 @@ const tMain = createI18n({
     untitledPdf: 'PDF chưa có tiêu đề',
     menuNewSlide: 'AI Slides',
     menuNewMarkdown: 'AI Markdown',
-    menuNewHtml: 'AI HTML',
+    menuNewHtml: 'AI tài liệu web',
     menuNewMindmap: 'Sơ đồ tư duy',
     menuNewHwp: 'AI HWP',
     menuNewTemplates: 'Mẫu Hanpan…',
