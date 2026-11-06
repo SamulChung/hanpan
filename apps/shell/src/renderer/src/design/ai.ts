@@ -831,7 +831,7 @@ function inLanguage(text: string, lang: string): boolean {
       return (
         /[a-z]/i.test(text) &&
         !VIETNAMESE.test(text) &&
-        !/[^\u0000-\u024f\s\p{P}\p{S}\d]/u.test(text)
+        !/[^\p{Script=Latin}\s\p{P}\p{S}\d]/u.test(text)
       )
     default:
       // other Latin-script languages cannot be told apart by their letters
