@@ -556,6 +556,17 @@ const DISPLAY_PATCHES = {
       },
     ]),
   ),
+  'studio-display-history-dates': {
+    file: /[\\/]rhwp-studio[\\/]src[\\/]ui[\\/]history-dialog\.ts$/,
+    edits: [
+      // the saved-history list and a snapshot's default note: dates in the UI language
+      {
+        find: "toLocaleString('ko-KR')",
+        replace: "toLocaleString(t('hanpan.localeTag'))",
+        count: 2,
+      },
+    ],
+  },
   'studio-display-compare-result-window': {
     file: /[\\/]rhwp-studio[\\/]src[\\/]ui[\\/]compare-result-window\.ts$/,
     edits: [

@@ -471,6 +471,12 @@ describe('studio text with no catalog key', () => {
     for (const key of used) expect(APP_STRINGS.ko, key).toHaveProperty([key])
   })
 
+  it.skipIf(!fetched)('writes dates in the UI language, not always in Korean', () => {
+    for (const path of sourceFiles()) {
+      expect(patched(`src/${path}`), path).not.toMatch(/toLocale(?:Date|Time)?String\('ko-KR'\)/)
+    }
+  })
+
   it.skipIf(!fetched)('shows style names in the UI language in the style dialog', () => {
     const code = patched('src/ui/style-dialog.ts')
     expect(code).toContain('name.textContent = styleDisplayName(s, getLocale());')
