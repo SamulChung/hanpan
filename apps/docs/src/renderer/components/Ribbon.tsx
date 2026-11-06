@@ -67,7 +67,7 @@ import { getActiveSubEditor } from '../editor/active-editor'
 import { wordUnitAt } from '../editor/word-range'
 import {
   BULLET_LIBRARY,
-  MULTILEVEL_LIBRARY,
+  multilevelLibraryFor,
   NUMBER_LIBRARY,
   bulletPresetLevels,
   numberPresetLevels,
@@ -2653,7 +2653,7 @@ function RibbonInner({
                           ? 'table-style-card active'
                           : 'table-style-card'
                       }
-                      data-tip={t('ribbonApplyTableStyleTip', { name: info.name })}
+                      data-tip={t('ribbonApplyTableStyleTip', { name: styleLabel(info, t) })}
                       onClick={() =>
                         chain().updateAttributes('docTable', { tblStyleId: info.styleId }).run()
                       }
@@ -2669,7 +2669,7 @@ function RibbonInner({
                             : undefined,
                         }}
                       />
-                      <span>{info.name}</span>
+                      <span>{styleLabel(info, t)}</span>
                     </button>
                   ))}
               </div>
@@ -2969,7 +2969,7 @@ function RibbonInner({
               <div className="ribbon-group-label">{t('ribbonGroupRowsCols')}</div>
             </div>
             <div className="ribbon-sep" />
-            <div className="table-tool-group">
+            <div className="table-tool-group table-tool-merge">
               <div className="table-tool-row">
                 <button disabled={!fs.canMergeCells} onClick={() => runTableCommand(mergeCells)}>
                   <IconMergeCells />
@@ -3935,7 +3935,7 @@ function RibbonInner({
                           multiPreview,
                         )}
                         <div className="list-gallery-title">{t('ribbonListLibraryTitle')}</div>
-                        {MULTILEVEL_LIBRARY.map((levels, i) => (
+                        {multilevelLibraryFor(lang).map((levels, i) => (
                           <button
                             key={i}
                             className="list-gallery-card list-gallery-card-multi"

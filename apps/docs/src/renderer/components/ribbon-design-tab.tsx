@@ -145,6 +145,11 @@ export function themeFontPresets(lang: string): Array<{ nameKey: StringKey; font
   ]
 }
 
+/** English watermark words offered beside the translated ones (Korean offices use the Korean words) */
+export function watermarkPresetTextsFor(lang: string): string[] {
+  return lang === 'en' || lang === 'ko' ? [] : ['CONFIDENTIAL', 'DRAFT']
+}
+
 /** Themes: a Korean UI swaps the Chinese East Asian face for 맑은 고딕 (Korean Office does the same) */
 export function themePresets(lang: string): typeof THEME_PRESETS {
   if (lang !== 'ko') return THEME_PRESETS
@@ -276,7 +281,7 @@ export function DesignTab({
   const odtOff = useOdtSession()
   const watermarkPresets = [
     ...WATERMARK_KEYS.map((key) => t(key)),
-    ...(lang !== 'en' ? ['CONFIDENTIAL', 'DRAFT'] : []),
+    ...watermarkPresetTextsFor(lang),
   ]
   const [watermarkPromptOpen, setWatermarkPromptOpen] = useState(false)
   const applyTheme = (preset: (typeof THEME_PRESETS)[number]) => {

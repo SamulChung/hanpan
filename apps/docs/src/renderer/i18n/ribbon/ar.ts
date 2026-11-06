@@ -951,4 +951,5 @@ export const ar = {
   ribbonThemeFontPretendard: 'Pretendard',
   ribbonThemeFontNoto: 'Noto Sans KR · Noto Serif KR',
   ribbonThemeFontDotumBatang: 'Dotum · Batang',
+  ribbonStyleTableGrid: 'Table Grid',
 } satisfies Record<keyof typeof zh, string>

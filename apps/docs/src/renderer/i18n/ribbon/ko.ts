@@ -971,4 +971,5 @@ export const ko = {
   ribbonThemeFontPretendard: 'Pretendard',
   ribbonThemeFontNoto: '본고딕 · 본명조 (Noto)',
   ribbonThemeFontDotumBatang: '돋움 · 바탕',
+  ribbonStyleTableGrid: '표 눈금',
 } satisfies Record<keyof typeof zh, string>

@@ -935,4 +935,5 @@ export const zhTW = {
   ribbonThemeFontPretendard: 'Pretendard',
   ribbonThemeFontNoto: 'Noto Sans KR · Noto Serif KR',
   ribbonThemeFontDotumBatang: 'Dotum · Batang',
+  ribbonStyleTableGrid: '表格格線',
 } satisfies Record<keyof typeof zh, string>

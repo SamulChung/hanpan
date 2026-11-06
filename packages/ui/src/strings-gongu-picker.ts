@@ -665,8 +665,8 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     confirm: '這張圖片有使用條件。\n{conditions}\n仍要插入嗎？',
   },
   vi: {
-    title: 'Hình ảnh Gongu',
-    find: 'Tìm trong Gongu',
+    title: 'Ảnh công cộng',
+    find: 'Tìm ảnh trong kho ảnh công cộng Hàn Quốc (Gongu)',
     placeholder: 'Tên tác phẩm hoặc tác giả (vd: 호랑이, 김홍도)',
     search: 'Tìm',
     searching: 'Đang tìm…',
@@ -675,7 +675,7 @@ export const GONGU_PICKER_STRINGS: Record<Lang, GonguPickerStrings> = {
     more: 'Xem thêm',
     insert: 'Chèn',
     inserting: 'Đang chèn…',
-    noKey: 'Chưa có khóa Gongu. Hãy nhập khóa trong Cài đặt → Tích hợp → "Hình ảnh Gongu".',
+    noKey: 'Chưa có khóa Gongu. Hãy nhập khóa trong Cài đặt → Tích hợp → "Ảnh công cộng".',
     footer:
       'Tác phẩm Gongu do Ủy ban Bản quyền Hàn Quốc cung cấp. Nguồn của hình được chèn sẽ được ghi tự động.',
     pictureFailed: 'Không lấy được hình ảnh. Hãy thử lại sau giây lát.',

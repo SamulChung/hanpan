@@ -973,4 +973,5 @@ export const ja = {
   ribbonThemeFontPretendard: 'Pretendard',
   ribbonThemeFontNoto: 'Noto Sans KR · Noto Serif KR',
   ribbonThemeFontDotumBatang: 'Dotum · Batang',
+  ribbonStyleTableGrid: '表 (格子)',
 } satisfies Record<keyof typeof zh, string>

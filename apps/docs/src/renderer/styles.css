@@ -2244,8 +2244,10 @@ th.cell-rev-del {
 }
 
 .layout-num > span:first-child {
-  width: 44px;
+  /* one line: "왼쪽 들여쓰기" folded into three clipped lines in a 44px box */
+  min-width: 44px;
   text-align: right;
+  white-space: nowrap;
   color: var(--text-dim);
 }
 
@@ -2346,6 +2348,64 @@ th.cell-rev-del {
 
   .ribbon-group-styles {
     min-width: 105px;
+  }
+
+  /* Insert: the Pages group stacks as three small rows (Word does the same when
+     narrow), so Equation at the end of the tab stays on screen at 1366 */
+  .ribbon:not(.ribbon-compact) .ribbon-group-pages > .ribbon-group-items {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 1px;
+  }
+
+  .ribbon:not(.ribbon-compact) .ribbon-group-pages .rb-big {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 5px;
+    width: 100%;
+    min-height: 0;
+    padding: 2px 8px 2px 4px;
+  }
+
+  .ribbon:not(.ribbon-compact) .ribbon-group-pages .rb-big-icon {
+    flex: none;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .ribbon:not(.ribbon-compact) .ribbon-group-pages .rb-big-icon svg:first-child {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Table Layout (1514px at 1366): the AutoFit button drops its current-mode
+     line (the menu shows it) and the AI presets keep only their icons */
+  .ribbon:not(.ribbon-compact) .table-autofit-button .table-command-copy small {
+    display: none;
+  }
+
+  .ribbon:not(.ribbon-compact) .table-ribbon-body .ribbon-group-ai .ai-preset > span:last-child {
+    display: none;
+  }
+
+  .ribbon:not(.ribbon-compact) .table-ribbon-body .ribbon-group-ai .ai-preset {
+    padding: 2px;
+  }
+
+  /* Merge / Split / Split Table stack as three 20px rows, like Select / Gridlines / Properties */
+  .ribbon:not(.ribbon-compact) .table-tool-merge > .table-tool-row {
+    display: grid;
+    grid-template-rows: repeat(3, 20px);
+    align-content: center;
+    gap: 2px;
+  }
+
+  .ribbon:not(.ribbon-compact) .table-tool-merge > .table-tool-row > button {
+    min-height: 20px;
+    padding-top: 0;
+    padding-bottom: 0;
   }
 }
 

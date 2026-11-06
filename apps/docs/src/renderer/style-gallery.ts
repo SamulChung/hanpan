@@ -170,6 +170,7 @@ const BUILT_IN_LABELS: Record<string, StringKey> = {
   'intense reference': 'ribbonStyleIntenseReference',
   'book title': 'ribbonStyleBookTitle',
   'list paragraph': 'ribbonStyleListParagraph',
+  'table grid': 'ribbonStyleTableGrid',
 }
 
 export function styleLabel(info: Pick<StyleInfo, 'name'>, t: TFunc): string {

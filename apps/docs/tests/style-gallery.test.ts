@@ -186,6 +186,8 @@ describe('quick style gallery (Word order and hiding)', () => {
     expect(styleLabel(styles.get('Heading1')!, t as never)).toBe('ribbonStyleHeading1')
     expect(styleLabel({ name: 'heading 7' }, t as never)).toBe('H 7')
     expect(styleLabel({ name: 'caption' }, t as never)).toBe('Caption')
+    // 0.17 v2 #28: the table style gallery names Word's built-in grid in the UI language
+    expect(styleLabel({ name: 'Table Grid' }, t as never)).toBe('ribbonStyleTableGrid')
     const intense = stylePreviewCss(styles.get('IntenseEmphasis')!)
     expect(intense.fontStyle).toBe('italic')
     expect(intense.color).toBe('#2F5496')

@@ -957,4 +957,5 @@ export const zh = {
   ribbonThemeFontPretendard: 'Pretendard',
   ribbonThemeFontNoto: 'Noto Sans KR · Noto Serif KR',
   ribbonThemeFontDotumBatang: 'Dotum · Batang',
+  ribbonStyleTableGrid: '网格型',
 }
