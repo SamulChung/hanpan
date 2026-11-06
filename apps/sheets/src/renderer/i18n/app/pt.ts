@@ -295,6 +295,7 @@ export const pt = {
     'Tabelas Dinâmicas/tabelas não podem ser salvas junto com novas planilhas e alterações de linhas/colunas — salve a estrutura primeiro e depois adicione as Tabelas Dinâmicas/tabelas.',
   appSaveSecondCanceled:
     'A segunda fase de salvamento foi cancelada — a estrutura foi salva; Tabelas Dinâmicas/tabelas/nomes definidos ainda não foram gravados.',
+  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
   appSavedTwoPhase: 'Salvo.',
   appSaveSecondFailed:
     'A estrutura foi salva, mas a segunda fase (Tabelas Dinâmicas/tabelas/nomes definidos) falhou: {reason}',

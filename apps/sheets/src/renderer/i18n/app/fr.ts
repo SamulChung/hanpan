@@ -305,6 +305,7 @@ export const fr = {
     "Les tableaux croisés dynamiques/tableaux ne peuvent pas être enregistrés en même temps que de nouvelles feuilles plus des modifications de lignes/colonnes — enregistrez d'abord la structure, puis ajoutez-les.",
   appSaveSecondCanceled:
     "La deuxième phase d'enregistrement a été annulée — la structure est enregistrée ; les tableaux croisés dynamiques/tableaux/noms définis ne sont pas encore écrits.",
+  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
   appSavedTwoPhase: 'Enregistré.',
   appSaveSecondFailed:
     'La structure est enregistrée, mais la deuxième phase (tableaux croisés dynamiques/tableaux/noms définis) a échoué : {reason}',

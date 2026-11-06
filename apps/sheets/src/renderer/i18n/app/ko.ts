@@ -278,6 +278,7 @@ export const ko = {
     '피벗 테이블/표는 새 시트 및 행/열 변경과 한 번에 저장할 수 없습니다. 먼저 구조를 저장한 후 피벗 테이블/표를 추가하십시오.',
   appSaveSecondCanceled:
     '두 번째 저장 단계가 취소되었습니다. 구조는 저장되었지만 피벗 테이블/표/이름 범위는 아직 기록되지 않았습니다.',
+  appReloadInputPaused: "저장한 통합 문서를 다시 불러오는 중입니다. 잠시 뒤에 입력하세요.",
   appSavedTwoPhase: '저장했습니다.',
   appSaveSecondFailed:
     '구조는 저장되었지만 두 번째 단계(피벗 테이블/표/이름 범위)가 실패했습니다: {reason}',

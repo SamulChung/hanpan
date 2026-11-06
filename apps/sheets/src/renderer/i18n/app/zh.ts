@@ -245,6 +245,7 @@ export const zh = {
   appSaveHeldStranded:
     '透视表/表格与新建工作表 + 行列变更没法一次保存——先保存一次结构，再添加透视表/表格。',
   appSaveSecondCanceled: '第二段保存被取消——结构已保存，透视表/表格/命名区域还未写入。',
+  appReloadInputPaused: "正在重新加载已保存的工作簿，请稍后再输入。",
   appSavedTwoPhase: '已保存。',
   appSaveSecondFailed: '结构已保存，但第二段（透视表/表格/命名区域）失败：{reason}',
   // AI session / status bar

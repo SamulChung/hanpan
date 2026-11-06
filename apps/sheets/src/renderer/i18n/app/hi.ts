@@ -277,6 +277,7 @@ export const hi = {
     'पिवट टेबल/तालिकाएँ नई शीट और पंक्ति/स्तंभ परिवर्तनों के साथ एक बार में सहेजी नहीं जा सकतीं — पहले संरचना सहेजें, फिर पिवट टेबल/तालिकाएँ जोड़ें।',
   appSaveSecondCanceled:
     'दूसरा सहेजन चरण रद्द किया गया — संरचना सहेजी गई; पिवट टेबल/तालिकाएँ/परिभाषित नाम अभी नहीं लिखे गए।',
+  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
   appSavedTwoPhase: 'सहेजा गया।',
   appSaveSecondFailed:
     'संरचना सहेजी गई, लेकिन दूसरा चरण (पिवट टेबल/तालिकाएँ/परिभाषित नाम) विफल रहा: {reason}',

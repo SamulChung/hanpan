@@ -270,6 +270,7 @@ export const ar = {
     'لا يمكن حفظ الجداول المحورية/الجداول مع أوراق جديدة وتغييرات صفوف/أعمدة معًا — احفظ البنية أولاً ثم أضفها.',
   appSaveSecondCanceled:
     'أُلغيت مرحلة الحفظ الثانية — حُفظت البنية؛ لم تُكتب الجداول المحورية/الجداول/الأسماء المعرفة بعد.',
+  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
   appSavedTwoPhase: 'تم الحفظ.',
   appSaveSecondFailed:
     'حُفظت البنية لكن المرحلة الثانية (الجداول المحورية/الجداول/الأسماء المعرفة) فشلت: {reason}',

@@ -270,6 +270,7 @@ export const en = {
     'PivotTables/tables cannot be saved together with new sheets plus row/column changes — save the structure first, then add the PivotTables/tables.',
   appSaveSecondCanceled:
     'The second save phase was canceled — the structure is saved; PivotTables/tables/defined names are not written yet.',
+  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
   appSavedTwoPhase: 'Saved.',
   appSaveSecondFailed:
     'The structure is saved, but the second phase (PivotTables/tables/defined names) failed: {reason}',

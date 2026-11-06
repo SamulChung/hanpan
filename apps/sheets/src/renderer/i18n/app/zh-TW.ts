@@ -246,6 +246,7 @@ export const zhTW = {
   appSaveHeldStranded:
     '樞紐分析表/表格與新增工作表 + 列欄變更沒辦法一次儲存——先儲存一次結構，再新增樞紐分析表/表格。',
   appSaveSecondCanceled: '第二段儲存被取消——結構已儲存，樞紐分析表/表格/已定義名稱尚未寫入。',
+  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
   appSavedTwoPhase: '已儲存。',
   appSaveSecondFailed: '結構已儲存，但第二段（樞紐分析表/表格/已定義名稱）失敗：{reason}',
   appReadyInitial: '就緒——可使用本機確定性 AI 命令。',

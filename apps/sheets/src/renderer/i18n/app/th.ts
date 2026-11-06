@@ -268,6 +268,7 @@ export const th = {
     'บันทึก PivotTable/ตารางพร้อมกับแผ่นงานใหม่บวกการเปลี่ยนแถว/คอลัมน์ในครั้งเดียวไม่ได้ — บันทึกโครงสร้างก่อน แล้วจึงเพิ่ม PivotTable/ตาราง',
   appSaveSecondCanceled:
     'การบันทึกช่วงที่สองถูกยกเลิก — โครงสร้างถูกบันทึกแล้ว แต่ PivotTable/ตาราง/ชื่อที่กำหนดยังไม่ถูกเขียน',
+  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
   appSavedTwoPhase: 'บันทึกแล้ว',
   appSaveSecondFailed:
     'โครงสร้างถูกบันทึกแล้ว แต่ช่วงที่สอง (PivotTable/ตาราง/ชื่อที่กำหนด) ล้มเหลว: {reason}',

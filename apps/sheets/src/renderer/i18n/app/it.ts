@@ -297,6 +297,7 @@ export const it = {
     'Le tabelle pivot/tabelle non possono essere salvate insieme a nuovi fogli e a modifiche di righe/colonne — salva prima la struttura, poi aggiungi le tabelle pivot/tabelle.',
   appSaveSecondCanceled:
     'La seconda fase di salvataggio è stata annullata — la struttura è salvata; tabelle pivot/tabelle/nomi definiti non sono ancora stati scritti.',
+  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
   appSavedTwoPhase: 'Salvato.',
   appSaveSecondFailed:
     'La struttura è salvata, ma la seconda fase (tabelle pivot/tabelle/nomi definiti) non è riuscita: {reason}',

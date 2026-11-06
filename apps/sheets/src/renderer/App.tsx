@@ -69,6 +69,7 @@ import {
 import { isNumericIdentifierText } from './cell-warning'
 import { consumePendingUndoCarry, undoStackDepth } from './undo-carry'
 import { createSaveGate, shouldRunSaveTick } from './save-scheduler'
+import { createReloadInputGuard, type ReloadInputGuard } from './reload-input-guard'
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import {
   useAutoSavePref,
@@ -695,6 +696,18 @@ export function App({
   const autoSaveRef = useRef(autoSave)
   autoSaveRef.current = autoSave
   const saveGateRef = useRef(createSaveGate())
+  // 저장 뒤 다시 열기 동안 격자 입력을 막는 문지기(reload-input-guard.ts)
+  const reloadInputGuardRef = useRef<ReloadInputGuard | null>(null)
+  useEffect(() => {
+    const guard = createReloadInputGuard(window, {
+      onBlocked: () => setMessage(t('appReloadInputPaused')),
+    })
+    reloadInputGuardRef.current = guard
+    return () => {
+      guard.dispose()
+      if (reloadInputGuardRef.current === guard) reloadInputGuardRef.current = null
+    }
+  }, [])
   // AutoSave tick (docs/slides parity): every 30 s and on window blur, flush
   // pending edits of the open workbook. The journal is read at tick time so
   // the interval stays stable; demo mode has no backing file and is skipped.
@@ -1130,6 +1143,7 @@ export function App({
       setMessage,
       openLazyWorkbook,
       setPendingEdits,
+      holdInput: () => reloadInputGuardRef.current?.hold() ?? (() => undefined),
       readCells: (addresses, sheetId) => readCellsImpl(readContext(), addresses, sheetId),
       stashViewRestore: (view) => {
         viewRestoreRef.current = view

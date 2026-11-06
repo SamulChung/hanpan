@@ -289,6 +289,7 @@ export const pl = {
     'Tabel przestawnych/tabel nie można zapisać razem z nowymi arkuszami i zmianami wierszy/kolumn — najpierw zapisz strukturę, a potem dodaj tabele przestawne/tabele.',
   appSaveSecondCanceled:
     'Druga faza zapisu została anulowana — struktura jest zapisana; tabele przestawne/tabele/zdefiniowane nazwy nie zostały jeszcze zapisane.',
+  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
   appSavedTwoPhase: 'Zapisano.',
   appSaveSecondFailed:
     'Struktura została zapisana, ale druga faza (tabele przestawne/tabele/zdefiniowane nazwy) nie powiodła się: {reason}',

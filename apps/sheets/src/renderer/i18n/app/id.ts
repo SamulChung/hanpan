@@ -278,6 +278,7 @@ export const id = {
     'PivotTable/tabel tidak dapat disimpan bersama lembar baru plus perubahan baris/kolom — simpan strukturnya dahulu, lalu tambahkan PivotTable/tabel.',
   appSaveSecondCanceled:
     'Fase penyimpanan kedua dibatalkan — struktur sudah tersimpan; PivotTable/tabel/nama yang ditentukan belum ditulis.',
+  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
   appSavedTwoPhase: 'Disimpan.',
   appSaveSecondFailed:
     'Struktur sudah tersimpan, tetapi fase kedua (PivotTable/tabel/nama yang ditentukan) gagal: {reason}',

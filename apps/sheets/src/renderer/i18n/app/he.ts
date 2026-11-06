@@ -258,6 +258,7 @@ export const he = {
     'לא ניתן לשמור טבלאות ציר/טבלאות יחד עם גיליונות חדשים ושינויי שורות/עמודות — שמור תחילה את המבנה, ואז הוסף את טבלאות הציר/הטבלאות.',
   appSaveSecondCanceled:
     'שלב השמירה השני בוטל — המבנה נשמר; טבלאות ציר/טבלאות/שמות מוגדרים טרם נכתבו.',
+  appReloadInputPaused: "Reloading the saved workbook — typing resumes in a moment.",
   appSavedTwoPhase: 'נשמר.',
   appSaveSecondFailed: 'המבנה נשמר, אך השלב השני (טבלאות ציר/טבלאות/שמות מוגדרים) נכשל: {reason}',
   appReadyInitial: 'מוכן לפקודת AI מקומית ודטרמיניסטית.',

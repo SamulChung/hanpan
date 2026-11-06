@@ -274,6 +274,7 @@ export const vi = {
     'Không thể lưu PivotTable/bảng cùng lúc với các trang tính mới và thay đổi hàng/cột — hãy lưu cấu trúc trước, sau đó thêm PivotTable/bảng.',
   appSaveSecondCanceled:
     'Giai đoạn lưu thứ hai đã bị hủy — cấu trúc đã được lưu; PivotTable/bảng/tên đã xác định vẫn chưa được ghi.',
+  appReloadInputPaused: "Đang tải lại sổ làm việc đã lưu — vui lòng nhập lại sau giây lát.",
   appSavedTwoPhase: 'Đã lưu.',
   appSaveSecondFailed:
     'Cấu trúc đã được lưu, nhưng giai đoạn thứ hai (PivotTable/bảng/tên đã xác định) thất bại: {reason}',
