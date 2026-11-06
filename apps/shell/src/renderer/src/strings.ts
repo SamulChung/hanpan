@@ -527,9 +527,8 @@ export const strings = {
       'GenOffice 依据 Apache License 2.0 按“原样”提供，不作任何保证。AI 生成的内容可能有误，请核实后再使用。确认自己有权使用这些内容是使用者的责任。',
     viewOnGitHub: '在 GitHub 上查看',
     setFeedback: '发送反馈',
-    setFeedbackDesc:
-      '意见通过一份简短的 Google 问卷收集。应用本身不会发送任何内容，也不会包含文档内容。',
-    feedbackOpen: '打开问卷',
+    setFeedbackDesc: '用邮件应用发送意见。邮件中只写入版本和操作系统，不包含文档内容。',
+    feedbackOpen: '写邮件',
     setChange: '更改',
     // Dates
     today: '今天',
@@ -1212,9 +1211,8 @@ export const strings = {
       'GenOffice is provided as is, without warranties of any kind, under the Apache License 2.0. AI-generated content can be wrong: check it before you use it. Making sure you have the right to use it is up to you.',
     viewOnGitHub: 'View on GitHub',
     setFeedback: 'Send feedback',
-    setFeedbackDesc:
-      'Feedback is collected through a short Google survey. The app sends nothing itself, and document contents are never included.',
-    feedbackOpen: 'Open survey',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: 'Change',
     today: 'Today',
     yesterday: 'Yesterday',
@@ -1906,9 +1904,8 @@ export const strings = {
       'GenOffice được cung cấp theo nguyên trạng, không có bất kỳ bảo đảm nào, theo Apache License 2.0. Nội dung do AI tạo có thể sai, hãy kiểm tra trước khi dùng. Việc xác nhận bạn có quyền sử dụng nội dung đó là trách nhiệm của bạn.',
     viewOnGitHub: 'Xem trên GitHub',
     setFeedback: 'Gửi phản hồi',
-    setFeedbackDesc:
-      'Phản hồi được thu thập qua một bảng hỏi Google ngắn. Ứng dụng không tự gửi gì và không bao giờ kèm nội dung tài liệu.',
-    feedbackOpen: 'Mở bảng hỏi',
+    setFeedbackDesc: 'Gửi góp ý bằng ứng dụng thư. Thư chỉ ghi phiên bản và hệ điều hành, không bao giờ có nội dung tài liệu.',
+    feedbackOpen: 'Viết thư',
     setChange: 'Thay đổi',
     today: 'Hôm nay',
     yesterday: 'Hôm qua',
@@ -2615,9 +2612,8 @@ export const strings = {
       'GenOffice は Apache License 2.0 に基づき「現状のまま」提供され、いかなる保証もありません。AI が作成した内容は誤っている場合があるため、確認してからご利用ください。その内容を使用する権利があるかどうかの確認は、利用者の責任です。',
     viewOnGitHub: 'GitHub で見る',
     setFeedback: 'フィードバックを送る',
-    setFeedbackDesc:
-      'ご意見は短い Google アンケートで受け付けます。アプリ自体は何も送信せず、文書の内容も含まれません。',
-    feedbackOpen: 'アンケートを開く',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: '変更',
     // Dates
     today: '今日',
@@ -3311,9 +3307,8 @@ export const strings = {
       'GenOffice는 Apache License 2.0에 따라 있는 그대로 제공되며, 어떤 보증도 하지 않습니다. AI가 만든 내용은 틀릴 수 있으니 확인한 뒤 쓰세요. 그 내용을 쓸 권리가 있는지 확인하는 일은 쓰는 사람의 몫입니다.',
     viewOnGitHub: 'GitHub에서 보기',
     setFeedback: '의견 보내기',
-    setFeedbackDesc:
-      '의견은 짧은 Google 설문으로 받습니다. 앱은 아무것도 보내지 않으며, 문서 내용은 포함되지 않습니다.',
-    feedbackOpen: '설문 열기',
+    setFeedbackDesc: '메일 앱으로 의견을 보냅니다. 버전과 운영체제만 메일에 적히고, 문서 내용은 들어가지 않습니다.',
+    feedbackOpen: '메일 쓰기',
     setChange: '변경',
     // Dates
     today: '오늘',
@@ -4026,9 +4021,8 @@ export const strings = {
       'GenOffice est fourni « en l’état », sans aucune garantie, selon l’Apache License 2.0. Le contenu généré par l’IA peut être erroné : vérifiez-le avant de l’utiliser. Il vous appartient de vous assurer que vous avez le droit de l’utiliser.',
     viewOnGitHub: 'Voir sur GitHub',
     setFeedback: 'Envoyer un commentaire',
-    setFeedbackDesc:
-      "Les commentaires sont recueillis via un court questionnaire Google. L'application n'envoie rien elle-même et le contenu des documents n'est jamais inclus.",
-    feedbackOpen: 'Ouvrir le questionnaire',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: 'Modifier',
     // Dates
     today: "Aujourd'hui",
@@ -4746,9 +4740,8 @@ export const strings = {
       'GenOffice wird gemäß der Apache License 2.0 ohne Mängelgewähr und ohne jegliche Garantie bereitgestellt. Von KI erzeugte Inhalte können falsch sein: Prüfen Sie sie vor der Verwendung. Ob Sie die Rechte zur Nutzung besitzen, müssen Sie selbst klären.',
     viewOnGitHub: 'Auf GitHub ansehen',
     setFeedback: 'Feedback senden',
-    setFeedbackDesc:
-      'Feedback wird über eine kurze Google-Umfrage gesammelt. Die App selbst sendet nichts, und Dokumentinhalte sind nie enthalten.',
-    feedbackOpen: 'Umfrage öffnen',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: 'Ändern',
     // Dates
     today: 'Heute',
@@ -5465,9 +5458,8 @@ export const strings = {
       'GenOffice se ofrece tal cual, sin garantías de ningún tipo, bajo la Apache License 2.0. El contenido generado por IA puede contener errores: revísalo antes de usarlo. Comprobar que tienes derecho a usarlo es responsabilidad tuya.',
     viewOnGitHub: 'Ver en GitHub',
     setFeedback: 'Enviar comentarios',
-    setFeedbackDesc:
-      'Los comentarios se recogen mediante una breve encuesta de Google. La aplicación no envía nada por sí misma y el contenido de los documentos nunca se incluye.',
-    feedbackOpen: 'Abrir la encuesta',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: 'Cambiar',
     // Dates
     today: 'Hoy',
@@ -6160,9 +6152,8 @@ export const strings = {
       'GenOffice ให้บริการตามสภาพที่เป็นอยู่ โดยไม่มีการรับประกันใด ๆ ภายใต้ Apache License 2.0 เนื้อหาที่ AI สร้างอาจผิดพลาดได้ โปรดตรวจสอบก่อนใช้ และการตรวจสอบว่าคุณมีสิทธิ์ใช้เนื้อหานั้นเป็นความรับผิดชอบของคุณ',
     viewOnGitHub: 'ดูบน GitHub',
     setFeedback: 'ส่งข้อเสนอแนะ',
-    setFeedbackDesc:
-      'ข้อเสนอแนะถูกรวบรวมผ่านแบบสอบถาม Google สั้น ๆ แอปไม่ได้ส่งข้อมูลใด ๆ ด้วยตัวเอง และไม่รวมเนื้อหาเอกสาร',
-    feedbackOpen: 'เปิดแบบสอบถาม',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: 'เปลี่ยน',
     // Dates
     today: 'วันนี้',
@@ -6865,9 +6856,8 @@ export const strings = {
       'GenOffice disediakan apa adanya, tanpa jaminan apa pun, berdasarkan Apache License 2.0. Konten buatan AI bisa salah, jadi periksa sebelum digunakan. Memastikan Anda berhak menggunakannya adalah tanggung jawab Anda.',
     viewOnGitHub: 'Lihat di GitHub',
     setFeedback: 'Kirim masukan',
-    setFeedbackDesc:
-      'Masukan dikumpulkan melalui survei Google singkat. Aplikasi tidak mengirim apa pun sendiri, dan isi dokumen tidak pernah disertakan.',
-    feedbackOpen: 'Buka survei',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: 'Ubah',
     // Dates
     today: 'Hari ini',
@@ -7576,9 +7566,8 @@ export const strings = {
       'GenOffice предоставляется «как есть», без каких-либо гарантий, на условиях Apache License 2.0. Созданное ИИ содержимое может содержать ошибки — проверяйте его перед использованием. Убедиться, что у вас есть право его использовать, — ваша ответственность.',
     viewOnGitHub: 'Открыть на GitHub',
     setFeedback: 'Отправить отзыв',
-    setFeedbackDesc:
-      'Отзывы собираются через короткий опрос Google. Приложение само ничего не отправляет, содержимое документов не включается.',
-    feedbackOpen: 'Открыть опрос',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: 'Изменить',
     // Dates
     today: 'Сегодня',
@@ -8274,9 +8263,8 @@ export const strings = {
       'يُقدَّم GenOffice كما هو، دون أي ضمانات، بموجب Apache License 2.0. قد يحتوي المحتوى الذي ينشئه الذكاء الاصطناعي على أخطاء، فتحقق منه قبل استخدامه. والتأكد من أن لديك حق استخدامه مسؤوليتك.',
     viewOnGitHub: 'عرض على GitHub',
     setFeedback: 'إرسال ملاحظات',
-    setFeedbackDesc:
-      'تُجمع الملاحظات عبر استبيان Google قصير. لا يرسل التطبيق أي شيء بنفسه، ولا يُضمَّن محتوى المستندات أبدًا.',
-    feedbackOpen: 'فتح الاستبيان',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: 'تغيير',
     // Dates
     today: 'اليوم',
@@ -8978,9 +8966,8 @@ export const strings = {
       'GenOffice é fornecido no estado em que se encontra, sem garantias de qualquer tipo, sob a Apache License 2.0. O conteúdo gerado por IA pode estar errado: confira antes de usar. Verificar se você tem o direito de usá-lo é responsabilidade sua.',
     viewOnGitHub: 'Ver no GitHub',
     setFeedback: 'Enviar comentários',
-    setFeedbackDesc:
-      'Os comentários são coletados por meio de uma breve pesquisa do Google. O aplicativo não envia nada por conta própria, e o conteúdo dos documentos nunca é incluído.',
-    feedbackOpen: 'Abrir pesquisa',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: 'Alterar',
     today: 'Hoje',
     yesterday: 'Ontem',
@@ -9681,9 +9668,8 @@ export const strings = {
       'GenOffice è fornito così com’è, senza garanzie di alcun tipo, ai sensi della Apache License 2.0. I contenuti generati dall’IA possono essere errati: verificali prima di usarli. Accertarti di avere il diritto di usarli spetta a te.',
     viewOnGitHub: 'Vedi su GitHub',
     setFeedback: 'Invia feedback',
-    setFeedbackDesc:
-      "Il feedback viene raccolto tramite un breve sondaggio Google. L'app non invia nulla da sola e il contenuto dei documenti non viene mai incluso.",
-    feedbackOpen: 'Apri il sondaggio',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: 'Cambia',
     today: 'Oggi',
     yesterday: 'Ieri',
@@ -10382,9 +10368,8 @@ export const strings = {
       'GenOffice jest udostępniany w stanie „tak jak jest”, bez jakichkolwiek gwarancji, na licencji Apache License 2.0. Treści wygenerowane przez AI mogą zawierać błędy — sprawdź je przed użyciem. Upewnienie się, że masz prawo z nich korzystać, należy do Ciebie.',
     viewOnGitHub: 'Zobacz na GitHubie',
     setFeedback: 'Wyślij opinię',
-    setFeedbackDesc:
-      'Opinie zbieramy przez krótką ankietę Google. Aplikacja sama nic nie wysyła, a treść dokumentów nigdy nie jest dołączana.',
-    feedbackOpen: 'Otwórz ankietę',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: 'Zmień',
     today: 'Dzisiaj',
     yesterday: 'Wczoraj',
@@ -11031,9 +11016,8 @@ export const strings = {
       'GenOffice se poskytuje tak, jak je, bez jakýchkoli záruk, podle licence Apache License 2.0. Obsah vytvořený AI může být chybný, proto jej před použitím zkontrolujte. Ověřit, že máte právo jej používat, je vaší odpovědností.',
     viewOnGitHub: 'Zobrazit na GitHubu',
     setFeedback: 'Odeslat zpětnou vazbu',
-    setFeedbackDesc:
-      'Zpětná vazba se sbírá krátkým dotazníkem Google. Aplikace sama nic neodesílá a obsah dokumentů se nikdy nepřikládá.',
-    feedbackOpen: 'Otevřít dotazník',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: 'Změnit',
     today: 'Dnes',
     yesterday: 'Včera',
@@ -11778,9 +11762,8 @@ export const strings = {
       'GenOffice wordt geleverd zoals het is, zonder enige garantie, onder de Apache License 2.0. Door AI gemaakte inhoud kan fouten bevatten: controleer die voordat u hem gebruikt. Nagaan of u het recht hebt om hem te gebruiken, is uw eigen verantwoordelijkheid.',
     viewOnGitHub: 'Bekijken op GitHub',
     setFeedback: 'Feedback sturen',
-    setFeedbackDesc:
-      'Feedback wordt verzameld via een korte Google-enquête. De app verstuurt zelf niets en de inhoud van documenten wordt nooit meegestuurd.',
-    feedbackOpen: 'Enquête openen',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: 'Wijzigen',
     today: 'Vandaag',
     yesterday: 'Gisteren',
@@ -12482,9 +12465,8 @@ export const strings = {
       'GenOffice disediakan sebagaimana adanya, tanpa sebarang jaminan, di bawah Apache License 2.0. Kandungan yang dijana AI mungkin salah, jadi semaklah sebelum digunakan. Memastikan anda berhak menggunakannya ialah tanggungjawab anda.',
     viewOnGitHub: 'Lihat di GitHub',
     setFeedback: 'Hantar maklum balas',
-    setFeedbackDesc:
-      'Maklum balas dikumpul melalui tinjauan Google yang pendek. Aplikasi tidak menghantar apa-apa sendiri, dan kandungan dokumen tidak pernah disertakan.',
-    feedbackOpen: 'Buka tinjauan',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: 'Tukar',
     today: 'Hari ini',
     yesterday: 'Semalam',
@@ -13166,9 +13148,8 @@ export const strings = {
       'GenOffice מסופק כפי שהוא, ללא אחריות מכל סוג, לפי Apache License 2.0. תוכן שנוצר בבינה מלאכותית עלול להיות שגוי, לכן יש לבדוק אותו לפני השימוש. הבדיקה שיש לך זכות להשתמש בו היא באחריותך.',
     viewOnGitHub: 'הצגה ב-GitHub',
     setFeedback: 'שליחת משוב',
-    setFeedbackDesc:
-      'המשוב נאסף באמצעות שאלון Google קצר. האפליקציה עצמה לא שולחת דבר, ותוכן המסמכים אינו נכלל לעולם.',
-    feedbackOpen: 'פתיחת השאלון',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: 'שינוי',
     today: 'היום',
     yesterday: 'אתמול',
@@ -13855,9 +13836,8 @@ export const strings = {
       'GenOffice को Apache License 2.0 के तहत "जैसा है" के आधार पर, बिना किसी वारंटी के प्रदान किया जाता है। AI द्वारा बनाई गई सामग्री गलत हो सकती है, इसलिए उपयोग से पहले जाँच लें। उसे उपयोग करने का अधिकार आपके पास है या नहीं, यह सुनिश्चित करना आपकी ज़िम्मेदारी है।',
     viewOnGitHub: 'GitHub पर देखें',
     setFeedback: 'फ़ीडबैक भेजें',
-    setFeedbackDesc:
-      'फ़ीडबैक एक छोटे Google सर्वेक्षण से लिया जाता है। ऐप स्वयं कुछ नहीं भेजता, और दस्तावेज़ की सामग्री कभी शामिल नहीं होती।',
-    feedbackOpen: 'सर्वेक्षण खोलें',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: 'बदलें',
     today: 'आज',
     yesterday: 'कल',
@@ -14527,9 +14507,8 @@ export const strings = {
       'GenOffice 依 Apache License 2.0 以「現狀」提供，不作任何保證。AI 產生的內容可能有誤，請確認後再使用。確認自己有權使用這些內容是使用者的責任。',
     viewOnGitHub: '在 GitHub 上查看',
     setFeedback: '傳送意見回饋',
-    setFeedbackDesc:
-      '意見透過一份簡短的 Google 問卷收集。應用程式本身不會傳送任何內容，也不會包含文件內容。',
-    feedbackOpen: '開啟問卷',
+    setFeedbackDesc: 'Sends your feedback from your mail app. Only the version and the OS go into the mail, never document content.',
+    feedbackOpen: 'Write email',
     setChange: '變更',
     today: '今天',
     yesterday: '昨天',

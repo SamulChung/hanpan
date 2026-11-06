@@ -199,9 +199,19 @@
   flex: 1;
 }
 
-/* the size picker sizes to its words ("작게" was cut to "작" at 39px) */
+/* the size picker sizes to its words ("작게" was cut to "작" at 39px) and never
+ * slides under the move buttons; the row wraps instead (0.17 리뷰 v2 #18) */
+.hw-form-row .hw-field {
+  flex: 0 0 auto;
+}
+
+.hw-form-row .hw-field > span:first-child {
+  min-width: 0;
+}
+
 .hw-form-row .hw-field select[name='size'] {
-  flex: 0 1 auto;
+  flex: none;
+  width: auto;
   min-width: 72px;
 }
 
