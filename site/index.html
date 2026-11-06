@@ -1309,7 +1309,8 @@
       // daily counts of visits and download clicks (site/api/track.js); only on the real
       // site, and not when the browser asks not to be tracked
       const counting =
-        location.hostname === 'hanpan-blond.vercel.app' && navigator.doNotTrack !== '1'
+        ['hanpan.tenai.kr', 'hanpan-blond.vercel.app'].includes(location.hostname) &&
+        navigator.doNotTrack !== '1'
       const count = (data) => {
         if (counting) navigator.sendBeacon('/api/track', JSON.stringify(data))
       }
