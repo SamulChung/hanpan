@@ -493,6 +493,11 @@
   color: var(--danger);
 }
 
+/* nothing to clear: no red that promises an action (0.17 리뷰 v2 shell #22) */
+.set-btn.danger:disabled {
+  color: var(--text-tertiary);
+}
+
 .set-pane-footer {
   margin-top: auto;
   padding-top: 20px;
@@ -1297,4 +1302,12 @@
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--surface-subtle, var(--surface));
+}
+
+.set-quicklook-head {
+  margin: 18px 0 4px;
+}
+
+.set-quicklook-head .set-pane-subtitle {
+  margin: 0 0 4px;
 }
