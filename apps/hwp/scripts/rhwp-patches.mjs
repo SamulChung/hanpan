@@ -131,7 +131,7 @@
  */
 
 import { HANCOM_KEYS_MODULE, studioCommandIds } from '../studio-plugin/hancom-keys.mjs'
-import { DIALOG_TEXT_PATCHES } from './studio-dialog-text.mjs'
+import { DIALOG_TEXT_PATCHES, STUDIO_LOCALES_MODULE } from './studio-dialog-text.mjs'
 
 /** Must equal RENDERER_SCHEME in packages/electron-utils/src/renderer-scheme.ts. */
 export const APP_SCHEME = 'genoffice-app'
@@ -149,7 +149,7 @@ export { HANCOM_KEYS_MODULE }
 export const FORMAT_COPY_MODULE = '@ieum/format-copy'
 
 /** Module specifier the studio-locale and studio-about patches import; build-studio.mjs aliases it. */
-export const STUDIO_LOCALES_MODULE = '@ieum/studio-locales'
+export { STUDIO_LOCALES_MODULE }
 
 const PATCHES = {
   ...DIALOG_TEXT_PATCHES,
@@ -1330,6 +1330,11 @@ export function applyPatch(name, code) {
   // (or, for an edit that names a count, exactly that many times, every one replaced)
   let next = code
   for (const edit of patch.edits ?? [patch]) {
+    if (edit.prepend !== undefined) {
+      // an import put at the top of the file
+      next = edit.prepend.replaceAll('\n', eol) + eol + next
+      continue
+    }
     const find = edit.find.replaceAll('\n', eol)
     const count = edit.count ?? 1
     const parts = next.split(find)

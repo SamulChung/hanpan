@@ -50,11 +50,11 @@ const STYLE_NAMES = {
 const HANGUL = /[가-힣]/
 
 /**
- * The name a style shows in the toolbar list. A document written in Korean names its styles
+ * The name a style shows in the toolbar list and the style dialog. A document written in Korean names its styles
  * in Korean and carries an English name beside each; outside Korean the list shows that
  * English name, or this language's word for one of Hangul's built-in styles. A style named
- * in another script, or without an English name, keeps its own name. Only the list changes:
- * the document, the style dialog and the AI keep the stored names.
+ * in another script, or without an English name, keeps its own name. Only what is shown
+ * changes (the toolbar list and the style dialog): the document and the AI keep the stored names.
  */
 export function styleDisplayName(style, locale) {
   const name = String(style?.name ?? '')
@@ -155,4 +155,67 @@ export const APP_STRINGS = {
     'hanpan.editor.inputLabel': 'Ô nhập chỉnh sửa tài liệu',
     ...dialogStrings(2),
   },
+}
+
+/**
+ * A compare or history item title in the UI language. The diff engine writes its titles in
+ * Korean and the views match on them ("텍스트 변경"), so the stored title stays as it is and
+ * only what the list shows is translated. A title of a shape this does not know stays Korean.
+ */
+const DIFF_SUBJECTS = {
+  표: ['Table', 'bảng'],
+  테이블: ['Table', 'bảng'],
+  도형: ['Shape', 'hình vẽ'],
+  이미지: ['Image', 'hình ảnh'],
+  그래프: ['Chart', 'biểu đồ'],
+  텍스트: ['Text', 'văn bản'],
+  메타: ['Metadata', 'siêu dữ liệu'],
+  그림: ['Picture', 'hình'],
+  문단: ['Paragraph', 'đoạn văn'],
+}
+const DIFF_CHANGES = {
+  추가: ['added', 'Đã thêm'],
+  삭제: ['deleted', 'Đã xóa'],
+  '행/열 변경': ['rows/columns changed', 'Thay đổi hàng/cột'],
+  '크기 변경': ['size changed', 'Thay đổi kích thước'],
+  '텍스트 변경': ['text changed', 'Thay đổi văn bản'],
+  '자르기 변경': ['crop changed', 'Thay đổi vùng cắt'],
+  '효과 변경': ['effect changed', 'Thay đổi hiệu ứng'],
+  '회전/대칭 변경': ['rotation/flip changed', 'Thay đổi xoay/lật'],
+  '배치 변경': ['layout changed', 'Thay đổi bố trí'],
+  '속성 변경': ['properties changed', 'Thay đổi thuộc tính'],
+  '순서 이동': ['order moved', 'Đổi thứ tự'],
+  '개체 수 변경': ['object count changed', 'Thay đổi số đối tượng'],
+  '이동 감지': ['move detected', 'Phát hiện di chuyển'],
+}
+const DIFF_TITLE =
+  /^(?:(\S+) )?(추가|삭제|행\/열 변경|크기 변경|텍스트 변경|자르기 변경|효과 변경|회전\/대칭 변경|배치 변경|속성 변경|순서 이동|개체 수 변경|이동 감지)(?:\((구조변경 동반)?(?:, )?(?:(\d+)셀)?\))?(?: \(구역 (\d+), 문단 (\d+)\))?$/
+
+export function diffTitleText(title, locale) {
+  const text = String(title ?? '')
+  if (locale === 'ko') return text
+  const m = DIFF_TITLE.exec(text)
+  if (!m) return text
+  const [, subjectKo, changeKo, structure, cells, section, paragraph] = m
+  if (subjectKo && !Object.hasOwn(DIFF_SUBJECTS, subjectKo)) return text
+  const vi = locale === 'vi'
+  const index = vi ? 1 : 0
+  const subject = subjectKo ? DIFF_SUBJECTS[subjectKo][index] : ''
+  const change = DIFF_CHANGES[changeKo][index]
+  let out = vi
+    ? subject
+      ? `${change} ${subject}`
+      : change
+    : subject
+      ? `${subject} ${change}`
+      : change.charAt(0).toUpperCase() + change.slice(1)
+  const extra = []
+  if (structure) extra.push(vi ? 'kèm thay đổi cấu trúc' : 'with structure change')
+  if (cells) extra.push(vi ? `${cells} ô` : `${cells} cells`)
+  if (extra.length) out += ` (${extra.join(', ')})`
+  if (section !== undefined)
+    out += vi
+      ? ` (phần ${section}, đoạn ${paragraph})`
+      : ` (section ${section}, paragraph ${paragraph})`
+  return out
 }

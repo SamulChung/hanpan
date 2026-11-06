@@ -7,6 +7,8 @@
  *
  * `{name}` is a placeholder the studio fills in; `$1`, `$2` are a regular expression's groups.
  */
+import { SOURCE_STRINGS } from './source-strings.mjs'
+
 export const DIALOG_STRINGS = {
   // 책갈피
   'hanpan.bookmark.defaultName': ['책갈피{count}', 'Bookmark{count}', 'DấuTrang{count}'],
@@ -133,8 +135,8 @@ export const DIALOG_STRINGS = {
   'hanpan.diff.none': ['(없음)', '(none)', '(không có)'],
   'hanpan.diff.empty': ['(빈값)', '(empty)', '(trống)'],
   'hanpan.diff.textChanged': ['텍스트 변경', 'Text changed', 'Văn bản đã thay đổi'],
-  'hanpan.diff.before': ['기존', 'Before', 'Trước'],
-  'hanpan.diff.after': ['변경', 'After', 'Sau'],
+  'hanpan.diff.before': ['기존', 'Old', 'Cũ'],
+  'hanpan.diff.after': ['변경', 'New', 'Mới'],
   'hanpan.diff.changes': ['변경값:', 'Changes:', 'Thay đổi:'],
   'hanpan.diff.changedCells': [
     '변경 셀 {count}개 (셀 미리보기 범위를 벗어나거나 텍스트가 길어 일부 생략됨)',
@@ -389,9 +391,12 @@ export const DIALOG_STRINGS = {
   'hanpan.tableRowColumn.cols': ['칸', 'Columns', 'Cột'],
 }
 
-/** The table above by language, as APP_STRINGS holds its words. */
+/** The table above and the studio's other text (source-strings.mjs) by language, as APP_STRINGS holds its words. */
 export function dialogStrings(index) {
   return Object.fromEntries(
-    Object.entries(DIALOG_STRINGS).map(([key, words]) => [key, words[index]]),
+    Object.entries({ ...DIALOG_STRINGS, ...SOURCE_STRINGS }).map(([key, words]) => [
+      key,
+      words[index],
+    ]),
   )
 }
