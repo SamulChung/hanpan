@@ -107,6 +107,7 @@ import {
   useSplitPaneFocusPing,
   type AiScopeQuoteData,
   type WordArtPreset,
+  type GonguPicked,
   aiPanelInitiallyOpen,
   rememberAiPanelOpen,
   AiMark,
@@ -1728,6 +1729,10 @@ export function App() {
   )
   const insertSoundEffect = useCallback(
     (id: string) => insertActions.insertSoundEffect(ctxRef.current, id),
+    [],
+  )
+  const insertGonguPicture = useCallback(
+    (picked: GonguPicked) => insertActions.insertGonguPicture(ctxRef.current, picked),
     [],
   )
   const insertModel3dFile = useCallback(() => insertActions.insertModel3dFile(ctxRef.current), [])
@@ -3489,6 +3494,7 @@ export function App() {
         onOpenEquation={() => setEqDialogOpen(true)}
         onInsertMedia={(kind) => void insertMediaFile(kind)}
         onInsertSoundEffect={(id) => void insertSoundEffect(id)}
+        onInsertGonguPicture={insertGonguPicture}
         onInsertModel3d={() => void insertModel3dFile()}
         recording={recording}
         onToggleScreenRecord={() => void toggleScreenRecord()}
