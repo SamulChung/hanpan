@@ -42,6 +42,7 @@ import type {
 import {
   AiMark,
   Dropdown,
+  RibbonCollapseButton,
   aiSubscriptionText,
   isSymbolFontFamily,
   useDismissablePopover,
@@ -4393,6 +4394,7 @@ function RibbonInner({
           />
         )}
       </div>
+      <RibbonCollapseButton state={collapse} label={t('ribbonCollapse')} />
 
       {pictureDialog === 'cutout' && imageDataUrl && (
         <CutoutDialog
