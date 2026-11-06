@@ -69,6 +69,7 @@ import { IconNotes, IconPlayBoxed } from './components/icons'
 import { PresenterView } from './components/PresenterView'
 import { CustomShowDialog } from './components/CustomShowDialog'
 import { PrintDialog } from './components/PrintDialog'
+import { ExportImagesDialog } from './components/ExportImagesDialog'
 import { FindReplaceDialog } from './components/FindReplaceDialog'
 import { formatClock, type CustomShow } from './slideshow-utils'
 import { ContextMenu } from './components/ContextMenu'
@@ -1032,7 +1033,8 @@ export function App() {
   }, [autoSave, path, editing, editingCell, save])
 
   const saveAs = useCallback(() => fileActions.saveAs(() => ctxRef.current), [])
-  const exportImages = useCallback(() => fileActions.exportImages(ctxRef.current), [])
+  // 형식·범위·크기를 고르는 대화상자부터 연다(UX v2 #21)
+  const exportImages = useCallback(() => setExportImgDlgOpen(true), [])
   const exportPdf = useCallback(() => void fileActions.exportPdf(ctxRef.current), [])
 
   // Headless export mode (--headless-export): this renderer lives in a hidden
@@ -1066,6 +1068,7 @@ export function App() {
   }, [])
 
   const [printDlgOpen, setPrintDlgOpen] = useState(false)
+  const [exportImgDlgOpen, setExportImgDlgOpen] = useState(false)
 
   /** Whether focus is in a text input (input/textarea/contentEditable) — these cases use native undo/delete */
   const inTextField = () => {
@@ -4672,6 +4675,19 @@ export function App() {
           onChange={updateCustomShows}
           onPlay={playCustomShow}
           onClose={() => setCustomShowDlgOpen(false)}
+        />
+      )}
+
+      {exportImgDlgOpen && (
+        <ExportImagesDialog
+          visibleCount={slides.filter((s) => !s.hidden).length}
+          slideWidthPx={slides[current]?.widthPx ?? 960}
+          slideHeightPx={slides[current]?.heightPx ?? 540}
+          onClose={() => setExportImgDlgOpen(false)}
+          onExport={(opts) => {
+            setExportImgDlgOpen(false)
+            void fileActions.exportImages(ctxRef.current, opts)
+          }}
         />
       )}
 

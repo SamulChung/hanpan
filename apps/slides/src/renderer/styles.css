@@ -9809,3 +9809,10 @@ body.show-curtain::after {
   user-select: none;
   pointer-events: none;
 }
+
+/* 이미지로 내보내기 대화상자: 인쇄 대화상자의 선택지 모양을 그대로 쓰고 폭만 넓힌다 */
+.export-images-dialog .export-images-options {
+  width: auto;
+  min-width: 340px;
+  margin: 4px 0 14px;
+}

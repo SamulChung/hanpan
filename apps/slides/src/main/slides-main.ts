@@ -1614,6 +1614,9 @@ function openExportedPdf(path: string): void {
 
 let ipcRegistered = false
 
+/** Folders written by Export as Images in this run — the only ones "Open folder" may open */
+const exportedImageDirs = new Set<string>()
+
 export function registerSlidesIpc(): void {
   if (ipcRegistered) return
   ipcRegistered = true
@@ -4946,18 +4949,26 @@ export function registerSlidesIpc(): void {
       try {
         // Zero-padding width follows the total page count (3 digits for ≥100 pages)
         const pad = op.pngsBase64.length >= 100 ? 3 : 2
+        const ext = op.ext === 'jpg' ? 'jpg' : 'png'
         const paths: string[] = []
         for (let i = 0; i < op.pngsBase64.length; i++) {
-          const p = join(op.dir, `${op.baseName}-${String(i + 1).padStart(pad, '0')}.png`)
+          const p = join(op.dir, `${op.baseName}-${String(i + 1).padStart(pad, '0')}.${ext}`)
           await writeFile(p, Buffer.from(op.pngsBase64[i], 'base64'))
           paths.push(p)
         }
+        exportedImageDirs.add(resolve(op.dir))
         return { ok: true, paths }
       } catch (err) {
         return { ok: false, error: String(err) }
       }
     },
   )
+
+  // 알림의 "폴더 열기": 이번 실행에서 이미지를 써 넣은 폴더만 연다(렌더러가 임의 경로를 열게 두지 않는다)
+  ipcMain.handle('slides:reveal-export-folder', async (_e, dir: unknown) => {
+    if (typeof dir !== 'string' || !exportedImageDirs.has(resolve(dir))) return false
+    return (await shell.openPath(resolve(dir))) === ''
+  })
 
   ipcMain.handle('slides:pick-export-pdf-path', async (_e, defaultName: string) => {
     const parent = dialogParent()

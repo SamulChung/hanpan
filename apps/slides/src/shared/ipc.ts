@@ -1175,6 +1175,8 @@ export interface ExportImagesOp {
   baseName: string
   /** base64 per page PNG (without the data: prefix), in page order */
   pngsBase64: string[]
+  /** File extension of the encoded pages; JPEG when 'jpg' (default 'png') */
+  ext?: 'png' | 'jpg'
 }
 
 export interface ExportImagesResult {
@@ -1716,6 +1718,8 @@ export interface SlidesApi {
   pickExportDir: () => Promise<string | null>
   /** Write each page PNG to disk as <baseName>-01.png …; returns the written paths */
   exportImages: (op: ExportImagesOp) => Promise<ExportImagesResult>
+  /** Open a folder images were exported to in this session (other paths are refused) */
+  revealExportFolder: (dir: string) => Promise<boolean>
   /** Export as PDF: shows the save dialog for the target path, cancel returns null */
   pickExportPdfPath: (defaultName: string) => Promise<string | null>
   /** Save as Picture: save dialog + write of the selection PNG */
