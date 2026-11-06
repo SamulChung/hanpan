@@ -4615,6 +4615,35 @@ const tMain = createI18n({
 const tm = (key: Parameters<typeof tMain>[1], params?: Parameters<typeof tMain>[2]) =>
   tMain(currentLang(), key, params)
 
+/**
+ * The name of a tab with no file yet, in `lang`. No extension: the title becomes the real
+ * file name (this default + .docx etc.) once the first save lands. A language change renames
+ * the tabs still carrying the old language's name (TabManager.retitleUntitled).
+ */
+function untitledTabTitle(kind: TabKind, lang: Lang): string {
+  const key =
+    kind === 'help'
+      ? 'menuUserGuide'
+      : kind === 'docs'
+        ? 'untitledDoc'
+        : kind === 'slides'
+          ? 'untitledDeck'
+          : kind === 'markdown'
+            ? 'untitledMarkdown'
+            : kind === 'html'
+              ? 'untitledHtml'
+              : kind === 'mindmap'
+                ? 'untitledMindmap'
+                : kind === 'hwp'
+                  ? 'untitledHwp'
+                  : kind === 'photo'
+                    ? 'untitledPhoto'
+                    : kind === 'illust'
+                      ? 'untitledIllust'
+                      : 'untitledSheet'
+  return tMain(lang, key)
+}
+
 // 제목 없는 메시지 상자(편집기의 저장 확인 창 포함)는 "Hanpan" 대신 화면 언어의 제품 이름을 쓴다
 installDefaultDialogTitle(dialog, () => productName(currentLang()))
 
@@ -5214,28 +5243,7 @@ function createShellWindow(): void {
       noteLiveSession()
     },
     applyMenuFor,
-    // no extension: these tabs have no file on disk yet; the title becomes the
-    // real filename (the localized untitled default + .docx etc.) once the first save lands
-    (kind) =>
-      kind === 'help'
-        ? tm('menuUserGuide')
-        : kind === 'docs'
-          ? tm('untitledDoc')
-          : kind === 'slides'
-            ? tm('untitledDeck')
-            : kind === 'markdown'
-              ? tm('untitledMarkdown')
-              : kind === 'html'
-                ? tm('untitledHtml')
-                : kind === 'mindmap'
-                  ? tm('untitledMindmap')
-                  : kind === 'hwp'
-                    ? tm('untitledHwp')
-                    : kind === 'photo'
-                      ? tm('untitledPhoto')
-                      : kind === 'illust'
-                        ? tm('untitledIllust')
-                        : tm('untitledSheet'),
+    (kind) => untitledTabTitle(kind, currentLang()),
     // the tab strip is interface chrome, so its height follows the scale
     () => currentUiScale,
     // every split change: remember it, re-role the pane views, tell the strip
@@ -6420,7 +6428,10 @@ function registerHomeIpc(): void {
 
   ipcMain.handle(HOME_CHANNELS.setLanguage, (_event, lang: unknown) => {
     if (!isLang(lang) || lang === currentLang()) return
+    const before = currentLang()
     persistLang(lang)
+    // tabs still named "untitled" in the old language take the new language's name
+    tabManager?.retitleUntitled((kind) => untitledTabTitle(kind, before))
     // the switcher lives on the home page, so the home menu is the active one
     buildHomeMenu()
     installDockMenu()
