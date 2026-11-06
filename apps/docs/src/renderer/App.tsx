@@ -4052,6 +4052,20 @@ export function App() {
           fastPasses++
           const dbg = (window as unknown as Record<string, Record<string, unknown>>).__pageDebug
           if (dbg) dbg.fastPasses = fastPasses
+          // the fast pass keeps the page slices, but change bars and revision
+          // balloons follow the text: a tracked deletion must show its balloon now
+          const fpm = pmEl()
+          if (fpm && editor) {
+            syncMarginAnnotations(
+              (fpm.closest('.page-wrap') as HTMLElement) ?? fpm,
+              fpm,
+              comments,
+              factor,
+              doc.parsed.blocks,
+              editor.view,
+              marginHandlersRef.current,
+            )
+          }
           locate()
           return
         }
