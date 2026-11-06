@@ -161,7 +161,7 @@ import { installCliLinkBestEffort } from './cli-link'
 import { createDefaultAppService, execFileRunner } from './default-app'
 import { registerIntegrationsIpc } from './integrations-ipc'
 import { registerResultStoreIpc } from './result-store-ipc'
-import { feedbackDetails, feedbackMailUrl, feedbackText, platformLabel } from './feedback'
+import { feedbackDetails, feedbackMailUrl, feedbackText, osLabel } from './feedback'
 import { registerDriveIpc, type DriveService } from './drive/drive-ipc'
 import { registerOutboundIpc } from './outbound-confirm'
 import { projectSkillsAllowed, projectSkillsView, setProjectSkills } from './agent/project-skills'
@@ -4991,7 +4991,7 @@ async function openFeedbackSurvey(): Promise<void> {
   const lang = currentLang()
   const detail = feedbackDetails(lang, {
     version: app.getVersion(),
-    os: `${platformLabel(process.platform)} ${release()}`,
+    os: osLabel(process.platform, release()),
     language: lang,
   })
   const options = {
@@ -5067,12 +5067,15 @@ function withHelpItems(): void {
   // "Invalid item" and took the main process down on the next tab switch. The
   // trailing entry is filler, discarded; the type check is what stops this from
   // silently regressing if Electron's rule ever changes again.
-  const hasUserGuide = submenu.items.some((i) => i.accelerator === 'F1')
+  const guideAt = submenu.items.findIndex((i) => i.accelerator === 'F1')
+  const hasUserGuide = guideAt >= 0
+  // the user guide comes first and feedback right under it (0.17 리뷰 v2 shell #20)
   const template: MenuItemConstructorOptions[] = hasUserGuide
     ? [feedback, { type: 'separator' }, { role: 'undo' }]
     : [userGuide, { type: 'separator' }, feedback, { type: 'separator' }, { role: 'undo' }]
   const items = Menu.buildFromTemplate(template).items.filter((i) => i.role !== 'undo')
-  items.forEach((item, index) => submenu.insert(index, item))
+  const start = hasUserGuide ? guideAt + 1 : 0
+  items.forEach((item, index) => submenu.insert(start + index, item))
 }
 
 function applyMenuFor(kind: TabKind): void {
@@ -7065,7 +7068,8 @@ const TAB_MENU_ICON: Record<TabKind, keyof MenuIconSet> = {
   epub: 'epub',
   photo: 'photo',
   illust: 'illust',
-  help: 'home',
+  // the user guide is a book, not Home (0.17 리뷰 v2 shell #30)
+  help: 'epub',
 }
 
 // tab views see neither DOM events nor a focus change when the user clicks the
@@ -7964,7 +7968,8 @@ function registerTabsIpc(): void {
     if (!tabManager || !shellWindow) return
     const menu = Menu.buildFromTemplate(
       tabManager.list().map((tab) => ({
-        label: tab.title,
+        // Home reads as the strip shows it ("한판"), not the window title "Hanpan"
+        label: tab.kind === 'home' ? productName(currentLang() as never) : tab.title,
         type: 'checkbox' as const,
         checked: tab.active,
         icon: menuIcons()[TAB_MENU_ICON[tab.kind]],
