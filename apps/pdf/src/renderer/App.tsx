@@ -8450,9 +8450,17 @@ export default function App() {
             t={t}
             saveDisabled={!dirty || saveState === 'saving'}
             busy={convertBusy}
-            onOpen={() => void window.pdfApi.openFileDialog().catch(() => {})}
+            onOpen={() =>
+              void window.pdfApi
+                .openFileDialog()
+                .catch((err) => console.error('[pdf] open dialog failed:', err))
+            }
             onSave={() => void save()}
-            onSaveAs={() => void window.pdfApi.saveAsDialog().catch(() => {})}
+            onSaveAs={() =>
+              void window.pdfApi
+                .saveAsDialog()
+                .catch((err) => console.error('[pdf] save as failed:', err))
+            }
             onConvert={(format) => void convertTo(format)}
             onConvertDialog={openConvertDialog}
             onPrint={openPrintDlg}

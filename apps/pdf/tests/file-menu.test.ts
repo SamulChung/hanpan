@@ -112,21 +112,22 @@ describe('PDF File menu', () => {
   it('disables Save with nothing to save and the exports while one runs', () => {
     const r = render({ saveDisabled: true, busy: true })
     const buttons = [...r.open().querySelectorAll('button')]
-    const find = (label: string) => buttons.find((b) => b.firstChild?.textContent?.trim() === label)!
+    const find = (label: string) =>
+      buttons.find((b) => b.firstChild?.textContent?.trim() === label)!
     expect(find(zh.fileMenuSave).disabled).toBe(true)
     expect(find(zh.fileMenuExportDocx).disabled).toBe(true)
     expect(find(zh.fileMenuOpen).disabled).toBe(false)
   })
 
   it('is wired to the ribbon flows, and Open / Save As ask the shell', () => {
-    const app = readFileSync(resolve(process.cwd(), 'src/renderer/App.tsx'), 'utf8')
+    const app = readFileSync(resolve(__dirname, '../src/renderer/App.tsx'), 'utf8')
     expect(app).toContain('<FileMenu')
     expect(app).toMatch(/onConvert=\{\(format\) => void convertTo\(format\)\}/)
     expect(app).toMatch(/onConvertDialog=\{openConvertDialog\}/)
     expect(app).toMatch(/onPrint=\{openPrintDlg\}/)
-    expect(app).toMatch(/onOpen=\{\(\) => void window\.pdfApi\.openFileDialog\(\)/)
-    expect(app).toMatch(/onSaveAs=\{\(\) => void window\.pdfApi\.saveAsDialog\(\)/)
-    const preload = readFileSync(resolve(process.cwd(), 'src/preload/index.ts'), 'utf8')
+    expect(app).toMatch(/onOpen=\{\(\) =>\s+void window\.pdfApi\s*\.openFileDialog\(\)/)
+    expect(app).toMatch(/onSaveAs=\{\(\) =>\s+void window\.pdfApi\s*\.saveAsDialog\(\)/)
+    const preload = readFileSync(resolve(__dirname, '../src/preload/index.ts'), 'utf8')
     expect(preload).toContain("openFileDialog: () => ipcRenderer.invoke('app:open-file-dialog')")
     expect(preload).toContain('saveAsDialog: () => ipcRenderer.invoke(PDF_CHANNELS.saveAsDialog)')
   })

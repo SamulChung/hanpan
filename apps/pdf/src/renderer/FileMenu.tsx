@@ -55,12 +55,7 @@ export function FileMenu(p: {
           <button type="button" role="menuitem" onClick={run(p.onOpen)}>
             {t('fileMenuOpen')} {key('⌘O')}
           </button>
-          <button
-            type="button"
-            role="menuitem"
-            disabled={p.saveDisabled}
-            onClick={run(p.onSave)}
-          >
+          <button type="button" role="menuitem" disabled={p.saveDisabled} onClick={run(p.onSave)}>
             {t('fileMenuSave')} {key('⌘S')}
           </button>
           <button type="button" role="menuitem" onClick={run(p.onSaveAs)}>

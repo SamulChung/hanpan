@@ -132,11 +132,11 @@ describe('HTML File menu', () => {
   })
 
   it('is wired to the same export and print flows as the shell menu, and Open asks the shell', () => {
-    const app = readFileSync(resolve(process.cwd(), 'src/renderer/App.tsx'), 'utf8')
+    const app = readFileSync(resolve(__dirname, '../src/renderer/App.tsx'), 'utf8')
     expect(app).toMatch(/onExport=\{\(format\) => void runExport\(format\)\}/)
     expect(app).toMatch(/onPrint=\{\(\) => void runPrint\(\)\}/)
-    expect(app).toMatch(/onOpen=\{\(\) => void window\.htmlApi\.openFileDialog\(\)/)
-    const preload = readFileSync(resolve(process.cwd(), 'src/preload/index.ts'), 'utf8')
+    expect(app).toMatch(/onOpen=\{\(\) =>\s+void window\.htmlApi\s*\.openFileDialog\(\)/)
+    const preload = readFileSync(resolve(__dirname, '../src/preload/index.ts'), 'utf8')
     expect(preload).toContain("openFileDialog: () => ipcRenderer.invoke('app:open-file-dialog')")
   })
 })
