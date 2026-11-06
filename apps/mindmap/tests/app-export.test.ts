@@ -225,6 +225,14 @@ describe('the Markdown outline', () => {
     expect(text).toContain(String(folded.children!.attached![0]!.title))
   })
 
+  it('of a one-sheet map reads as a document: the central topic is the title, its topics the list', async () => {
+    const fake = await mountWith(await (await documentOf(plainSheet('Sheet 1'))).save())
+    await act(async () => fake.emitExport('markdown'))
+    await settle()
+    const { text } = fake.exports[0]!.request as { text: string }
+    expect(text).toBe(['# Center', '', '- One', '- Two', ''].join('\n'))
+  })
+
   it('a new map whose central topic still has its first title is offered as untitled', async () => {
     const fake = await mountWith(new Uint8Array(), null)
     await act(async () => fake.emitExport('markdown'))

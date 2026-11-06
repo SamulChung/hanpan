@@ -4,7 +4,9 @@
  * - Picture (PNG) and PDF: the sheet on screen, as it is drawn (folded
  *   branches folded), the whole sheet and not only the part in view.
  * - Markdown outline: every sheet of the file, from the map as it stands now
- *   (unsaved edits included, folding ignored): the engine's `sheetsToOutline`.
+ *   (unsaved edits included, folding ignored): the engine's `sheetsToOutline`;
+ *   a map of one sheet reads as a document, its central topic the title
+ *   (`outline.ts`).
  * - Print: the sheet on screen on one landscape A4 page, shown in the editor's
  *   own print dialog first (`PrintDialog`), which prints it. Print is in the
  *   File menu; the toolbar has the three exports.
@@ -22,6 +24,7 @@ import { setThumbnailProvider } from '../document/thumbnail'
 import type { MapController } from '../map/controller'
 import type { ExportFormat, ExportResult } from '../../shared/ipc'
 import { documentName, sheetExportName } from './names'
+import { documentOutline } from './outline'
 import { pictureScale, snapshotPage, snapshotPng, thumbnailScale } from './render'
 import { type MapSnapshot, snapshotSheet, type SnapshotOptions } from './snapshot'
 
@@ -157,7 +160,7 @@ export function useMapExport(host: MapExportHost): MapExport {
       try {
         if (format === 'markdown') {
           current.flushAll()
-          const text = session.outline()
+          const text = documentOutline(session.outline(), session.tabs().length)
           report(
             current.say,
             await api.exportMarkdown({ text, suggestedName: mapNameOf(session, current.path) }),
