@@ -272,14 +272,12 @@ function ThemePicker({
  *  an image upload server) behind one labelled menu instead of bare icons. */
 function AdvancedMenu({
   disabled,
-  sourceMode,
   backlinksOpen,
   onImageHost,
   onToggleBacklinks,
   onOpenGraph,
 }: {
   disabled?: boolean
-  sourceMode?: boolean
   backlinksOpen?: boolean
   onImageHost: () => void
   onToggleBacklinks?: () => void
@@ -316,30 +314,26 @@ function AdvancedMenu({
             ref={menuRef}
             style={style}
           >
-            {!sourceMode && (
-              <button
-                type="button"
-                role="menuitem"
-                className={`md-theme-item${backlinksOpen ? ' on' : ''}`}
-                disabled={disabled}
-                onClick={run(onToggleBacklinks)}
-              >
-                <IconBacklinks size={16} />
-                {t('backlinks')}
-              </button>
-            )}
-            {!sourceMode && (
-              <button
-                type="button"
-                role="menuitem"
-                className="md-theme-item"
-                disabled={disabled}
-                onClick={run(onOpenGraph)}
-              >
-                <IconGraph size={16} />
-                {t('graph')}
-              </button>
-            )}
+            <button
+              type="button"
+              role="menuitem"
+              className={`md-theme-item${backlinksOpen ? ' on' : ''}`}
+              disabled={disabled}
+              onClick={run(onToggleBacklinks)}
+            >
+              <IconBacklinks size={16} />
+              {t('backlinks')}
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              className="md-theme-item"
+              disabled={disabled}
+              onClick={run(onOpenGraph)}
+            >
+              <IconGraph size={16} />
+              {t('graph')}
+            </button>
             <button
               type="button"
               role="menuitem"
@@ -925,14 +919,16 @@ export function Ribbon({
                 <IconEyeOff size={ICON} />
               </IconBtn>
             )}
-            <AdvancedMenu
-              disabled={disabled}
-              sourceMode={sourceMode}
-              backlinksOpen={backlinksOpen}
-              onImageHost={onImageHost}
-              onToggleBacklinks={onToggleBacklinks}
-              onOpenGraph={onOpenGraph}
-            />
+            {/* a .txt/.json file has no notes to link and no pictures to upload */}
+            {!sourceMode && (
+              <AdvancedMenu
+                disabled={disabled}
+                backlinksOpen={backlinksOpen}
+                onImageHost={onImageHost}
+                onToggleBacklinks={onToggleBacklinks}
+                onOpenGraph={onOpenGraph}
+              />
+            )}
           </div>
         </div>
       </div>
