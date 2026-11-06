@@ -852,9 +852,16 @@ export async function requestSlidesClose(
   if (autoSavePrefByWc.get(contents.id) && sessions.get(contents.id)?.path) {
     if (await requestRendererSave(contents)) return true
   }
+  // 어느 덱인지 이름을 넣는다: 저장 안 한 덱이 여럿이면 같은 창이 거듭 떠 무엇을 버리는지 모른다
+  const closing = sessions.get(contents.id)
+  const deckName = closing?.path
+    ? basename(closing.path).replace(/\.pptx$/i, '')
+    : closing
+      ? untitledRecoveryTitle(closing)
+      : tm('untitledDeck')
   const options = {
     type: 'warning' as const,
-    message: tm('closeUnsavedMsg'),
+    message: tm('closeUnsavedMsg', { name: deckName }),
     detail: tm('closeUnsavedDetail'),
     buttons: [tm('menuSave'), tm('btnDontSave'), tm('btnCancel')],
     defaultId: 0,

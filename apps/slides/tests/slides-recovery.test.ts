@@ -610,6 +610,17 @@ describe('deleting copies', () => {
     expect(existsSync(legacyCopyPath(path))).toBe(false)
   })
 
+  it('the close prompt names the deck it is about (UX v2 #22)', async () => {
+    const path = makeDeckFile('영업보고.pptx')
+    const tab = new FakeContents(34)
+    await call<Promise<unknown>>(tab, 'slides:open-path', path, FIT)
+    call(tab, 'slides:add-blank-slide', { sourceIndex: 0, before: false, fitWidthPx: FIT })
+    showMessageBox.mockResolvedValue({ response: 2 })
+    expect(await requestSlidesClose(tab as never)).toBe(false)
+    const box = showMessageBox.mock.calls[0]!.at(-1) as { message: string }
+    expect(box.message).toContain('영업보고')
+  })
+
   it('deletes the copy on an MCP close without saving, even while the app is ending', async () => {
     const tab = new FakeContents(33)
     await newUntitledDeck(tab)
