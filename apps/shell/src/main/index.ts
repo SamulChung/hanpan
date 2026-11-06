@@ -1228,6 +1228,7 @@ const tMain = createI18n({
     pdfPwdShow: '显示密码',
     pdfPwdHide: '隐藏密码',
     pdfDocxLocalCorruptDetail: '文件已损坏或不是有效的 PDF，无法转换。',
+    dlgPickMyForm: '选择要添加到我的模板的文件',
     dlgPickSaveDir: '选择默认保存位置',
     errSaveDirUnusable: '所选文件夹不可写，无法用作默认保存位置',
     saveDirFallbackMsg: '无法保存到"文档"文件夹',
@@ -1402,6 +1403,7 @@ const tMain = createI18n({
     pdfPwdShow: 'Show password',
     pdfPwdHide: 'Hide password',
     pdfDocxLocalCorruptDetail: 'The file is damaged or not a valid PDF and cannot be converted.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Choose Default Save Location',
     errSaveDirUnusable:
       'The selected folder is not writable and cannot be used as the default save location',
@@ -1578,6 +1580,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Ẩn mật khẩu',
     pdfDocxLocalCorruptDetail:
       'Tệp bị hỏng hoặc không phải là tệp PDF hợp lệ và không thể chuyển đổi.',
+    dlgPickMyForm: 'Chọn tệp để thêm vào Mẫu của tôi',
     dlgPickSaveDir: 'Chọn vị trí lưu mặc định',
     errSaveDirUnusable: 'Thư mục đã chọn không thể ghi và không thể dùng làm vị trí lưu mặc định',
     saveDirFallbackMsg: 'Không thể lưu vào thư mục Tài liệu',
@@ -1754,6 +1757,7 @@ const tMain = createI18n({
     pdfPwdShow: 'パスワードを表示',
     pdfPwdHide: 'パスワードを非表示',
     pdfDocxLocalCorruptDetail: 'ファイルが破損しているか有効なPDFではないため、変換できません。',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: '既定の保存先を選択',
     errSaveDirUnusable:
       '選択したフォルダーは書き込みできないため、既定の保存先として使用できません',
@@ -1929,6 +1933,7 @@ const tMain = createI18n({
     pdfPwdShow: '암호 표시',
     pdfPwdHide: '암호 숨기기',
     pdfDocxLocalCorruptDetail: '파일이 손상되었거나 유효한 PDF가 아니어서 변환할 수 없습니다.',
+    dlgPickMyForm: '내 양식으로 추가할 파일 고르기',
     dlgPickSaveDir: '기본 저장 위치 선택',
     errSaveDirUnusable: '선택한 폴더에 쓸 수 없어 기본 저장 위치로 사용할 수 없습니다',
     saveDirFallbackMsg: '문서 폴더에 저장할 수 없습니다',
@@ -2106,6 +2111,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Masquer le mot de passe',
     pdfDocxLocalCorruptDetail:
       "Le fichier est endommagé ou n'est pas un PDF valide et ne peut pas être converti.",
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: "Choisir l'emplacement d'enregistrement par défaut",
     errSaveDirUnusable:
       "Le dossier sélectionné n'est pas accessible en écriture et ne peut pas servir d'emplacement d'enregistrement par défaut",
@@ -2284,6 +2290,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Passwort ausblenden',
     pdfDocxLocalCorruptDetail:
       'Die Datei ist beschädigt oder keine gültige PDF und kann nicht konvertiert werden.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Standard-Speicherort auswählen',
     errSaveDirUnusable:
       'Der ausgewählte Ordner ist nicht beschreibbar und kann nicht als Standard-Speicherort verwendet werden',
@@ -2462,6 +2469,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Ocultar contraseña',
     pdfDocxLocalCorruptDetail:
       'El archivo está dañado o no es un PDF válido y no se puede convertir.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Elegir ubicación de guardado predeterminada',
     errSaveDirUnusable:
       'La carpeta seleccionada no admite escritura y no puede usarse como ubicación de guardado predeterminada',
@@ -2635,6 +2643,7 @@ const tMain = createI18n({
     pdfPwdShow: 'แสดงรหัสผ่าน',
     pdfPwdHide: 'ซ่อนรหัสผ่าน',
     pdfDocxLocalCorruptDetail: 'ไฟล์เสียหายหรือไม่ใช่ PDF ที่ถูกต้อง จึงไม่สามารถแปลงได้',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'เลือกตำแหน่งบันทึกเริ่มต้น',
     errSaveDirUnusable: 'โฟลเดอร์ที่เลือกไม่สามารถเขียนได้ จึงใช้เป็นตำแหน่งบันทึกเริ่มต้นไม่ได้',
     saveDirFallbackMsg: 'บันทึกลงในโฟลเดอร์เอกสารไม่ได้',
@@ -2811,6 +2820,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Sembunyikan kata sandi',
     pdfDocxLocalCorruptDetail:
       'File rusak atau bukan PDF yang valid sehingga tidak dapat dikonversi.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Pilih Lokasi Penyimpanan Default',
     errSaveDirUnusable:
       'Folder yang dipilih tidak dapat ditulis dan tidak bisa digunakan sebagai lokasi penyimpanan default',
@@ -2988,6 +2998,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Скрыть пароль',
     pdfDocxLocalCorruptDetail:
       'Файл повреждён или не является корректным PDF, преобразование невозможно.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Выбрать папку сохранения по умолчанию',
     errSaveDirUnusable:
       'Выбранная папка недоступна для записи и не может использоваться как папка сохранения по умолчанию',
@@ -3161,6 +3172,7 @@ const tMain = createI18n({
     pdfPwdShow: 'إظهار كلمة المرور',
     pdfPwdHide: 'إخفاء كلمة المرور',
     pdfDocxLocalCorruptDetail: 'الملف تالف أو ليس ملف PDF صالحًا ولا يمكن تحويله.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'اختيار موقع الحفظ الافتراضي',
     errSaveDirUnusable: 'المجلد المحدد غير قابل للكتابة ولا يمكن استخدامه كموقع حفظ افتراضي',
     saveDirFallbackMsg: 'تعذّر الحفظ في مجلد المستندات',
@@ -3337,6 +3349,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Ocultar senha',
     pdfDocxLocalCorruptDetail:
       'O arquivo está danificado ou não é um PDF válido e não pode ser convertido.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Escolher local de salvamento padrão',
     errSaveDirUnusable:
       'A pasta selecionada não permite gravação e não pode ser usada como local de salvamento padrão',
@@ -3514,6 +3527,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Nascondi password',
     pdfDocxLocalCorruptDetail:
       'Il file è danneggiato o non è un PDF valido e non può essere convertito.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Scegli la posizione di salvataggio predefinita',
     errSaveDirUnusable:
       'La cartella selezionata non è scrivibile e non può essere usata come posizione di salvataggio predefinita',
@@ -3691,6 +3705,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Ukryj hasło',
     pdfDocxLocalCorruptDetail:
       'Plik jest uszkodzony lub nie jest prawidłowym plikiem PDF i nie można go przekonwertować.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Wybierz domyślną lokalizację zapisu',
     errSaveDirUnusable:
       'Wybrany folder nie pozwala na zapis i nie może być domyślną lokalizacją zapisu',
@@ -3865,6 +3880,7 @@ const tMain = createI18n({
     pdfPwdShow: 'Zobrazit heslo',
     pdfPwdHide: 'Skrýt heslo',
     pdfDocxLocalCorruptDetail: 'Soubor je poškozený nebo není platným PDF a nelze ho převést.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Zvolte výchozí umístění pro ukládání',
     errSaveDirUnusable:
       'Do vybrané složky nelze zapisovat a nelze ji použít jako výchozí umístění pro ukládání',
@@ -4043,6 +4059,7 @@ const tMain = createI18n({
     pdfPwdHide: 'Wachtwoord verbergen',
     pdfDocxLocalCorruptDetail:
       'Het bestand is beschadigd of geen geldige PDF en kan niet worden geconverteerd.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Standaard opslaglocatie kiezen',
     errSaveDirUnusable:
       'De geselecteerde map is niet beschrijfbaar en kan niet als standaard opslaglocatie worden gebruikt',
@@ -4219,6 +4236,7 @@ const tMain = createI18n({
     pdfPwdShow: 'Tunjukkan kata laluan',
     pdfPwdHide: 'Sembunyikan kata laluan',
     pdfDocxLocalCorruptDetail: 'Fail rosak atau bukan PDF yang sah dan tidak dapat ditukar.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'Pilih Lokasi Simpanan Lalai',
     errSaveDirUnusable:
       'Folder yang dipilih tidak boleh ditulis dan tidak dapat digunakan sebagai lokasi simpanan lalai',
@@ -4392,6 +4410,7 @@ const tMain = createI18n({
     pdfPwdShow: 'הצג סיסמה',
     pdfPwdHide: 'הסתר סיסמה',
     pdfDocxLocalCorruptDetail: 'הקובץ פגום או שאינו PDF תקין ולא ניתן להמירו.',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'בחירת מיקום שמירה כברירת מחדל',
     errSaveDirUnusable:
       'התיקייה שנבחרה אינה ניתנת לכתיבה ולא ניתן להשתמש בה כמיקום שמירה כברירת מחדל',
@@ -4569,6 +4588,7 @@ const tMain = createI18n({
     pdfPwdHide: 'पासवर्ड छिपाएँ',
     pdfDocxLocalCorruptDetail:
       'फ़ाइल क्षतिग्रस्त है या मान्य PDF नहीं है, इसलिए रूपांतरण नहीं हो सकता।',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: 'डिफ़ॉल्ट सहेजने का स्थान चुनें',
     errSaveDirUnusable:
       'चयनित फ़ोल्डर में लिखा नहीं जा सकता, इसलिए इसे डिफ़ॉल्ट सहेजने के स्थान के रूप में उपयोग नहीं किया जा सकता',
@@ -4736,6 +4756,7 @@ const tMain = createI18n({
     pdfPwdShow: '顯示密碼',
     pdfPwdHide: '隱藏密碼',
     pdfDocxLocalCorruptDetail: '檔案已損壞或不是有效的 PDF，無法轉換。',
+    dlgPickMyForm: 'Choose a file to add to My templates',
     dlgPickSaveDir: '選擇預設儲存位置',
     errSaveDirUnusable: '所選資料夾無法寫入，無法作為預設儲存位置',
     saveDirFallbackMsg: '無法儲存到「文件」資料夾',
@@ -9841,6 +9862,8 @@ registerMyFormsIpc({
     const win = shellWindow
     if (!win) return null
     const picked = await dialog.showOpenDialog(win, {
+      // says what the file is for, not a bare "Open" (0.17 리뷰 v2 shell #33)
+      title: tm('dlgPickMyForm'),
       properties: ['openFile'],
       filters: [
         { name: 'Word, HWP', extensions: ['docx', 'hwp', 'hwpx'] },
