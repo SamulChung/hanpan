@@ -3695,7 +3695,7 @@ export function registerSheetsIpc(): void {
           return { ok: true, path: filePath }
         }
         if (request.type === 'xlsx') {
-          const buffer = await sheetCsvToXlsxBuffer(request.content, request.sheetName ?? 'Sheet1')
+          const buffer = await sheetCsvToXlsxBuffer(request.content, request.sheetName)
           const filePath = uniquePathIn(
             configuredDefaultSaveDir(app),
             `${sanitizeGeneratedFileBase(request.title)}.xlsx`,
@@ -5075,7 +5075,7 @@ async function openEmptyXlsx(path: string): Promise<{
   await mkdir(directory, { recursive: true })
   const openPath = join(directory, basename(path))
   try {
-    await writeFile(openPath, (await csvToXlsxBufferForOpen('', 'Sheet1')).buffer)
+    await writeFile(openPath, (await csvToXlsxBufferForOpen('')).buffer)
   } catch (error) {
     await cleanupImportTempDirectory(app.getPath('temp'), directory)
     throw error
@@ -5264,7 +5264,7 @@ async function prepareWorkbookForOpen(
         }
         const converted = await csvToXlsxBufferForOpen(
           decodeCsvBuffer(await readFile(path), legacyCsvCharset()),
-          'Sheet1',
+          undefined,
           copyExtension === 'tsv' ? '\t' : undefined,
         )
         await writeFile(openPath, converted.buffer)
@@ -5308,7 +5308,7 @@ async function prepareWorkbookForOpen(
       if (csvStat.size > MAX_DELIMITED_IMPORT_BYTES) throw new Error(tm('errFileTooLarge'))
       const converted = await csvToXlsxBufferForOpen(
         decodeCsvBuffer(await readFile(path), legacyCsvCharset()),
-        'Sheet1',
+        undefined,
         // A .tsv's delimiter is declared by its extension, and sniffing by
         // frequency can get it wrong: annotation-heavy exports (gene
         // descriptions, database cross-references) hold comma-separated

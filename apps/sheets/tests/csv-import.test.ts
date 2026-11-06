@@ -236,7 +236,8 @@ describe('csvToXlsxBuffer', () => {
     )
     expect(sheet).toContain('<c r="B2" t="inlineStr"><is><t xml:space="preserve">007</t></is></c>')
     expect(sheet).toContain('<c r="B3"><v>42</v></c>')
-    expect(await zip.file('xl/workbook.xml')?.async('text')).toContain('<sheet name="Sheet1"')
+    // a CSV opened as a new workbook starts in Korean like a blank one (0.17 #9)
+    expect(await zip.file('xl/workbook.xml')?.async('text')).toContain('<sheet name="시트1"')
   })
 
   it('rejects an empty file and escapes XML metacharacters', async () => {
@@ -341,6 +342,28 @@ describe('blankXlsxBuffer', () => {
   it('keeps a name the caller gives', async () => {
     const zip = await JSZip.loadAsync(await blankXlsxBuffer('Sheet1'))
     expect(await zip.file('xl/workbook.xml')?.async('text')).toContain('<sheet name="Sheet1"')
+  })
+})
+
+describe('the first sheet of a workbook made from CSV (0.17 #9)', () => {
+  const firstSheetName = async (buffer: Buffer) =>
+    /<sheet name="([^"]*)"/.exec((await (await JSZip.loadAsync(buffer)).file('xl/workbook.xml')?.async('text')) ?? '')?.[1]
+
+  it('is 시트1 when the caller names none, on the open path and the AI path', async () => {
+    expect(await firstSheetName((await csvToXlsxBufferForOpen('a,b\n1,2')).buffer)).toBe('시트1')
+    expect(await firstSheetName((await csvToXlsxBufferForOpen('')).buffer)).toBe('시트1')
+    expect(await firstSheetName(await sheetCsvToXlsxBuffer('a,b\r\n'))).toBe('시트1')
+  })
+
+  it('keeps a name the caller gives', async () => {
+    expect(await firstSheetName((await csvToXlsxBufferForOpen('a', 'Sheet1')).buffer)).toBe('Sheet1')
+    expect(await firstSheetName(await sheetCsvToXlsxBuffer('a', 'de'))).toBe('de')
+  })
+
+  it('is not hard-coded as Sheet1 by the sheets main process', async () => {
+    const { readFileSync } = await import('node:fs')
+    const main = readFileSync(new URL('../src/main/sheets-main.ts', import.meta.url), 'utf8')
+    expect(main).not.toMatch(/'Sheet1'/)
   })
 })
 

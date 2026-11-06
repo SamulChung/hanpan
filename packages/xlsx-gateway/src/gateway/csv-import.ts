@@ -343,7 +343,17 @@ function columnIndexFromLabel(label: string): number {
   return index - 1
 }
 
-export async function csvToXlsxBuffer(csvText: string, sheetName = 'Sheet1'): Promise<Buffer> {
+/**
+ * The first sheet of a workbook this package makes from nothing (a blank workbook, a CSV
+ * opened or imported, the AI's create_document): Korean, as Hanpan 0.17 starts new
+ * workbooks. A sheet of an existing file keeps its own name; only new ones take this.
+ */
+export const NEW_WORKBOOK_SHEET_NAME = '시트1'
+
+export async function csvToXlsxBuffer(
+  csvText: string,
+  sheetName = NEW_WORKBOOK_SHEET_NAME,
+): Promise<Buffer> {
   const rows = parseCsv(csvText, resolveImportDelimiter(csvText))
   if (rows.length === 0) throw new Error('The CSV file has no data rows.')
   return xlsxBufferFromRows(rows, sheetName)
@@ -357,7 +367,7 @@ export async function csvToXlsxBuffer(csvText: string, sheetName = 'Sheet1'): Pr
  */
 export async function csvToXlsxBufferForOpen(
   csvText: string,
-  sheetName = 'Sheet1',
+  sheetName = NEW_WORKBOOK_SHEET_NAME,
   delimiter?: string,
 ): Promise<{ buffer: Buffer; empty: boolean }> {
   const rows = parseCsv(csvText, delimiter ?? resolveImportDelimiter(csvText))
@@ -406,7 +416,10 @@ function bodyRowsAgreeOnWidth(rows: readonly (readonly string[])[]): boolean {
  * neither), and sniffing would then split the wrong columns — and an
  * all-empty grid becomes a valid blank workbook instead of an import error.
  */
-export async function sheetCsvToXlsxBuffer(csvText: string, sheetName = 'Sheet1'): Promise<Buffer> {
+export async function sheetCsvToXlsxBuffer(
+  csvText: string,
+  sheetName = NEW_WORKBOOK_SHEET_NAME,
+): Promise<Buffer> {
   return xlsxBufferFromRows(parseCsv(csvText, ','), sheetName)
 }
 
@@ -415,7 +428,7 @@ export async function sheetCsvToXlsxBuffer(csvText: string, sheetName = 'Sheet1'
  * Korean (Hanpan 0.17): the first sheet is 시트1 unless the caller names it, and the Normal
  * font is 맑은 고딕.
  */
-export async function blankXlsxBuffer(sheetName = '시트1'): Promise<Buffer> {
+export async function blankXlsxBuffer(sheetName = NEW_WORKBOOK_SHEET_NAME): Promise<Buffer> {
   return xlsxBufferFromSheets([{ name: sheetName, rows: [] }], NEW_WORKBOOK_STYLESHEET_XML)
 }
 
