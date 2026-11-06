@@ -128,7 +128,7 @@ export async function sourceMarkdown(deps: SendDeps, tabId: string): Promise<Sou
   if (!source || sendTargetsFor(source.kind, true).length === 0) {
     return { ok: false, problem: 'unsupported' }
   }
-  const title = titleStem(source.title)
+  let title = titleStem(source.title)
   let markdown: string
   try {
     if (LIVE_KINDS.has(source.kind)) {
@@ -144,6 +144,8 @@ export async function sourceMarkdown(deps: SendDeps, tabId: string): Promise<Sou
     } else {
       const saved = await savedSource(deps, source)
       if (!saved?.filePath) return { ok: false, problem: 'canceled' }
+      // an untitled document saved just now: its tab may not show the new name yet
+      title = titleStem(saved.filePath.split(/[\\/]/).pop() ?? '') || title
       const read = await readFileText(deps, saved.filePath)
       if (!read.ok) return read
       if (source.kind === 'docs') markdown = docxTextToMarkdown(read.text)

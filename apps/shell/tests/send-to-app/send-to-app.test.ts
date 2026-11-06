@@ -157,6 +157,19 @@ describe('reading the source', () => {
     expect(read.ok).toBe(true)
   })
 
+  it('names the result after the file an untitled document was just saved as', async () => {
+    // the tab may still say 제목 없는 문서 when the save lands; the new deck is named WORD1
+    const untitled = docx({ title: '제목 없는 문서', filePath: undefined, dirty: true })
+    const saved = { ...docx(), title: '제목 없는 문서', filePath: 'C:\\d\\WORD1.docx' }
+    let calls = 0
+    const d = deps(untitled, {
+      document: async () => (calls++ === 0 ? untitled : saved),
+      parse: async () => ({ ok: true, kind: 'text', text: '본문' }) as ParsedFile,
+    })
+    const read = await sourceMarkdown(d, 't2')
+    expect(read.ok && read.title).toBe('WORD1')
+  })
+
   it('stops when the person does not want to save', async () => {
     const parse = vi.fn()
     const d = deps(docx({ dirty: true, filePath: undefined }), {
