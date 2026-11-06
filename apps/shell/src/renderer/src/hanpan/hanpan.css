@@ -105,6 +105,66 @@
 .hp-design-badge {
   font-size: 18px;
 }
+/* 내 양식: the user's own forms, above the built-in ones */
+.hp-my-forms {
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.hp-my-forms-head,
+.hp-my-forms-save {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.hp-my-forms-head {
+  justify-content: space-between;
+}
+.hp-my-forms-save {
+  margin: 0 0 10px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.hp-my-forms-save label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hp-my-forms-save .hp-tpl-note {
+  margin: 0;
+}
+.hp-my-forms-head button,
+.hp-my-forms-save button,
+.hp-my-forms-save select,
+.hp-my-forms-save input {
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 12px;
+}
+.hp-my-forms-head button,
+.hp-my-forms-save button {
+  white-space: nowrap;
+  cursor: pointer;
+}
+.hp-my-forms-save input {
+  width: 180px;
+}
+.hp-my-forms .hp-tpl-error {
+  margin: 0 0 8px;
+}
+.hp-my-form-type {
+  margin-inline-start: 4px;
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+}
 
 /* ── Hanpan Home: the start board and the card order (mind map first) ── */
 

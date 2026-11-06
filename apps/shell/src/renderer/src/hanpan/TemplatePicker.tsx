@@ -8,6 +8,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useI18n } from '../locale'
 import type { MarkdownConverterApi } from './MarkdownConverter'
+import { MyFormsSection, type MyFormsApi } from './MyForms'
 
 export interface TemplateSummary {
   id: string
@@ -19,7 +20,7 @@ export interface TemplateSummary {
   form?: string
 }
 
-export interface HanpanApi extends Partial<MarkdownConverterApi> {
+export interface HanpanApi extends Partial<MarkdownConverterApi>, Partial<MyFormsApi> {
   templates(): Promise<TemplateSummary[]>
   openTemplate(
     id: string,
@@ -50,11 +51,27 @@ const CATEGORY_ORDER = [
   '기타',
 ]
 
+/** the 내 양식 calls, only when every one of them is there */
+function myFormsApiOf(api: HanpanApi | undefined): MyFormsApi | null {
+  if (
+    !api?.myForms ||
+    !api.myFormSources ||
+    !api.saveMyForm ||
+    !api.importMyForm ||
+    !api.openMyForm ||
+    !api.deleteMyForm
+  )
+    return null
+  return api as MyFormsApi
+}
+
 export function TemplatePicker(p: { onClose(): void }) {
   const { t } = useI18n()
   const [templates, setTemplates] = useState<TemplateSummary[]>([])
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
+  // the user's own forms, when this build's preload offers them
+  const [myFormsApi] = useState(() => myFormsApiOf(window.hanpanApi))
 
   useEffect(() => {
     void window.hanpanApi
@@ -112,6 +129,7 @@ export function TemplatePicker(p: { onClose(): void }) {
           </p>
         )}
         <div className="hp-tpl-body">
+          {myFormsApi && <MyFormsSection api={myFormsApi} onOpened={p.onClose} />}
           {groups.map(([category, list]) => (
             <section key={category}>
               <h3>{category}</h3>
