@@ -70,6 +70,11 @@ const REVEAL_COMMAND = 'ext:ieum-reveal'
  */
 export const FILE_COMMAND_EVENT = 'ieum:file-command'
 /**
+ * The event the About box's licence button fires on the editor's window (0.17 UI/UX review v2,
+ * hwp-design #6): the app opens its own open-source licence list, rhwp's crates included.
+ */
+export const OPEN_LICENSES_EVENT = 'ieum:open-licenses'
+/**
  * The event this plugin fires on the editor's window when the document's unsaved state
  * changes, with the new state (true: unsaved changes) as its detail.
  */

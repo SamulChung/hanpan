@@ -174,3 +174,13 @@ describe("the notice's buttons", () => {
     expect(showItemInFolder).not.toHaveBeenCalled()
   })
 })
+
+describe("the About box's licence button (#6)", () => {
+  it("opens the app's open-source licence list", () => {
+    const openLicenseNotices = vi.fn()
+    configureHwpRuntime({ preloadPath: '', openLicenseNotices })
+    const tab = createHwpView().webContents
+    call(HWP_CHANNELS.openLicenses, tab)
+    expect(openLicenseNotices).toHaveBeenCalledTimes(1)
+  })
+})

@@ -195,6 +195,17 @@ export const UX_CORRECTIONS = {
 }
 
 export const UX_STRINGS = {
+  // 파일 > 제품 정보 (#6): the licences are in the app's own list, not a crate table
+  'hanpan.about.licenses': [
+    'rhwp가 쓰는 프로그램을 포함한 모든 라이선스와 저작권 고지는 한판의 오픈소스 라이선스 목록에 있습니다.',
+    "Every licence and copyright notice, rhwp's components included, is in Hanpan's open-source licence list.",
+    'Mọi giấy phép và thông báo bản quyền, kể cả các thành phần của rhwp, có trong danh sách giấy phép mã nguồn mở của Hanpan.',
+  ],
+  'hanpan.about.licensesButton': [
+    '오픈소스 라이선스 보기',
+    'View open-source licences',
+    'Xem giấy phép mã nguồn mở',
+  ],
   // 문서 이력 관리: nothing saved yet (#4)
   'hanpan.history.empty': [
     '저장한 이력이 없습니다. [이력에 저장]을 누르면 지금 문서가 여기에 남습니다.',

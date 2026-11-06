@@ -25,7 +25,14 @@
  *
  * studio-options-no-pdf (#5)
  *   Tools > Preferences offered the browser print guide for PDFs; the app writes PDFs itself.
+ *
+ * studio-about-licenses (#6)
+ *   File > About listed rhwp's crates, sent the reader to THIRD_PARTY_LICENSES.md (which the app
+ *   cannot open) and ended with rhwp's copyright line. One line and a button now open the app's
+ *   own open-source licence list, which carries all of that. The list stays in the source, moved
+ *   into a method nobody calls, so the patch keeps the file's text otherwise as it is.
  */
+import { OPEN_LICENSES_EVENT } from '../studio-plugin/agent-plugin.mjs'
 import { HANCOM_KEYS_MODULE } from '../studio-plugin/hancom-keys.mjs'
 
 /** A file of the studio's source, by its path under src/. */
@@ -243,6 +250,54 @@ export const UX_PATCHES = {
           "    sbMessage().textContent = t('ui.sbMessage.filePages', { p1: wasm.fileName, p2: wasm.pageCount });",
           '  }',
           "  documentState.markClean('host-save');",
+        ].join('\n'),
+      },
+    ],
+  },
+
+  'studio-about-licenses': {
+    file: studioFile('ui/about-dialog'),
+    edits: [
+      {
+        find: [
+          '    // 오픈소스 라이선스',
+          "    const licenseTitle = document.createElement('div');",
+        ].join('\n'),
+        replace: [
+          "    // the licences are in the app's own list (Settings > About), rhwp's crates included",
+          "    const licenseNote = document.createElement('div');",
+          "    licenseNote.className = 'about-license-note';",
+          "    licenseNote.textContent = t('hanpan.about.licenses');",
+          '    body.appendChild(licenseNote);',
+          "    const licenseButton = document.createElement('button');",
+          "    licenseButton.type = 'button';",
+          "    licenseButton.className = 'dialog-btn about-license-btn';",
+          "    licenseButton.textContent = t('hanpan.about.licensesButton');",
+          "    licenseButton.addEventListener('click', () =>",
+          `      window.dispatchEvent(new CustomEvent('${OPEN_LICENSES_EVENT}')),`,
+          '    );',
+          '    body.appendChild(licenseButton);',
+          '',
+          '    return body;',
+          '  }',
+          '',
+          "  /** rhwp's own licence list and copyright line, left out above. */",
+          '  private rhwpLicenseList(body: HTMLElement): void {',
+          "    const licenseTitle = document.createElement('div');",
+        ].join('\n'),
+      },
+      {
+        find: [
+          "    copyright.textContent = '\\u00A9 2026 rhwp: Edward Kim';",
+          '    body.appendChild(copyright);',
+          '',
+          '    return body;',
+          '  }',
+        ].join('\n'),
+        replace: [
+          "    copyright.textContent = '\\u00A9 2026 rhwp: Edward Kim';",
+          '    body.appendChild(copyright);',
+          '  }',
         ].join('\n'),
       },
     ],

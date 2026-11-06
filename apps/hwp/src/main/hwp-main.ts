@@ -82,6 +82,8 @@ interface RuntimePaths {
   goHome?: () => void
   /** a new Hangul document in a tab (Hangul's Alt+N) */
   newDocument?: () => void
+  /** the app's open-source licence list; the editor's About box points there */
+  openLicenseNotices?: () => void
 }
 
 let runtime: RuntimePaths = { preloadPath: '' }
@@ -705,6 +707,8 @@ function registerHwpIpc(): void {
 
   // the export and save notices' buttons: a file this tab wrote, opened in the app or shown in
   // its folder; any other path is refused
+  ipcMain.on(HWP_CHANNELS.openLicenses, () => runtime.openLicenseNotices?.())
+
   ipcMain.handle(HWP_CHANNELS.revealOutput, (e, path: unknown, how: unknown): boolean => {
     const wcId = e.sender.id
     if (typeof path !== 'string' || (how !== 'open' && how !== 'folder')) return false

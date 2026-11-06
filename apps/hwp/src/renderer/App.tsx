@@ -17,6 +17,7 @@ import { createAgentBridge } from './ai/agent-bridge'
 import {
   DIRTY_EVENT,
   FILE_COMMAND_EVENT,
+  OPEN_LICENSES_EVENT,
   MEMO_NOT_COPIED_EVENT,
   MEMO_REMOVED_EVENT,
 } from '../../studio-plugin/agent-plugin.mjs'
@@ -555,9 +556,13 @@ export default function App() {
     }
     frame.addEventListener(FILE_COMMAND_EVENT, onCommand)
     frame.addEventListener(MEMO_INSERT_EVENT, onMemoInsert)
+    // the About box's licence button (0.17 UI/UX review v2 #6)
+    const onLicenses = () => window.hwpApi.openLicenses()
+    frame.addEventListener(OPEN_LICENSES_EVENT, onLicenses)
     return () => {
       frame.removeEventListener(FILE_COMMAND_EVENT, onCommand)
       frame.removeEventListener(MEMO_INSERT_EVENT, onMemoInsert)
+      frame.removeEventListener(OPEN_LICENSES_EVENT, onLicenses)
     }
   }, [phase, agentBridge, t])
 

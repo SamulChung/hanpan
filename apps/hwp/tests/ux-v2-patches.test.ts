@@ -8,6 +8,8 @@ import { JSDOM } from 'jsdom'
 import { describe, expect, it } from 'vitest'
 import { showCorrectedLabels, tidyStudioMenus } from '../studio-plugin/hancom-keys.mjs'
 import { DIALOG_THEME_CSS } from '../studio-plugin/dialog-theme.mjs'
+import { OPEN_LICENSES_EVENT } from '../studio-plugin/agent-plugin.mjs'
+import { APP_STRINGS } from '../studio-plugin/studio-locales.mjs'
 import { STUDIO_PATCHES, applyPatch, patchTargets } from '../scripts/rhwp-patches.mjs'
 import { UX_PATCHES } from '../scripts/studio-ux-patches.mjs'
 
@@ -192,5 +194,28 @@ describe.skipIf(!fetched)('the status bar after Save As (#7)', () => {
     expect(save.slice(0, 600)).toContain(
       "sbMessage().textContent = t('ui.sbMessage.filePages', { p1: wasm.fileName, p2: wasm.pageCount });",
     )
+  })
+})
+
+describe.skipIf(!fetched)('the About box (#6)', () => {
+  it("lists no crates and no file the app cannot open, and points to the app's licence list", () => {
+    const c = patched('src/ui/about-dialog.ts')
+    const body = c.slice(c.indexOf('protected createBody()'), c.indexOf('private rhwpLicenseList('))
+    // rhwp's list stays in the file, in a method nothing calls
+    expect(c.split('rhwpLicenseList(').length - 1).toBe(1)
+    expect(body).not.toContain('THIRD_PARTY_LICENSES')
+    expect(body).not.toContain("t('dialog.about.licenseNote.text')")
+    expect(body).not.toContain('Edward Kim')
+    expect(body).toContain("t('hanpan.about.licenses')")
+    expect(body).toContain(`new CustomEvent('${OPEN_LICENSES_EVENT}')`)
+    // the HWP specification notice stays: rhwp's use of the spec requires it
+    expect(body).toContain("t('dialog.about.notice.text')")
+  })
+
+  it('has its words in every studio language', () => {
+    for (const locale of ['ko', 'en', 'vi'] as const) {
+      expect(APP_STRINGS[locale]['hanpan.about.licenses'], locale).toBeTruthy()
+      expect(APP_STRINGS[locale]['hanpan.about.licensesButton'], locale).toBeTruthy()
+    }
   })
 })

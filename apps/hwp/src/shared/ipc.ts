@@ -28,6 +28,8 @@ export const HWP_CHANNELS = {
    * this tab wrote in the app, or show it in its folder (0.17 UI/UX review v2)
    */
   revealOutput: 'hwp:reveal-output',
+  /** send(): the About box asks for the app's open-source licence list (0.17 UI/UX review v2) */
+  openLicenses: 'hwp:open-licenses',
   dirtyChanged: 'hwp:dirty-changed',
   closeSaveRequest: 'hwp:close-save-request',
   closeSaveResult: 'hwp:close-save-result',
@@ -365,6 +367,8 @@ export interface HwpApi {
   savePngs(request: PngExport): Promise<PrintResult>
   /** open a file this tab saved or exported in the app ('open'), or show it in its folder */
   revealOutput(path: string, how: 'open' | 'folder'): Promise<boolean>
+  /** the About box's licence button: the app's open-source licence list */
+  openLicenses(): void
   onCloseSaveRequest(handler: () => void): () => void
   sendCloseSaveResult(ok: boolean): void
   /** the memo editor opened or closed in this tab: main holds back save, close and quit */
