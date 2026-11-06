@@ -2,7 +2,12 @@ import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { PRINT_READY_SCRIPT, printHtmlDocument, type PrintDialogWindow } from '../src/print-window'
+import {
+  PRINT_READY_SCRIPT,
+  printHtmlDocument,
+  withPrintOptions,
+  type PrintDialogWindow,
+} from '../src/print-window'
 
 /** Records the call order, so the assertions can pin sequencing and not just
  * end state: the readiness probe has to happen BEFORE print(), and show() has
@@ -175,5 +180,44 @@ describe('HTML print window', () => {
     }
     // Teardown must not turn a print failure into an unhandled rejection.
     await expect(run(win, 'win32')).rejects.toThrow('window already gone')
+  })
+})
+
+describe('withPrintOptions', () => {
+  it('tells the system dialog the paper on every print, and passes the rest through', async () => {
+    const seen: unknown[] = []
+    const calls: string[] = []
+    const win = {
+      loadFile: async () => void calls.push('load'),
+      webContents: {
+        executeJavaScript: async () => 'READY',
+        print: (options: unknown, callback: (ok: boolean, reason: string) => void) => {
+          seen.push(options)
+          callback(true, '')
+        },
+      },
+      show: () => void calls.push('show'),
+      focus: () => void calls.push('focus'),
+      isDestroyed: () => false,
+      destroy: () => void calls.push('destroy'),
+    }
+    const wrapped = withPrintOptions(win, { pageSize: 'A4', landscape: true })
+    await wrapped.loadFile('x.html')
+    wrapped.show()
+    wrapped.focus()
+    await new Promise<void>((resolve) =>
+      wrapped.webContents.print({ silent: false, printBackground: true }, () => resolve()),
+    )
+    wrapped.destroy()
+    expect(seen).toEqual([
+      {
+        silent: false,
+        printBackground: true,
+        pageSize: 'A4',
+        landscape: true,
+        margins: { marginType: 'none' },
+      },
+    ])
+    expect(calls).toEqual(['load', 'show', 'focus', 'destroy'])
   })
 })

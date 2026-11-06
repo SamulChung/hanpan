@@ -10,6 +10,7 @@
     "./ai-panel-prefs": "./src/ai-panel-prefs.ts",
     "./ai-subscription-login-window": "./src/ai-subscription-login-window.ts",
     "./template-fonts": "./src/template-fonts.ts",
+    "./image-print": "./src/image-print.ts",
     "./tokens.css": "./src/tokens.css",
     "./screentip.css": "./src/screentip.css",
     "./color-picker.css": "./src/color-picker.css",

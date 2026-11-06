@@ -118,6 +118,16 @@ describe('menus', () => {
     expect(menu).toContain("kind === 'photo' ? newPhotoTab() : newIllustTab()")
   })
 
+  it('the graphics menu (and so ☰) prints through the page, with Ctrl+P shown', () => {
+    const menu = fnSource('buildGraphicsMenu')
+    expect(menu).toMatch(
+      /label: tm\('menuPrint'\),\s*accelerator: 'CmdOrCtrl\+P',[\s\S]*?sendGraphicsMenuCommand\(tab\.webContents, 'print'\)/,
+    )
+    expect(main).toContain(
+      "printGraphics: (contents) => sendGraphicsMenuCommand(contents, 'print')",
+    )
+  })
+
   it('the new-tab menu and File > New list both, with no Korean-documents switch', () => {
     expect(main.split("label: tm('menuNewPhoto')").length - 1).toBe(2)
     expect(main.split("label: tm('menuNewIllust')").length - 1).toBe(2)

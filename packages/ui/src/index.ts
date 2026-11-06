@@ -440,3 +440,19 @@ export {
 export { ProviderLogo } from './provider-logos'
 export { useRedactLabelField } from './use-redact-label'
 export type { RedactLabelField } from './use-redact-label'
+export {
+  ImagePrintDialog,
+  type ImagePrintDialogLabels,
+  type ImagePrintDialogProps,
+} from './image-print-dialog'
+export {
+  PRINT_MAX_SIDE,
+  autoOrientation,
+  buildImagePrintHtml,
+  fitSheet,
+  paperSheetFor,
+  pngSize,
+  type PrintOrientation,
+  type PrintPicture,
+  type PrintSheet,
+} from './image-print'

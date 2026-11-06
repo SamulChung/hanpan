@@ -153,7 +153,7 @@ export function tabMenuTemplate(input: TabMenuInput): MenuItemConstructorOptions
     {
       id: 'print',
       label: tm('menuTabPrint'),
-      // AI 포토, AI 일러스트 and books have no print: the entry is off rather than dead
+      // books have no print: the entry is off rather than dead
       enabled: document && tabDocumentActionSupported(tab.kind, 'print'),
       click: () => actions.print(tab.id),
     },

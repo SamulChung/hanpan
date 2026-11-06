@@ -25,10 +25,12 @@ export interface TabDocumentActionDeps {
   saveEpub(contents: WebContents, mode: 'save' | 'saveAs'): void
   /** AI 포토 and AI 일러스트 */
   saveGraphics(contents: WebContents, mode: 'save' | 'saveAs'): void
+  /** AI 포토 and AI 일러스트: the page asks the app for its picture and shows the print preview */
+  printGraphics(contents: WebContents): void
 }
 
 /** document kinds whose editor has no print workflow: the tab menu switches Print off for them */
-const NO_PRINT: ReadonlySet<TabKind> = new Set(['photo', 'illust', 'epub'])
+const NO_PRINT: ReadonlySet<TabKind> = new Set(['epub'])
 
 /** Whether the tab menu can run this action on a tab of this kind (Home and the manual have none). */
 export function tabDocumentActionSupported(kind: TabKind, action: TabDocumentAction): boolean {
@@ -94,7 +96,8 @@ export function runTabDocumentAction(
       break
     case 'photo':
     case 'illust':
-      deps.saveGraphics(contents, mode)
+      if (action === 'print') deps.printGraphics(contents)
+      else deps.saveGraphics(contents, mode)
       break
   }
 }

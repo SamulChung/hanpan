@@ -237,6 +237,16 @@ const KO = {
   iconLook: '아이콘 색과 굵기',
   icon: '아이콘',
   iconCredit: '아이콘: Lucide (ISC 라이선스)',
+  print: '인쇄',
+  printPreparing: '페이지를 그리는 중…',
+  printPages: (n: number) => `${n}쪽`,
+  printRange: '인쇄 범위',
+  printCurrent: '이 쪽만',
+  printAll: '모든 쪽',
+  printCancel: '취소',
+  printFailed: '인쇄하지 못했습니다.',
+  printPaper: (paper: string) => `용지: ${paper}`,
+  printFit: 'A4에 맞춤',
 }
 export type Words = typeof KO
 
@@ -468,6 +478,16 @@ const EN: Words = {
   iconLook: 'Icon colour and weight',
   icon: 'Icon',
   iconCredit: 'Icons: Lucide (ISC licence)',
+  print: 'Print',
+  printPreparing: 'Drawing the pages…',
+  printPages: (n: number) => `${n} ${n === 1 ? 'page' : 'pages'}`,
+  printRange: 'Print range',
+  printCurrent: 'This page',
+  printAll: 'All pages',
+  printCancel: 'Cancel',
+  printFailed: 'Could not print.',
+  printPaper: (paper: string) => `Paper: ${paper}`,
+  printFit: 'fitted to A4',
 }
 
 export const wordsFor = (lang: string): Words => (lang === 'ko' ? KO : EN)

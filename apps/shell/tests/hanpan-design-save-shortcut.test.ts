@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { saveShortcut } from '../src/renderer/src/design/model'
+import { printShortcut, saveShortcut } from '../src/renderer/src/design/model'
 
 const key = (
   k: string,
@@ -24,5 +24,15 @@ describe('design board save keys', () => {
     expect(saveShortcut(key('s'))).toBeNull()
     expect(saveShortcut(key('s', { ctrlKey: true, altKey: true }))).toBeNull()
     expect(saveShortcut(key('d', { ctrlKey: true }))).toBeNull()
+  })
+})
+
+describe('design board print key', () => {
+  it('Ctrl+P (or Cmd+P) prints; not with Shift or Alt, not without the modifier', () => {
+    expect(printShortcut(key('p', { ctrlKey: true }))).toBe(true)
+    expect(printShortcut(key('P', { metaKey: true }))).toBe(true)
+    expect(printShortcut(key('p'))).toBe(false)
+    expect(printShortcut(key('p', { ctrlKey: true, shiftKey: true }))).toBe(false)
+    expect(printShortcut(key('p', { ctrlKey: true, altKey: true }))).toBe(false)
   })
 })

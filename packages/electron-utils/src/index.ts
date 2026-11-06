@@ -138,6 +138,8 @@ export { atomicWriteFile, atomicWriteVia, writeJsonAtomic } from './atomic-write
 export {
   PRINT_READY_SCRIPT,
   printHtmlDocument,
+  withPrintOptions,
+  type PrintableWindow,
   type PrintDialogOutcome,
   type PrintDialogWindow,
   type PrintDocumentOptions,

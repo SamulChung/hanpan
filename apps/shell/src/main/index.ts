@@ -7235,6 +7235,7 @@ function tabMenuActions(): TabMenuActions {
         saveGraphics: (contents, mode) => {
           void requestGraphicsSave(contents, mode)
         },
+        printGraphics: (contents) => sendGraphicsMenuCommand(contents, 'print'),
       },
       id,
       action,
@@ -8010,6 +8011,16 @@ function buildGraphicsMenu(kind: 'photo' | 'illust'): void {
           click: () => {
             const tab = activeGraphicsTarget()
             if (tab) sendGraphicsMenuCommand(tab.webContents, 'export')
+          },
+        },
+        { type: 'separator' },
+        {
+          // the page asks the app for its picture and shows the print preview
+          label: tm('menuPrint'),
+          accelerator: 'CmdOrCtrl+P',
+          click: () => {
+            const tab = activeGraphicsTarget()
+            if (tab) sendGraphicsMenuCommand(tab.webContents, 'print')
           },
         },
         { type: 'separator' },

@@ -33,6 +33,9 @@ contextBridge.exposeInMainWorld('hanpanDesign', {
   savePdf: (pages: Uint8Array[], size: { width: number; height: number }, name: string) =>
     ipcRenderer.invoke('hanpan-design:save-pdf', pages, size, name),
   copyImage: (bytes: Uint8Array) => ipcRenderer.invoke('hanpan-design:copy-image', bytes),
+  // pages as the PNG export draws them; main builds the print page from them
+  print: (pages: Uint8Array[], sheet: { widthMm: number; heightMm: number; marginMm: number }) =>
+    ipcRenderer.invoke('hanpan-design:print', pages, sheet),
   // 'save' writes over the design's own file (main keeps the path); 'saveAs' always asks
   saveDesign: (text: string, name: string, mode?: 'save' | 'saveAs') =>
     ipcRenderer.invoke('hanpan-design:save', text, name, mode),
