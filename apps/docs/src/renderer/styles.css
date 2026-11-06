@@ -524,6 +524,9 @@ html.genoffice-popover-open .ribbon-tabs {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  /* labels never wrap: the menu widens to the longest item instead */
+  gap: 16px;
+  white-space: nowrap;
   width: 100%;
   border: none;
   background: none;

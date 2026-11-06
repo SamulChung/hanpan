@@ -35,7 +35,10 @@ describe('Home tab fits narrower windows', () => {
   it('marks the AI group and its four preset buttons', () => {
     vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true)
     ;(window as unknown as { desktop: unknown }).desktop = { onLanguageChanged: () => () => {} }
-    const editor = new Editor({ element: document.createElement('div'), extensions: editorExtensions })
+    const editor = new Editor({
+      element: document.createElement('div'),
+      extensions: editorExtensions,
+    })
     const host = document.createElement('div')
     document.body.append(host)
     const root = createRoot(host)
@@ -74,5 +77,12 @@ describe('Home tab fits narrower windows', () => {
   it('drops the preset labels below 1366px', () => {
     const block = mediaBlock('(max-width: 1365px)')
     expect(block).toMatch(/\.ai-preset > span:last-child\s*\{[^}]*display: none/)
+  })
+})
+
+describe('File menu items stay on one line', () => {
+  // measured: "다른 이름으로 저장…" broke onto two lines beside "Ctrl+Shift+S" in the 210px menu
+  it('does not wrap item labels', () => {
+    expect(css).toMatch(/\.file-menu button\s*\{[^}]*white-space: nowrap/)
   })
 })
