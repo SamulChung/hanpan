@@ -17,7 +17,7 @@ import {
 import { REWRITE_MODES, type RewriteMode } from './ai'
 import { BUNDLED_FONTS, GONGU_FONTS, SYSTEM_FONTS, type FontChoice } from './fonts'
 import type { AlignMode } from './geometry'
-import type { Words } from './words'
+import { LANG_NATIVE_NAMES, fontLabel, type Words } from './words'
 
 export type Arrange = 'toFront' | 'front' | 'back' | 'toBack'
 
@@ -26,6 +26,8 @@ const ADD_FONT = '\u0000add-font'
 
 export interface InspectorProps {
   w: Words
+  /** the UI language: font names and the default translation target follow it */
+  lang: string
   page: DesignPage
   selection: DesignElement[]
   docColors: string[]
@@ -58,6 +60,9 @@ export interface InspectorProps {
     error: string | null
     rewrite(id: string, mode: RewriteMode): void
     stop(): void
+    /** the language a translation goes to; null for the default */
+    translateTo: string | null
+    setTranslateTo(lang: string | null): void
   }
 }
 
@@ -393,6 +398,21 @@ export function Inspector(p: InspectorProps) {
                   </button>
                 ))}
               </div>
+              <label className="dz-row">
+                <span>{w.translateTo}</span>
+                <select
+                  value={p.ai.translateTo ?? ''}
+                  onChange={(ev) => p.ai!.setTranslateTo(ev.target.value || null)}
+                  data-hanpan="design-translate-to"
+                >
+                  <option value="">{w.translateAuto(LANG_NATIVE_NAMES[p.lang] ?? p.lang)}</option>
+                  {Object.entries(LANG_NATIVE_NAMES).map(([code, name]) => (
+                    <option key={code} value={code}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+              </label>
               {p.ai.busy && (
                 <div className="dz-row" role="status">
                   <span className="dz-muted">{w.aiRewriting}</span>
@@ -418,21 +438,21 @@ export function Inspector(p: InspectorProps) {
               <optgroup label={w.bundledFonts}>
                 {BUNDLED_FONTS.map((f) => (
                   <option key={f.family} value={f.family}>
-                    {f.label}
+                    {fontLabel(f, p.lang)}
                   </option>
                 ))}
               </optgroup>
               <optgroup label={w.gonguFonts}>
                 {GONGU_FONTS.map((f) => (
                   <option key={f.family} value={f.family}>
-                    {f.label}
+                    {fontLabel(f, p.lang)}
                   </option>
                 ))}
               </optgroup>
               <optgroup label={w.systemFonts}>
                 {pcList.map((f) => (
                   <option key={f.family} value={f.family}>
-                    {f.label}
+                    {fontLabel(f, p.lang)}
                   </option>
                 ))}
               </optgroup>
