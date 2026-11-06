@@ -39,7 +39,8 @@ export const vi = {
   quickDoneAutoTone: 'Đã tự động chỉnh tông màu.',
   quickDoneTrace: 'Đã đồ hình ảnh thành các hình vẽ.',
   quickDoneCenter: 'Đã đưa vào giữa bảng vẽ.',
-  quickNeedPixelLayer: 'Hãy chọn một lớp hình ảnh rồi thử lại. Lớp văn bản hoặc lớp trống không có điểm ảnh để thay đổi.',
+  quickNeedPixelLayer:
+    'Hãy chọn một lớp hình ảnh rồi thử lại. Lớp văn bản hoặc lớp trống không có điểm ảnh để thay đổi.',
   quickTraceFailed: 'Không đồ lại được. Hãy chọn hình ảnh đã chèn rồi thử lại.',
   quickCenterFailed: 'Không căn giữa được. Hãy chọn đối tượng cần di chuyển rồi thử lại.',
   untitledPhoto: 'Ảnh chưa có tiêu đề',

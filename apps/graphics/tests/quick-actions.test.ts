@@ -238,7 +238,11 @@ describe('the quick actions', () => {
 
   it('an export keeps a real file name', async () => {
     const app = fakeApp()
-    app.adapter.docInfo = async () => ({ hasDocument: true, dirty: true, title: 'Untitled-art.svg' })
+    app.adapter.docInfo = async () => ({
+      hasDocument: true,
+      dirty: true,
+      title: 'Untitled-art.svg',
+    })
     const d = deps(app.adapter, { untitledName: '제목 없는 일러스트' })
     await runQuickAction('exportPngSvg', d)
     expect(d.exportFile).toHaveBeenCalledWith(

@@ -39,7 +39,8 @@ export const ko = {
   quickDoneAutoTone: '색과 밝기를 자동으로 맞췄습니다.',
   quickDoneTrace: '그림을 따라 도형으로 그렸습니다.',
   quickDoneCenter: '대지 가운데로 옮겼습니다.',
-  quickNeedPixelLayer: '그림 레이어를 고른 뒤 다시 해 보세요. 문자 레이어나 빈 레이어에는 바꿀 픽셀이 없습니다.',
+  quickNeedPixelLayer:
+    '그림 레이어를 고른 뒤 다시 해 보세요. 문자 레이어나 빈 레이어에는 바꿀 픽셀이 없습니다.',
   quickTraceFailed: '따라 그리지 못했습니다. 넣은 그림을 고른 뒤 다시 해 보세요.',
   quickCenterFailed: '가운데로 옮기지 못했습니다. 옮길 개체를 고른 뒤 다시 해 보세요.',
   untitledPhoto: '제목 없는 사진',

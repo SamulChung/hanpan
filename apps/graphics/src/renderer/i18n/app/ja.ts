@@ -40,9 +40,11 @@ export const ja = {
   quickDoneAutoTone: '色調を自動補正しました。',
   quickDoneTrace: '画像をトレースして図形にしました。',
   quickDoneCenter: 'アートボードの中央に移動しました。',
-  quickNeedPixelLayer: '画像レイヤーを選んでからもう一度お試しください。テキストレイヤーや空のレイヤーには変更するピクセルがありません。',
+  quickNeedPixelLayer:
+    '画像レイヤーを選んでからもう一度お試しください。テキストレイヤーや空のレイヤーには変更するピクセルがありません。',
   quickTraceFailed: 'トレースできませんでした。配置した画像を選んでからもう一度お試しください。',
-  quickCenterFailed: '中央に移動できませんでした。移動するオブジェクトを選んでからもう一度お試しください。',
+  quickCenterFailed:
+    '中央に移動できませんでした。移動するオブジェクトを選んでからもう一度お試しください。',
   untitledPhoto: '無題の写真',
   untitledIllust: '無題のイラスト',
   exportSize: 'サイズ',

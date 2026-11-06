@@ -39,7 +39,8 @@ export const th = {
   quickDoneAutoTone: 'Adjusted the tone automatically.',
   quickDoneTrace: 'Traced the picture into shapes.',
   quickDoneCenter: 'Moved it to the center of the artboard.',
-  quickNeedPixelLayer: 'Select a picture layer and try again. A type layer or an empty layer has no pixels to change.',
+  quickNeedPixelLayer:
+    'Select a picture layer and try again. A type layer or an empty layer has no pixels to change.',
   quickTraceFailed: 'Could not trace it. Select a placed picture and try again.',
   quickCenterFailed: 'Could not center it. Select the objects to move and try again.',
   untitledPhoto: 'ภาพถ่ายไม่มีชื่อ',
