@@ -207,7 +207,7 @@ export function AppFrame({ initialOnboardingSeen }: AppFrameProps) {
         <Home
           connection={connection}
           aiSettings={notice.settings}
-          // during the onboarding its connect step shows the notice instead
+          // the notice waits until the first run is over (it never covers the onboarding)
           noticeDue={notice.due && !showOnboarding}
           onNoticeAcknowledge={notice.acknowledge}
         />
@@ -215,12 +215,7 @@ export function AppFrame({ initialOnboardingSeen }: AppFrameProps) {
       {/* editor WebContentsViews paint above ALL shell DOM, so the overlay only
        * renders while the home tab is active — it comes back when home does */}
       {showOnboarding && homeActive && (
-        <Onboarding
-          onDone={finishOnboarding}
-          connection={connection}
-          noticeDue={notice.due}
-          onNoticeAcknowledge={notice.acknowledge}
-        />
+        <Onboarding onDone={finishOnboarding} connection={connection} />
       )}
     </div>
   )
