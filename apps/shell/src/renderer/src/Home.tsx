@@ -900,10 +900,15 @@ function AccountEntry({
   onOpenChange,
   onFileSearchSettingsChange,
   openRequest,
+  noticeDue = false,
+  onNoticeAcknowledge,
 }: {
   connection: SubscriptionConnection
   /** the settings modal opened or closed */
   onOpenChange?: (open: boolean) => void
+  /** the first-connection notice is owed: Settings shows it inside its AI section */
+  noticeDue?: boolean
+  onNoticeAcknowledge?: () => void
   onFileSearchSettingsChange?: () => void
   /** a fresh object per request: the home list asks to open the modal on a given block */
   openRequest?: SettingsTarget | null
@@ -973,6 +978,8 @@ function AccountEntry({
           skillUpdateDue={skillUpdate}
           onSkillUpdateDue={setSkillUpdate}
           target={target}
+          noticeDue={noticeDue}
+          onNoticeAcknowledge={onNoticeAcknowledge}
         />
       )}
       <button
@@ -1145,19 +1152,6 @@ export function Home({
   // bumped when the Jev settings change so the current results are judged again (or the order dropped)
   const [rerankSettingsTick, setRerankSettingsTick] = useState(0)
   const [settingsRequest, setSettingsRequest] = useState<SettingsTarget | null>(null)
-  // latched once Settings was opened: a connection made there may only be seen
-  // here after the dialog closed, and its notice is still owed then
-  const [settingsVisited, setSettingsVisited] = useState(false)
-  /**
-   * Settings opened from the search box's settings button: that visit is about
-   * search, not about connecting an AI, so it does not bring up the
-   * subscription notice on top (0.17 리뷰 v2 shell #5).
-   */
-  const quietSettingsRef = useRef(false)
-  const handleSettingsOpenChange = useCallback((open: boolean) => {
-    if (open && !quietSettingsRef.current) setSettingsVisited(true)
-    if (!open) quietSettingsRef.current = false
-  }, [])
   useEffect(
     () =>
       window.aiOffice.onOpenSettings?.((target) =>
@@ -3090,10 +3084,7 @@ export function Home({
       data-search-settings=""
       title={t('searchJevSettings')}
       aria-label={t('searchJevSettings')}
-      onClick={() => {
-        quietSettingsRef.current = true
-        setSettingsRequest({ section: 'aiMedia', block: 'rerank' })
-      }}
+      onClick={() => setSettingsRequest({ section: 'aiMedia', block: 'rerank' })}
     >
       {/* sliders: a settings button, not a sort arrow */}
       <svg
@@ -3841,7 +3832,8 @@ export function Home({
         {renderFolderPanel()}
         <AccountEntry
           connection={connection}
-          onOpenChange={handleSettingsOpenChange}
+          noticeDue={noticeDue}
+          onNoticeAcknowledge={onNoticeAcknowledge}
           onFileSearchSettingsChange={() => setRerankSettingsTick((n) => n + 1)}
           openRequest={settingsRequest}
         />
@@ -4051,12 +4043,10 @@ export function Home({
         </div>
       )}
 
-      {/* the first-connection notice comes up where a connection is made or first
-          used from this screen: in Settings and on the ask panel (an editor's AI
-          panel shows it for itself) */}
-      {noticeDue && (settingsVisited || askMode) && (
-        <FirstConnectionDialog onAcknowledge={onNoticeAcknowledge} />
-      )}
+      {/* the first-connection notice comes up where AI is first used from this
+          screen: the ask panel (an editor's AI panel shows it for itself). In
+          Settings it sits inside the AI section, never over the shell. */}
+      {noticeDue && askMode && <FirstConnectionDialog onAcknowledge={onNoticeAcknowledge} />}
       {/* documents with unsaved content left in recovery copies, asked about
           once at launch; the main process keeps Home in front meanwhile */}
       <LaunchRecoveryList />

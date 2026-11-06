@@ -499,3 +499,39 @@ describe('0.17 review v2: the search box settings button', () => {
     expect(host.querySelector('.first-notice')).toBeNull()
   })
 })
+
+describe('coordinator: the subscription notice does not cover the shell from Settings', () => {
+  it('opens Settings without the notice over the screen and shows it in the AI section', async () => {
+    const acknowledge = vi.fn()
+    await act(async () => {
+      root.render(
+        createElement(
+          LocaleProvider,
+          { initial: 'ko' },
+          createElement(Home, {
+            connection,
+            aiSettings: defaultAiSettings(),
+            noticeDue: true,
+            onNoticeAcknowledge: acknowledge,
+          }),
+        ),
+      )
+    })
+    await flush()
+    await click(host.querySelector('.account-btn'))
+    expect(host.querySelector('.first-notice-overlay')).toBeNull()
+    const aiNav = Array.from(host.querySelectorAll<HTMLButtonElement>('button')).find(
+      (b) => b.textContent?.trim() === 'AI',
+    )
+    await click(aiNav)
+    const inline = host.querySelector('[data-ai-notice-due]')
+    expect(inline).not.toBeNull()
+    // closing Settings does not bring the overlay up afterwards either
+    await act(async () => {
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    })
+    await flush()
+    expect(host.querySelector('.first-notice-overlay')).toBeNull()
+  })
+})

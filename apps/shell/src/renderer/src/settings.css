@@ -1289,3 +1289,12 @@
 .set-local-actions {
   justify-content: space-between;
 }
+
+/* the first-connection notice, owed and shown inside the AI section (not over the shell) */
+.set-ai-notice-due {
+  margin: 8px 0 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-subtle, var(--surface));
+}

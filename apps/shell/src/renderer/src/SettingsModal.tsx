@@ -1624,6 +1624,9 @@ export interface SettingsModalProps {
   onSkillUpdateDue?: (due: boolean) => void
   /** open on this section / block instead of the account page */
   target?: SettingsTarget | null
+  /** the first-connection notice is owed: the AI section shows it in place */
+  noticeDue?: boolean
+  onNoticeAcknowledge?: () => void
 }
 
 export function SettingsModal({
@@ -1632,6 +1635,8 @@ export function SettingsModal({
   skillUpdateDue: updateDue = false,
   onSkillUpdateDue,
   target,
+  noticeDue = false,
+  onNoticeAcknowledge,
 }: SettingsModalProps) {
   const { lang, setLang, t } = useI18n()
   const [section, setSection] = useState<SectionId>(target?.section ?? 'account')
@@ -1834,6 +1839,8 @@ export function SettingsModal({
                 t={t}
                 lang={lang}
                 connection={connection}
+                noticeDue={noticeDue}
+                onNoticeAcknowledge={onNoticeAcknowledge}
                 openTab={section === 'aiMedia' ? 'media' : undefined}
                 advanced={(tab) =>
                   tab === 'model' ? (
