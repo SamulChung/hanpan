@@ -44,10 +44,10 @@ import {
   registerRecoveryEditor,
   rendererUrl,
   printHtmlDocument,
-  type PrintDialogOutcome,
   assertFileSaved,
 } from '@genoffice/electron-utils'
 import { fetchImageBytes } from '@genoffice/electron-utils/fetch-image-bytes'
+import { createDocumentPrinter } from '@genoffice/electron-utils/document-printer'
 import { createI18n, getUiLang } from '@genoffice/i18n'
 import {
   sharedSubscriptionStatuses,
@@ -1086,15 +1086,22 @@ export function sendHtmlPrintRequest(contents: WebContents): void {
 // Scripting stays on here, unlike the PDF export window: Chromium rejects
 // executeJavaScript under `javascript: false`, and the fonts/images readiness
 // probe needs it. Print and Export-PDF therefore differ for <script>-built content.
-function printHtml(html: string, docPath: string | undefined): Promise<PrintDialogOutcome> {
-  const base = docPath ? assetBaseHref(dirname(docPath)) : null
-  return printHtmlDocument({
-    html: buildPreviewDocument(html, base),
-    window: new BrowserWindow({ show: false, webPreferences: { sandbox: true } }),
-    fileName: 'print.html',
-    dirPrefix: 'genoffice-html-print-',
-  })
-}
+// The shared printer aborts a pending job when the tab or the print window
+// closes and when the app quits, so a system dialog that never came back
+// cannot keep the window alive.
+const documentPrinter = createDocumentPrinter({
+  app: 'html',
+  createWindow: () => {
+    const win = new BrowserWindow({ show: false, webPreferences: { sandbox: true } })
+    win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
+    return { window: win, onClosed: (listener) => win.once('closed', listener) }
+  },
+  print: printHtmlDocument,
+  prepare: (html, sender) => {
+    const docPath = savePathByWc.get((sender as WebContents).id)
+    return buildPreviewDocument(html, docPath ? assetBaseHref(dirname(docPath)) : null)
+  },
+})
 
 export function htmlIsDirty(webContentsId: number): boolean {
   return dirtyByWc.has(webContentsId)
@@ -1406,6 +1413,9 @@ let ipcRegistered = false
 function registerHtmlIpc(): void {
   if (ipcRegistered) return
   ipcRegistered = true
+
+  // a print dialog that never came back must not outlive the app
+  app.on('before-quit', () => documentPrinter.abortAll())
 
   registerImageProtocol()
   registerPreviewProtocol((wcId) => {
@@ -1938,7 +1948,7 @@ function registerHtmlIpc(): void {
       // user closed from a real failure, so the outcome maps straight onto
       // PrintResult: the renderer can stay silent on cancel and must surface
       // a failure instead of swallowing it.
-      return printHtml(request.html, savePathByWc.get(e.sender.id))
+      return documentPrinter.print(e.sender, request)
     },
   )
 

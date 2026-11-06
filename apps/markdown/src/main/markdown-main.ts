@@ -34,6 +34,7 @@ import {
   registerRecoveryEditor,
   registerRendererScheme,
   rendererUrl,
+  printHtmlDocument,
 } from '@genoffice/electron-utils'
 import type { RecoveryIdentity, SaveDiskState } from '@genoffice/electron-utils'
 import { createI18n, getUiLang } from '@genoffice/i18n'
@@ -41,6 +42,7 @@ import { sharedSubscriptionStatuses } from '@genoffice/ai-provider/subscription'
 import { generateImageTool, documentMediaRoots, withMediaCallSignal } from '@genoffice/ai-search'
 import { ImageExportSessions } from './image-export'
 import { printMarkdownPdf } from './print-pdf'
+import { createDocumentPrinter } from '@genoffice/electron-utils/document-printer'
 import { atomicWriteFile } from './atomic-write'
 import {
   copyImageIntoOwnedAssets,
@@ -84,6 +86,7 @@ import type {
   ExportFormat,
   ExportOdtRequest,
   ExportPdfRequest,
+  PrintDocumentRequest,
   ImageExportPreparation,
   ExportResult,
   ImageData,
@@ -865,9 +868,35 @@ const imageExports = new ImageExportSessions()
 
 let ipcRegistered = false
 
+// Scripting stays on for the readiness probe (fonts, images); the window is
+// sandboxed, and the document is the editor's own rendered DOM.
+const documentPrinter = createDocumentPrinter({
+  createWindow: () => {
+    const win = new BrowserWindow({ show: false, webPreferences: { sandbox: true } })
+    win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
+    return { window: win, onClosed: (listener) => win.once('closed', listener) }
+  },
+  print: printHtmlDocument,
+  app: 'md',
+})
+
 function registerMarkdownIpc(): void {
   if (ipcRegistered) return
   ipcRegistered = true
+
+  // a print dialog that never came back must not outlive the app
+  app.on('before-quit', () => documentPrinter.abortAll())
+  ipcMain.handle(MARKDOWN_CHANNELS.listPrinters, async (e) => {
+    const printers = await e.sender.getPrintersAsync().catch(() => [])
+    return printers.map((p) => ({
+      name: p.name,
+      displayName: p.displayName || p.name,
+      isDefault: (p as { isDefault?: boolean }).isDefault === true,
+    }))
+  })
+  ipcMain.handle(MARKDOWN_CHANNELS.printDocument, (e, request: PrintDocumentRequest) =>
+    documentPrinter.print(e.sender, request),
+  )
 
   registerImageProtocol()
 

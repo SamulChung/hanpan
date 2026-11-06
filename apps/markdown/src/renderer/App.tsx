@@ -20,6 +20,9 @@ import {
   useSplitPaneFocusPing,
   useSplitPaneRole,
   type TemplateDocument,
+  DocumentPrintDialog,
+  type DocumentPrinter,
+  type DocumentPrintJob,
 } from '@genoffice/ui'
 import {
   pollUntilReady,
@@ -952,11 +955,16 @@ export default function App() {
     [sourceRev, sourceMode],
   )
 
-  const printingRef = useRef(false)
+  // Print preview and job live in the app; the job itself runs in a main-process
+  // window, so this tab never blocks on a system print dialog (see print-document.ts)
+  const [printSheet, setPrintSheet] = useState<{
+    html: string
+    printers: DocumentPrinter[]
+    message: string | null
+  } | null>(null)
   const printDoc = useCallback(async () => {
     const current = editorRef.current
-    if (!current || statusRef.current !== 'ready' || printingRef.current) return
-    printingRef.current = true
+    if (!current || statusRef.current !== 'ready') return
     const title =
       (filePathRef.current
         ? filePathRef.current.replace(/^.*[/\\]/, '').replace(/\.(md|markdown|txt|json)$/i, '')
@@ -968,39 +976,38 @@ export default function App() {
       pre.textContent = sourceTextRef.current
       printRoot.appendChild(pre)
     }
-    const frame = document.createElement('iframe')
-    frame.style.position = 'fixed'
-    frame.style.right = '100%'
-    frame.style.bottom = '100%'
-    frame.style.width = '0'
-    frame.style.height = '0'
-    frame.style.border = '0'
-    try {
-      await new Promise<void>((resolve) => {
-        frame.onload = () => resolve()
-        frame.srcdoc = buildPrintHtml(printRoot, title)
-        document.body.appendChild(frame)
-      })
-      const fdoc = frame.contentDocument
-      const fwin = frame.contentWindow
-      if (!fdoc || !fwin) return
-      // the export path passes printToPDF margins instead; the dialog needs @page
-      const pageStyle = fdoc.createElement('style')
-      pageStyle.textContent = '@page { margin: 0.6in; }'
-      fdoc.head.appendChild(pageStyle)
-      await Promise.all([...fdoc.images].map((img) => img.decode().catch(() => {})))
-      // resolve on afterprint so the frame survives until the dialog closes (cancel included)
-      await new Promise<void>((resolve) => {
-        fwin.addEventListener('afterprint', () => resolve())
-        fwin.print()
-      })
-    } catch (err) {
-      console.error('[markdown] print failed:', err)
-    } finally {
-      frame.remove()
-      printingRef.current = false
-    }
+    // the export path passes printToPDF margins instead; the print job needs @page
+    const html = buildPrintHtml(printRoot, title).replace(
+      '</head>',
+      '<style>@page { margin: 0.6in; }</style></head>',
+    )
+    setPrintSheet({ html, printers: [], message: null })
+    const printers = await window.markdownApi.listPrinters().catch(() => [])
+    setPrintSheet((sheet) => (sheet && sheet.html === html ? { ...sheet, printers } : sheet))
   }, [sourceMode])
+
+  const runPrintJob = useCallback(
+    async (html: string, job: DocumentPrintJob) => {
+      const outcome = await window.markdownApi
+        .printDocument({ html, job })
+        .catch((err: unknown) => ({
+          ok: false as const,
+          error: err instanceof Error ? err.message : String(err),
+        }))
+      if (!outcome.ok) {
+        console.error('[markdown] print failed:', outcome.error)
+        setPrintSheet((sheet) =>
+          sheet ? { ...sheet, message: t('printFailed', { error: outcome.error }) } : sheet,
+        )
+        return
+      }
+      // a system dialog the user canceled returns to the preview
+      if ('canceled' in outcome) return
+      setPrintSheet(null)
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t is not referentially stable
+    [],
+  )
 
   useEffect(() => {
     const offExport = window.markdownApi.onExportRequest((format) => void runExport(format))
@@ -1567,6 +1574,26 @@ export default function App() {
             setGraphOpen(false)
             void window.markdownApi.openSourcePath(path)
           }}
+        />
+      )}
+      {printSheet && (
+        <DocumentPrintDialog
+          html={printSheet.html}
+          printers={printSheet.printers}
+          message={printSheet.message}
+          labels={{
+            title: t('printTitle'),
+            printer: t('printPrinter'),
+            defaultPrinter: t('printDefaultPrinter'),
+            systemDialog: t('printSystemDialog'),
+            copies: t('printCopies'),
+            print: t('printTitle'),
+            cancel: t('printCancel'),
+            preparing: t('printPreparing'),
+            printing: t('printPrinting'),
+          }}
+          onPrint={(job) => runPrintJob(printSheet.html, job)}
+          onClose={() => setPrintSheet(null)}
         />
       )}
       {imageHostOpen && (
