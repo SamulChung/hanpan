@@ -2381,6 +2381,7 @@ export function showCorrectedLabels(doc, locale) {
  *   the toolbar's find button: they go to the Tools menu, above 환경 설정.
  * - View > 테마 offered its own light/dark and skins beside the app's theme, which the app
  *   already hands to the editor: it goes, with the separator before it.
+ * - 쪽 > 머리말·꼬리말 listed its five presets twice (#11): the repeats go.
  * Running it again changes nothing.
  */
 export function tidyStudioMenus(doc) {
@@ -2395,6 +2396,16 @@ export function tidyStudioMenus(doc) {
   }
   for (const item of doc.querySelectorAll('.tb-split-item[data-cmd="edit:document-history"]')) {
     item.remove()
+  }
+  // header/footer presets 6-10: the engine writes them exactly as 1-5 (same text, plain
+  // characters), so the bold-printed second group looked like a choice it is not (#11)
+  for (const panel of doc.querySelectorAll('.md-hf-template-panel')) {
+    const repeats = [...panel.querySelectorAll('[data-template-id]')].filter(
+      (item) => Number(item.dataset.templateId) >= 6,
+    )
+    const before = repeats[0]?.previousElementSibling
+    if (before?.classList.contains('md-sep')) before.remove()
+    for (const item of repeats) item.remove()
   }
   const theme = doc.querySelector('[data-cmd="view:theme-system"]')?.closest('.md-sub')
   if (theme) {

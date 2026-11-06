@@ -7,7 +7,7 @@ import { join } from 'node:path'
 import { JSDOM } from 'jsdom'
 import { describe, expect, it } from 'vitest'
 import { showCorrectedLabels, tidyStudioMenus } from '../studio-plugin/hancom-keys.mjs'
-import { DIALOG_THEME_CSS } from '../studio-plugin/dialog-theme.mjs'
+import { DIALOG_THEME_CSS, markClippedToolbarButtons } from '../studio-plugin/dialog-theme.mjs'
 import { OPEN_LICENSES_EVENT } from '../studio-plugin/agent-plugin.mjs'
 import { APP_STRINGS } from '../studio-plugin/studio-locales.mjs'
 import { STUDIO_PATCHES, applyPatch, patchTargets } from '../scripts/rhwp-patches.mjs'
@@ -217,5 +217,84 @@ describe.skipIf(!fetched)('the About box (#6)', () => {
       expect(APP_STRINGS[locale]['hanpan.about.licenses'], locale).toBeTruthy()
       expect(APP_STRINGS[locale]['hanpan.about.licensesButton'], locale).toBeTruthy()
     }
+  })
+})
+
+describe('the scrolling toolbar at 1366 (#12)', () => {
+  /** A toolbar 300px wide showing buttons 60px apart, scrolled by `offset`, with « and » out. */
+  function toolbar(offset: number) {
+    const doc = new JSDOM(
+      [
+        '<div id="icon-toolbar"><button class="tb-scroll-nav" id="icon-toolbar-prev"></button>',
+        '<div class="tb-scroll-viewport"><div class="tb-scroll-track">',
+        ...Array.from({ length: 8 }, (_, i) => `<button class="tb-btn" data-i="${i}"></button>`),
+        '<div class="tb-split"><button class="tb-btn tb-split-main"></button><button class="tb-btn tb-split-arrow"></button></div>',
+        '</div></div><button class="tb-scroll-nav" id="icon-toolbar-next"></button></div>',
+      ].join(''),
+    ).window.document
+    const rect = (left: number, width: number) =>
+      ({ left, right: left + width, width, top: 0, bottom: 50, height: 50 }) as DOMRect
+    doc.querySelector('.tb-scroll-viewport')!.getBoundingClientRect = () => rect(0, 300)
+    doc.querySelector('#icon-toolbar-prev')!.getBoundingClientRect = () => rect(4, 24)
+    doc.querySelector('#icon-toolbar-next')!.getBoundingClientRect = () => rect(272, 24)
+    doc.querySelectorAll<HTMLElement>('.tb-scroll-track > .tb-btn').forEach((b, i) => {
+      b.getBoundingClientRect = () => rect(i * 60 - offset, 56)
+    })
+    doc.querySelector<HTMLElement>('.tb-split')!.getBoundingClientRect = () =>
+      rect(480 - offset, 70)
+    return doc
+  }
+  const hidden = (doc: Document) =>
+    [...doc.querySelectorAll<HTMLElement>('.tb-scroll-track > *')]
+      .map((el, i) => (el.style.visibility === 'hidden' ? i : -1))
+      .filter((i) => i >= 0)
+
+  it('hides a button the edge or the » button cuts, and shows it again once whole', () => {
+    const doc = toolbar(0)
+    markClippedToolbarButtons(doc)
+    // 0 sits under «, 4 runs under » (240..296), 5.. are past the edge
+    expect(hidden(doc)).toEqual([0, 4, 5, 6, 7, 8])
+    const moved = toolbar(0)
+    moved.querySelectorAll<HTMLElement>('.tb-scroll-track > .tb-btn').forEach((b, i) => {
+      b.getBoundingClientRect = () =>
+        ({
+          left: 30 + i * 60,
+          right: 86 + i * 60,
+          width: 56,
+          top: 0,
+          bottom: 50,
+          height: 50,
+        }) as DOMRect
+    })
+    markClippedToolbarButtons(moved)
+    expect(hidden(moved)).toEqual([4, 5, 6, 7, 8])
+  })
+
+  it('makes the split button arrow (▾ beside 찾기) readable, not a dot', () => {
+    expect(DIALOG_THEME_CSS.replace(/\s+/g, ' ')).toContain(
+      '#icon-toolbar .tb-split-arrow .tb-arrow-icon',
+    )
+  })
+})
+
+describe('the header and footer presets (#11)', () => {
+  // the engine writes templates 6-10 exactly as 1-5 (same text, same plain character shape;
+  // checked on rhwp 0.8.7 with applyHfTemplate), so the second, bold-printed group only looked
+  // like a different choice
+  it('offer each preset once', () => {
+    const items = (from: number, to: number) =>
+      Array.from(
+        { length: to - from + 1 },
+        (_, i) =>
+          `<div class="md-item" data-cmd="page:apply-hf-template" data-template-id="${from + i}"></div>`,
+      ).join('')
+    const doc = new JSDOM(
+      `<div class="md-sub-panel md-hf-template-panel">${items(0, 0)}<div class="md-sep"></div>${items(1, 5)}<div class="md-sep"></div>${items(6, 10)}</div>`,
+    ).window.document
+    tidyStudioMenus(doc)
+    const ids = [...doc.querySelectorAll<HTMLElement>('.md-hf-template-panel > *')].map(
+      (el) => el.dataset.templateId ?? el.className,
+    )
+    expect(ids).toEqual(['0', 'md-sep', '1', '2', '3', '4', '5'])
   })
 })

@@ -13,7 +13,7 @@
  * Everything returned crosses to the app renderer by structured clone.
  */
 
-import { installDialogTheme } from './dialog-theme.mjs'
+import { installDialogTheme, installToolbarClipGuard } from './dialog-theme.mjs'
 import { installLocaleLayout, styleDisplayName, studioLocaleNow } from './studio-locales.mjs'
 
 export const AGENT_PLUGIN_ID = 'ieum-agent'
@@ -3021,6 +3021,8 @@ export const agentPlugin = {
     // when the plugin comes up, not when the AI panel opens: a settings dialog
     // can be opened on a document the panel never touched.
     installDialogTheme()
+    // no button cut in half at the edges of the scrolling toolbar (0.17 UX v2 #12)
+    installToolbarClipGuard()
     // the style bar's widths in the added languages (studio-locales.mjs)
     installLocaleLayout()
 
