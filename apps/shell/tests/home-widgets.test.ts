@@ -475,3 +475,27 @@ describe('0.17 review v2: deleting a file that is open in a tab', () => {
     expect(dialog.querySelector('.btn-danger')?.textContent).toBe('탭 닫고 삭제')
   })
 })
+
+describe('0.17 review v2: the search box settings button', () => {
+  it('says what it is and opens Settings without the subscription notice on top', async () => {
+    await act(async () => {
+      root.render(
+        createElement(
+          LocaleProvider,
+          { initial: 'ko' },
+          createElement(Home, {
+            connection,
+            aiSettings: defaultAiSettings(),
+            noticeDue: true,
+            onNoticeAcknowledge: vi.fn(),
+          }),
+        ),
+      )
+    })
+    await flush()
+    const button = host.querySelector<HTMLButtonElement>('[data-search-settings]')!
+    expect(button.title).toBe('검색 설정')
+    await click(button)
+    expect(host.querySelector('.first-notice')).toBeNull()
+  })
+})

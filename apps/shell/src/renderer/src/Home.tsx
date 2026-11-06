@@ -1148,8 +1148,15 @@ export function Home({
   // latched once Settings was opened: a connection made there may only be seen
   // here after the dialog closed, and its notice is still owed then
   const [settingsVisited, setSettingsVisited] = useState(false)
+  /**
+   * Settings opened from the search box's settings button: that visit is about
+   * search, not about connecting an AI, so it does not bring up the
+   * subscription notice on top (0.17 리뷰 v2 shell #5).
+   */
+  const quietSettingsRef = useRef(false)
   const handleSettingsOpenChange = useCallback((open: boolean) => {
-    if (open) setSettingsVisited(true)
+    if (open && !quietSettingsRef.current) setSettingsVisited(true)
+    if (!open) quietSettingsRef.current = false
   }, [])
   useEffect(
     () =>
@@ -3080,10 +3087,15 @@ export function Home({
   const renderSearchSettingsButton = () => (
     <button
       className="file-search-settings"
+      data-search-settings=""
       title={t('searchJevSettings')}
       aria-label={t('searchJevSettings')}
-      onClick={() => setSettingsRequest({ section: 'aiMedia', block: 'rerank' })}
+      onClick={() => {
+        quietSettingsRef.current = true
+        setSettingsRequest({ section: 'aiMedia', block: 'rerank' })
+      }}
     >
+      {/* sliders: a settings button, not a sort arrow */}
       <svg
         width="16"
         height="16"
@@ -3095,8 +3107,10 @@ export function Home({
         strokeLinejoin="round"
         aria-hidden="true"
       >
-        <path d="M12 20V4M12 4l-4 4M12 4l4 4" />
-        <path d="M3 12h6M3 16h5M3 20h4" />
+        <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0" />
+        <circle cx="16" cy="6" r="2" />
+        <circle cx="10" cy="12" r="2" />
+        <circle cx="18" cy="18" r="2" />
       </svg>
     </button>
   )

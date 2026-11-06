@@ -192,6 +192,24 @@ describe('Settings → Integrations', () => {
     )
   })
 
+  it('keeps the coding-assistant setup in a closed developer section with tidy paths (0.17 review v2 #9)', async () => {
+    const winDir = 'C:\\Users\\Jane\\AppData\\Local\\Programs\\Hanpan\\resources\\cli'
+    await openIntegrations({
+      status: async () => {
+        const s = baseStatus()
+        return { ...s, cli: { ...s.cli, status: 'missing', launcherDir: winDir } }
+      },
+      copyText: async () => {},
+    })
+    const dev = host.querySelector<HTMLDetailsElement>('details[data-intg-dev]')
+    expect(dev).not.toBeNull()
+    expect(dev!.open).toBe(false)
+    expect(dev!.querySelector('.set-intg-mcp')).not.toBeNull()
+    const code = [...host.querySelectorAll('.set-intg-mcp code')].map((c) => c.textContent ?? '')
+    expect(code.join('\n')).not.toContain('\\..\\')
+    expect(code[0]).toContain('C:\\Users\\Jane\\AppData\\Local\\Programs\\Hanpan\\Hanpan.exe')
+  })
+
   it('writes only after the path was shown and confirmed, then refreshes the row', async () => {
     const status = baseStatus()
     const install = vi.fn(async (target: { agentId?: string; dir?: string }) => {

@@ -274,7 +274,7 @@ export const strings = {
     setResultStoreDeleteAll: '全部删除',
     setResultStoreConfirm: '要删除所有已保存的 AI 读取结果和译文吗？重新生成需要再次使用 AI。',
     setResultStoreDeleteFailed: '无法删除，请重试。',
-    setSearchRerank: 'Jev 搜索重排',
+    setSearchRerank: '用 AI 重新排序搜索结果（会外部传输）',
     setSearchRerankDesc:
       '把本机搜索的前 20 条命中片段发给 TypeSafe 的 Jev 模型，按相关性重新排序。默认关闭；开启后命中片段会离开本机。',
     setAiInternetTools: '允许 AI 使用互联网工具',
@@ -282,7 +282,7 @@ export const strings = {
       '网页搜索、读取网页、按地址获取图片，以及生成和分析图片。关闭后，编辑器中的 AI 不再使用这些工具。开启时，对话中没出现过的地址会在获取前先询问你。AI 对话本身不受影响。',
     setSearchRerankEndpoint: 'Jev 端点',
     searchRerankedBy: '已由 Jev 按相关性重排',
-    searchJevSettings: 'Jev 语义排序',
+    searchJevSettings: '搜索设置',
     setSearchRerankCustomUrl: '服务地址',
     setSearchRerankCustomModel: '模型 ID',
     setSearchRerankAccount: '账户 ID',
@@ -378,6 +378,7 @@ export const strings = {
     setAiAnalysisChatHint: '图片会直接展示给正在对话的 AI，无需另外的 key。',
     setAiVideoNoneHint:
       '视频和音频解析需要支持视频的 key 方式服务商。在这里选择一个并填写 key 后即可使用。',
+    intgDevToggle: '开发者用：在 AI 编程工具（Claude Code、Codex 等）中使用 Hanpan',
     intgHeroTitle: '在 AI 助手里使用 GenOffice',
     intgHeroDesc:
       '接好后，Claude Code、Codex、Cursor、Claude Desktop 等助手就能替你创建、转换、读取和编辑 Word、Excel、PowerPoint、PDF 和 Markdown 文件。全部在本机完成，不会上传任何内容。',
@@ -935,15 +936,14 @@ export const strings = {
     setResultStoreConfirm:
       'Delete all saved AI readings and translations? Getting them back means using AI again.',
     setResultStoreDeleteFailed: 'Could not delete them. Try again.',
-    setSearchRerank: 'Jev search reranking',
-    setSearchRerankDesc:
-      "Sends the top 20 local hits' excerpts to TypeSafe's Jev model and reorders them by relevance. Off by default; when on, excerpts leave this device.",
+    setSearchRerank: 'Re-rank search results with AI (sent online)',
+    setSearchRerankDesc: 'Sends excerpts of the top 20 file-search results to an online AI (Jev by TypeSafe) and reorders them by relevance. Off by default; when on, the excerpts leave this PC.',
     setAiInternetTools: 'Let AI use internet tools',
     setAiInternetToolsDesc:
       'Web search, reading web pages, fetching pictures by address, and making and analyzing images. Off: the editors’ AI works without them. On: an address that has not appeared in the conversation is asked about before it is fetched. The AI conversation itself is not affected.',
-    setSearchRerankEndpoint: 'Jev endpoint',
-    searchRerankedBy: 'Reordered by relevance with Jev',
-    searchJevSettings: 'Jev semantic reranking',
+    setSearchRerankEndpoint: 'Re-ranking server address',
+    searchRerankedBy: 'Reordered by relevance with AI',
+    searchJevSettings: 'Search settings',
     setSearchRerankCustomUrl: 'Server URL',
     setSearchRerankCustomModel: 'Model ID',
     setSearchRerankAccount: 'Account ID',
@@ -976,7 +976,7 @@ export const strings = {
     settings: 'Settings',
     setSecAccount: 'Account',
     setSecGeneral: 'General',
-    setMcp: 'Local MCP server',
+    setMcp: 'Connect other AI programs (MCP server)',
     setMcpDesc:
       'Let external AI agents (Claude Desktop, Cursor…) create Word documents through this running app. Localhost only.',
     setMcpPort: 'Port',
@@ -1044,6 +1044,7 @@ export const strings = {
       'Images are shown to the AI you are chatting with. No separate key is needed.',
     setAiVideoNoneHint:
       'Video and audio analysis needs a key provider that supports video. Choose one here and enter its key to use it.',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: 'Use GenOffice from your AI assistant',
     intgHeroDesc:
       'Once connected, Claude Code, Codex, Cursor, Claude Desktop and similar assistants can create, convert, read and edit Word, Excel, PowerPoint, PDF and Markdown files for you. Everything runs on this computer; nothing is uploaded.',
@@ -1136,7 +1137,7 @@ export const strings = {
     setAiModelId: 'Model',
     setAiApiKey: 'API Key',
     setAiKeyHint: 'Stored only on this device.',
-    setAiBaseUrl: 'Base URL',
+    setAiBaseUrl: 'Server address (Base URL)',
     setAiBaseUrlHint: 'Leave empty for the official endpoint.',
     setAiEndpoint: 'Endpoint',
     setAiEndpointHint: 'Save several self-hosted servers and switch between them anytime.',
@@ -1170,7 +1171,7 @@ export const strings = {
     setAiCapSearch: 'Web search',
     setAiCapFileSearch: 'Local file search',
     setReadUrlTitle: 'Web documents',
-    setReadUrlToken: 'GitHub read token (optional)',
+    setReadUrlToken: 'Token for reading private GitHub repositories (optional)',
     setReadUrlSave: 'Save token',
     setReadUrlTokenHint:
       'Used when reading documents and skill links in private repositories. Paste a read-only token. It is saved in this PC’s settings file.',
@@ -1622,15 +1623,14 @@ export const strings = {
     setResultStoreConfirm:
       'Xóa tất cả kết quả đọc bằng AI và bản dịch đã lưu? Muốn có lại sẽ phải dùng AI lần nữa.',
     setResultStoreDeleteFailed: 'Không xóa được. Hãy thử lại.',
-    setSearchRerank: 'Sắp xếp lại kết quả tìm kiếm Jev',
-    setSearchRerankDesc:
-      'Gửi đoạn trích của 20 kết quả hàng đầu cục bộ tới mô hình Jev của TypeSafe và sắp xếp lại theo mức độ liên quan. Tắt theo mặc định; khi bật, các đoạn trích sẽ được gửi ra ngoài thiết bị này.',
+    setSearchRerank: 'Dùng AI sắp xếp lại kết quả tìm kiếm (gửi ra ngoài)',
+    setSearchRerankDesc: 'Gửi đoạn trích của 20 kết quả tìm tệp đầu tiên tới một AI trực tuyến (Jev của TypeSafe) để sắp xếp lại theo mức độ liên quan. Mặc định tắt; khi bật, các đoạn trích sẽ rời khỏi máy tính này.',
     setAiInternetTools: 'Cho phép AI dùng công cụ internet',
     setAiInternetToolsDesc:
       'Tìm kiếm web, đọc trang web, lấy hình theo địa chỉ, tạo và phân tích hình ảnh. Khi tắt, AI trong trình soạn thảo làm việc mà không có chúng. Khi bật, địa chỉ chưa xuất hiện trong cuộc trò chuyện sẽ được hỏi trước khi tải. Bản thân cuộc trò chuyện với AI không bị ảnh hưởng.',
-    setSearchRerankEndpoint: 'Điểm cuối Jev',
-    searchRerankedBy: 'Được sắp xếp lại theo mức độ liên quan với Jev',
-    searchJevSettings: 'Sắp xếp lại ngữ nghĩa Jev',
+    setSearchRerankEndpoint: 'Địa chỉ máy chủ sắp xếp',
+    searchRerankedBy: 'AI đã sắp xếp lại theo mức độ liên quan',
+    searchJevSettings: 'Cài đặt tìm kiếm',
     setSearchRerankCustomUrl: 'URL máy chủ',
     setSearchRerankCustomModel: 'ID mô hình',
     setSearchRerankAccount: 'ID tài khoản',
@@ -1663,7 +1663,7 @@ export const strings = {
     settings: 'Cài đặt',
     setSecAccount: 'Tài khoản',
     setSecGeneral: 'Chung',
-    setMcp: 'Máy chủ MCP cục bộ',
+    setMcp: 'Kết nối chương trình AI khác (máy chủ MCP)',
     setMcpDesc:
       'Cho phép các tác tử AI bên ngoài (Claude Desktop, Cursor…) tạo tài liệu Word thông qua ứng dụng đang chạy này. Chỉ trên máy cục bộ (localhost).',
     setMcpPort: 'Cổng',
@@ -1730,6 +1730,7 @@ export const strings = {
       'Hình ảnh được đưa trực tiếp cho AI mà bạn đang trò chuyện. Không cần khóa riêng.',
     setAiVideoNoneHint:
       'Phân tích video và âm thanh cần một nhà cung cấp theo khóa có hỗ trợ video. Hãy chọn một nhà cung cấp ở đây và nhập khóa để sử dụng.',
+    intgDevToggle: 'Dành cho nhà phát triển: dùng Hanpan từ công cụ lập trình AI (Claude Code, Codex…)',
     intgHeroTitle: 'Sử dụng GenOffice từ trợ lý AI của bạn',
     intgHeroDesc:
       'Sau khi kết nối, Claude Code, Codex, Cursor, Claude Desktop và các trợ lý tương tự có thể tạo, chuyển đổi, đọc và chỉnh sửa các tệp Word, Excel, PowerPoint, PDF và Markdown cho bạn. Mọi thứ đều chạy trên máy tính này; không có gì được tải lên.',
@@ -1824,7 +1825,7 @@ export const strings = {
     setAiModelId: 'Mô hình',
     setAiApiKey: 'Khóa API',
     setAiKeyHint: 'Chỉ được lưu trữ trên thiết bị này.',
-    setAiBaseUrl: 'URL cơ sở',
+    setAiBaseUrl: 'Địa chỉ máy chủ (Base URL)',
     setAiBaseUrlHint: 'Để trống để sử dụng điểm cuối chính thức.',
     setAiEndpoint: 'Điểm cuối',
     setAiEndpointHint: 'Lưu nhiều máy chủ tự host và chuyển đổi bất cứ lúc nào.',
@@ -1850,15 +1851,14 @@ export const strings = {
     setAiSearchSerplyHint: 'Serply cung cấp cả tìm kiếm web và hình ảnh bằng key của bạn.',
     setAiSearchTavilyHint:
       'Tavily cung cấp tìm kiếm web bằng khóa của bạn; tìm kiếm hình ảnh sẽ chuyển sang dùng các nguồn miễn phí.',
-    setAiSearchParallelHint:
-      'Để trống khóa để dùng tìm kiếm Parallel miễn phí (giới hạn lượt dùng). Nhập khóa để dùng tài khoản Parallel của bạn. Tìm kiếm hình ảnh sử dụng các nguồn khác.',
+    setAiSearchParallelHint: 'Để trống khóa để dùng miễn phí dịch vụ tìm kiếm web (Parallel), có giới hạn. Nhập khóa để dùng tài khoản Parallel của bạn. Tìm hình ảnh dùng nguồn khác.',
     setAiCapImage: 'Tạo hình ảnh',
     setAiCapAnalysis: 'Phân tích hình ảnh',
     setAiCapVideo: 'Phân tích video',
     setAiCapSearch: 'Tìm kiếm web',
     setAiCapFileSearch: 'Tìm kiếm tệp cục bộ',
     setReadUrlTitle: 'Tài liệu web',
-    setReadUrlToken: 'Token đọc GitHub (tùy chọn)',
+    setReadUrlToken: 'Token để đọc kho GitHub riêng tư (tùy chọn)',
     setReadUrlSave: 'Lưu token',
     setReadUrlTokenHint:
       'Dùng khi đọc tài liệu và liên kết kỹ năng trong kho riêng tư. Dán token chỉ đọc. Token được lưu trong tệp cài đặt của PC này.',
@@ -2427,6 +2427,7 @@ export const strings = {
     setAiAnalysisChatHint: '画像は会話中の AI に直接渡されます。別のキーは必要ありません。',
     setAiVideoNoneHint:
       '動画と音声の解析には、動画に対応したキー方式のプロバイダーが必要です。ここで 1 つ選んでキーを入力すると使えるようになります。',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: 'AI アシスタントから GenOffice を使う',
     intgHeroDesc:
       '接続すると、Claude Code、Codex、Cursor、Claude Desktop などのアシスタントが Word、Excel、PowerPoint、PDF、Markdown ファイルの作成・変換・読み取り・編集を代行します。すべてこの PC 上で完結し、何もアップロードされません。',
@@ -3015,15 +3016,14 @@ export const strings = {
     setResultStoreConfirm:
       '보관된 AI 읽기 결과와 번역본을 모두 지울까요? 다시 만들려면 AI를 다시 써야 합니다.',
     setResultStoreDeleteFailed: '지우지 못했습니다. 다시 시도해 주세요.',
-    setSearchRerank: 'Jev 검색 재정렬',
-    setSearchRerankDesc:
-      '로컬 검색 상위 20개 결과의 발췌문을 TypeSafe의 Jev 모델로 보내 관련도 순으로 재정렬합니다. 기본은 꺼짐이며, 켜면 발췌문이 기기 밖으로 전송됩니다.',
+    setSearchRerank: 'AI로 검색 결과 다시 정렬(외부 전송)',
+    setSearchRerankDesc: '파일 검색 상위 20개 결과의 발췌문을 외부 AI(TypeSafe의 Jev)로 보내 관련 있는 순서로 다시 정렬합니다. 기본은 꺼짐이며, 켜면 발췌문이 이 PC 밖으로 전송됩니다.',
     setAiInternetTools: 'AI가 인터넷 도구 쓰기',
     setAiInternetToolsDesc:
       '웹 검색, 웹 페이지 읽기, 주소로 그림 가져오기, 이미지 만들기와 분석입니다. 끄면 편집기의 AI가 이 도구 없이 일합니다. 켜 두어도 대화에 없던 주소는 가져오기 전에 묻습니다. AI 대화 자체는 그대로입니다.',
-    setSearchRerankEndpoint: 'Jev 엔드포인트',
-    searchRerankedBy: 'Jev가 관련도 순으로 재정렬함',
-    searchJevSettings: 'Jev 시맨틱 재정렬',
+    setSearchRerankEndpoint: '정렬 서버 주소',
+    searchRerankedBy: 'AI가 관련 있는 순서로 다시 정렬함',
+    searchJevSettings: '검색 설정',
     setSearchRerankCustomUrl: '서버 URL',
     setSearchRerankCustomModel: '모델 ID',
     setSearchRerankAccount: '계정 ID',
@@ -3056,7 +3056,7 @@ export const strings = {
     settings: '설정',
     setSecAccount: '계정',
     setSecGeneral: '일반',
-    setMcp: '로컬 MCP 서버',
+    setMcp: '다른 AI 프로그램과 연결(MCP 서버)',
     setMcpDesc:
       '외부 AI 에이전트(Claude Desktop, Cursor 등)가 이 앱을 통해 Word 문서를 만들 수 있게 합니다. 로컬호스트 전용.',
     setMcpPort: '포트',
@@ -3122,6 +3122,7 @@ export const strings = {
     setAiAnalysisChatHint: '대화 중인 AI에게 이미지를 직접 보여 줍니다. 별도의 키가 필요 없습니다.',
     setAiVideoNoneHint:
       '동영상·음성 분석은 동영상을 지원하는 키 방식 제공업체가 있어야 합니다. 여기서 하나를 고르고 키를 넣으면 쓸 수 있습니다.',
+    intgDevToggle: '개발자용: AI 코딩 도구(Claude Code, Codex 등)에서 한판 쓰기',
     intgHeroTitle: 'AI 어시스턴트에서 GenOffice 사용하기',
     intgHeroDesc:
       '연결하면 Claude Code, Codex, Cursor, Claude Desktop 등의 어시스턴트가 Word, Excel, PowerPoint, PDF, Markdown 파일을 대신 만들고 변환하고 읽고 편집합니다. 모두 이 컴퓨터에서 처리되며 어떤 내용도 업로드되지 않습니다.',
@@ -3213,7 +3214,7 @@ export const strings = {
     setAiModelId: '모델',
     setAiApiKey: 'API 키',
     setAiKeyHint: '키는 이 기기에만 저장됩니다.',
-    setAiBaseUrl: 'Base URL',
+    setAiBaseUrl: '서버 주소(Base URL)',
     setAiBaseUrlHint: '비워 두면 공식 엔드포인트를 사용합니다.',
     setAiEndpoint: '엔드포인트',
     setAiEndpointHint: '여러 자체 호스팅 서버를 저장하고 언제든 전환할 수 있습니다.',
@@ -3238,23 +3239,21 @@ export const strings = {
     setAiSearchSerplyHint: 'Serply는 내 키로 웹 검색과 이미지 검색을 모두 제공합니다.',
     setAiSearchTavilyHint:
       'Tavily는 내 키로 웹 검색을 제공합니다. 이미지 검색은 무료 소스로 대체됩니다.',
-    setAiSearchParallelHint:
-      '키를 비워 두면 Parallel 검색을 무료로 사용할 수 있습니다(사용량 제한). 키를 입력하면 자신의 Parallel 계정을 사용합니다. 이미지 검색은 다른 소스를 사용합니다.',
+    setAiSearchParallelHint: '키를 비워 두면 웹 검색 서비스(Parallel)를 무료로 쓸 수 있습니다(사용량 제한). 키를 넣으면 내 Parallel 계정을 씁니다. 그림 검색은 다른 곳을 씁니다.',
     setAiCapImage: '이미지 생성',
     setAiCapAnalysis: '이미지 분석',
     setAiCapVideo: '동영상 분석',
     setAiCapSearch: '웹 검색',
     setAiCapFileSearch: '로컬 파일 검색',
     setReadUrlTitle: '웹 문서',
-    setReadUrlToken: 'GitHub 읽기 토큰(선택)',
+    setReadUrlToken: 'GitHub 비공개 저장소를 읽을 때 쓰는 토큰(선택)',
     setReadUrlSave: '토큰 저장',
     setReadUrlTokenHint:
       '비공개 저장소의 문서·스킬 링크를 읽을 때 씁니다. 읽기 전용 토큰을 붙여 넣으세요. 이 PC의 설정 파일에 저장됩니다.',
     setReadUrlNoToken: '토큰 없음',
     setReadUrlTokenSaved: '토큰 저장됨',
     setReadUrlClear: '지우기',
-    setAiSharedKeyHint:
-      '같은 제공자의 키와 Base URL은 모든 기능에서 공유되므로 한 번만 입력하면 됩니다.',
+    setAiSharedKeyHint: '같은 제공업체의 키와 서버 주소는 모든 기능이 함께 쓰므로 한 번만 넣으면 됩니다.',
     setGithub: '오픈 소스',
     setBasedOn: '오픈 소스 프로젝트 {{GenOffice}}(Apache License 2.0)를 바탕으로 만들었습니다.',
     setLicenses: '오픈소스 라이선스',
@@ -3818,6 +3817,7 @@ export const strings = {
       'Les images sont montrées à l’IA avec laquelle vous discutez. Aucune clé distincte n’est nécessaire.',
     setAiVideoNoneHint:
       'L’analyse vidéo et audio nécessite un fournisseur à clé qui prend en charge la vidéo. Choisissez-en un ici et saisissez sa clé pour l’utiliser.',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: 'Utiliser GenOffice depuis votre assistant IA',
     intgHeroDesc:
       'Une fois connectés, Claude Code, Codex, Cursor, Claude Desktop et les assistants similaires peuvent créer, convertir, lire et modifier vos fichiers Word, Excel, PowerPoint, PDF et Markdown. Tout se passe sur cet ordinateur ; rien n’est envoyé.',
@@ -4528,6 +4528,7 @@ export const strings = {
       'Bilder werden der KI gezeigt, mit der Sie gerade chatten. Ein eigener Schlüssel ist nicht nötig.',
     setAiVideoNoneHint:
       'Die Video- und Audioanalyse benötigt einen Anbieter mit Schlüssel, der Video unterstützt. Wählen Sie hier einen aus und tragen Sie seinen Schlüssel ein, um sie zu nutzen.',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: 'GenOffice aus Ihrem KI-Assistenten nutzen',
     intgHeroDesc:
       'Einmal verbunden, können Claude Code, Codex, Cursor, Claude Desktop und ähnliche Assistenten Word-, Excel-, PowerPoint-, PDF- und Markdown-Dateien für Sie erstellen, konvertieren, lesen und bearbeiten. Alles läuft auf diesem Rechner; nichts wird hochgeladen.',
@@ -5239,6 +5240,7 @@ export const strings = {
       'Las imágenes se muestran a la IA con la que estás chateando. No hace falta una clave aparte.',
     setAiVideoNoneHint:
       'El análisis de vídeo y audio necesita un proveedor con clave compatible con vídeo. Elige uno aquí e introduce su clave para usarlo.',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: 'Usa GenOffice desde tu asistente de IA',
     intgHeroDesc:
       'Una vez conectados, Claude Code, Codex, Cursor, Claude Desktop y asistentes similares pueden crear, convertir, leer y editar archivos Word, Excel, PowerPoint, PDF y Markdown por ti. Todo ocurre en este equipo; no se sube nada.',
@@ -5930,6 +5932,7 @@ export const strings = {
     setAiAnalysisChatHint: 'ภาพจะถูกส่งให้ AI ที่คุณกำลังสนทนาอยู่โดยตรง ไม่ต้องใช้คีย์แยกต่างหาก',
     setAiVideoNoneHint:
       'การวิเคราะห์วิดีโอและเสียงต้องใช้ผู้ให้บริการแบบใช้คีย์ที่รองรับวิดีโอ เลือกผู้ให้บริการที่นี่แล้วกรอกคีย์เพื่อใช้งาน',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: 'ใช้ GenOffice จากผู้ช่วย AI ของคุณ',
     intgHeroDesc:
       'เมื่อเชื่อมต่อแล้ว Claude Code, Codex, Cursor, Claude Desktop และผู้ช่วยลักษณะเดียวกันจะสร้าง แปลง อ่าน และแก้ไขไฟล์ Word, Excel, PowerPoint, PDF และ Markdown แทนคุณได้ ทุกอย่างทำงานบนคอมพิวเตอร์เครื่องนี้ ไม่มีการอัปโหลดใด ๆ',
@@ -6619,6 +6622,7 @@ export const strings = {
       'Gambar diperlihatkan langsung kepada AI yang sedang Anda ajak bercakap. Tidak perlu kunci terpisah.',
     setAiVideoNoneHint:
       'Analisis video dan audio memerlukan penyedia berbasis kunci yang mendukung video. Pilih salah satu di sini dan masukkan kuncinya untuk menggunakannya.',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: 'Gunakan GenOffice dari asisten AI Anda',
     intgHeroDesc:
       'Setelah terhubung, Claude Code, Codex, Cursor, Claude Desktop, dan asisten serupa dapat membuat, mengonversi, membaca, dan mengedit file Word, Excel, PowerPoint, PDF, dan Markdown untuk Anda. Semuanya berjalan di komputer ini; tidak ada yang diunggah.',
@@ -7316,6 +7320,7 @@ export const strings = {
       'Изображения показываются тому ИИ, с которым вы общаетесь. Отдельный ключ не нужен.',
     setAiVideoNoneHint:
       'Для анализа видео и аудио нужен провайдер с ключом, поддерживающий видео. Выберите его здесь и введите ключ, чтобы пользоваться анализом.',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: 'Используйте GenOffice из своего ИИ-ассистента',
     intgHeroDesc:
       'После подключения Claude Code, Codex, Cursor, Claude Desktop и похожие ассистенты смогут создавать, конвертировать, читать и редактировать файлы Word, Excel, PowerPoint, PDF и Markdown за вас. Всё выполняется на этом компьютере; ничего не загружается.',
@@ -8012,6 +8017,7 @@ export const strings = {
       'تُعرض الصور مباشرةً على الذكاء الاصطناعي الذي تحادثه. ولا حاجة إلى مفتاح منفصل.',
     setAiVideoNoneHint:
       'يتطلب تحليل الفيديو والصوت مزوّدًا يعمل بمفتاح ويدعم الفيديو. اختر واحدًا هنا وأدخل مفتاحه لاستخدامه.',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: 'استخدم GenOffice من مساعد الذكاء الاصطناعي',
     intgHeroDesc:
       'بعد الربط، يمكن لـ Claude Code وCodex وCursor وClaude Desktop والمساعدين المشابهين إنشاء ملفات Word وExcel وPowerPoint وPDF وMarkdown وتحويلها وقراءتها وتحريرها نيابةً عنك. كل شيء يعمل على هذا الجهاز؛ لا يُرفع أي شيء.',
@@ -8696,6 +8702,7 @@ export const strings = {
       'As imagens são mostradas à IA com a qual você está conversando. Não é necessária uma chave separada.',
     setAiVideoNoneHint:
       'A análise de vídeo e áudio precisa de um provedor com chave que ofereça suporte a vídeo. Escolha um aqui e informe a chave para usá-lo.',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: 'Use o GenOffice a partir do seu assistente de IA',
     intgHeroDesc:
       'Depois de conectados, Claude Code, Codex, Cursor, Claude Desktop e assistentes semelhantes podem criar, converter, ler e editar arquivos Word, Excel, PowerPoint, PDF e Markdown por você. Tudo roda neste computador; nada é enviado.',
@@ -9388,6 +9395,7 @@ export const strings = {
       'Le immagini vengono mostrate all’IA con cui stai chattando. Non serve una chiave separata.',
     setAiVideoNoneHint:
       'L’analisi di video e audio richiede un provider con chiave che supporti i video. Scegline uno qui e inserisci la sua chiave per usarla.',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: 'Usa GenOffice dal tuo assistente IA',
     intgHeroDesc:
       'Una volta collegati, Claude Code, Codex, Cursor, Claude Desktop e assistenti simili possono creare, convertire, leggere e modificare file Word, Excel, PowerPoint, PDF e Markdown per te. Tutto avviene su questo computer; nulla viene caricato.',
@@ -10080,6 +10088,7 @@ export const strings = {
       'Obrazy są pokazywane AI, z którym rozmawiasz. Osobny klucz nie jest potrzebny.',
     setAiVideoNoneHint:
       'Analiza wideo i dźwięku wymaga dostawcy z kluczem, który obsługuje wideo. Wybierz go tutaj i wpisz jego klucz, aby z niej korzystać.',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: 'Używaj GenOffice ze swojego asystenta AI',
     intgHeroDesc:
       'Po połączeniu Claude Code, Codex, Cursor, Claude Desktop i podobni asystenci mogą tworzyć, konwertować, czytać i edytować pliki Word, Excel, PowerPoint, PDF i Markdown za Ciebie. Wszystko działa na tym komputerze; nic nie jest przesyłane.',
@@ -10719,6 +10728,7 @@ export const strings = {
       'Obrázky se ukážou AI, se kterou si právě píšete. Samostatný klíč není potřeba.',
     setAiVideoNoneHint:
       'Analýza videa a zvuku vyžaduje poskytovatele s klíčem, který podporuje video. Vyberte ho zde a zadejte jeho klíč, abyste ji mohli používat.',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: 'Používejte GenOffice ze svého AI asistenta',
     intgHeroDesc:
       'Po připojení mohou Claude Code, Codex, Cursor, Claude Desktop a podobní asistenti za vás vytvářet, převádět, číst a upravovat soubory Word, Excel, PowerPoint, PDF a Markdown. Vše běží na tomto počítači; nic se neodesílá.',
@@ -11454,6 +11464,7 @@ export const strings = {
       'Afbeeldingen worden getoond aan de AI waarmee je chat. Een aparte sleutel is niet nodig.',
     setAiVideoNoneHint:
       'Video- en audioanalyse vereist een provider met een sleutel die video ondersteunt. Kies er hier een en vul de sleutel in om het te gebruiken.',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: 'GenOffice gebruiken vanuit uw AI-assistent',
     intgHeroDesc:
       'Eenmaal verbonden kunnen Claude Code, Codex, Cursor, Claude Desktop en vergelijkbare assistenten Word-, Excel-, PowerPoint-, PDF- en Markdown-bestanden voor je maken, converteren, lezen en bewerken. Alles draait op deze computer; er wordt niets geüpload.',
@@ -12144,6 +12155,7 @@ export const strings = {
       'Imej ditunjukkan terus kepada AI yang sedang bersembang dengan anda. Kunci berasingan tidak diperlukan.',
     setAiVideoNoneHint:
       'Analisis video dan audio memerlukan penyedia berasaskan kunci yang menyokong video. Pilih satu di sini dan masukkan kuncinya untuk menggunakannya.',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: 'Gunakan GenOffice daripada pembantu AI anda',
     intgHeroDesc:
       'Setelah disambungkan, Claude Code, Codex, Cursor, Claude Desktop dan pembantu serupa boleh mencipta, menukar, membaca dan mengedit fail Word, Excel, PowerPoint, PDF dan Markdown untuk anda. Semuanya berjalan di komputer ini; tiada apa yang dimuat naik.',
@@ -12828,6 +12840,7 @@ export const strings = {
     setAiAnalysisChatHint: 'התמונות מוצגות ישירות ל-AI שאיתו אתם משוחחים. אין צורך במפתח נפרד.',
     setAiVideoNoneHint:
       'ניתוח וידאו ושמע דורש ספק עם מפתח שתומך בווידאו. בחרו כאן ספק והזינו את המפתח שלו כדי להשתמש בו.',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: 'שימוש ב-GenOffice מתוך עוזר ה-AI שלכם',
     intgHeroDesc:
       'לאחר החיבור, Claude Code‏, Codex‏, Cursor‏, Claude Desktop ועוזרים דומים יכולים ליצור, להמיר, לקרוא ולערוך עבורך קובצי Word‏, Excel‏, PowerPoint‏, PDF ו‑Markdown. הכול פועל במחשב זה; דבר אינו נשלח.',
@@ -13500,6 +13513,7 @@ export const strings = {
       'इमेज सीधे उसी AI को दिखाई जाती हैं जिससे आप चैट कर रहे हैं। अलग कुंजी की ज़रूरत नहीं है।',
     setAiVideoNoneHint:
       'वीडियो और ऑडियो विश्लेषण के लिए ऐसा कुंजी वाला प्रदाता चाहिए जो वीडियो का समर्थन करता हो। इसका उपयोग करने के लिए यहाँ एक चुनें और उसकी कुंजी दर्ज करें।',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: 'अपने AI असिस्टेंट से GenOffice इस्तेमाल करें',
     intgHeroDesc:
       'कनेक्ट होने के बाद Claude Code, Codex, Cursor, Claude Desktop और ऐसे ही सहायक आपके लिए Word, Excel, PowerPoint, PDF और Markdown फ़ाइलें बना, बदल, पढ़ और संपादित कर सकते हैं। सब कुछ इसी कंप्यूटर पर चलता है; कुछ भी अपलोड नहीं होता।',
@@ -14170,6 +14184,7 @@ export const strings = {
     setAiAnalysisChatHint: '圖片會直接顯示給正在對話的 AI，不需要另外的 key。',
     setAiVideoNoneHint:
       '影片和音訊解析需要支援影片的 key 方式服務商。在這裡選擇一個並填寫 key 後即可使用。',
+    intgDevToggle: 'For developers: use Hanpan from AI coding tools (Claude Code, Codex…)',
     intgHeroTitle: '在 AI 助理中使用 GenOffice',
     intgHeroDesc:
       '接好後，Claude Code、Codex、Cursor、Claude Desktop 等助理就能替你建立、轉換、讀取和編輯 Word、Excel、PowerPoint、PDF 和 Markdown 檔案。全部在本機完成，不會上傳任何內容。',

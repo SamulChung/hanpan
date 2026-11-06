@@ -719,6 +719,24 @@
   gap: 8px;
 }
 
+/* Integrations: the coding-assistant setup (commands, JSON) behind one closed line */
+.set-intg-dev {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.set-intg-dev > summary {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.set-intg-dev[open] > summary {
+  margin-bottom: 8px;
+}
+
 .set-intg-details {
   margin-top: 10px;
 }
