@@ -86,10 +86,13 @@
 }
 .hp-tpl-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
 }
+/* a label stays on one line ("한글로 열기"); a narrow card moves buttons to the next row */
 .hp-tpl-actions button {
-  flex: 1;
+  flex: 1 1 auto;
+  white-space: nowrap;
   padding: 5px 8px;
   border: 1px solid var(--border);
   border-radius: 6px;
