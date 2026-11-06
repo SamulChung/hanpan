@@ -310,7 +310,7 @@ export default function App({
               className="gx-frame"
               title={kind}
               src={appFrameUrl(kind, lang)}
-              allow="clipboard-read; clipboard-write"
+              allow="clipboard-read; clipboard-write; local-fonts"
             />
           )}
           {/* takes the pointer while the AI works: the person's edits stay out of its undo step */}

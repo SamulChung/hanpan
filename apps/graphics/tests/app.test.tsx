@@ -113,6 +113,8 @@ describe('the host page', () => {
     await mount('illust')
     await until(() => frame() !== null)
     expect(frame()!.getAttribute('src')).toBe('./web/illust/index.html?embedded=hanpan&lang=ko')
+    // the app reads the PC's fonts (queryLocalFonts) inside the frame
+    expect(frame()!.getAttribute('allow')).toBe('clipboard-read; clipboard-write; local-fonts')
     expect(host.textContent).toContain('앱을 불러오는 중')
     const page = readyPage()
     ;(frame()!.contentWindow as unknown as Record<string, unknown>).vectorcraft = page
