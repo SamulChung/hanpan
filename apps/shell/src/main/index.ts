@@ -30,7 +30,12 @@ import {
 } from 'electron'
 import type { MenuItemConstructorOptions, NativeImage, WebContents } from 'electron'
 import { atomicWriteFile } from './atomic-write'
-import { setupHanpan } from './hanpan/setup'
+import { loadHwpEngine, setupHanpan } from './hanpan/setup'
+import { sendToApp, type SendDeps, type SendResult } from './send-to-app/send-to-app'
+import { sendToAppMenuItem } from './send-to-app/menu'
+import { sendLabel, type SendLabelKey } from './send-to-app/labels'
+import type { SendTarget } from './send-to-app/targets'
+import type { SheetsControl } from './mcp/tools/sheets-tools'
 import { createMyFormsStore, type MyFormType } from './hanpan/my-forms'
 import { MY_FORMS_CHANNELS, registerMyFormsIpc, type MyFormSource } from './hanpan/my-forms-ipc'
 import {
@@ -226,7 +231,7 @@ import {
 import { createCliRunner } from './mcp/cli-runner'
 import { DEFAULT_MCP_PORT } from './mcp/mcp-server'
 import { createDocsControl, installDocsBridge } from './mcp/docs-bridge'
-import { createSlidesControl } from './mcp/slides-bridge'
+import { createSlidesControl, liveDeckOf } from './mcp/slides-bridge'
 import { createSheetsControl, installSheetsBridge } from './mcp/sheets-bridge'
 import { createOpenDocumentsControl, createOpenTargetResolver } from './mcp/open-documents-bridge'
 import { sanitizeFileBase } from './mcp/tools/document-tools'
@@ -396,7 +401,7 @@ import {
   sameAiPanelPrefs,
   type AiPanelPrefs,
 } from '@genoffice/ui/ai-panel-prefs'
-import type { DocumentTabKind, TabKind } from '../shared/tabs-api'
+import type { DocumentTabKind, OpenDocumentTab, TabKind } from '../shared/tabs-api'
 import { TABS_CHANNELS } from '../shared/tabs-api'
 import { SPLIT_TABS_CHANNELS } from '../shared/split-view-api'
 import type {
@@ -7559,6 +7564,133 @@ async function shareTabFromShell(id: string): Promise<void> {
   if (result === 'failed') console.warn(`[share] tab ${id}: the share sheet did not open`)
 }
 
+// ---- 다른 앱으로 보내기: Markdown in between, a new untitled document of another editor (decision 0096) ----
+
+/** the sheets bridge, for the active sheet's name; set where the MCP controls are made */
+let sendSheetsControl: SheetsControl | null = null
+
+/** the editors' names as the New menu has them */
+const SEND_TARGET_NAME = {
+  docs: 'menuNewDoc',
+  slides: 'menuNewSlide',
+  hwp: 'menuNewHwp',
+  markdown: 'menuNewMarkdown',
+  mindmap: 'menuNewMindmap',
+  html: 'menuNewHtml',
+} as const satisfies Record<SendTarget, Parameters<typeof tm>[0]>
+
+/** the submenu for one tab (null for Home, help and picture tabs) */
+function sendToAppItemFor(
+  tab: { id: string; kind: TabKind },
+  enabled = true,
+): MenuItemConstructorOptions | null {
+  return sendToAppMenuItem({
+    kind: tab.kind,
+    korean: koreanDocsOn(),
+    lang: currentLang(),
+    targetName: (target) => tm(SEND_TARGET_NAME[target]),
+    send: (target) => void sendTabToAppFromShell(tab.id, target),
+    enabled,
+  })
+}
+
+async function sendOpenDocuments(): Promise<OpenDocumentTab[]> {
+  const tabs = tabManager ? await tabManager.openDocuments() : []
+  return [...tabs, ...(await detachedOpenDocuments())]
+}
+
+async function sendContents(tabId: string): Promise<WebContents> {
+  const contents = await liveDocumentContents(tabId)
+  if (!contents || contents.isDestroyed()) throw new Error('the document is no longer open')
+  return contents
+}
+
+function sendToAppDeps(): SendDeps {
+  return {
+    document: async (tabId) => (await sendOpenDocuments()).find((doc) => doc.id === tabId),
+    readLive: async (source) => {
+      const contents = await sendContents(source.id)
+      if (source.kind === 'markdown') return markdownReadText(contents)
+      if (source.kind === 'html') return htmlReadText(contents)
+      if (source.kind === 'mindmap') return mindmapReadOutline(contents)
+      return hwpReadText(contents)
+    },
+    liveDeck: async (source) => liveDeckOf((await sendContents(source.id)).id),
+    activeSheet: async (source) => {
+      if (!sendSheetsControl) return null
+      const wcId = (await sendContents(source.id)).id
+      const read = (await sendSheetsControl.runCommand(wcId, 'read_sheet', {})) as
+        { context?: { sheetName?: unknown } } | undefined
+      return typeof read?.context?.sheetName === 'string' ? read.context.sheetName : null
+    },
+    parse: (path) => parseFileToText(path),
+    confirmSave: async () => {
+      const win = shellWindow
+      if (!win || win.isDestroyed()) return false
+      const lang = currentLang()
+      const answer = await dialog.showMessageBox(win, {
+        type: 'question',
+        message: sendLabel(lang, 'sendSaveFirst'),
+        detail: sendLabel(lang, 'sendSaveFirstDetail'),
+        buttons: [sendLabel(lang, 'sendSaveAndSend'), tm('btnCancel')],
+        defaultId: 0,
+        cancelId: 1,
+      })
+      return answer.response === 0
+    },
+    save: (tabId) => tabMenuActions().save(tabId),
+    loadHwpEngine,
+    // like a map sent to a document: the bytes alone in a fresh temp folder, gone with the tab
+    openDocument: async (doc) => {
+      const dir = join(app.getPath('temp'), 'hanpan-sent', randomUUID())
+      mkdirSync(dir, { recursive: true })
+      const path = join(dir, doc.fileName)
+      try {
+        await atomicWriteFile(path, Buffer.from(doc.bytes))
+        const opened = await openTemplateCopyTab({ ...doc, path, dir })
+        if (opened) {
+          opened.contents.once('destroyed', () => rmSync(dir, { recursive: true, force: true }))
+          return opened.tabId
+        }
+      } catch (error) {
+        console.warn('[send-to-app] the new tab did not open:', error)
+      }
+      rmSync(dir, { recursive: true, force: true })
+      return null
+    },
+    korean: () => koreanDocsOn(),
+    untitled: tm('untitledMindmap'),
+  }
+}
+
+function sendTabToApp(tabId: string, target: SendTarget): Promise<SendResult> {
+  return sendToApp(sendToAppDeps(), tabId, target)
+}
+
+const SEND_PROBLEM_LABEL: Partial<
+  Record<Exclude<SendResult, { ok: true }>['problem'], SendLabelKey>
+> = {
+  empty: 'sendEmpty',
+  unreadable: 'sendUnreadable',
+  redaction: 'sendRedaction',
+  'too-many-slides': 'sendTooManySlides',
+}
+
+async function sendTabToAppFromShell(tabId: string, target: SendTarget): Promise<void> {
+  const result = await sendTabToApp(tabId, target)
+  if (result.ok || result.problem === 'canceled') return
+  console.warn(`[send-to-app] tab ${tabId} → ${target}: ${result.problem}`)
+  const win = shellWindow
+  if (!win || win.isDestroyed()) return
+  const lang = currentLang()
+  const detail = SEND_PROBLEM_LABEL[result.problem]
+  void dialog.showMessageBox(win, {
+    type: 'warning',
+    message: sendLabel(lang, 'sendFailed'),
+    ...(detail ? { detail: sendLabel(lang, detail) } : {}),
+  })
+}
+
 function registerTabsIpc(): void {
   ipcMain.on(TABS_CHANNELS.chromePressed, (event) => broadcastChromePressed(event.sender))
   ipcMain.handle(TABS_CHANNELS.list, () => tabManager?.list() ?? [])
@@ -7600,6 +7732,10 @@ function registerTabsIpc(): void {
           !!tabManager?.canDetachTab(front.id),
         click: () => front && void shareTabFromShell(front.id),
       },
+      // 다른 앱으로 보내기 for the same tab, right below Share
+      ...(front ? [sendToAppItemFor(front, !!tabManager?.canDetachTab(front.id))] : []).filter(
+        (item): item is MenuItemConstructorOptions => item !== null,
+      ),
       { type: 'separator' },
       settingsMenuItem(currentLang(), () => openSettingsFromMenu()),
     )
@@ -7681,6 +7817,7 @@ function registerTabsIpc(): void {
       fileExists: !!tab.filePath && existsSync(tab.filePath),
       canReopen: recentlyClosed.getEntries().length > 0,
       canShare: canShareTab(process.platform, tab.kind),
+      sendTo: sendToAppItemFor(tab),
       tm,
       actions: tabMenuActions(),
     })
@@ -9752,6 +9889,7 @@ app.whenReady().then(async () => {
     authorizeSave: authorizeMcpSheetWrite,
     abandonBlankTab: (wcId) => abandonBlankSheetsTabForMcp(wcId),
   })
+  sendSheetsControl = mcpSheetsControl
   // The PDF tools window (decision 0030): Home's "PDF tools" card opens it; what it
   // writes, or a PDF picked for an editor-only tool, opens in a tab here.
   // Hanpan: the design board window, opened from the Home card
@@ -9942,6 +10080,11 @@ app.whenReady().then(async () => {
         if (!isDetachedTabId(tabId)) revealShellWindow()
       },
     }),
+    // 다른 앱으로 보내기 for the AI helpers: the same flow as the tab menu's
+    sendToAppControl: {
+      list: () => sendOpenDocuments(),
+      send: (tabId, target) => sendTabToApp(tabId, target),
+    },
     logFilePath: join(app.getPath('userData'), 'mcp-log.txt'),
   })
   // Agent mode (decision 0032): the person's Claude Code or Codex with its own tools in a
