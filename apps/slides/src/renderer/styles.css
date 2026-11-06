@@ -6989,15 +6989,33 @@ body.show-curtain::after {
 
 .slideshow .ss-counter {
   position: absolute;
-  right: 14px;
-  bottom: 10px;
-  font-size: 12px;
-  color: var(--slides-show-ink-40);
+  right: 16px;
+  bottom: 12px;
+  /* 발표자가 멀리서도 읽을 수 있게: 흐린 회색 12px → 또렷한 16px */
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--slides-show-ink-85);
   background: var(--slides-show-counter-bg);
-  border-radius: 4px;
-  padding: 3px 8px;
+  border-radius: 6px;
+  padding: 5px 11px;
   line-height: 1;
   pointer-events: none;
+}
+
+/* 쇼 화면의 오른쪽 클릭 메뉴는 편집 화면보다 크게(전체 화면에서 읽기 쉽게) */
+.slideshow .ctx-item {
+  font-size: 15px;
+  padding: 8px 14px;
+}
+.slideshow .ctx-hint {
+  font-size: 13px;
+}
+.slideshow .ss-tool-pen {
+  cursor: crosshair;
+}
+.slideshow .ss-tool-laser {
+  cursor: none;
 }
 
 .slideshow .ss-end {
