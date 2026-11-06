@@ -21,13 +21,19 @@ const mcpBlankSheet = section(
 
 describe('Home file creation is atomic', () => {
   it('publishes a blank spreadsheet through a temporary file', () => {
-    expect(newSheetTab).toContain('await atomicWriteFile(backingPath, await blankXlsxBuffer())')
-    expect(newSheetTab).toContain('await atomicWriteFile(suggestedPath, await blankXlsxBuffer())')
+    expect(newSheetTab).toContain(
+      'await atomicWriteFile(backingPath, await blankXlsxBuffer(undefined, currentLang()))',
+    )
+    expect(newSheetTab).toContain(
+      'await atomicWriteFile(suggestedPath, await blankXlsxBuffer(undefined, currentLang()))',
+    )
     expect(newSheetTab).not.toMatch(/writeFileSync\(/)
   })
 
   it('publishes the MCP blank spreadsheet through a temporary file', () => {
-    expect(mcpBlankSheet).toContain('await atomicWriteFile(filePath, await blankXlsxBuffer())')
+    expect(mcpBlankSheet).toContain(
+      'await atomicWriteFile(filePath, await blankXlsxBuffer(undefined, currentLang()))',
+    )
     expect(mcpBlankSheet).not.toMatch(/writeFileSync\(/)
   })
 

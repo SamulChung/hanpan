@@ -85,10 +85,10 @@ import {
 } from './model'
 import { loadPcFonts, type FontChoice, type PcFontInfo } from './fonts'
 import { ICONS } from './icons'
-import { DESIGN_TEMPLATES } from './templates'
+import { templatesFor } from './templates'
 import { coverRect, inkPath, shapePath, textPadding } from './style'
 import { PagePreview, elementBox, elementLook, pageBackground } from './view'
-import { wordsFor } from './words'
+import { LANG_NATIVE_NAMES, iconLabel, wordsFor } from './words'
 import { DesignPrintDialog, type DesignPrintResult, type PrintRange } from './PrintDialog'
 import type { PrintSheet } from '@genoffice/ui'
 
@@ -259,11 +259,12 @@ const isTyping = (target: EventTarget | null) => {
 
 export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string | undefined }) {
   const w = wordsFor(p.lang)
-  // Gongu pictures and credits speak every UI language (the rest of the board: Korean or English)
+  // Gongu pictures and credits speak every UI language; the board's own words are Korean,
+  // English or Vietnamese (words.ts), and follow a language change without reopening
   const g = (key: GonguStringKey, params?: Record<string, string | number>) =>
     gonguUiText(p.lang as never, key, params)
   const [doc, setDoc] = useState<DesignDoc>(() =>
-    p.outline ? cardNewsFromOutline(p.outline) : DESIGN_TEMPLATES[0]!.make(),
+    p.outline ? cardNewsFromOutline(p.outline) : templatesFor(p.lang)[0]!.make(),
   )
   const [pageIndex, setPageIndex] = useState(0)
   const [selected, setSelected] = useState<string[]>([])
@@ -333,7 +334,13 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   const docColors = useMemo(() => colorsOf(doc), [doc])
   const credited = useMemo(() => creditsOf(doc.pages).length > 0, [doc.pages])
   const issues = useMemo(() => creditIssues(doc, creditList), [doc, creditList])
-  const templatePreviews = useMemo(() => DESIGN_TEMPLATES.map((t) => ({ t, doc: t.make() })), [])
+  const templatePreviews = useMemo(
+    () => templatesFor(p.lang).map((t) => ({ t, doc: t.make() })),
+    [p.lang],
+  )
+  // where a translation goes: a language the person picked, or null for the default
+  // (the UI language, or English for a text already in it)
+  const [translateTo, setTranslateTo] = useState<string | null>(null)
 
   // the page fits the space it has; zoom multiplies that
   useLayoutEffect(() => {
@@ -1453,8 +1460,15 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
               key={m}
               type="button"
               disabled={ai.busy !== null}
-              onClick={() => ai.send({ mode: 'rewrite', id: e.id, rewrite: m })}
+              onClick={() =>
+                ai.send({ mode: 'rewrite', id: e.id, rewrite: m, target: translateTo })
+              }
               data-ai-quick={m}
+              title={
+                m === 'translate' && translateTo
+                  ? `${w.translateTo}: ${LANG_NATIVE_NAMES[translateTo] ?? translateTo}`
+                  : undefined
+              }
             >
               {w.rewrites[m]}
             </button>
@@ -1690,7 +1704,9 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
 
   const iconWords = iconQuery.trim().toLowerCase().split(/\s+/).filter(Boolean)
   const shownIcons = ICONS.filter((icon) =>
-    iconWords.every((q) => icon.label.includes(q) || icon.name.includes(q)),
+    iconWords.every(
+      (q) => icon.label.includes(q) || icon.name.includes(q) || iconLabel(icon, p.lang).includes(q),
+    ),
   )
 
   const tabs: Tab[] = ['templates', 'elements', 'text', 'layers']
@@ -1731,7 +1747,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
             {!formatId && <option value="">{`${doc.width}×${doc.height}`}</option>}
             {FORMATS.map((f) => (
               <option key={f.id} value={f.id}>
-                {f.name} {f.width}×{f.height}
+                {w.formats[f.id] ?? f.name} {f.width}×{f.height}
               </option>
             ))}
           </select>
@@ -1949,7 +1965,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                     className="ghost"
                     onClick={() => startNew(blankDoc(f))}
                   >
-                    + {f.name}
+                    + {w.formats[f.id] ?? f.name}
                   </button>
                 ))}
               </div>
@@ -2113,8 +2129,8 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                   <button
                     key={icon.name}
                     type="button"
-                    title={icon.label}
-                    aria-label={icon.label}
+                    title={iconLabel(icon, p.lang)}
+                    aria-label={iconLabel(icon, p.lang)}
                     onClick={() => addIcon(icon.name)}
                     data-add-icon={icon.name}
                   >
@@ -2236,7 +2252,9 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                                 : e.kind === 'draw'
                                   ? w.drawing
                                   : e.kind === 'icon'
-                                    ? (ICONS.find((i) => i.name === e.icon)?.label ?? w.icon)
+                                    ? ((icon) => (icon ? iconLabel(icon, p.lang) : w.icon))(
+                                        ICONS.find((i) => i.name === e.icon),
+                                      )
                                     : w[e.kind]}
                       </span>
                       {e.group && (
@@ -2402,6 +2420,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
           ) : (
             <Inspector
               w={w}
+              lang={p.lang}
               page={page}
               selection={selection}
               docColors={docColors}
@@ -2432,7 +2451,10 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                       busy: ai.busy !== null,
                       error:
                         ai.busy === null && ai.thread.at(-1)?.mode === 'rewrite' ? ai.error : null,
-                      rewrite: (id, rewrite) => ai.send({ mode: 'rewrite', id, rewrite }),
+                      rewrite: (id, rewrite) =>
+                        ai.send({ mode: 'rewrite', id, rewrite, target: translateTo }),
+                      translateTo,
+                      setTranslateTo,
                       stop: ai.stop,
                     }
                   : null

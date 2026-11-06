@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { IpcRendererEvent } from 'electron'
+import { isLang } from '@genoffice/i18n'
 import { subscriptionApi } from './subscription-bridge'
 
 // Hanpan design board window: save and open through main's dialogs, copy a
@@ -22,6 +23,14 @@ contextBridge.exposeInMainWorld('hanpanDesign', {
       theme: themeOf(init?.theme),
       outline: typeof init?.outline === 'string' ? init.outline : undefined,
     }
+  },
+  // the UI language changed in Settings: the board redraws in it without reopening
+  onLanguageChanged(handler: (lang: string) => void) {
+    const listener = (_event: IpcRendererEvent, lang: unknown) => {
+      if (isLang(lang)) handler(lang)
+    }
+    ipcRenderer.on('app:language-changed', listener)
+    return () => ipcRenderer.removeListener('app:language-changed', listener)
   },
   onThemeChanged(handler: (theme: Theme) => void) {
     const listener = (_event: IpcRendererEvent, theme: unknown) => handler(themeOf(theme))

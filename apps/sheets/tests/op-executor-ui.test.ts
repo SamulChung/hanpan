@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { initialSnapshot } from '../src/renderer/app-constants'
+import { initialSnapshot, initialSnapshotFor } from '../src/renderer/app-constants'
 import { nextSheetName, planFromOps, prefetchOpImages } from '../src/renderer/op-executor'
 
 const workbook = {
@@ -101,5 +101,13 @@ describe('prefetchOpImages', () => {
 describe('the in-memory blank workbook', () => {
   it('starts on 시트1', () => {
     expect(initialSnapshot.sheets.map((sheet) => sheet.name)).toEqual(['시트1'])
+  })
+
+  it('names its first sheet in the UI language', () => {
+    const names = (lang: string) => initialSnapshotFor(lang).sheets.map((sheet) => sheet.name)
+    expect(names('ko')).toEqual(['시트1'])
+    expect(names('vi')).toEqual(['Trang tính1'])
+    expect(names('en')).toEqual(['Sheet1'])
+    expect(names('zh-TW')).toEqual(['工作表1'])
   })
 })

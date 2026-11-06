@@ -20,12 +20,3 @@ export const MINIMAL_STYLESHEET_XML =
   '<cellXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/></cellXfs>' +
   '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>' +
   '</styleSheet>'
-
-/// The stylesheet of a new blank workbook (Hanpan 0.17): the same table with a Korean
-/// Normal font, 맑은 고딕 11pt, as Korean Excel writes it — without `<scheme>`, which would
-/// let the theme's Latin face (Calibri) stand in for it. A PC without the face falls back
-/// through the editor's usual font substitution.
-export const NEW_WORKBOOK_STYLESHEET_XML = MINIMAL_STYLESHEET_XML.replace(
-  '<font><sz val="11"/><name val="Calibri"/></font>',
-  '<font><sz val="11"/><name val="맑은 고딕"/><family val="2"/><charset val="129"/></font>',
-)
