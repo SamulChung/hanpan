@@ -32,6 +32,8 @@ export const DESIGN_CHANNELS = {
   copyImage: 'hanpan-design:copy-image',
   saveDesign: 'hanpan-design:save',
   openDesign: 'hanpan-design:open',
+  /** the board started a new design: the next save asks where again */
+  newDesign: 'hanpan-design:new',
   pickImage: 'hanpan-design:pick-image',
   gonguSearch: 'hanpan-design:gongu-search',
   gonguPicture: 'hanpan-design:gongu-picture',
@@ -63,6 +65,8 @@ let deps: DesignWindowDeps | null = null
 let win: BrowserWindow | null = null
 /** what a window opened from a map starts with: the map as indented text, taken once */
 let pendingOutline: string | null = null
+/** the file the open design came from or was last saved to; Ctrl+S writes over it */
+let designPath: string | null = null
 const MAX_BYTES = 64 * 1024 * 1024
 
 function fromWindow(event: IpcMainInvokeEvent): boolean {
@@ -82,6 +86,16 @@ function safeName(name: unknown, fallback: string): string {
       .trim()
       .slice(0, 80) || fallback
   )
+}
+
+/** The board's own check (parseDesign) in short: a design file it will open. */
+function looksLikeDesign(text: string): boolean {
+  try {
+    const value = JSON.parse(text) as { version?: unknown; pages?: unknown } | null
+    return value?.version === 1 && Array.isArray(value.pages)
+  } catch {
+    return false
+  }
 }
 
 const GONGU_PER_PAGE = 20
@@ -122,7 +136,7 @@ async function saveAs(
 ): Promise<string | null> {
   const parent = win && !win.isDestroyed() ? win : undefined
   const options = {
-    defaultPath: `${name}.${extension}`,
+    defaultPath: designPath && extension === 'hpdesign' ? designPath : `${name}.${extension}`,
     filters: [{ name: label, extensions: [extension] }],
   }
   const result = parent
@@ -178,9 +192,22 @@ function registerIpc(): void {
     clipboard.writeImage(nativeImage.createFromBuffer(Buffer.from(png)))
     return true
   })
-  ipcMain.handle(DESIGN_CHANNELS.saveDesign, async (event, text: unknown, name: unknown) => {
-    if (!fromWindow(event) || typeof text !== 'string' || text.length > MAX_BYTES) return null
-    return saveAs(safeName(name, 'design'), 'hpdesign', '한판 디자인', text)
+  ipcMain.handle(
+    DESIGN_CHANNELS.saveDesign,
+    async (event, text: unknown, name: unknown, mode: unknown) => {
+      if (!fromWindow(event) || typeof text !== 'string' || text.length > MAX_BYTES) return null
+      // Ctrl+S: over the design's own file; only a design never saved (or "save as") asks
+      if (mode !== 'saveAs' && designPath) {
+        await writeFile(designPath, text)
+        return designPath
+      }
+      const path = await saveAs(safeName(name, 'design'), 'hpdesign', '한판 디자인', text)
+      if (path) designPath = path
+      return path
+    },
+  )
+  ipcMain.handle(DESIGN_CHANNELS.newDesign, (event) => {
+    if (fromWindow(event)) designPath = null
   })
   ipcMain.handle(DESIGN_CHANNELS.openDesign, async (event) => {
     if (!fromWindow(event)) return null
@@ -191,7 +218,10 @@ function registerIpc(): void {
     const path = result.filePaths[0]
     if (result.canceled || !path) return null
     const text = await readFile(path, 'utf8')
-    return text.length > MAX_BYTES ? null : { name: basename(path, extname(path)), text }
+    if (text.length > MAX_BYTES) return null
+    // the board drops a file it cannot read; such a file must never be written over
+    if (looksLikeDesign(text)) designPath = path
+    return { name: basename(path, extname(path)), text }
   })
   ipcMain.handle(DESIGN_CHANNELS.pickImage, async (event) => {
     if (!fromWindow(event)) return null
@@ -285,6 +315,7 @@ export function openDesignWindow(): void {
   next.once('ready-to-show', () => next.show())
   next.on('closed', () => {
     if (win === next) win = null
+    designPath = null
   })
   if (process.env.ELECTRON_RENDERER_URL)
     void next.loadURL(`${process.env.ELECTRON_RENDERER_URL}/design.html`)

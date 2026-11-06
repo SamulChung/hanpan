@@ -71,6 +71,7 @@ import {
   newId,
   parseDesign,
   pathElement,
+  saveShortcut,
   qrElement,
   resizeDoc,
   shapeElement,
@@ -81,6 +82,7 @@ import {
   type DesignPage,
   type ShapeName,
 } from './model'
+import { loadPcFonts, type FontChoice, type PcFontInfo } from './fonts'
 import { ICONS } from './icons'
 import { DESIGN_TEMPLATES } from './templates'
 import { coverRect, inkPath, shapePath, textPadding } from './style'
@@ -95,7 +97,12 @@ export interface DesignApi extends Partial<DesignAiApi & DesignAiSettingsApi & G
     name: string,
   ): Promise<string | null>
   copyImage(bytes: Uint8Array): Promise<boolean>
-  saveDesign(text: string, name: string): Promise<string | null>
+  /** 'save' writes over the design's own file and asks only when there is none; 'saveAs' always asks */
+  saveDesign(text: string, name: string, mode?: 'save' | 'saveAs'): Promise<string | null>
+  /** a new design: its first save asks where */
+  newDesign?(): Promise<void>
+  /** Korean names and Hangul coverage of installed fonts, read from the font files */
+  fontFamilyInfo?(families: string[]): Promise<ReadonlyArray<[string, PcFontInfo]>>
   openDesign(): Promise<{ name: string; text: string } | null>
   pickImage(): Promise<{ dataUrl: string; width: number; height: number } | null>
 }
@@ -301,6 +308,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   const spaceDown = useRef(false)
   const clip = useRef<DesignElement[]>([])
   const fontInput = useRef<HTMLInputElement>(null)
+  const [pcFonts, setPcFonts] = useState<readonly FontChoice[]>([])
   const stageWrap = useRef<HTMLDivElement>(null)
   const pageRef = useRef<HTMLDivElement>(null)
   const drag = useRef<Drag | null>(null)
@@ -308,6 +316,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   const docRef = useRef(doc)
   docRef.current = doc
   const lastMerge = useRef<{ key: string; at: number } | null>(null)
+  const saveRef = useRef<(mode?: 'save' | 'saveAs') => Promise<void>>(async () => {})
 
   const pi = Math.min(pageIndex, doc.pages.length - 1)
   const page: DesignPage = doc.pages[pi]!
@@ -986,6 +995,14 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
         else if (pen) setPen(false)
         return
       }
+      const saving = saveShortcut(event)
+      if (saving) {
+        // also from a text being typed: leaving it keeps the text, then the design is saved
+        event.preventDefault()
+        if (isTyping(event.target)) (event.target as HTMLElement).blur()
+        setTimeout(() => void saveRef.current(saving), 0)
+        return
+      }
       if (isTyping(event.target)) return
       const mod = event.ctrlKey || event.metaKey
       const key = event.key.toLowerCase()
@@ -1289,9 +1306,16 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
       conditions: (issue.conditions ?? []).map((c) => names[c]).join(', '),
     })
   }
-  const save = async () => {
-    const path = await p.api.saveDesign(JSON.stringify(doc), doc.name)
+  const save = async (mode: 'save' | 'saveAs' = 'save') => {
+    const current = docRef.current
+    const path = await p.api.saveDesign(JSON.stringify(current), current.name, mode)
     if (path) say(`${w.saved}: ${path}`)
+  }
+  saveRef.current = save
+  /** a design that starts over (template, blank, outline): its first save asks where */
+  const startNew = (next: DesignDoc) => {
+    void p.api.newDesign?.()
+    replaceDoc(next)
   }
   const open = async () => {
     const file = await p.api.openDesign()
@@ -1826,8 +1850,11 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
               </div>
             )}
           </span>
-          <button type="button" onClick={() => void save()}>
+          <button type="button" onClick={() => void save()} title="Ctrl+S">
             {w.save}
+          </button>
+          <button type="button" onClick={() => void save('saveAs')} title="Ctrl+Shift+S">
+            {w.saveAs}
           </button>
           <button type="button" onClick={() => void open()}>
             {w.open}
@@ -1869,7 +1896,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                     type="button"
                     className="dz-template"
                     data-template={t.id}
-                    onClick={() => (replaceDoc(t.make()), setFromTemplate(true))}
+                    onClick={() => (startNew(t.make()), setFromTemplate(true))}
                     title={t.name}
                   >
                     <PagePreview
@@ -1889,7 +1916,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                     key={f.id}
                     type="button"
                     className="ghost"
-                    onClick={() => replaceDoc(blankDoc(f))}
+                    onClick={() => startNew(blankDoc(f))}
                   >
                     + {f.name}
                   </button>
@@ -1916,7 +1943,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
                     className="primary"
                     data-action="design-outline-make"
                     onClick={() => {
-                      replaceDoc(cardNewsFromOutline(outlineText))
+                      startNew(cardNewsFromOutline(outlineText))
                       setOutlineOpen(false)
                     }}
                   >
@@ -2358,6 +2385,11 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
               fillPage={fillPage}
               replaceImage={(id) => void replaceImage(id)}
               fonts={(doc.fonts ?? []).map((f) => f.family)}
+              pcFonts={pcFonts}
+              loadPcFonts={() => {
+                if (!pcFonts.length)
+                  void loadPcFonts(p.api.fontFamilyInfo?.bind(p.api)).then(setPcFonts)
+              }}
               addFont={() => fontInput.current?.click()}
               group={group}
               ungroup={ungroup}
