@@ -9,7 +9,7 @@
  * or the person, so it reads exactly as in the design board and the HWP editor.
  * Apps import `@genoffice/ui/gongu-picker.css` for the chrome.
  */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { format, type Lang, type Params } from '@genoffice/i18n'
 import {
@@ -133,6 +133,8 @@ export function GonguPicker(p: {
   onClose(): void
   /** asks about a work with conditions; window.confirm by default */
   confirm?: (message: string) => boolean
+  /** opens Settings → Integrations; with it the "key needed" note carries a button there */
+  onOpenSettings?: () => void
 }) {
   const t = (key: keyof GonguPickerStrings, params?: Params) => gonguPickerText(p.lang, key, params)
   const modalKeys = useModalKeys(p.onClose, { restoreFocus: true })
@@ -145,6 +147,22 @@ export function GonguPicker(p: {
   const [busy, setBusy] = useState<'search' | 'insert' | null>(null)
   const [error, setError] = useState<keyof GonguPickerStrings | null>(null)
   const [chosen, setChosen] = useState<string | null>(null)
+  // the key is checked when the dialog opens (an empty search: no words leave the PC and
+  // main answers without a request), so the guidance shows before the first search
+  const [noKey, setNoKey] = useState(false)
+  const { api } = p
+  useEffect(() => {
+    let live = true
+    void api
+      .gonguSearch('', 1)
+      .then((answer) => {
+        if (live && answer && !answer.ok && answer.error === 'no-key') setNoKey(true)
+      })
+      .catch(() => {})
+    return () => {
+      live = false
+    }
+  }, [api])
 
   const search = async (words: string, nextPage: number) => {
     if (!words.trim() || busy) return
@@ -153,7 +171,12 @@ export function GonguPicker(p: {
     const answer = await p.api.gonguSearch(words, nextPage).catch(() => null)
     setBusy(null)
     if (!answer) return setError('errService')
+    if (!answer.ok && answer.error === 'no-key') {
+      setNoKey(true)
+      return setError(null)
+    }
     if (!answer.ok) return setError(FAILURE_KEYS[answer.error])
+    setNoKey(false)
     setAsked(words)
     setPage(nextPage)
     setTotal(answer.total)
@@ -248,6 +271,26 @@ export function GonguPicker(p: {
             {busy === 'search' ? t('searching') : t('search')}
           </button>
         </form>
+        {noKey && (
+          <div className="gs-gongu-nokey" role="status" data-hanpan="gongu-no-key">
+            <p>
+              <strong>{t('noKey')}</strong> {t('noKeyHint')}
+            </p>
+            {p.onOpenSettings && (
+              <button
+                type="button"
+                className="primary"
+                onClick={() => {
+                  p.onOpenSettings?.()
+                  p.onClose()
+                }}
+                data-action="gongu-open-settings"
+              >
+                {t('openSettings')}
+              </button>
+            )}
+          </div>
+        )}
         {error && (
           <p className="gs-gongu-error" role="status">
             {t(error)}

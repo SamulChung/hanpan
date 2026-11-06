@@ -108,6 +108,22 @@
   color: var(--color-error);
 }
 
+/* no key yet: what to do, shown as soon as the dialog opens */
+.gs-gongu-nokey {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  line-height: 1.5;
+}
+
+.gs-gongu-nokey p {
+  margin: 0;
+}
+
 .gs-gongu-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));

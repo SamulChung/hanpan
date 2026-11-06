@@ -185,6 +185,40 @@ describe('GonguPicker', () => {
     expect(onClose).not.toHaveBeenCalled()
   })
 
+  it('shows the key guidance as soon as it opens, with a button to Settings', async () => {
+    const api = fakeApi({
+      gonguSearch: vi.fn(async () => ({ ok: false as const, error: 'no-key' as const })),
+    })
+    const onOpenSettings = vi.fn()
+    const onClose = vi.fn()
+    await act(async () => {
+      root.render(
+        createElement(GonguPicker, { lang: 'ko', api, onInsert: vi.fn(), onClose, onOpenSettings }),
+      )
+    })
+    // the probe sends no words: nothing the person typed leaves the PC
+    expect(api.gonguSearch).toHaveBeenCalledWith('', 1)
+    const note = document.querySelector('[data-hanpan="gongu-no-key"]')!
+    expect(note.textContent).toContain(GONGU_PICKER_STRINGS.ko.noKey)
+    expect(note.textContent).toContain(GONGU_PICKER_STRINGS.ko.noKeyHint)
+    const open = note.querySelector<HTMLButtonElement>('[data-action="gongu-open-settings"]')!
+    expect(open.textContent).toBe(GONGU_PICKER_STRINGS.ko.openSettings)
+    act(() => open.click())
+    expect(onOpenSettings).toHaveBeenCalledTimes(1)
+    expect(onClose).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows no guidance (and no empty-result line) when a key is set', async () => {
+    const api = fakeApi({ gonguSearch: vi.fn(async () => ({ ok: true as const, works: [], total: null })) })
+    await act(async () => {
+      root.render(
+        createElement(GonguPicker, { lang: 'ko', api, onInsert: vi.fn(), onClose: vi.fn() }),
+      )
+    })
+    expect(document.querySelector('[data-hanpan="gongu-no-key"]')).toBeNull()
+    expect(document.body.textContent).not.toContain(GONGU_PICKER_STRINGS.ko.noResults)
+  })
+
   it('tells where to put the key when there is none', async () => {
     const api = fakeApi({
       gonguSearch: vi.fn(async () => ({ ok: false as const, error: 'no-key' as const })),

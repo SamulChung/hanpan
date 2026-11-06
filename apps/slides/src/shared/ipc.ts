@@ -1764,6 +1764,8 @@ export interface SlidesApi {
   onAiSettingsChanged: (handler: () => void) => () => void
   /** shell only: switch to Home and open Settings › AI Model (rejects in standalone) */
   openAiModelSettings: () => Promise<void>
+  /** shell only: switch to Home and open Settings › Integrations (rejects in standalone) */
+  openIntegrationSettings: () => Promise<void>
   aiStream: (request: AiStreamRequest) => Promise<void>
   aiStreamCancel: (requestId: string) => Promise<void>
   /** Subscription connections (Claude, Codex): statuses, sign-in, install. Every call may reject while no handler is registered — read that as `checking` */

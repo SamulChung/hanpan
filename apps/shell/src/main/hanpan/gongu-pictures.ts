@@ -71,6 +71,9 @@ export async function searchGonguPictures(
   key: string,
 ): Promise<GonguSearchAnswer | null> {
   if (typeof query !== 'string') return null
+  // decided before anything else: the picker sends an empty probe when it opens, to
+  // show the "key needed" guidance before the person searches
+  if (!key.trim()) return { ok: false, error: 'no-key' }
   const result = await gonguImageSearch(query.slice(0, 100), key, {
     page: Math.min(1000, Math.max(1, Math.floor(Number(page) || 1))),
     perPage: GONGU_PER_PAGE,

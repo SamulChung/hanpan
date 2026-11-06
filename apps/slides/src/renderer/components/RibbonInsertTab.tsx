@@ -273,6 +273,7 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
             api={window.slidesApi}
             onInsert={onInsertGonguPicture}
             onClose={() => setGonguOpen(false)}
+            onOpenSettings={() => void window.slidesApi.openIntegrationSettings().catch(() => {})}
           />
         )}
         {dropBig(
