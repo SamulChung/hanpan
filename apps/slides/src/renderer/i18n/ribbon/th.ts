@@ -773,4 +773,5 @@ export const th = {
   ribbonZoomSelectedSlides: 'เลือกแล้ว {n} สไลด์',
   ribbonZoomSelectedSections: 'เลือกแล้ว {n} ส่วน',
   ribbonTabCollapseTip: 'Double-click to collapse the ribbon ({key})',
+  ribbonAnimSelectFirst: 'First select the object to animate',
 } satisfies Record<keyof typeof zh, string>

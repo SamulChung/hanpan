@@ -775,4 +775,5 @@ export const ar = {
   ribbonZoomSelectedSlides: 'تم تحديد {n} شرائح',
   ribbonZoomSelectedSections: 'تم تحديد {n} مقاطع',
   ribbonTabCollapseTip: 'Double-click to collapse the ribbon ({key})',
+  ribbonAnimSelectFirst: 'First select the object to animate',
 } satisfies Record<keyof typeof zh, string>

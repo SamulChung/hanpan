@@ -779,4 +779,5 @@ export const zh = {
   ribbonZoomSelectedSlides: '已选择 {n} 张幻灯片',
   ribbonZoomSelectedSections: '已选择 {n} 个节',
   ribbonTabCollapseTip: '双击可折叠功能区（{key}）',
+  ribbonAnimSelectFirst: '请先选择要添加动画的对象',
 }

@@ -777,4 +777,5 @@ export const en = {
   ribbonZoomSelectedSlides: '{n} slides selected',
   ribbonZoomSelectedSections: '{n} sections selected',
   ribbonTabCollapseTip: 'Double-click to collapse the ribbon ({key})',
+  ribbonAnimSelectFirst: 'First select the object to animate',
 } satisfies Record<keyof typeof zh, string>

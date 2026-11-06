@@ -9176,6 +9176,17 @@ body.show-curtain::after {
   align-items: center;
   gap: 4px;
   padding: 6px 8px;
+  /* a folded group with many effects (animations) wraps into rows instead of
+     running past the window's right edge */
+  flex-wrap: wrap;
+  max-width: min(560px, calc(100vw - 24px));
+}
+
+.rb-collapse-hint {
+  flex-basis: 100%;
+  padding: 2px 4px 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 /* ── Layout picker panel ──────────────────────────────────────────────── */

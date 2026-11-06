@@ -802,4 +802,5 @@ export const ja = {
   ribbonZoomSelectedSlides: '{n} 枚のスライドを選択中',
   ribbonZoomSelectedSections: '{n} 個のセクションを選択中',
   ribbonTabCollapseTip: 'ダブルクリックでリボンを折りたたみます ({key})',
+  ribbonAnimSelectFirst: '先にアニメーションを付けるオブジェクトを選択してください',
 } satisfies Record<keyof typeof zh, string>

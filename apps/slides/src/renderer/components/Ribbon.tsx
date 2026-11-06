@@ -2308,6 +2308,7 @@ export function Ribbon({
                   closePanels(['collapse'])
                   setCollapseOpen((v) => (v === 'animation' ? null : 'animation'))
                 },
+                hint: hasSelection ? undefined : t('ribbonAnimSelectFirst'),
                 icon: (
                   <span className="rb-anim-glyph rb-anim-entr">
                     <IconAnimStar size={20} />
@@ -2359,6 +2360,7 @@ export function Ribbon({
                   closePanels(['collapse'])
                   setCollapseOpen((v) => (v === 'motionPaths' ? null : 'motionPaths'))
                 },
+                hint: hasSelection ? undefined : t('ribbonAnimSelectFirst'),
                 icon: (
                   <span className="rb-anim-glyph rb-anim-path">
                     <IconPathDiagonal size={20} />

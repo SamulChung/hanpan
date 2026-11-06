@@ -787,4 +787,5 @@ export const vi = {
   ribbonZoomSelectedSlides: 'Đã chọn {n} trang chiếu',
   ribbonZoomSelectedSections: 'Đã chọn {n} phần',
   ribbonTabCollapseTip: 'Nhấp đúp để thu gọn dải băng ({key})',
+  ribbonAnimSelectFirst: 'Trước tiên hãy chọn đối tượng cần tạo hiệu ứng',
 } satisfies Record<keyof typeof zh, string>

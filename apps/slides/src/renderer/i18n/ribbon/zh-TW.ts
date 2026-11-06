@@ -757,4 +757,5 @@ export const zhTW = {
   ribbonZoomSelectedSlides: '已選取 {n} 張投影片',
   ribbonZoomSelectedSections: '已選取 {n} 個節',
   ribbonTabCollapseTip: 'Double-click to collapse the ribbon ({key})',
+  ribbonAnimSelectFirst: 'First select the object to animate',
 } satisfies Record<keyof typeof zh, string>
