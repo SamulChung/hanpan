@@ -5,6 +5,7 @@ export const ja = {
   failed: 'アプリを起動できませんでした。',
   retry: '再試行',
   notInstalled: 'このインストールにはこのアプリが含まれていません。',
+  editorLangOnReopen: 'エディターの言語は、このタブを開き直すと切り替わります。',
   saveFailed: '保存できませんでした。ドキュメントは未保存のままです。',
   layeredSaveNotice: 'レイヤーと編集情報を残すため、PSD で保存します。',
   openFailed: 'ファイルを開けませんでした。アプリからもう一度開いてください。',
@@ -36,4 +37,19 @@ export const ja = {
   printLandscape: '横',
   printNothing: '印刷するドキュメントがありません。',
   printFailed: '印刷できませんでした。',
+  quickDoneRemoveBackground: '背景を削除しました。',
+  quickDoneAutoTone: '色調を自動補正しました。',
+  quickDoneTrace: '画像をトレースして図形にしました。',
+  quickDoneCenter: 'アートボードの中央に移動しました。',
+  quickNeedPixelLayer:
+    '画像レイヤーを選んでからもう一度お試しください。テキストレイヤーや空のレイヤーには変更するピクセルがありません。',
+  quickTraceFailed: 'トレースできませんでした。配置した画像を選んでからもう一度お試しください。',
+  quickCenterFailed:
+    '中央に移動できませんでした。移動するオブジェクトを選んでからもう一度お試しください。',
+  untitledPhoto: '無題の写真',
+  untitledIllust: '無題のイラスト',
+  exportSize: 'サイズ',
+  exportKeepRatio: '縦横比を固定',
+  exportScalePrint: '印刷用 (300 dpi)',
+  exportQuality: 'JPG 画質',
 } satisfies Record<keyof typeof zh, string>

@@ -5,6 +5,7 @@ export const de = {
   failed: 'Die App konnte nicht gestartet werden.',
   retry: 'Erneut versuchen',
   notInstalled: 'Diese Installation enthält diese App nicht.',
+  editorLangOnReopen: "The editor's language changes when this tab is opened again.",
   saveFailed: 'Speichern fehlgeschlagen. Das Dokument bleibt als nicht gespeichert markiert.',
   layeredSaveNotice:
     'Wird als PSD gespeichert, damit Ebenen und Bearbeitungsdaten erhalten bleiben.',
@@ -37,4 +38,18 @@ export const de = {
   printLandscape: 'Querformat',
   printNothing: 'Es gibt kein Dokument zum Drucken.',
   printFailed: 'Drucken nicht möglich.',
+  quickDoneRemoveBackground: 'Removed the background.',
+  quickDoneAutoTone: 'Adjusted the tone automatically.',
+  quickDoneTrace: 'Traced the picture into shapes.',
+  quickDoneCenter: 'Moved it to the center of the artboard.',
+  quickNeedPixelLayer:
+    'Select a picture layer and try again. A type layer or an empty layer has no pixels to change.',
+  quickTraceFailed: 'Could not trace it. Select a placed picture and try again.',
+  quickCenterFailed: 'Could not center it. Select the objects to move and try again.',
+  untitledPhoto: 'Unbenanntes Foto',
+  untitledIllust: 'Unbenannte Illustration',
+  exportSize: 'Size',
+  exportKeepRatio: 'Keep the ratio',
+  exportScalePrint: 'Print (300 dpi)',
+  exportQuality: 'JPG quality',
 } satisfies Record<keyof typeof zh, string>

@@ -16,6 +16,7 @@ import { watchCaptures, type CaptureWatch } from './doc/capture-watch'
 import { createDirtyState, type DirtyState } from './doc/dirty-state'
 import { watchDoc, type DocWatch } from './doc/doc-watch'
 import { openPending } from './doc/open-flow'
+import { startRecoveryLoop } from './doc/recovery-loop'
 import { runSave, type SaveNoticeKey } from './doc/save-flow'
 import { singleFlight } from './doc/single-flight'
 import { copyBytes } from './frame/bytes'
@@ -46,7 +47,9 @@ export default function App({
   pollMs = 1000,
   connect = (frame) => connectPageApi(frame),
 }: AppProps) {
-  const { t } = useI18n()
+  const { t, lang: uiLang } = useI18n()
+  /** the language the frame was started in: a change reloads an empty tab only (G9) */
+  const [frameLang, setFrameLang] = useState<Lang>(lang)
   const [status, setStatus] = useState<Status>('checking')
   const [notice, setNotice] = useState<{ id: number; text: string } | null>(null)
   const noticeSeq = useRef(0)
@@ -125,7 +128,8 @@ export default function App({
         ),
       lock: lockApp,
       measure: measureImage,
-      resize: (bytes, width, height, format) => resizeImage(bytes, width, height, format),
+      resize: (bytes, width, height, format, quality) =>
+        resizeImage(bytes, width, height, format, quality),
     })
     if (result.messageKey) notify(result.messageKey)
   }
@@ -181,6 +185,23 @@ export default function App({
     }
   }, [kind, probeWeb, attempt])
 
+  // Hanpan's language changed: a tab without a document starts its editor again in the new
+  // language; a tab with one keeps it (reloading would drop it) and says when it changes (G9)
+  const langSeen = useRef(lang)
+  useEffect(() => {
+    if (uiLang === langSeen.current) return
+    langSeen.current = uiLang
+    if (uiLang === frameLang) return
+    if (status === 'ready' && hasDocument) {
+      notify('editorLangOnReopen')
+      return
+    }
+    setFrameLang(uiLang)
+    setAttempt((n) => n + 1)
+    // notify reads refs and state setters only
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uiLang])
+
   // the frame stands while the app loads and runs; a change between the two must not unwire it
   const frameOn = status === 'loading' || status === 'ready'
 
@@ -210,6 +231,25 @@ export default function App({
         )
         if (!live) return
         if (opened === 'failed') notify('openFailed')
+        // an opened file is shown whole, not cut at the app's starting zoom (W14)
+        if (opened === 'opened') {
+          window.setTimeout(
+            () =>
+              void api
+                .execute(kind === 'photo' ? 'view.fitOnScreen' : 'view.fitAll', {})
+                .catch(() => {}),
+            300,
+          )
+        }
+        // Save, Save As and Print inside the frame (its menus, its keys) are Hanpan's: the file
+        // is written by Hanpan's save, and only then is the tab marked saved (G1-G3)
+        api.onHostRequest?.((request) => {
+          if (request === 'print') {
+            if (appLocks.current === 0) setPrintOn(adapter)
+            return
+          }
+          void save(request)
+        })
         const captures = watchCaptures({
           adapter,
           intervalMs: pollMs,
@@ -241,6 +281,14 @@ export default function App({
           pollMs,
         )
         docWatchRef.current = docWatch
+        stops.push(
+          startRecoveryLoop({
+            adapter,
+            dirty: dirtyRef.current,
+            busy: () => hostOps.current > 0 || appLocks.current > 0,
+            api: graphicsApi(),
+          }),
+        )
         stops.push(() => docWatch.stop())
         setStatus('ready')
       } catch {
@@ -309,7 +357,7 @@ export default function App({
               ref={frameRef}
               className="gx-frame"
               title={kind}
-              src={appFrameUrl(kind, lang)}
+              src={appFrameUrl(kind, frameLang)}
               allow="clipboard-read; clipboard-write; local-fonts"
             />
           )}

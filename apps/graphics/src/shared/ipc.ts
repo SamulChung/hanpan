@@ -30,6 +30,15 @@ export const GRAPHICS_CHANNELS = {
   menuCommand: 'graphics:menu-command',
   /** the picture the page took from the app, printed through the system dialog */
   print: 'graphics:print',
+  /** crash recovery: the page hands main a copy of the document (main picks the place) */
+  recoveryWrite: 'graphics:recovery-write',
+  /** the document was opened from a recovery copy: the page marks it changed (asked once) */
+  recoveryRestored: 'graphics:recovery-restored',
+  /** the OS is ending the session: write a copy now, then answer done */
+  recoveryCopyNow: 'graphics:recovery-copy-now',
+  recoveryCopyNowDone: 'graphics:recovery-copy-now-done',
+  /** the copy was saved or dropped: the next copy is written even if nothing changed since */
+  recoveryReset: 'graphics:recovery-reset',
 } as const
 
 export const APP_CHANNELS = {
@@ -91,6 +100,18 @@ export interface PickedImage {
   bytes: Uint8Array
 }
 
+/** A copy of the document for crash recovery; `ext` without the dot ('psd', 'png', 'vectorcraft'). */
+export interface RecoveryCopyRequest {
+  bytes: Uint8Array
+  ext: string
+}
+/**
+ * - `written`: kept in the profile's recovery folder.
+ * - `superseded`: not kept now (the document was just dropped with "Don't Save").
+ * - `refused`: a format this tab does not keep.
+ */
+export type RecoveryWriteAnswer = 'written' | 'superseded' | 'refused'
+
 export type GraphicsMenuCommand = 'export' | 'undo' | 'redo' | 'print'
 
 /** The app's picture as a PNG, and the paper the preview put it on. */
@@ -124,6 +145,13 @@ export interface GraphicsApi {
   onMenuCommand(handler: (command: GraphicsMenuCommand) => void): () => void
   /** prints the picture on the paper the preview showed; main builds the page itself */
   print(request: PrintRequest): Promise<PrintResult>
+  // ---- crash recovery: main writes the copy into the profile's recovery folder ----
+  writeRecoveryCopy(request: RecoveryCopyRequest): Promise<RecoveryWriteAnswer>
+  /** true once when the document came from a recovery copy */
+  recoveryRestored(): Promise<boolean>
+  onRecoveryCopyNow(handler: () => void): () => void
+  recoveryCopyNowDone(): void
+  onRecoveryReset(handler: () => void): () => void
   // ---- the AI panel: no attachments, no web search, no files of its own ----
   getAiPanelPrefs(): Promise<AiPanelPrefs>
   setAiPanelPrefs(patch: Partial<AiPanelPrefs>): Promise<AiPanelPrefs>

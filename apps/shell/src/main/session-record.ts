@@ -50,7 +50,7 @@ const DOCUMENT_KINDS: readonly DocumentTabKind[] = [
 
 /** the same shape the recovery store accepts for an untitled copy */
 const UNTITLED_ID_RE = /^[A-Za-z0-9_-]{1,64}$/
-const EXT_RE = /^\.[a-z0-9]{1,10}$/
+const EXT_RE = /^\.[a-z0-9]{1,12}$/
 const MIN_RATIO = 0.05
 const MAX_RATIO = 0.95
 
