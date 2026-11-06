@@ -1246,7 +1246,10 @@ export async function requestHtmlClose(
 ): Promise<boolean> {
   if (!dirtyByWc.has(contents.id) || contents.isDestroyed()) return true
   // with several edited tabs, "this document" alone does not say which one asks
-  const docName = closePromptDocName(savePathByWc.get(contents.id), contents.getTitle())
+  const docName = closePromptDocName(
+    savePathByWc.get(contents.id),
+    typeof contents.getTitle === 'function' ? contents.getTitle() : null,
+  )
   const options = {
     type: 'warning' as const,
     message: docName ? tm('closeUnsavedNamedMsg', { name: docName }) : tm('closeUnsavedMsg'),
