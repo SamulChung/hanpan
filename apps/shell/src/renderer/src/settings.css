@@ -1311,3 +1311,17 @@
 .set-quicklook-head .set-pane-subtitle {
   margin: 0 0 4px;
 }
+
+/* Settings → About (0.17 리뷰 v2 shell #19): the notices read as one column,
+ * and the contact address never breaks inside itself */
+.set-about-notices {
+  flex: 1;
+  gap: 8px;
+}
+
+.set-field-value.set-field-email {
+  text-align: left;
+  word-break: normal;
+  overflow-wrap: normal;
+  white-space: nowrap;
+}

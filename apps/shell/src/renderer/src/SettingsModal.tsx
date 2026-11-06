@@ -2206,9 +2206,11 @@ export function SettingsModal({
                 </div>
                 <div className="set-field">
                   <div className="set-field-text">
-                    <label className="set-field-label">{t('setRightsContact')}</label>
-                    <div className="set-field-desc">{t('setRightsContactDesc')}</div>
-                    <div className="set-field-value">{PRODUCT_CONTACT_EMAIL}</div>
+                    <div className="set-field-stack">
+                      <label className="set-field-label">{t('setRightsContact')}</label>
+                      <div className="set-field-desc">{t('setRightsContactDesc')}</div>
+                      <div className="set-field-value set-field-email">{PRODUCT_CONTACT_EMAIL}</div>
+                    </div>
                   </div>
                   <button
                     className="set-btn"
@@ -2218,7 +2220,8 @@ export function SettingsModal({
                   </button>
                 </div>
                 <div className="set-field">
-                  <div className="set-field-text">
+                  {/* one column: side by side they broke every word or two (#19) */}
+                  <div className="set-field-stack set-about-notices" data-about-notices="">
                     <div className="set-field-desc">{t('setBasedOn')}</div>
                     <div className="set-field-desc">{t('setHwpNotice')}</div>
                     <div className="set-field-desc">{t('setTrademarks')}</div>
