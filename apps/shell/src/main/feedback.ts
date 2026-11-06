@@ -1,4 +1,10 @@
-import { createI18n, defineStrings, PRODUCT_CONTACT_EMAIL, productName, type Lang } from '@genoffice/i18n'
+import {
+  createI18n,
+  defineStrings,
+  PRODUCT_CONTACT_EMAIL,
+  productName,
+  type Lang,
+} from '@genoffice/i18n'
 
 /**
  * Hanpan: feedback goes to the people who make it (TenAI) by email. The Help
