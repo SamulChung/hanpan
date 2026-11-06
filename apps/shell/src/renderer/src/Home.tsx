@@ -8,6 +8,17 @@ import logoLockup from './assets/genoffice-logo.svg'
 import { KbAskPanel } from './KbAskPanel'
 import { TemplatePicker } from './hanpan/TemplatePicker'
 import { StartBoard } from './hanpan/StartBoard'
+import {
+  HomeCustomizePanel,
+  HomeWidgets,
+  WidgetGallery,
+  addWidgetTo,
+  arrangeCards,
+  configuresOnAdd,
+  useHomeLayout,
+  type HomeAppCard,
+} from './HomeWidgets'
+import { homeCustomText } from './i18n/strings-home-custom'
 import { MarkdownConverter, type MarkdownConverterApi } from './hanpan/MarkdownConverter'
 import './hanpan/hanpan.css'
 import iconDocx from './assets/file-docx.svg'
@@ -1284,6 +1295,8 @@ export function Home({
   entriesLen.current = entries.length
 
   /** reload the list; keepCount keeps the loaded row count (refresh), otherwise back to page one */
+  /** bumps whenever everything re-pulls, so the file widgets re-read too (not on filter changes) */
+  const [widgetTick, setWidgetTick] = useState(0)
   const reload = (keepCount: boolean) => {
     const seq = ++requestSeq.current
     const ext = filter === 'all' ? undefined : filter
@@ -1327,6 +1340,7 @@ export function Home({
   /** everything on screen re-pulls: the paged list, the root and every loaded folder */
   const refresh = () => {
     reloadRef.current(true)
+    setWidgetTick((tick) => tick + 1)
     loadRoot()
     invalidateFolders([...listings.keys()])
   }
@@ -1959,6 +1973,12 @@ export function Home({
       }),
     [],
   )
+  // 0.17: the widgets and the app card arrangement ("홈 꾸미기")
+  const [homeLayout, updateHomeLayout] = useHomeLayout()
+  const [customizeOpen, setCustomizeOpen] = useState(false)
+  const [galleryOpen, setGalleryOpen] = useState(false)
+  /** the widget whose settings are open */
+  const [editingWidget, setEditingWidget] = useState<string | null>(null)
   const [converterOpen, setConverterOpen] = useState(false)
   const hp = window.hanpanApi
   const converterApi: MarkdownConverterApi | null =
@@ -1972,7 +1992,7 @@ export function Home({
    * documents and tools follow in a compact row. Every card keeps `quick-card`
    * and names what it makes in `data-new`.
    */
-  function renderQuickCards() {
+  function quickCardDefs() {
     const made = (ext: string) => NEW_ITEMS.find((item) => item.ext === ext)!
     const primary = [
       {
@@ -2135,33 +2155,70 @@ export function Home({
         action: () => window.aiOffice.browse(),
       },
     ]
+    return { primary, secondary }
+  }
+
+  /** every app card as the 홈 꾸미기 panel and the favorites widget list them */
+  function homeAppCards(): { primary: HomeAppCard[]; secondary: HomeAppCard[] } {
+    const defs = quickCardDefs()
+    return {
+      primary: defs.primary.map((card) => ({
+        key: card.key,
+        title: card.title,
+        icon: card.badge,
+        action: card.action,
+      })),
+      secondary: defs.secondary.map((card) => ({
+        key: card.key,
+        title: card.title,
+        icon: card.icon,
+        action: card.action,
+      })),
+    }
+  }
+
+  /** the cards in the person's order, hidden ones left out (0.17 홈 꾸미기) */
+  function renderQuickCards() {
+    const defs = quickCardDefs()
+    const primary = arrangeCards(defs.primary, homeLayout)
+    const secondary = arrangeCards(defs.secondary, homeLayout)
     return (
       <div className="hp-cards">
-        <div className="quick-cards hp-primary">
-          {primary.map((card) => (
-            <button
-              key={card.key}
-              className={
-                card.start ? 'quick-card hp-primary-card is-start' : 'quick-card hp-primary-card'
-              }
-              data-new={card.key}
-              data-hanpan={card.key === 'templates' ? 'templates' : undefined}
-              onClick={() => void card.action()}
-            >
-              {card.start && <span className="hp-start-badge">{t('hpStartBadge')}</span>}
-              {card.badge}
-              <span className="quick-text">
-                <span className="quick-title-row">
-                  <span className="quick-title">{card.title}</span>
-                  {card.ai && <span className="ai-chip">AI</span>}
+        {primary.length > 0 && (
+          <div className="quick-cards hp-primary">
+            {primary.map((card) => (
+              <button
+                key={card.key}
+                className={
+                  card.start ? 'quick-card hp-primary-card is-start' : 'quick-card hp-primary-card'
+                }
+                data-new={card.key}
+                data-hanpan={card.key === 'templates' ? 'templates' : undefined}
+                onClick={() => void card.action()}
+              >
+                {card.start && <span className="hp-start-badge">{t('hpStartBadge')}</span>}
+                {card.badge}
+                <span className="quick-text">
+                  <span className="quick-title-row">
+                    <span className="quick-title">{card.title}</span>
+                    {card.ai && <span className="ai-chip">AI</span>}
+                  </span>
+                  <span className="quick-sub">{card.sub}</span>
                 </span>
-                <span className="quick-sub">{card.sub}</span>
-              </span>
-            </button>
-          ))}
-        </div>
+              </button>
+            ))}
+          </div>
+        )}
         <div className="section-head hp-more-head">
           <span className="section-label">{t('hpMoreTools')}</span>
+          <button
+            type="button"
+            className="home-custom-open"
+            data-home-custom="open"
+            onClick={() => setCustomizeOpen(true)}
+          >
+            {homeCustomText(lang, 'customize')}
+          </button>
         </div>
         <div className="quick-cards hp-secondary">
           {secondary.map((card) => {
@@ -2204,6 +2261,19 @@ export function Home({
             )
           })}
         </div>
+        {customizeOpen && renderCustomizePanel()}
+        {galleryOpen && (
+          <WidgetGallery
+            layout={homeLayout}
+            lang={lang}
+            onPick={(type) => {
+              setGalleryOpen(false)
+              const id = addWidgetTo(updateHomeLayout, type)
+              if (id && configuresOnAdd(type)) setEditingWidget(id)
+            }}
+            onClose={() => setGalleryOpen(false)}
+          />
+        )}
         {templatesOpen && (
           <TemplatePicker
             // a new request while the dialog is open starts it over with the new document
@@ -2219,6 +2289,50 @@ export function Home({
           <MarkdownConverter api={converterApi} onClose={() => setConverterOpen(false)} />
         )}
       </div>
+    )
+  }
+
+  function renderCustomizePanel() {
+    const apps = homeAppCards()
+    return (
+      <HomeCustomizePanel
+        layout={homeLayout}
+        update={updateHomeLayout}
+        groups={[
+          { label: homeCustomText(lang, 'mainCards'), cards: apps.primary },
+          { label: t('hpMoreTools'), cards: apps.secondary },
+        ]}
+        cards={[...apps.primary, ...apps.secondary]}
+        lang={lang}
+        onOpenGallery={() => {
+          setCustomizeOpen(false)
+          setGalleryOpen(true)
+        }}
+        themeLabels={{
+          title: t('theme'),
+          light: t('themeLight'),
+          dark: t('themeDark'),
+          system: t('themeSystem'),
+        }}
+        onClose={() => setCustomizeOpen(false)}
+      />
+    )
+  }
+
+  function renderWidgets() {
+    const apps = homeAppCards()
+    return (
+      <HomeWidgets
+        layout={homeLayout}
+        update={updateHomeLayout}
+        cards={[...apps.primary, ...apps.secondary]}
+        lang={lang}
+        dateLocale={i18n.dateLocale}
+        reloadKey={widgetTick}
+        editingId={editingWidget}
+        onEdit={setEditingWidget}
+        onOpenGallery={() => setGalleryOpen(true)}
+      />
     )
   }
 
@@ -3375,6 +3489,8 @@ export function Home({
           )}
           {renderQuickCards()}
         </section>
+
+        {renderWidgets()}
 
         <section
           className="recents"

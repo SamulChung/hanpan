@@ -133,6 +133,8 @@ import {
   writeAppSettings,
   writeAppSettingThen,
 } from './app-settings'
+import { readHomeLayout, writeHomeLayout } from './home-layout'
+import { openWidgetTarget, pathKind } from './home-widget-targets'
 import { KOREAN_DOC_FEATURES_KEY, readKoreanDocFeatures } from './korean-doc-features'
 import { fallbackUiLang } from './ui-lang-fallback'
 import {
@@ -6441,6 +6443,32 @@ function registerHomeIpc(): void {
       autoSaveDefaultUpdatedAt: next.updatedAt,
     })
     for (const wc of webContents.getAllWebContents()) wc.send('app:auto-save-default-changed', next)
+  })
+
+  // 0.17: Home's widgets and app card arrangement; a damaged value reads as the defaults
+  ipcMain.handle(HOME_CHANNELS.getHomeLayout, () => readHomeLayout(APP_SETTINGS_PATH()))
+  ipcMain.handle(HOME_CHANNELS.setHomeLayout, (_event, layout: unknown) =>
+    writeHomeLayout(APP_SETTINGS_PATH(), layout),
+  )
+  ipcMain.handle(HOME_CHANNELS.openWidgetTarget, (_event, target: unknown) =>
+    openWidgetTarget(target, {
+      kindOf: pathKind,
+      openDocument: (path) => {
+        openDocumentPath(path)
+        fileIndexer?.refresh()
+      },
+      openFolder: (path) => shell.openPath(path),
+      openExternal: (url) => shell.openExternal(url),
+    }),
+  )
+  ipcMain.handle(HOME_CHANNELS.pickWidgetTarget, async (event, kind: unknown) => {
+    if (kind !== 'file' && kind !== 'folder') return null
+    const win = BrowserWindow.fromWebContents(event.sender) ?? shellWindow
+    if (!win) return null
+    const result = await dialog.showOpenDialog(win, {
+      properties: [kind === 'file' ? 'openFile' : 'openDirectory'],
+    })
+    return result.canceled ? null : (result.filePaths[0] ?? null)
   })
 
   // Hanpan: the Korean document features switch (decision 0091); editors read it too
