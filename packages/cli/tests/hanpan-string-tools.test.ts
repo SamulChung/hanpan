@@ -63,4 +63,10 @@ describe('upsertBlockStrings', () => {
       "export const strings = {\n  en: {\n    a: 'A',\n    hpX: 'Hello there',\n  },\n  vi: {\n    a: 'A',\n    hpX: 'Xin chào',\n  },\n}\n",
     )
   })
+
+  it('reads afterKey as a plain name, not a pattern', () => {
+    const src = "export const strings = {\n  en: {\n    axb: other,\n    z: 'Z',\n  },\n}\n"
+    const r = upsertBlockStrings(src, 'a.b', entries)
+    expect(r.text).toContain("    z: 'Z',\n    hpX: 'Hello there',\n  },")
+  })
 })
