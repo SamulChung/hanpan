@@ -6,6 +6,7 @@
  * Every handler answers only the design window itself.
  */
 import {
+  app,
   BrowserWindow,
   clipboard,
   dialog,
@@ -56,6 +57,15 @@ export const DESIGN_CHANNELS = {
   gonguSearch: 'hanpan-design:gongu-search',
   gonguPicture: 'hanpan-design:gongu-picture',
   open: 'hanpan:open-design',
+  /** the board has (or no longer has) unsaved work: closing asks first */
+  setDirty: 'hanpan-design:set-dirty',
+  /** 저장 / 저장 안 함 / 취소 before the board replaces unsaved work */
+  askUnsaved: 'hanpan-design:ask-unsaved',
+  /** to the board: the person chose 저장 while closing; save, then closeAfterSave */
+  saveThenClose: 'hanpan-design:save-then-close',
+  closeAfterSave: 'hanpan-design:close-after-save',
+  /** Settings → Integrations (the Gongu key), from the board's picture search */
+  openGonguSettings: 'hanpan-design:open-gongu-settings',
 } as const
 
 export interface DesignWindowDeps {
@@ -65,6 +75,10 @@ export interface DesignWindowDeps {
   title(lang: string): string
   /** the Gongu key from Settings → Integrations (opened from its seal), '' when none */
   gonguKey(): string
+  /** where a first save starts; left out: Documents\Hanpan */
+  saveDir?: () => string
+  /** opens Settings at a section in the shell window; left out: the Home settings request */
+  openSettings?: (section: 'integrations') => void
   /** prints a finished page through the system dialog; left out: a hidden window here */
   printHtml?: (html: string, sheet: PrintSheet) => Promise<PrintDialogOutcome>
 }
@@ -75,6 +89,10 @@ let win: BrowserWindow | null = null
 let pendingOutline: string | null = null
 /** the file the open design came from or was last saved to; Ctrl+S writes over it */
 let designPath: string | null = null
+/** the board has changes not yet saved (it says so on every change) */
+let dirty = false
+/** the person already answered the close question: the next close goes through */
+let closing = false
 const MAX_BYTES = 64 * 1024 * 1024
 
 function fromWindow(event: IpcMainInvokeEvent): boolean {
@@ -106,6 +124,74 @@ function looksLikeDesign(text: string): boolean {
   }
 }
 
+/** The dialog words in the UI language (Korean, English, Vietnamese; English elsewhere). */
+const DIALOG_WORDS = {
+  ko: {
+    buttons: ['저장', '저장 안 함', '취소'],
+    message: '디자인을 저장할까요?',
+    detail: '저장하지 않으면 이 디자인에서 바꾼 내용이 사라집니다.',
+    saveTitle: '디자인 저장',
+    exportTitle: '디자인 내보내기',
+    openTitle: '디자인 열기',
+    filter: '한판 디자인',
+  },
+  en: {
+    buttons: ['Save', "Don't save", 'Cancel'],
+    message: 'Save the design?',
+    detail: 'Changes to this design are lost if you do not save them.',
+    saveTitle: 'Save design',
+    exportTitle: 'Export design',
+    openTitle: 'Open design',
+    filter: 'Hanpan design',
+  },
+  vi: {
+    buttons: ['Lưu', 'Không lưu', 'Hủy'],
+    message: 'Lưu thiết kế?',
+    detail: 'Nếu không lưu, những thay đổi trong thiết kế này sẽ mất.',
+    saveTitle: 'Lưu thiết kế',
+    exportTitle: 'Xuất thiết kế',
+    openTitle: 'Mở thiết kế',
+    filter: 'Thiết kế Hanpan',
+  },
+} as const
+function dialogWords(): (typeof DIALOG_WORDS)[keyof typeof DIALOG_WORDS] {
+  const lang = deps?.lang() ?? 'ko'
+  return lang === 'ko' || lang === 'vi' ? DIALOG_WORDS[lang] : DIALOG_WORDS.en
+}
+
+/** 저장 / 저장 안 함 / 취소, over the design window. */
+async function askUnsaved(): Promise<'save' | 'discard' | 'cancel'> {
+  const words = dialogWords()
+  const options = {
+    type: 'warning' as const,
+    buttons: [...words.buttons],
+    defaultId: 0,
+    cancelId: 2,
+    noLink: true,
+    title: deps?.title(deps.lang()) ?? '',
+    message: words.message,
+    detail: words.detail,
+  }
+  const parent = win && !win.isDestroyed() ? win : undefined
+  const { response } = parent
+    ? await dialog.showMessageBox(parent, options)
+    : await dialog.showMessageBox(options)
+  return response === 0 ? 'save' : response === 1 ? 'discard' : 'cancel'
+}
+
+/** The window title: the design's file name in front once it has one. */
+function showTitle(): void {
+  if (!win || win.isDestroyed() || !deps) return
+  const base = deps.title(deps.lang())
+  win.setTitle(designPath ? `${basename(designPath, extname(designPath))} - ${base}` : base)
+}
+
+/** Where a first save or an export starts: the app's save folder (Documents\Hanpan). */
+function saveDir(): string {
+  if (deps?.saveDir) return deps.saveDir()
+  return join(app.getPath('documents'), 'Hanpan')
+}
+
 async function saveAs(
   name: string,
   extension: string,
@@ -113,8 +199,13 @@ async function saveAs(
   bytes: Uint8Array | string,
 ): Promise<string | null> {
   const parent = win && !win.isDestroyed() ? win : undefined
+  const words = dialogWords()
   const options = {
-    defaultPath: designPath && extension === 'hpdesign' ? designPath : `${name}.${extension}`,
+    title: extension === 'hpdesign' ? words.saveTitle : words.exportTitle,
+    defaultPath:
+      designPath && extension === 'hpdesign'
+        ? designPath
+        : join(saveDir(), `${name}.${extension}`),
     filters: [{ name: label, extensions: [extension] }],
   }
   const result = parent
@@ -224,19 +315,44 @@ function registerIpc(): void {
         await writeFile(designPath, text)
         return designPath
       }
-      const path = await saveAs(safeName(name, 'design'), 'hpdesign', '한판 디자인', text)
+      const path = await saveAs(safeName(name, 'design'), 'hpdesign', dialogWords().filter, text)
       if (path) designPath = path
+      showTitle()
       return path
     },
   )
   ipcMain.handle(DESIGN_CHANNELS.newDesign, (event) => {
-    if (fromWindow(event)) designPath = null
+    if (!fromWindow(event)) return
+    designPath = null
+    showTitle()
+  })
+  ipcMain.handle(DESIGN_CHANNELS.setDirty, (event, value: unknown) => {
+    if (fromWindow(event)) dirty = value === true
+  })
+  ipcMain.handle(DESIGN_CHANNELS.askUnsaved, (event) =>
+    fromWindow(event) ? askUnsaved() : 'cancel',
+  )
+  ipcMain.handle(DESIGN_CHANNELS.closeAfterSave, (event) => {
+    if (!fromWindow(event)) return
+    closing = true
+    win!.close()
+  })
+  ipcMain.handle(DESIGN_CHANNELS.openGonguSettings, (event) => {
+    if (!fromWindow(event) || !deps) return
+    if (deps.openSettings) return deps.openSettings('integrations')
+    const parent = deps.parentWindow()
+    if (!parent || parent.isDestroyed()) return
+    if (parent.isMinimized()) parent.restore()
+    parent.show()
+    parent.focus()
+    parent.webContents.send('home:open-settings', { section: 'integrations' })
   })
   ipcMain.handle(DESIGN_CHANNELS.openDesign, async (event) => {
     if (!fromWindow(event)) return null
     const result = await dialog.showOpenDialog(win!, {
+      title: dialogWords().openTitle,
       properties: ['openFile'],
-      filters: [{ name: '한판 디자인', extensions: ['hpdesign'] }],
+      filters: [{ name: dialogWords().filter, extensions: ['hpdesign'] }],
     })
     const path = result.filePaths[0]
     if (result.canceled || !path) return null
@@ -244,6 +360,7 @@ function registerIpc(): void {
     if (text.length > MAX_BYTES) return null
     // the board drops a file it cannot read; such a file must never be written over
     if (looksLikeDesign(text)) designPath = path
+    showTitle()
     return { name: basename(path, extname(path)), text }
   })
   ipcMain.handle(DESIGN_CHANNELS.pickImage, async (event) => {
@@ -351,9 +468,25 @@ export function openDesignWindow(): void {
   next.once('ready-to-show', () => next.show())
   // the window keeps the title in the UI language, not the page's own <title>
   next.on('page-title-updated', (event) => event.preventDefault())
+  // unsaved work: 저장 / 저장 안 함 / 취소 first, as the other editors ask (점검 v2 hwp-design #2)
+  dirty = false
+  closing = false
+  next.on('close', (event) => {
+    if (closing || !dirty) return
+    event.preventDefault()
+    void askUnsaved().then((answer) => {
+      if (next.isDestroyed()) return
+      if (answer === 'discard') {
+        closing = true
+        next.close()
+      } else if (answer === 'save') next.webContents.send(DESIGN_CHANNELS.saveThenClose)
+    })
+  })
   next.on('closed', () => {
     if (win === next) win = null
     designPath = null
+    dirty = false
+    closing = false
   })
   if (process.env.ELECTRON_RENDERER_URL)
     void next.loadURL(`${process.env.ELECTRON_RENDERER_URL}/design.html`)
