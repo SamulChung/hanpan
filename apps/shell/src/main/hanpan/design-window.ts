@@ -24,6 +24,18 @@ import {
   type GonguWork,
 } from '@genoffice/ai-search'
 import { fetchImageBytes } from '@genoffice/electron-utils/fetch-image-bytes'
+import {
+  printHtmlDocument,
+  withPrintOptions,
+  type PrintDialogOutcome,
+} from '@genoffice/electron-utils/print-window'
+import {
+  buildImagePrintHtml,
+  isPrintSheet,
+  pngSize,
+  printPageOptions,
+  type PrintSheet,
+} from '@genoffice/ui/image-print'
 
 export const DESIGN_CHANNELS = {
   getInit: 'hanpan-design:get-init',
@@ -35,6 +47,8 @@ export const DESIGN_CHANNELS = {
   /** the board started a new design: the next save asks where again */
   newDesign: 'hanpan-design:new',
   pickImage: 'hanpan-design:pick-image',
+  /** pages as the PNG export draws them, printed through the system dialog */
+  print: 'hanpan-design:print',
   gonguSearch: 'hanpan-design:gongu-search',
   gonguPicture: 'hanpan-design:gongu-picture',
   open: 'hanpan:open-design',
@@ -47,6 +61,8 @@ export interface DesignWindowDeps {
   title(lang: string): string
   /** the Gongu key from Settings → Integrations (opened from its seal), '' when none */
   gonguKey(): string
+  /** prints a finished page through the system dialog; left out: a hidden window here */
+  printHtml?: (html: string, sheet: PrintSheet) => Promise<PrintDialogOutcome>
 }
 
 /** A search hit for the board: the work and its thumbnail as a data URL (the page loads no remote picture). */
@@ -147,6 +163,26 @@ async function saveAs(
   return result.filePath
 }
 
+/** The page in a hidden window of its own, handed to the system print dialog. */
+function printInWindow(html: string, sheet: PrintSheet): Promise<PrintDialogOutcome> {
+  const parent = win && !win.isDestroyed() ? win : undefined
+  const printer = new BrowserWindow({
+    show: false,
+    ...(parent ? { parent } : {}),
+    ...(process.platform === 'win32'
+      ? { width: 900, height: 700, autoHideMenuBar: true, closable: false, skipTaskbar: true }
+      : {}),
+    webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false },
+  })
+  printer.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
+  return printHtmlDocument({
+    html,
+    fileName: 'design.html',
+    dirPrefix: 'hanpan-design-print-',
+    window: withPrintOptions(printer, printPageOptions(sheet)),
+  })
+}
+
 function registerIpc(): void {
   ipcMain.handle(DESIGN_CHANNELS.getInit, (event) => {
     if (!fromWindow(event) || !deps) return null
@@ -184,6 +220,31 @@ function registerIpc(): void {
       const path = await saveAs(safeName(name, 'design'), 'pdf', 'PDF', await pdf.save())
       if (path) void shell.openPath(path)
       return path
+    },
+  )
+  ipcMain.handle(
+    DESIGN_CHANNELS.print,
+    async (event, pages: unknown, sheet: unknown): Promise<PrintDialogOutcome> => {
+      if (!fromWindow(event)) return { ok: false, error: 'design: not the board' }
+      if (!Array.isArray(pages) || !pages.length || pages.length > 200 || !isPrintSheet(sheet))
+        return { ok: false, error: 'design: bad print request' }
+      const pictures = []
+      for (const page of pages) {
+        const png = bytesOf(page)
+        // the size comes from the PNG itself
+        const size = png ? pngSize(png) : null
+        if (!png || !size) return { ok: false, error: 'design: bad print request' }
+        pictures.push({
+          src: `data:image/png;base64,${Buffer.from(png).toString('base64')}`,
+          ...size,
+        })
+      }
+      const html = buildImagePrintHtml(pictures, sheet)
+      try {
+        return await (deps?.printHtml ?? printInWindow)(html, sheet)
+      } catch (err) {
+        return { ok: false, error: err instanceof Error ? err.message : String(err) }
+      }
     },
   )
   ipcMain.handle(DESIGN_CHANNELS.copyImage, (event, bytes: unknown) => {

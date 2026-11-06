@@ -71,6 +71,7 @@ import {
   newId,
   parseDesign,
   pathElement,
+  printShortcut,
   saveShortcut,
   qrElement,
   resizeDoc,
@@ -88,6 +89,8 @@ import { DESIGN_TEMPLATES } from './templates'
 import { coverRect, inkPath, shapePath, textPadding } from './style'
 import { PagePreview, elementBox, elementLook, pageBackground } from './view'
 import { wordsFor } from './words'
+import { DesignPrintDialog, type DesignPrintResult, type PrintRange } from './PrintDialog'
+import type { PrintSheet } from '@genoffice/ui'
 
 export interface DesignApi extends Partial<DesignAiApi & DesignAiSettingsApi & GonguApi> {
   savePng(bytes: Uint8Array, name: string, format?: 'png' | 'jpg'): Promise<string | null>
@@ -97,6 +100,8 @@ export interface DesignApi extends Partial<DesignAiApi & DesignAiSettingsApi & G
     name: string,
   ): Promise<string | null>
   copyImage(bytes: Uint8Array): Promise<boolean>
+  /** prints pages drawn as the PNG export draws them, on the paper the preview showed */
+  print?(pages: Uint8Array[], sheet: PrintSheet): Promise<DesignPrintResult>
   /** 'save' writes over the design's own file and asks only when there is none; 'saveAs' always asks */
   saveDesign(text: string, name: string, mode?: 'save' | 'saveAs'): Promise<string | null>
   /** a new design: its first save asks where */
@@ -304,6 +309,8 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
   /** export draws a list of the Gongu credits at the foot of the page (not kept) */
   const [creditList, setCreditList] = useState(true)
   const [checkOpen, setCheckOpen] = useState(false)
+  /** the print preview is open: the board behind it takes no keys */
+  const [printOpen, setPrintOpen] = useState(false)
   const [panning, setPanning] = useState(false)
   const spaceDown = useRef(false)
   const clip = useRef<DesignElement[]>([])
@@ -988,6 +995,14 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      // the print preview has the keys (it closes on Esc itself)
+      if (printOpen) return
+      if (printShortcut(event)) {
+        event.preventDefault()
+        if (isTyping(event.target)) (event.target as HTMLElement).blur()
+        if (p.api.print) setPrintOpen(true)
+        return
+      }
       // Esc leaves the menu, crop mode or the pen even from a slider or field
       if (event.key === 'Escape' && (menu || cropping || pen)) {
         setMenu(null)
@@ -1073,7 +1088,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
       stageWrap.current?.classList.remove('dz-can-pan')
     }
     const onCopy = (event: ClipboardEvent, cut: boolean) => {
-      if (isTyping(event.target) || !selection.length || !event.clipboardData) return
+      if (printOpen || isTyping(event.target) || !selection.length || !event.clipboardData) return
       event.preventDefault()
       clip.current = selection.map(clone)
       event.clipboardData.setData('application/x-hanpan-design', JSON.stringify(selection))
@@ -1089,7 +1104,7 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
     const copy = (event: ClipboardEvent) => onCopy(event, false)
     const cut = (event: ClipboardEvent) => onCopy(event, true)
     const paste = (event: ClipboardEvent) => {
-      if (isTyping(event.target) || !event.clipboardData) return
+      if (printOpen || isTyping(event.target) || !event.clipboardData) return
       const ours = event.clipboardData.getData('application/x-hanpan-design')
       if (ours) {
         event.preventDefault()
@@ -1271,6 +1286,12 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
       pages.push(await pagePng(i === last ? exportPage(pg, doc.pages) : pg, doc.width, doc.height))
     const path = await p.api.savePdf(pages, { width: doc.width, height: doc.height }, doc.name)
     if (path) saidAfterExport(`${w.saved}: ${path}`)
+  }
+  /** What prints: the pages exactly as the PNG and PDF exports draw them. */
+  const printPages = (range: PrintRange): DesignPage[] => {
+    if (range === 'current') return [exportPage(page, [page])]
+    const last = doc.pages.length - 1
+    return doc.pages.map((pg, i) => (i === last ? exportPage(pg, doc.pages) : pg))
   }
   const copyImage = async () => {
     const png = await pagePng(exportPage(page, [page]), doc.width, doc.height)
@@ -1792,6 +1813,16 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
           <button type="button" data-action="design-pdf" onClick={() => void exportPdf()}>
             {w.pdf}
           </button>
+          {p.api.print && (
+            <button
+              type="button"
+              data-action="design-print"
+              title="Ctrl+P"
+              onClick={() => setPrintOpen(true)}
+            >
+              {w.print}
+            </button>
+          )}
           {credited && (
             <label className="dz-export-check">
               <input
@@ -2427,6 +2458,19 @@ export function DesignBoard(p: { lang: string; api: DesignApi; outline?: string 
         <div className="dz-notice" role="status">
           {w.cropping}
         </div>
+      )}
+      {printOpen && p.api.print && (
+        <DesignPrintDialog
+          width={doc.width}
+          height={doc.height}
+          pages={printPages}
+          words={w}
+          print={p.api.print}
+          onClose={(failed) => {
+            setPrintOpen(false)
+            if (failed) say(w.printFailed)
+          }}
+        />
       )}
       {notice && (
         <div className="dz-notice" role="status">

@@ -96,3 +96,43 @@ export async function printHtmlDocument({
     }
   }
 }
+
+/** An Electron window as `withPrintOptions` needs it (kept structural: no Electron import here). */
+export interface PrintableWindow<O extends object> {
+  loadFile(path: string): Promise<void>
+  webContents: {
+    executeJavaScript(script: string, userGesture?: boolean): Promise<unknown>
+    print(
+      options: O & { silent: boolean; printBackground: boolean; margins: { marginType: 'none' } },
+      callback: (success: boolean, failureReason: string) => void,
+    ): void
+  }
+  show(): void
+  focus(): void
+  isDestroyed(): boolean
+  destroy(): void
+}
+
+/**
+ * A window for `printHtmlDocument` that tells the system dialog the page's own
+ * paper (`pageSize`, `landscape`) with no margin of its own: the page sets its
+ * margins itself, so what prints is what the preview showed.
+ */
+export function withPrintOptions<O extends object>(
+  win: PrintableWindow<O>,
+  page: O,
+): PrintDialogWindow {
+  return {
+    loadFile: (path) => win.loadFile(path),
+    webContents: {
+      executeJavaScript: (script, userGesture) =>
+        win.webContents.executeJavaScript(script, userGesture),
+      print: (options, callback) =>
+        win.webContents.print({ ...options, ...page, margins: { marginType: 'none' } }, callback),
+    },
+    show: () => win.show(),
+    focus: () => win.focus(),
+    isDestroyed: () => win.isDestroyed(),
+    destroy: () => win.destroy(),
+  }
+}

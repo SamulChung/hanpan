@@ -97,6 +97,7 @@ const api: GraphicsApi = {
   sendCloseSaveResult: (ok) => ipcRenderer.send(GRAPHICS_CHANNELS.closeSaveResult, ok),
   exportFile: (request) => ipcRenderer.invoke(GRAPHICS_CHANNELS.exportFile, request),
   pickImage: () => ipcRenderer.invoke(GRAPHICS_CHANNELS.pickImage),
+  print: (request) => ipcRenderer.invoke(GRAPHICS_CHANNELS.print, request),
   onMenuCommand: (handler) => listen<[GraphicsMenuCommand]>(GRAPHICS_CHANNELS.menuCommand, handler),
   getAiPanelPrefs: () => ipcRenderer.invoke(APP_CHANNELS.getAiPanelPrefs),
   setAiPanelPrefs: (patch) => ipcRenderer.invoke(APP_CHANNELS.setAiPanelPrefs, patch),

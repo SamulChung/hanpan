@@ -44,6 +44,7 @@ function fixture(kind: TabKind) {
     printMindmap: vi.fn(),
     saveEpub: vi.fn(),
     saveGraphics: vi.fn(),
+    printGraphics: vi.fn(),
   }
   return { deps, contents }
 }
@@ -140,19 +141,26 @@ describe('document actions from a background tab context menu', () => {
     expect(deps.printMindmap).toHaveBeenCalledWith(contents)
   })
 
-  it.each(['photo', 'illust', 'epub'] as const)(
-    'saves the clicked %s tab and never pretends to print it',
-    (kind) => {
-      const { deps, contents } = fixture(kind)
-      for (const action of ['save', 'saveAs', 'print'] as const)
-        runTabDocumentAction(deps, 'clicked', action)
-      const save = kind === 'epub' ? deps.saveEpub : deps.saveGraphics
-      expect(save).toHaveBeenNthCalledWith(1, contents, 'save')
-      expect(save).toHaveBeenNthCalledWith(2, contents, 'saveAs')
-      expect(save).toHaveBeenCalledTimes(2)
-      expect(contents.send).not.toHaveBeenCalled()
-    },
-  )
+  it.each(['photo', 'illust'] as const)('saves and prints the clicked %s tab', (kind) => {
+    const { deps, contents } = fixture(kind)
+    for (const action of ['save', 'saveAs', 'print'] as const)
+      runTabDocumentAction(deps, 'clicked', action)
+    expect(deps.saveGraphics).toHaveBeenNthCalledWith(1, contents, 'save')
+    expect(deps.saveGraphics).toHaveBeenNthCalledWith(2, contents, 'saveAs')
+    expect(deps.saveGraphics).toHaveBeenCalledTimes(2)
+    expect(deps.printGraphics).toHaveBeenCalledWith(contents)
+  })
+
+  it('saves the clicked book and never pretends to print it', () => {
+    const { deps, contents } = fixture('epub')
+    for (const action of ['save', 'saveAs', 'print'] as const)
+      runTabDocumentAction(deps, 'clicked', action)
+    expect(deps.saveEpub).toHaveBeenNthCalledWith(1, contents, 'save')
+    expect(deps.saveEpub).toHaveBeenNthCalledWith(2, contents, 'saveAs')
+    expect(deps.saveEpub).toHaveBeenCalledTimes(2)
+    expect(deps.printGraphics).not.toHaveBeenCalled()
+    expect(contents.send).not.toHaveBeenCalled()
+  })
 })
 
 describe('which tab kinds can save and print from the tab menu', () => {
@@ -185,9 +193,11 @@ describe('which tab kinds can save and print from the tab menu', () => {
       'html',
       'mindmap',
       'hwp',
+      'photo',
+      'illust',
     ] as const)
       expect(tabDocumentActionSupported(kind, 'print')).toBe(true)
-    for (const kind of ['photo', 'illust', 'epub', 'home', 'help'] as const)
+    for (const kind of ['epub', 'home', 'help'] as const)
       expect(tabDocumentActionSupported(kind, 'print')).toBe(false)
   })
 })

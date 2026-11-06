@@ -8,6 +8,7 @@ import { createAdapter, type GraphicsAdapter } from './adapters'
 import { GraphicsAiDock } from './ai/AiDock'
 import { lockFrameInput } from './ai/input-lock'
 import { ExportDialog } from './quick/ExportDialog'
+import { PrintDialog } from './quick/PrintDialog'
 import { QuickBar } from './quick/QuickBar'
 import { runQuickAction, type ExportChoice, type QuickActionId } from './quick/quick-actions'
 import { measureImage, resizeImage, type PixelSize } from './quick/resize'
@@ -56,6 +57,8 @@ export default function App({
     size: PixelSize
     answer: (choice: ExportChoice | null) => void
   } | null>(null)
+  /** the print preview, open on the app's adapter */
+  const [printOn, setPrintOn] = useState<GraphicsAdapter | null>(null)
   const [attempt, setAttempt] = useState(0)
   /** the app's adapter once it is up: the AI panel works through it */
   const [aiAdapter, setAiAdapter] = useState<GraphicsAdapter | null>(null)
@@ -272,6 +275,10 @@ export default function App({
             .catch(() => {})
           return
         }
+        if (command === 'print') {
+          setPrintOn(adapter)
+          return
+        }
         // the menu's Export: the export dialog, as the quick button does
         void runQuick(kind === 'photo' ? 'exportAtSize' : 'exportPngSvg')
       }),
@@ -332,6 +339,15 @@ export default function App({
         )}
       </div>
       {exportAsk && <ExportDialog kind={kind} size={exportAsk.size} onDone={exportAsk.answer} />}
+      {printOn && (
+        <PrintDialog
+          adapter={printOn}
+          onClose={(message) => {
+            setPrintOn(null)
+            if (message) notify(message)
+          }}
+        />
+      )}
       {notice && (
         <div className="gx-notice" role="status">
           {notice.text}

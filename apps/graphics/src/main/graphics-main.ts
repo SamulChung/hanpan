@@ -39,6 +39,14 @@ import {
 } from '@genoffice/electron-utils'
 import type { SaveDiskState } from '@genoffice/electron-utils'
 import { atomicWriteFile } from '@genoffice/electron-utils/atomic-write'
+import { printHtmlDocument, withPrintOptions } from '@genoffice/electron-utils/print-window'
+import {
+  buildImagePrintHtml,
+  isPrintSheet,
+  pngSize,
+  printPageOptions,
+  type PrintSheet,
+} from '@genoffice/ui/image-print'
 import { getUiLang, normalizeLang, setUiLang } from '@genoffice/i18n'
 import { tm } from './i18n-main'
 import { APP_CHANNELS, GRAPHICS_CHANNELS } from '../shared/ipc'
@@ -50,6 +58,7 @@ import type {
   GraphicsMenuCommand,
   PendingOpen,
   PickedImage,
+  PrintResult,
   SaveMode,
 } from '../shared/ipc'
 import { APP_GLOBAL, WRITABLE_EXTS, extOf, graphicsKindForPath } from '../shared/kinds'
@@ -66,6 +75,8 @@ export interface GraphicsRuntime {
   goHome?: () => void
   /** Ctrl+N in a graphics tab: a new tab of the same kind */
   newDocument?: (kind: GraphicsKind) => void
+  /** prints a finished page through the system dialog; left out: a hidden window here */
+  printHtml?: (html: string, sheet: PrintSheet, owner: WebContents) => Promise<PrintResult>
 }
 
 let runtime: GraphicsRuntime = { preloadPath: '' }
@@ -193,7 +204,7 @@ export function sendGraphicsMenuCommand(contents: WebContents, command: Graphics
   if (!contents.isDestroyed()) contents.send(GRAPHICS_CHANNELS.menuCommand, command)
 }
 
-export type GraphicsShortcut = 'save' | 'saveAs' | 'open' | 'new' | 'swallow'
+export type GraphicsShortcut = 'save' | 'saveAs' | 'open' | 'new' | 'print'
 
 /**
  * Keys a graphics tab takes before the page sees them: the web app would
@@ -221,7 +232,7 @@ export function shortcutFor(
     case 'n':
       return input.shift ? null : 'new'
     case 'p':
-      return 'swallow'
+      return 'print'
     default:
       return null
   }
@@ -313,6 +324,36 @@ async function mayReplaceAddedName(
     ? await dialog.showMessageBox(parent, options)
     : await dialog.showMessageBox(options)
   return response === 0
+}
+
+const MAX_PRINT_BYTES = 64 * 1024 * 1024
+
+/**
+ * The page in a hidden window of its own, handed to the system print dialog
+ * (the window Hanpan's other editors print from). The window runs no page
+ * script; the paper is told to the dialog as well.
+ */
+async function printInWindow(
+  html: string,
+  sheet: PrintSheet,
+  owner: WebContents,
+): Promise<PrintResult> {
+  const parent = parentWindowOf(owner)
+  const win = new BrowserWindow({
+    show: false,
+    ...(parent && !parent.isDestroyed() ? { parent } : {}),
+    ...(process.platform === 'win32'
+      ? { width: 900, height: 700, autoHideMenuBar: true, closable: false, skipTaskbar: true }
+      : {}),
+    webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false },
+  })
+  win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
+  return printHtmlDocument({
+    html,
+    fileName: 'picture.html',
+    dirPrefix: 'hanpan-graphics-print-',
+    window: withPrintOptions(win, printPageOptions(sheet)),
+  })
 }
 
 let ipcRegistered = false
@@ -467,6 +508,23 @@ function registerGraphicsIpc(): void {
     },
   )
 
+  ipcMain.handle(GRAPHICS_CHANNELS.print, async (e, request: unknown): Promise<PrintResult> => {
+    if (!kindByWc.has(e.sender.id)) return { ok: false, error: 'graphics: not a graphics view' }
+    const { bytes: rawBytes, sheet } = (request ?? {}) as Record<string, unknown>
+    const bytes = bytesOf(rawBytes)
+    // the picture's size is read from the PNG itself, not taken from the page
+    const size = bytes && bytes.byteLength <= MAX_PRINT_BYTES ? pngSize(bytes) : null
+    if (!bytes || !size || !isPrintSheet(sheet))
+      return { ok: false, error: 'graphics: bad print request' }
+    const src = `data:image/png;base64,${Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength).toString('base64')}`
+    const html = buildImagePrintHtml([{ src, ...size }], sheet)
+    try {
+      return await (runtime.printHtml ?? printInWindow)(html, sheet, e.sender)
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) }
+    }
+  })
+
   ipcMain.handle(GRAPHICS_CHANNELS.pickImage, async (e): Promise<PickedImage | null> => {
     const options = {
       title: tm('dlgPickImageTitle'),
@@ -534,6 +592,7 @@ function track(wc: WebContents, kind: GraphicsKind, openPath?: string | null): v
     if (shortcut === 'save' || shortcut === 'saveAs') void requestGraphicsSave(wc, shortcut)
     else if (shortcut === 'open') runtime.openFileDialog?.()
     else if (shortcut === 'new') runtime.newDocument?.(kind)
+    else if (shortcut === 'print') sendGraphicsMenuCommand(wc, 'print')
   })
   wc.once('destroyed', () => {
     kindByWc.delete(wcId)

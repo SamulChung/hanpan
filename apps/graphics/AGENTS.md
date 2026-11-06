@@ -4,7 +4,7 @@ AI 포토(탭 종류 `photo`, PhotoCraft 웹판)와 AI 일러스트(탭 종류 `
 
 ## 맡은 범위
 
-- 뒷단(`src/main/graphics-main.ts`): 보기 만들기, 연 파일 넘기기, 저장 두 단계(`begin-save`가 대상을 정하고 `commit-save`가 그 대상에만 쓴다), 내보내기·그림 고르기 대화상자, 닫기 확인, Ctrl+S·Ctrl+Shift+S·Ctrl+O·Ctrl+N·Ctrl+P 가로채기. 넘긴 파일은 화면이 "앱이 열었다"고 확인해야(`graphics:open-confirmed`) 그 탭의 저장 대상이 된다.
+- 뒷단(`src/main/graphics-main.ts`): 보기 만들기, 연 파일 넘기기, 저장 두 단계(`begin-save`가 대상을 정하고 `commit-save`가 그 대상에만 쓴다), 내보내기·그림 고르기 대화상자, 닫기 확인, 인쇄(`graphics:print`: 화면이 보낸 PNG와 용지로 뒷단이 페이지를 다시 만들어 시스템 인쇄 대화상자로), Ctrl+S·Ctrl+Shift+S·Ctrl+O·Ctrl+N·Ctrl+P 가로채기. 넘긴 파일은 화면이 "앱이 열었다"고 확인해야(`graphics:open-confirmed`) 그 탭의 저장 대상이 된다.
 - 형식 표(`src/shared/kinds.ts`): 여는 확장자, 쓰는 확장자, 새 문서 형식, 레이어 없는 형식, 내보내기 형식, 앱 화면 언어. 껍데기 앱의 열기 경로도 이 표를 읽는다.
 - 저장 대상 판단(`src/shared/save-target.ts`).
 - 호스트 페이지(`src/renderer/`)
@@ -12,7 +12,7 @@ AI 포토(탭 종류 `photo`, PhotoCraft 웹판)와 AI 일러스트(탭 종류 `
   - `adapters/`: 앱마다 하나(`GraphicsAdapter`). 문서 상태, 저장 바이트, 내보내기, 레이어 여부, 기록 길이와 되돌리기, 캔버스 그림, 문서 요약, 그림 넣기를 앱의 명령으로 바꾼다.
   - `doc/`: 문서 상태 따라가기(`doc-watch.ts`), 바뀜 표시(`dirty-state.ts`), 저장 흐름(`save-flow.ts`, 한 번에 하나는 `single-flight.ts`), 앱이 스스로 저장·내보내기로 만든 파일 가로채기(`capture-watch.ts`), 넘겨받은 파일 열기(`open-flow.ts`).
   - `ai/`: AI 창(`AiPanel.tsx`, `AiDock.tsx`), 도구 7개(`tools.ts`), skill과 앱별 지시문(`graphics-skill.ts`, `prompts/`), 필요할 때 읽는 안내서(`guides.ts`), AI가 못 쓰는 명령(`blocked-commands.ts`), 요청 하나의 되돌리기(`undo-tracker.ts`), 입력 잠금(`input-lock.ts`), 캔버스 그림(`snapshot.ts`), 전송과 구독 연결(`transport.ts`, `connection.ts`, `subscription-client.ts`).
-  - `quick/`: 앱마다 빠른 작업 단추 셋(`quick-actions.ts`, `QuickBar.tsx`), 내보내기 대화상자(`ExportDialog.tsx`), 크기 바꾸기(`resize.ts`).
+  - `quick/`: 앱마다 빠른 작업 단추 셋(`quick-actions.ts`, `QuickBar.tsx`), 내보내기 대화상자(`ExportDialog.tsx`), 크기 바꾸기(`resize.ts`), 인쇄 미리보기(`PrintDialog.tsx`: 어댑터의 `snapshotPng`로 그림을 받아 `@genoffice/ui`의 `ImagePrintDialog`로 A4에 맞춰 보인다).
   - `i18n/`: 21개 언어. 호스트 문구는 `app/`, AI 창 문구는 `ai/`.
 - 웹판 파일은 `tools/fetch-graphics-web.mjs`가 `public/web/<앱>/`에 받고(git 무시), 빌드가 렌더러 출력에 복사한다. 고지 8절은 `tools/graphics-notices.mjs`가 그 폴더에서 만든다.
 

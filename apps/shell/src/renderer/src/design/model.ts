@@ -444,3 +444,15 @@ export function saveShortcut(event: {
   if (event.key.toLowerCase() !== 's') return null
   return event.shiftKey ? 'saveAs' : 'save'
 }
+
+/** Ctrl+P (Cmd+P): the print preview, as in Hanpan's other editors. */
+export function printShortcut(event: {
+  key: string
+  ctrlKey: boolean
+  metaKey: boolean
+  shiftKey: boolean
+  altKey: boolean
+}): boolean {
+  if (!(event.ctrlKey || event.metaKey) || event.altKey || event.shiftKey) return false
+  return event.key.toLowerCase() === 'p'
+}

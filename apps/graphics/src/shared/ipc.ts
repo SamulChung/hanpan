@@ -7,6 +7,7 @@
 import type { Lang } from '@genoffice/i18n'
 import type { AiPanelPrefs } from '@genoffice/ui'
 import type { AiSettings, AiStreamChunk, AiStreamRequest } from '@genoffice/ai-provider'
+import type { PrintSheet } from '@genoffice/ui/image-print'
 import type { SaveMode } from './save-target'
 import type { GraphicsSubscriptionApi } from './subscription-api'
 
@@ -27,6 +28,8 @@ export const GRAPHICS_CHANNELS = {
   exportFile: 'graphics:export-file',
   pickImage: 'graphics:pick-image',
   menuCommand: 'graphics:menu-command',
+  /** the picture the page took from the app, printed through the system dialog */
+  print: 'graphics:print',
 } as const
 
 export const APP_CHANNELS = {
@@ -88,7 +91,14 @@ export interface PickedImage {
   bytes: Uint8Array
 }
 
-export type GraphicsMenuCommand = 'export' | 'undo' | 'redo'
+export type GraphicsMenuCommand = 'export' | 'undo' | 'redo' | 'print'
+
+/** The app's picture as a PNG, and the paper the preview put it on. */
+export interface PrintRequest {
+  bytes: Uint8Array
+  sheet: PrintSheet
+}
+export type PrintResult = { ok: true } | { ok: true; canceled: true } | { ok: false; error: string }
 
 /** What the preload exposes as `window.graphicsApi`. Every `on…` returns its unsubscribe. */
 export interface GraphicsApi {
@@ -112,6 +122,8 @@ export interface GraphicsApi {
   exportFile(request: ExportRequest): Promise<ExportResult>
   pickImage(): Promise<PickedImage | null>
   onMenuCommand(handler: (command: GraphicsMenuCommand) => void): () => void
+  /** prints the picture on the paper the preview showed; main builds the page itself */
+  print(request: PrintRequest): Promise<PrintResult>
   // ---- the AI panel: no attachments, no web search, no files of its own ----
   getAiPanelPrefs(): Promise<AiPanelPrefs>
   setAiPanelPrefs(patch: Partial<AiPanelPrefs>): Promise<AiPanelPrefs>

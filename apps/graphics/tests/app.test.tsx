@@ -39,6 +39,7 @@ function fakeApi() {
     exportFile: vi.fn(),
     pickImage: vi.fn(),
     onMenuCommand: on('menu'),
+    print: vi.fn(async () => ({ ok: true })),
   }
   installGraphicsApi(api as unknown as GraphicsApi)
   return { api, listeners }
@@ -170,5 +171,71 @@ describe('the host page', () => {
     await act(async () => listeners.menu!('redo'))
     expect(page.executed.map(([id]) => id)).not.toContain('edit.undo')
     expect(page.executed.map(([id]) => id)).not.toContain('edit.redo')
+  })
+})
+
+describe('printing (0.17)', () => {
+  /** a PNG head that says 3000 × 2000, as base64 */
+  const pngBase64 = (() => {
+    const bytes = new Uint8Array(33)
+    bytes.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52])
+    new DataView(bytes.buffer).setUint32(16, 3000)
+    new DataView(bytes.buffer).setUint32(20, 2000)
+    return btoa(String.fromCharCode(...bytes))
+  })()
+
+  /** PhotoCraft as the photo adapter reads it: one document, and h2's exportImage */
+  function photoPage() {
+    const page = readyPage()
+    const asked: unknown[] = []
+    page.inspect = async () => ({
+      session: { active: 0, documents: [{ name: 'a.psd', dirty: false, revision: 1 }] },
+    })
+    page.request = async (method: string, params?: unknown) => {
+      if (method === 'app.exportImage') {
+        asked.push(params)
+        return { dataBase64: pngBase64, width: 3000, height: 2000, format: 'png' }
+      }
+      throw new Error(`unknown method \`${method}\``)
+    }
+    return { page, asked }
+  }
+
+  async function readyPhoto() {
+    const fake = fakeApi()
+    await mount('photo')
+    await until(() => frame() !== null)
+    const { page, asked } = photoPage()
+    ;(frame()!.contentWindow as unknown as Record<string, unknown>).photocraft = page
+    await until(() => host.querySelector('.gx-cover') === null)
+    return { ...fake, asked }
+  }
+
+  it('the menu Print asks the app for its picture and shows the preview', async () => {
+    const { listeners, asked } = await readyPhoto()
+    await act(async () => listeners.menu!('print'))
+    await until(() => host.querySelector('[data-hanpan="image-print-preview"]') !== null)
+    expect(asked[0]).toMatchObject({ format: 'png', maxSide: 3508 })
+    const html = host.querySelector('[data-hanpan="image-print-preview"]')!.getAttribute('srcdoc')!
+    // a wide picture on landscape A4
+    expect(html).toContain('@page { size: 297mm 210mm; margin: 0; }')
+    expect(html).toContain(`data:image/png;base64,${pngBase64}`)
+  })
+
+  it('prints the same picture on the paper the preview shows, then closes', async () => {
+    const { api, listeners } = await readyPhoto()
+    await act(async () => listeners.menu!('print'))
+    await until(() => host.querySelector('[data-action="image-print-go"]:not([disabled])') !== null)
+    await act(async () =>
+      (host.querySelector('[data-print-orientation="portrait"]') as HTMLInputElement).click(),
+    )
+    await act(async () =>
+      (host.querySelector('[data-action="image-print-go"]') as HTMLButtonElement).click(),
+    )
+    await until(() => api.print.mock.calls.length === 1)
+    const [request] = api.print.mock.calls[0] as unknown as [{ bytes: Uint8Array; sheet: unknown }]
+    expect(request.sheet).toEqual({ widthMm: 210, heightMm: 297, marginMm: 10 })
+    expect(btoa(String.fromCharCode(...request.bytes))).toBe(pngBase64)
+    await until(() => host.querySelector('[data-hanpan="image-print"]') === null)
   })
 })
