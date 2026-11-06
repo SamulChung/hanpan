@@ -9761,7 +9761,8 @@ registerMyFormsIpc({
 // Hanpan: the Markdown converter. The folder it writes to is chosen here only
 // (a picked file's folder, or the folder dialog), never taken from the page.
 let mdConvertFolder: string | null = null
-const mdFolder = () => mdConvertFolder ?? join(app.getPath('documents'), '한판 변환')
+// the app's save folder (Settings → General), as every other new document uses (0.17 리뷰 v2 shell #4)
+const mdFolder = () => mdConvertFolder ?? defaultSaveDir()
 ipcMain.handle('hanpan:md-folder', () => mdFolder())
 ipcMain.handle('hanpan:md-pick-file', async (event) => {
   const win = BrowserWindow.fromWebContents(event.sender) ?? shellWindow

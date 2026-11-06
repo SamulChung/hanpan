@@ -19,3 +19,4 @@ export {
 } from './slide-styles'
 export * from './gongu-credit'
 export * from './gongu-ai'
+export * from './doc-theme'
