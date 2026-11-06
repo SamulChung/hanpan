@@ -171,11 +171,29 @@ const sameDef = (a, b) =>
   !!a.alt === !!b.alt &&
   (a.platform ?? null) === (b.platform ?? null)
 
+/**
+ * The studio's file commands and the app's File menu commands (agent-plugin.mjs, FILE_MENU) that
+ * stand for them. The embedded editor registers none of its own file commands, so a file key
+ * that reaches it (the main process takes them first, but input that skips `before-input-event`,
+ * such as a DevTools-protocol key, does not pass there) would be dropped. Pointed at the app's
+ * commands, the key saves or prints the way the File menu does.
+ */
+export const APP_FILE_COMMANDS = {
+  'file:open': 'ext:ieum-open',
+  'file:save': 'ext:ieum-save',
+  'file:save-as': 'ext:ieum-save-as',
+  'file:print': 'ext:ieum-print',
+}
+
 /** Turns the studio's shortcut table (in place: the studio holds the one array) into Hangul's. */
 export function adaptToHancom(shortcuts) {
   for (const [def, id] of REMOVED_SHORTCUTS) {
     const at = shortcuts.findIndex(([d, c]) => c === id && sameDef(d, def))
     if (at !== -1) shortcuts.splice(at, 1)
+  }
+  for (const entry of shortcuts) {
+    const app = APP_FILE_COMMANDS[entry[1]]
+    if (app) entry[1] = app
   }
   shortcuts.unshift(...ADDED_SHORTCUTS)
   return shortcuts
