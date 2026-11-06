@@ -62,6 +62,8 @@ export const MARKDOWN_CHANNELS = {
   printRequest: 'markdown:print-request',
   listPrinters: 'markdown:list-printers',
   printDocument: 'markdown:print-document',
+  openExported: 'markdown:open-exported',
+  revealExported: 'markdown:reveal-exported',
   aiGenerateImage: 'markdown:ai-generate-image',
   getLanguage: 'app:get-language',
   languageChanged: 'app:language-changed',
@@ -306,9 +308,7 @@ export interface PrintDocumentRequest {
 }
 
 export type PrintDocumentOutcome =
-  | { ok: true }
-  | { ok: true; canceled: true }
-  | { ok: false; error: string }
+  { ok: true } | { ok: true; canceled: true } | { ok: false; error: string }
 
 export interface PrinterEntry {
   name: string
@@ -473,6 +473,9 @@ export interface MarkdownApi {
   listPrinters(): Promise<PrinterEntry[]>
   /** print in a main-process window: the tab itself never blocks on a print dialog */
   printDocument(request: PrintDocumentRequest): Promise<PrintDocumentOutcome>
+  /** status bar after an export: open / reveal a file this tab exported */
+  openExported(path: string): Promise<boolean>
+  revealExported(path: string): Promise<boolean>
   exportDocx(request: ExportDocxRequest): Promise<ExportResult>
   /** save dialog (.odt) → docx → ODT → confirmation when something changes → write */
   exportOdt(request: ExportOdtRequest): Promise<ExportResult>
