@@ -124,6 +124,8 @@ export const pt = {
   appExportingImages: 'Exportando imagens…',
   appExportImagesProgress: 'Exportando {count} imagens…',
   appExportImagesDone: '{count} imagens exportadas para {dir}',
+  appOpenExported: 'Abrir',
+  appRevealExported: 'Abrir pasta',
   appExportImagesFailed: 'Falha ao exportar imagens: {error}',
   appMixedExportOpening:
     'Tamanhos de papel mistos: abrindo a visualização de paginação para exportar mesclando por página…',

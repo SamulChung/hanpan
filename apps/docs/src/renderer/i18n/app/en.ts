@@ -121,6 +121,8 @@ export const en = {
   appExportingImages: 'Exporting images…',
   appExportImagesProgress: 'Exporting {count} images…',
   appExportImagesDone: 'Exported {count} images to {dir}',
+  appOpenExported: 'Open',
+  appRevealExported: 'Open folder',
   appExportImagesFailed: 'Image export failed: {error}',
   appMixedExportOpening: 'Mixed paper sizes: opening pagination preview to export pages merged…',
   appSelectTextToComment: 'Select the text to comment on first',

@@ -121,6 +121,8 @@ export const vi = {
   appExportingImages: 'Đang xuất hình ảnh…',
   appExportImagesProgress: 'Đang xuất {count} hình ảnh…',
   appExportImagesDone: 'Đã xuất {count} hình ảnh tới {dir}',
+  appOpenExported: 'Mở',
+  appRevealExported: 'Mở thư mục',
   appExportImagesFailed: 'Xuất hình ảnh thất bại: {error}',
   appMixedExportOpening:
     'Nhiều khổ giấy: đang mở bản xem trước phân trang để xuất các trang đã gộp…',

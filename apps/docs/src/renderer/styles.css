@@ -9649,6 +9649,31 @@ body.docs-crop-active
   text-overflow: ellipsis;
 }
 
+/* 내보내기 뒤 상태줄의 [열기] [폴더 열기] */
+.status-export-actions {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+.status-link-btn {
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  padding: 0 6px;
+  line-height: 16px;
+  cursor: pointer;
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+.status-link-btn:hover {
+  opacity: 1;
+}
+
 .status-right {
   display: flex;
   align-items: center;

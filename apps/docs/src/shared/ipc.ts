@@ -637,6 +637,10 @@ export interface DesktopApi {
     scale?: number,
     links?: PdfInternalLink[],
   ): Promise<{ ok: boolean; path?: string; error?: string }>
+  /** status-bar "Open" after an export (only files this tab exported) */
+  openExported(path: string): Promise<boolean>
+  /** status-bar "Open folder" after an export */
+  revealExported(path: string): Promise<boolean>
   exportHtml(
     defaultName: string,
     html: string,

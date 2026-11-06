@@ -123,6 +123,8 @@ export const cs = {
   appExportingImages: 'Exportují se obrázky…',
   appExportImagesProgress: 'Exportuje se {count} obrázků…',
   appExportImagesDone: 'Exportováno {count} obrázků do {dir}',
+  appOpenExported: 'Otevřít',
+  appRevealExported: 'Otevřít složku',
   appExportImagesFailed: 'Export obrázků se nezdařil: {error}',
   appMixedExportOpening:
     'Různé velikosti papíru: otevírá se náhled stránkování pro sloučený export stránek…',

@@ -121,6 +121,8 @@ export const th = {
   appExportingImages: 'กำลังส่งออกรูปภาพ…',
   appExportImagesProgress: 'กำลังส่งออกรูปภาพ {count} รูป…',
   appExportImagesDone: 'ส่งออกรูปภาพ {count} รูปไปยัง {dir} แล้ว',
+  appOpenExported: 'เปิด',
+  appRevealExported: 'เปิดโฟลเดอร์',
   appExportImagesFailed: 'ส่งออกรูปภาพไม่สำเร็จ: {error}',
   appMixedExportOpening:
     'เอกสารมีขนาดกระดาษผสม: กำลังเปิดตัวอย่างการแบ่งหน้าเพื่อส่งออกแบบรวมทีละหน้า…',

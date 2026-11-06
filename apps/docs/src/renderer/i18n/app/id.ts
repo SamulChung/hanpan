@@ -124,6 +124,8 @@ export const id = {
   appExportingImages: 'Mengekspor gambar…',
   appExportImagesProgress: 'Mengekspor {count} gambar…',
   appExportImagesDone: '{count} gambar diekspor ke {dir}',
+  appOpenExported: 'Buka',
+  appRevealExported: 'Buka folder',
   appExportImagesFailed: 'Gagal mengekspor gambar: {error}',
   appMixedExportOpening:
     'Ukuran kertas campuran: membuka pratinjau paginasi untuk mengekspor halaman yang digabungkan…',

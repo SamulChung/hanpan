@@ -219,6 +219,8 @@ const api: DesktopApi = {
       scale,
       links,
     ),
+  openExported: (path: string) => ipcRenderer.invoke('docs:open-exported', path),
+  revealExported: (path: string) => ipcRenderer.invoke('docs:reveal-exported', path),
   exportHtml: (defaultName: string, html: string, outPath?: string) =>
     ipcRenderer.invoke('docs:export-html', defaultName, html, outPath),
   exportMarkdown: (

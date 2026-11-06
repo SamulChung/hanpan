@@ -118,6 +118,8 @@ export const zhTW = {
   appExportingImages: '正在匯出圖片…',
   appExportImagesProgress: '正在匯出 {count} 張圖片…',
   appExportImagesDone: '已匯出 {count} 張圖片到 {dir}',
+  appOpenExported: '開啟',
+  appRevealExported: '開啟資料夾',
   appExportImagesFailed: '匯出圖片失敗：{error}',
   appMixedExportOpening: '混合紙張文件:正在開啟分頁預覽並按頁合併匯出…',
   appSelectTextToComment: '請先選取要加註解的文字',

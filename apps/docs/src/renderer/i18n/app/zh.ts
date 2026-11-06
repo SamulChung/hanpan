@@ -124,6 +124,8 @@ export const zh = {
   appExportingImages: '正在导出图片…',
   appExportImagesProgress: '正在导出 {count} 张图片…',
   appExportImagesDone: '已导出 {count} 张图片到 {dir}',
+  appOpenExported: '打开',
+  appRevealExported: '打开文件夹',
   appExportImagesFailed: '导出图片失败：{error}',
   appMixedExportOpening: '混合纸张文档:正在打开分页预览并按页合并导出…',
   // Comments

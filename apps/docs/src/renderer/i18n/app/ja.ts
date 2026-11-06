@@ -129,6 +129,8 @@ export const ja = {
   appExportingImages: '画像をエクスポート中…',
   appExportImagesProgress: '{count} 枚の画像をエクスポート中…',
   appExportImagesDone: '{count} 枚の画像を {dir} にエクスポートしました',
+  appOpenExported: '開く',
+  appRevealExported: 'フォルダーを開く',
   appExportImagesFailed: '画像のエクスポートに失敗しました：{error}',
   appMixedExportOpening:
     '用紙サイズが混在する文書:ページ プレビューを開き、ページごとに結合してエクスポートしています…',

@@ -126,6 +126,8 @@ export const de = {
   appExportingImages: 'Bilder werden exportiert…',
   appExportImagesProgress: '{count} Bilder werden exportiert…',
   appExportImagesDone: '{count} Bilder nach {dir} exportiert',
+  appOpenExported: 'Öffnen',
+  appRevealExported: 'Ordner öffnen',
   appExportImagesFailed: 'Bildexport fehlgeschlagen: {error}',
   appMixedExportOpening:
     'Gemischte Papierformate: Seitenvorschau wird geöffnet, um die Seiten zusammengeführt zu exportieren…',

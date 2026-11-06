@@ -118,8 +118,8 @@ export const ko = {
   appPrintDuplexLong: '긴 쪽으로 넘김',
   appPrintDuplexShort: '짧은 쪽으로 넘김',
   appExportedPdf: 'PDF를 내보냈습니다: {path}',
-  appExportedHtml: 'HTML를 내보냈습니다: {path}',
-  appExportedMarkdown: 'Markdown를 내보냈습니다: {path}',
+  appExportedHtml: 'HTML을 내보냈습니다: {path}',
+  appExportedMarkdown: 'Markdown을 내보냈습니다: {path}',
   appExportMarkdownImagesDropped: '({count}개 이미지를 읽을 수 없어 건너뛰었습니다)',
   appExportedPdfMixed:
     'PDF를 내보냈습니다: {path}(용지 크기 혼합, {n}개 그룹을 페이지 순서로 병합)',
@@ -129,6 +129,8 @@ export const ko = {
   appExportingImages: '이미지 내보내는 중…',
   appExportImagesProgress: '이미지 {count}장 내보내는 중…',
   appExportImagesDone: '이미지 {count}장을 {dir}에 내보냈습니다',
+  appOpenExported: '열기',
+  appRevealExported: '폴더 열기',
   appExportImagesFailed: '이미지 내보내기 실패: {error}',
   appMixedExportOpening:
     '용지 크기가 혼합된 문서: 페이지 미리 보기를 열어 페이지별로 병합하여 내보내는 중…',

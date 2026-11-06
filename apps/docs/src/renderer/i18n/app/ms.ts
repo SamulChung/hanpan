@@ -126,6 +126,8 @@ export const ms = {
   appExportingImages: 'Mengeksport imej…',
   appExportImagesProgress: 'Mengeksport {count} imej…',
   appExportImagesDone: '{count} imej dieksport ke {dir}',
+  appOpenExported: 'Buka',
+  appRevealExported: 'Buka folder',
   appExportImagesFailed: 'Eksport imej gagal: {error}',
   appMixedExportOpening:
     'Saiz kertas bercampur: membuka pratonton penomboran halaman untuk eksport dengan gabungan mengikut halaman…',

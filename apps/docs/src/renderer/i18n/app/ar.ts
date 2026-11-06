@@ -119,6 +119,8 @@ export const ar = {
   appExportingImages: 'جارٍ تصدير الصور…',
   appExportImagesProgress: 'جارٍ تصدير {count} صورة…',
   appExportImagesDone: 'تم تصدير {count} صورة إلى {dir}',
+  appOpenExported: 'فتح',
+  appRevealExported: 'فتح المجلد',
   appExportImagesFailed: 'فشل تصدير الصور: {error}',
   appMixedExportOpening:
     'أحجام ورق مختلطة: جارٍ فتح معاينة ترقيم الصفحات للتصدير مع الدمج حسب الصفحات…',

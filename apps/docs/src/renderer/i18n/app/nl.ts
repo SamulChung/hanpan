@@ -126,6 +126,8 @@ export const nl = {
   appExportingImages: 'Afbeeldingen exporteren…',
   appExportImagesProgress: '{count} afbeeldingen exporteren…',
   appExportImagesDone: '{count} afbeeldingen geëxporteerd naar {dir}',
+  appOpenExported: 'Openen',
+  appRevealExported: 'Map openen',
   appExportImagesFailed: 'Exporteren van afbeeldingen mislukt: {error}',
   appMixedExportOpening:
     'Gemengde papierformaten: pagineringsvoorbeeld wordt geopend om per pagina samengevoegd te exporteren…',

@@ -231,6 +231,7 @@ import {
 } from './doc-format'
 import { copyImageDisplaySize, validCopyImageDataUrl } from './copy-image-guard'
 import { closePromptDocName } from './close-prompt-name'
+import { ExportedFiles } from './exported-files'
 import { printJobOptions, printScaleOption, validPrintGeometry } from './print-args'
 import { addPdfInternalLinks } from './pdf-links'
 import {
@@ -3455,6 +3456,7 @@ function releaseSpellIgnores(wcId: number): void {
 
 function dropDocWriter(wcId: number): void {
   releaseSpellIgnores(wcId)
+  exportedFiles.forget(wcId)
   docWritablePaths.delete(wcId)
   pdfWritablePaths.delete(wcId)
   openDocByWc.delete(wcId)
@@ -3477,6 +3479,9 @@ function dropDocWriter(wcId: number): void {
 // ── External-modification detection: remember the disk state at every read/write
 // so docs:save can refuse to clobber edits made by Word/another window ──
 const docDiskStates = new Map<number, Map<string, DiskFileState>>()
+
+/** what each tab exported, for the status bar's Open / Open folder */
+const exportedFiles = new ExportedFiles()
 
 const sha256Hex = (bytes: Buffer) => createHash('sha256').update(bytes).digest('hex')
 
@@ -5593,6 +5598,25 @@ export function registerDocsIpc(): void {
     })
   })
 
+  // status-bar buttons after an export: only for files this tab exported
+  ipcMain.handle('docs:open-exported', (event, path: unknown) => {
+    if (!exportedFiles.allows(event.sender.id, path)) return false
+    try {
+      if (shellHooks?.openGeneratedPath?.(path)) return true
+    } catch (err) {
+      console.warn('[docs] Failed to open exported file:', err)
+    }
+    void shell.openPath(path)
+    return true
+  })
+  ipcMain.handle('docs:reveal-exported', (event, path: unknown) => {
+    if (!exportedFiles.allows(event.sender.id, path)) return false
+    // an image export names its folder: open the folder itself
+    if (exportedFiles.isFolder(path)) void shell.openPath(path)
+    else shell.showItemInFolder(path)
+    return true
+  })
+
   ipcMain.handle(
     'docs:export-pdf',
     async (
@@ -5639,7 +5663,9 @@ export function registerDocsIpc(): void {
         })
         const data = await withInternalLinks(printed, links)
         await atomicWriteFile(filePath, data)
-        if (!isImageExportTemp(event.sender.id, filePath)) openGeneratedFile(filePath)
+        // offered as status-bar Open / Open folder buttons, not opened in a new tab
+        if (!isImageExportTemp(event.sender.id, filePath))
+          exportedFiles.remember(event.sender.id, filePath)
         return { ok: true, path: filePath }
       } catch (err) {
         // path is already authorized, so the renderer can retry chunked to the same target
@@ -5706,6 +5732,7 @@ export function registerDocsIpc(): void {
       try {
         const filePath = join(dir, fileName)
         await atomicWriteFile(filePath, Buffer.from(String(pngBase64), 'base64'))
+        exportedFiles.remember(event.sender.id, dir, true)
         return { ok: true, path: filePath }
       } catch (err) {
         return { ok: false, error: String(err) }
@@ -5736,7 +5763,7 @@ export function registerDocsIpc(): void {
           filePath,
           Buffer.from(await inlineLazyMediaInHtml(html, readLazyMedia), 'utf8'),
         )
-        openGeneratedFile(filePath)
+        exportedFiles.remember(event.sender.id, filePath)
         return { ok: true, path: filePath }
       } catch (err) {
         return { ok: false, error: String(err), path: filePath }
@@ -5779,7 +5806,7 @@ export function registerDocsIpc(): void {
           filePath,
           Buffer.from(markdown.split(`${MARKDOWN_MEDIA_DIR_TOKEN}/`).join(`${mediaDir}/`), 'utf8'),
         )
-        openGeneratedFile(filePath)
+        exportedFiles.remember(event.sender.id, filePath)
         return { ok: true, path: filePath, imagesDropped: images.length - written }
       } catch (err) {
         return { ok: false, error: String(err), path: filePath }
@@ -5847,7 +5874,9 @@ export function registerDocsIpc(): void {
         }
         if (Array.isArray(links) && links.length > 0) addPdfInternalLinks(merged, links)
         await atomicWriteFile(filePath, Buffer.from(await merged.save()))
-        if (!isImageExportTemp(event.sender.id, filePath)) openGeneratedFile(filePath)
+        // offered as status-bar Open / Open folder buttons, not opened in a new tab
+        if (!isImageExportTemp(event.sender.id, filePath))
+          exportedFiles.remember(event.sender.id, filePath)
         return { ok: true, path: filePath }
       } catch (err) {
         return { ok: false, error: String(err) }
