@@ -1586,6 +1586,17 @@ export const de = {
   appFileSaveAs: 'Speichern unter…',
   appFileExportPdf: 'Als PDF exportieren…',
   appFileExportCsv: 'Als CSV exportieren…',
+  appFileExportPng: 'Als Bild (PNG) exportieren…',
+  appFileExportCsvAll: 'Alle Blätter als CSV exportieren…',
+  appCsvAllExported: '{count} Blätter als CSV nach {path} exportiert.',
+  appPngNeedsFullLoad:
+    'Für den Bildexport muss die Arbeitsmappe vollständig geladen sein – warten Sie, bis das Laden abgeschlossen ist.',
+  appPngRendering: 'Bild wird gezeichnet…',
+  appPngExported: '{path} exportiert.',
+  appPngCanceled: 'Bildexport abgebrochen.',
+  appPngTooLarge:
+    'Das Blatt ist für ein Bild zu groß. Wählen Sie einen kleineren Bereich oder exportieren Sie als PDF.',
+  appPngExportFailed: 'Bildexport fehlgeschlagen.',
   appFilePrint: 'Drucken…',
   appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

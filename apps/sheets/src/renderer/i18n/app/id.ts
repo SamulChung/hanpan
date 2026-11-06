@@ -1532,6 +1532,17 @@ export const id = {
   appFileSaveAs: 'Simpan sebagai…',
   appFileExportPdf: 'Ekspor sebagai PDF…',
   appFileExportCsv: 'Ekspor sebagai CSV…',
+  appFileExportPng: 'Ekspor sebagai Gambar (PNG)…',
+  appFileExportCsvAll: 'Ekspor Semua Lembar sebagai CSV…',
+  appCsvAllExported: '{count} lembar diekspor sebagai CSV ke {path}.',
+  appPngNeedsFullLoad:
+    'Ekspor gambar memerlukan buku kerja yang dimuat penuh — tunggu hingga pemuatan selesai.',
+  appPngRendering: 'Menggambar gambar…',
+  appPngExported: '{path} diekspor.',
+  appPngCanceled: 'Ekspor gambar dibatalkan.',
+  appPngTooLarge:
+    'Lembar terlalu besar untuk satu gambar. Pilih rentang yang lebih kecil, atau ekspor sebagai PDF.',
+  appPngExportFailed: 'Ekspor gambar gagal.',
   appFilePrint: 'Cetak…',
   appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

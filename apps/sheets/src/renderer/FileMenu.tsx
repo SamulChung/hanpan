@@ -1,6 +1,6 @@
 /**
  * The File menu on the editor's own screen (0.17 #6), modelled on the slide editor's: open,
- * save, save as, PDF and CSV export, and print. The shell's ☰ menu stays as it is; each item
+ * save, save as, PDF, image and CSV export (the sheet or all sheets), and print. The shell's ☰ menu stays as it is; each item
  * hands the same `MenuAction` that menu sends, so App runs one handler for both (print opens
  * the print preview, the exports their dialogs).
  */
@@ -24,12 +24,14 @@ const ITEMS: readonly { action: FileMenuAction; label: StringKey; key?: string }
   { action: 'save', label: 'appFileSave', key: 'Ctrl+S' },
   { action: 'save-as', label: 'appFileSaveAs', key: 'Ctrl+Shift+S' },
   { action: 'export-pdf', label: 'appFileExportPdf' },
+  { action: 'export-png', label: 'appFileExportPng' },
   { action: 'export-csv', label: 'appFileExportCsv' },
+  { action: 'export-csv-all', label: 'appFileExportCsvAll' },
   { action: 'print', label: 'appFilePrint', key: 'Ctrl+P' },
 ]
 
 /** Items after which a separator stands: open | save, save as | exports | print */
-const SEPARATED_AFTER = new Set<FileMenuAction>(['open', 'save-as', 'export-csv'])
+const SEPARATED_AFTER = new Set<FileMenuAction>(['open', 'save-as', 'export-csv-all'])
 
 export function FileMenu({ hasWorkbook, canSave, canSaveAs, onAction }: FileMenuProps) {
   const { t } = useI18n()

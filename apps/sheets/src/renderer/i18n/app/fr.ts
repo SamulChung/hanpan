@@ -1598,6 +1598,17 @@ export const fr = {
   appFileSaveAs: 'Enregistrer sous…',
   appFileExportPdf: 'Exporter en PDF…',
   appFileExportCsv: 'Exporter en CSV…',
+  appFileExportPng: 'Exporter en image (PNG)…',
+  appFileExportCsvAll: 'Exporter toutes les feuilles en CSV…',
+  appCsvAllExported: '{count} feuilles exportées en CSV dans {path}.',
+  appPngNeedsFullLoad:
+    'L’export en image nécessite le classeur entièrement chargé — attendez la fin du chargement.',
+  appPngRendering: 'Dessin de l’image…',
+  appPngExported: '{path} exporté.',
+  appPngCanceled: 'Export en image annulé.',
+  appPngTooLarge:
+    'La feuille est trop grande pour une seule image. Sélectionnez une plage plus petite ou exportez en PDF.',
+  appPngExportFailed: 'Échec de l’export en image.',
   appFilePrint: 'Imprimer…',
   appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

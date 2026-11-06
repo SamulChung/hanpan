@@ -1555,6 +1555,17 @@ export const pl = {
   appFileSaveAs: 'Zapisz jako…',
   appFileExportPdf: 'Eksportuj jako PDF…',
   appFileExportCsv: 'Eksportuj jako CSV…',
+  appFileExportPng: 'Eksportuj jako obraz (PNG)…',
+  appFileExportCsvAll: 'Eksportuj wszystkie arkusze do CSV…',
+  appCsvAllExported: 'Wyeksportowano arkusze do CSV ({count}) w {path}.',
+  appPngNeedsFullLoad:
+    'Eksport obrazu wymaga w pełni wczytanego skoroszytu — poczekaj na zakończenie wczytywania.',
+  appPngRendering: 'Rysowanie obrazu…',
+  appPngExported: 'Wyeksportowano {path}.',
+  appPngCanceled: 'Anulowano eksport obrazu.',
+  appPngTooLarge:
+    'Arkusz jest za duży na jeden obraz. Zaznacz mniejszy zakres lub wyeksportuj do PDF.',
+  appPngExportFailed: 'Nie udało się wyeksportować obrazu.',
   appFilePrint: 'Drukuj…',
   appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

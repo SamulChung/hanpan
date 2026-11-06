@@ -1530,6 +1530,17 @@ export const ms = {
   appFileSaveAs: 'Simpan sebagai…',
   appFileExportPdf: 'Eksport sebagai PDF…',
   appFileExportCsv: 'Eksport sebagai CSV…',
+  appFileExportPng: 'Eksport sebagai Imej (PNG)…',
+  appFileExportCsvAll: 'Eksport Semua Helaian sebagai CSV…',
+  appCsvAllExported: '{count} helaian dieksport sebagai CSV ke {path}.',
+  appPngNeedsFullLoad:
+    'Eksport imej memerlukan buku kerja dimuatkan sepenuhnya — tunggu sehingga pemuatan selesai.',
+  appPngRendering: 'Melukis imej…',
+  appPngExported: '{path} dieksport.',
+  appPngCanceled: 'Eksport imej dibatalkan.',
+  appPngTooLarge:
+    'Helaian terlalu besar untuk satu imej. Pilih julat yang lebih kecil atau eksport sebagai PDF.',
+  appPngExportFailed: 'Eksport imej gagal.',
   appFilePrint: 'Cetak…',
   appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

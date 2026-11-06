@@ -1529,6 +1529,17 @@ export const cs = {
   appFileSaveAs: 'Uložit jako…',
   appFileExportPdf: 'Exportovat jako PDF…',
   appFileExportCsv: 'Exportovat jako CSV…',
+  appFileExportPng: 'Exportovat jako obrázek (PNG)…',
+  appFileExportCsvAll: 'Exportovat všechny listy do CSV…',
+  appCsvAllExported: 'Do CSV bylo exportováno listů: {count}, složka {path}.',
+  appPngNeedsFullLoad:
+    'Export obrázku vyžaduje plně načtený sešit — počkejte na dokončení načítání.',
+  appPngRendering: 'Kreslí se obrázek…',
+  appPngExported: 'Exportováno: {path}.',
+  appPngCanceled: 'Export obrázku byl zrušen.',
+  appPngTooLarge:
+    'List je pro jeden obrázek příliš velký. Vyberte menší oblast nebo exportujte do PDF.',
+  appPngExportFailed: 'Export obrázku se nezdařil.',
   appFilePrint: 'Tisk…',
   appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

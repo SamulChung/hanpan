@@ -1578,6 +1578,17 @@ export const ja = {
   appFileSaveAs: '名前を付けて保存…',
   appFileExportPdf: 'PDF にエクスポート…',
   appFileExportCsv: 'CSV にエクスポート…',
+  appFileExportPng: '画像 (PNG) としてエクスポート…',
+  appFileExportCsvAll: 'すべてのシートを CSV にエクスポート…',
+  appCsvAllExported: '{count} 枚のシートを CSV として {path} にエクスポートしました。',
+  appPngNeedsFullLoad:
+    '画像のエクスポートにはブックの読み込み完了が必要です。読み込みが終わるまでお待ちください。',
+  appPngRendering: '画像を描画しています…',
+  appPngExported: '{path} をエクスポートしました。',
+  appPngCanceled: '画像のエクスポートをキャンセルしました。',
+  appPngTooLarge:
+    'シートが大きすぎて 1 枚の画像にできません。範囲を絞って選択するか、PDF でエクスポートしてください。',
+  appPngExportFailed: '画像をエクスポートできませんでした。',
   appFilePrint: '印刷…',
   appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

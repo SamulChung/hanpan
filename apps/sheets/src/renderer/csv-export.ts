@@ -171,3 +171,61 @@ export async function handleExportCsv(ctx: CsvExportContext, targetPath?: string
     showToast(failed, 'error')
   }
 }
+
+/// Every sheet of the workbook in tab order, each serialized like the one-sheet export
+/// (0.17 "all sheets as CSV"); null without a workbook, 'too-large' when one sheet or the
+/// whole set passes the IPC cap. Callers gate on preloadComplete first.
+export function serializeAllSheetsCsv(
+  runtime: UniverRuntime | null,
+  state: LazyWorkbookState | null,
+): { sheets: { name: string; content: string }[]; hasFormulas: boolean } | 'too-large' | null {
+  const workbook = runtime?.univerAPI.getActiveWorkbook()
+  if (!workbook) return null
+  const sheets: { name: string; content: string }[] = []
+  let hasFormulas = false
+  let total = 0
+  for (const worksheet of workbook.getSheets()) {
+    const sheet = worksheet as unknown as CsvWorksheet
+    const content = serializeActiveSheetCsv(sheet, state)
+    if (content === 'too-large') return 'too-large'
+    total += content.length
+    if (total > MAX_CSV_EXPORT_CHARS * 2) return 'too-large'
+    sheets.push({ name: sheet.getSheetName(), content })
+    hasFormulas ||= sheetHasFormulas(sheet)
+  }
+  return sheets.length > 0 ? { sheets, hasFormulas } : null
+}
+
+/// File > Export All Sheets as CSV: one CSV per sheet in a folder the user picks.
+export async function handleExportAllCsv(ctx: CsvExportContext): Promise<void> {
+  const state = ctx.lazyWorkbookRef.current
+  if (state && !state.flags.preloadComplete) {
+    ctx.setMessage(t('appCsvExportNeedsFullLoad'))
+    return
+  }
+  try {
+    const all = serializeAllSheetsCsv(ctx.univerRef.current, state)
+    if (all === null) return
+    if (all === 'too-large') {
+      ctx.setMessage(t('appCsvExportTooLarge'))
+      return
+    }
+    const result = await window.desktopApi.exportCsvAll({
+      baseName: (state?.file.name ?? 'Book1').replace(/\.[^.]+$/, ''),
+      sheets: all.sheets,
+      hasFormulas: all.hasFormulas,
+    })
+    if (result.canceled) {
+      if (result.saveAsXlsxInstead) ctx.requestSaveAs()
+      else ctx.setMessage(t('appCsvExportCanceled'))
+      return
+    }
+    const exported = t('appCsvAllExported', { count: result.count, path: result.folder })
+    ctx.setMessage(exported)
+    showToast(exported)
+  } catch (error: unknown) {
+    const failed = error instanceof Error ? error.message : t('appCsvExportFailed')
+    ctx.setMessage(failed)
+    showToast(failed, 'error')
+  }
+}

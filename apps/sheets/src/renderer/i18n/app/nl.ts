@@ -1568,6 +1568,17 @@ export const nl = {
   appFileSaveAs: 'Opslaan als…',
   appFileExportPdf: 'Exporteren als pdf…',
   appFileExportCsv: 'Exporteren als csv…',
+  appFileExportPng: 'Exporteren als afbeelding (PNG)…',
+  appFileExportCsvAll: 'Alle bladen exporteren als csv…',
+  appCsvAllExported: '{count} bladen als csv geëxporteerd naar {path}.',
+  appPngNeedsFullLoad:
+    'Voor het exporteren als afbeelding moet de werkmap volledig geladen zijn — wacht tot het laden klaar is.',
+  appPngRendering: 'Afbeelding tekenen…',
+  appPngExported: '{path} geëxporteerd.',
+  appPngCanceled: 'Exporteren als afbeelding geannuleerd.',
+  appPngTooLarge:
+    'Het blad is te groot voor één afbeelding. Selecteer een kleiner bereik of exporteer als pdf.',
+  appPngExportFailed: 'Exporteren als afbeelding mislukt.',
   appFilePrint: 'Afdrukken…',
   appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

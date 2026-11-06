@@ -454,13 +454,18 @@ import {
 } from './ribbon-actions'
 import {
   handleApplyHeaderFooter as handleApplyHeaderFooterImpl,
+  handleExportImage as handleExportImageImpl,
   handleExportPdf as handleExportPdfImpl,
   handlePageLayoutCommand as handlePageLayoutCommandImpl,
   openPrintPreviewHost,
   type PrintPreviewHost,
   type PageLayoutContext,
 } from './page-layout-actions'
-import { handleExportCsv as handleExportCsvImpl, type CsvExportContext } from './csv-export'
+import {
+  handleExportAllCsv as handleExportAllCsvImpl,
+  handleExportCsv as handleExportCsvImpl,
+  type CsvExportContext,
+} from './csv-export'
 import { effectivePageBreaks, installPageBreakPreview } from './page-break-preview'
 import { mapProtectedRanges } from './protected-ranges'
 import {
@@ -5016,8 +5021,12 @@ export function App({
       void openPrintPreviewHost(pageLayoutContext()).then(setPrintHost)
     } else if (action === 'export-pdf') {
       void handleExportPdfImpl(pageLayoutContext())
+    } else if (action === 'export-png') {
+      void handleExportImageImpl(pageLayoutContext())
     } else if (action === 'export-csv') {
       void handleExportCsvImpl(csvExportContext())
+    } else if (action === 'export-csv-all') {
+      void handleExportAllCsvImpl(csvExportContext())
     } else if (action === 'undo' || action === 'redo') {
       // The shell's own text fields (AI prompt, dialog inputs) keep native
       // text undo; everywhere else ⌘Z means workbook history.
