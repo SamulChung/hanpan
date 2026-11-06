@@ -989,6 +989,9 @@ export default function App() {
             setZoom(100)
             return
           }
+          // the frame has focus, so a ribbon menu never sees this Esc: hand it to the window listeners
+          if (msg.command === 'escape')
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
           const sid = selectedSidRef.current
           if (sid === null) return
           const map = getMap()
