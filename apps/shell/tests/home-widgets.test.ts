@@ -551,6 +551,6 @@ describe('0.17 review v2: an empty filter on a non-empty recent list', () => {
     const pills = Array.from(host.querySelectorAll<HTMLButtonElement>('.filter-pill'))
     await click(pills.at(-1))
     expect(host.textContent).toContain('이 종류의 최근 파일이 없습니다.')
-    expect(host.textContent).not.toContain('최근 파일이 없습니다')
+    expect(host.textContent).not.toContain('새로 만들거나 파일을 열어')
   })
 })
