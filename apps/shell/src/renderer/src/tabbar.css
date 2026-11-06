@@ -305,6 +305,29 @@ body.overlay-title-bar .tab-bar-drag-spacer {
   background: rgba(0, 0, 0, 0.1);
 }
 
+/* 저장 안 된 탭: 닫기 자리에 점. 탭에 마우스를 올리거나 키보드로 닫기에 가면 ×로 돌아온다 */
+.tab-dirty-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.75;
+}
+
+.tab-item.dirty .tab-close-x {
+  display: none;
+}
+
+.tab-item.dirty:hover .tab-close-x,
+.tab-item.dirty .tab-close:focus-visible .tab-close-x {
+  display: inline;
+}
+
+.tab-item.dirty:hover .tab-dirty-dot,
+.tab-item.dirty .tab-close:focus-visible .tab-dirty-dot {
+  display: none;
+}
+
 /* "+" new tab button: lives inside the strip so it hugs the last tab, Chrome-style */
 .tab-new-btn {
   margin-left: 4px;

@@ -72,6 +72,7 @@ import {
 import { rendererUrl, safeExternalUrl } from '@genoffice/electron-utils'
 import type { DocumentTabKind, OpenDocumentTab, TabKind, TabSummary } from '../shared/tabs-api'
 import { isSettledRect, tabStripHeight } from '../shared/tab-drag-geometry'
+import { rendererReportedDirty } from './tab-dirty-mirror'
 import type {
   SplitDropIntent,
   SplitOrientation,
@@ -468,7 +469,64 @@ export class TabManager {
       closable: t.id !== HOME_ID,
       active: t.id === this.activeId,
       ...(t.filePath ? { filePath: t.filePath } : {}),
+      ...(this.tabShowsDirty(t) ? { dirty: true } : {}),
     }))
+  }
+
+  /** dirty tab ids at the last refreshDirty, so only a real change re-sends the list */
+  private lastDirtyKey = ''
+
+  /**
+   * Recompute the tab strip's unsaved dots. True when the set of dirty tabs
+   * changed since the last call (the caller then re-sends the tab list).
+   */
+  refreshDirty(): boolean {
+    const key = this.tabs
+      .filter((t) => this.tabShowsDirty(t))
+      .map((t) => t.id)
+      .join(',')
+    if (key === this.lastDirtyKey) return false
+    this.lastDirtyKey = key
+    return true
+  }
+
+  /**
+   * Unsaved-changes state for the tab strip, answered synchronously: docs reads
+   * the value its renderer last pushed (the close guard still asks it directly).
+   */
+  private tabShowsDirty(tab: TabRecord): boolean {
+    const wc = tab.view?.webContents
+    if (!wc || wc.isDestroyed()) return false
+    try {
+      switch (tab.kind) {
+        case 'sheets':
+          return sheetsPendingEditCount(wc.id) > 0
+        case 'pdf':
+          return pdfIsDirty(wc.id) === true
+        case 'markdown':
+          return markdownIsDirty(wc.id) === true
+        case 'html':
+          return htmlIsDirty(wc.id) === true
+        case 'hwp':
+          return hwpIsDirty(wc.id) === true
+        case 'slides':
+          return slidesIsDirty(wc.id) === true
+        case 'docs':
+          return rendererReportedDirty(wc.id)
+        case 'mindmap':
+          return mindmapIsDirty(wc.id) === true
+        case 'epub':
+          return epubIsDirty(wc.id) === true
+        case 'photo':
+        case 'illust':
+          return graphicsIsDirty(wc.id) === true
+        default:
+          return false
+      }
+    } catch {
+      // a family that has not finished wiring its view yet counts as clean
+      return false
+    }
   }
 
   /**
