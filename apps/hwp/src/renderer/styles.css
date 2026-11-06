@@ -404,9 +404,21 @@ body {
   font: inherit;
 }
 .hp-tools-result {
-  margin: 4px 0 0;
-  padding-inline-start: 16px;
+  margin: 4px 0 6px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-subtle);
   color: var(--text-secondary);
+}
+.hp-tools-result > ul {
+  margin: 2px 0 0;
+  padding-inline-start: 16px;
+}
+.hp-tools-result-title {
+  display: block;
+  color: var(--text);
+  font-weight: 600;
 }
 .hp-credit-result li + li {
   margin-top: 4px;

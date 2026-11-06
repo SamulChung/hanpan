@@ -264,4 +264,5 @@ export const ko = {
   exportedPng: '쪽 그림 {count}장을 저장했습니다.',
   noticeOpen: '열기',
   noticeOpenFolder: '폴더 열기',
+  hpResultOf: '{tool} 결과',
 } satisfies Record<keyof typeof zh, string>

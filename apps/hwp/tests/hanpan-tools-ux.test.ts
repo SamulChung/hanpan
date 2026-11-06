@@ -94,3 +94,37 @@ describe('the Hanpan strings', () => {
     }
   })
 })
+
+// 0.17 UI/UX review v2, hwp-design #22: the 공문 점검 result landed at the bottom of the menu
+// with no title, the picture-credit result under its own button, and an earlier result stayed
+// when another tool ran.
+describe('a tool result', () => {
+  const answer = (value: unknown) =>
+    ((window.hwpApi as Partial<HwpApi>).hanpanTool as ReturnType<typeof vi.fn>).mockResolvedValue(
+      value,
+    )
+
+  it('shows under the tool that made it, titled with its name', async () => {
+    answer({ ok: true, findings: [{ code: 'no-recipient' }] })
+    await openTools('ko')
+    await act(async () =>
+      container.querySelector<HTMLButtonElement>('[data-tool="check"]')!.click(),
+    )
+    const result = container.querySelector('.hp-tools-result')!
+    expect(result.previousElementSibling?.getAttribute('data-tool')).toBe('check')
+    expect(result.querySelector('.hp-tools-result-title')?.textContent).toBe('공문 점검 결과')
+  })
+
+  it('goes when another tool runs, so two results never mix', async () => {
+    answer({ ok: true, findings: [] })
+    await openTools('ko')
+    await act(async () =>
+      container.querySelector<HTMLButtonElement>('[data-tool="check"]')!.click(),
+    )
+    answer({ ok: true, changed: 2 })
+    await act(async () => container.querySelector<HTMLButtonElement>('[data-tool="tidy"]')!.click())
+    const results = container.querySelectorAll('.hp-tools-result')
+    expect(results).toHaveLength(1)
+    expect(results[0]!.previousElementSibling?.getAttribute('data-tool')).toBe('tidy')
+  })
+})

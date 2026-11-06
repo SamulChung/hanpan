@@ -272,4 +272,5 @@ export const ms = {
   exportedPng: 'Saved {count} page pictures.',
   noticeOpen: 'Open',
   noticeOpenFolder: 'Show in folder',
+  hpResultOf: 'Keputusan: {tool}',
 } satisfies Record<keyof typeof zh, string>

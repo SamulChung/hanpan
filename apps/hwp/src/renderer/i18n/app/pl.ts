@@ -271,4 +271,5 @@ export const pl = {
   exportedPng: 'Saved {count} page pictures.',
   noticeOpen: 'Open',
   noticeOpenFolder: 'Show in folder',
+  hpResultOf: 'Wynik: {tool}',
 } satisfies Record<keyof typeof zh, string>

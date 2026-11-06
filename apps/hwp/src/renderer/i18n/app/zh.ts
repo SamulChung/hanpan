@@ -256,4 +256,5 @@ export const zh = {
   exportedPng: 'Saved {count} page pictures.',
   noticeOpen: 'Open',
   noticeOpenFolder: 'Show in folder',
+  hpResultOf: '{tool} 结果',
 }

@@ -267,4 +267,5 @@ export const vi = {
   exportedPng: 'Đã lưu {count} ảnh trang.',
   noticeOpen: 'Mở',
   noticeOpenFolder: 'Mở thư mục',
+  hpResultOf: 'Kết quả: {tool}',
 } satisfies Record<keyof typeof zh, string>
