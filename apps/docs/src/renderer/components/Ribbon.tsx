@@ -287,6 +287,10 @@ interface RibbonProps {
   onOpen: () => void
   onSave: () => void
   onSaveAs: () => void
+  /** File menu exports: the same flows as the tab bar menu (export-pdf/html/markdown/images) */
+  onExport?: (format: RibbonExportFormat) => void
+  /** File menu Print: the same flow as the tab bar menu and Ctrl+P */
+  onPrint?: () => void
   showAi: boolean
   onToggleAi: () => void
   section: SectionSettings | null
@@ -513,6 +517,15 @@ export function applyPainterFormat(
 
 // Word for Mac has no File ribbon tab: file actions live in the native menu
 // bar (which we provide). Windows Word does have one, so keep it there.
+/** File menu export formats, in the tab bar menu's order */
+export type RibbonExportFormat = 'pdf' | 'html' | 'markdown' | 'images'
+const RIBBON_EXPORTS = [
+  ['pdf', 'ribbonExportPdf'],
+  ['html', 'ribbonExportHtml'],
+  ['markdown', 'ribbonExportMarkdown'],
+  ['images', 'ribbonExportImages'],
+] as const satisfies ReadonlyArray<readonly [RibbonExportFormat, string]>
+
 const IS_MAC = navigator.platform.toLowerCase().includes('mac')
 // Word offers Half-width / Full-width under Change Case only on CJK UIs
 const WIDTH_CASE_LANGS = new Set<Lang>(['zh', 'zh-TW', 'ja'])
@@ -756,6 +769,8 @@ function RibbonInner({
   onOpen,
   onSave,
   onSaveAs,
+  onExport,
+  onPrint,
   showAi,
   onToggleAi,
   section,
@@ -2111,6 +2126,27 @@ function RibbonInner({
                   }}
                 >
                   {t('ribbonSaveAs')} <span className="file-menu-key">Ctrl+Shift+S</span>
+                </button>
+                {RIBBON_EXPORTS.map(([format, label]) => (
+                  <button
+                    key={format}
+                    disabled={!hasDoc}
+                    onClick={() => {
+                      setDropdown(null)
+                      onExport?.(format)
+                    }}
+                  >
+                    {t(label)}
+                  </button>
+                ))}
+                <button
+                  disabled={!hasDoc}
+                  onClick={() => {
+                    setDropdown(null)
+                    onPrint?.()
+                  }}
+                >
+                  {t('ribbonPrint')} <span className="file-menu-key">Ctrl+P</span>
                 </button>
               </div>
             )}

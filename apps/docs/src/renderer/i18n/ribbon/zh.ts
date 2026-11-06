@@ -65,6 +65,11 @@ export const zh = {
   ribbonOpen: '打开…',
   ribbonSave: '保存',
   ribbonSaveAs: '另存为…',
+  ribbonExportPdf: '导出为 PDF…',
+  ribbonExportHtml: '导出为 HTML…',
+  ribbonExportMarkdown: '导出为 Markdown…',
+  ribbonExportImages: '导出为图片…',
+  ribbonPrint: '打印…',
   // Home · Clipboard
   ribbonPaste: '粘贴',
   ribbonCutTip: '剪切 (⌘X)',

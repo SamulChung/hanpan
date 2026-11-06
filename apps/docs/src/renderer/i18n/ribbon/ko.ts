@@ -66,6 +66,11 @@ export const ko = {
   ribbonOpen: '열기…',
   ribbonSave: '저장',
   ribbonSaveAs: '다른 이름으로 저장…',
+  ribbonExportPdf: 'PDF로 내보내기…',
+  ribbonExportHtml: 'HTML로 내보내기…',
+  ribbonExportMarkdown: 'Markdown으로 내보내기…',
+  ribbonExportImages: '이미지로 내보내기…',
+  ribbonPrint: '인쇄…',
   // Home · Clipboard
   ribbonPaste: '붙여넣기',
   ribbonCutTip: '잘라내기 (⌘X)',

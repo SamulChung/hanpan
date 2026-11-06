@@ -276,7 +276,7 @@ import { useShallowStable, useStableCallbacks } from './use-stable'
 import { FindPanel } from './components/FindPanel'
 import { ZoomDialog } from './components/ZoomDialog'
 import type { PageLayout } from './editor/goto'
-import { Ribbon } from './components/Ribbon'
+import { Ribbon, type RibbonExportFormat } from './components/Ribbon'
 import {
   AdjustListIndentsDialog,
   DefineBulletDialog,
@@ -6868,6 +6868,16 @@ export function App() {
     onOpen: () => void openFile(),
     onSave: () => void save(false),
     onSaveAs: () => void save(true),
+    // same flows as the tab bar menu's export-*/print commands
+    onExport: (format: RibbonExportFormat) => {
+      if (format === 'pdf') void exportPdf()
+      else if (format === 'html') void exportHtml()
+      else if (format === 'markdown') void exportMarkdown()
+      else void exportImages()
+    },
+    onPrint: () => {
+      if (doc) void printDoc()
+    },
     onToggleAi: () => setShowAi((v) => !v),
     onSection: (next: SectionSettings) => {
       // text columns are off in an ODT document
