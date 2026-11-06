@@ -535,3 +535,22 @@ describe('coordinator: the subscription notice does not cover the shell from Set
     expect(host.querySelector('.first-notice-overlay')).toBeNull()
   })
 })
+
+describe('0.17 review v2: an empty filter on a non-empty recent list', () => {
+  it('says this type has no recent files, not that there are none at all', async () => {
+    window.aiOffice = new Proxy(window.aiOffice as object, {
+      get: (target, name: string) =>
+        name === 'recents'
+          ? async (q: { ext?: string }) =>
+              q?.ext
+                ? { entries: [], total: 0, totalAll: 5 }
+                : { entries: [entry('report.hwp')], total: 1, totalAll: 5 }
+          : (target as Record<string, unknown>)[name],
+    }) as typeof window.aiOffice
+    await renderHome()
+    const pills = Array.from(host.querySelectorAll<HTMLButtonElement>('.filter-pill'))
+    await click(pills.at(-1))
+    expect(host.textContent).toContain('이 종류의 최근 파일이 없습니다.')
+    expect(host.textContent).not.toContain('최근 파일이 없습니다')
+  })
+})

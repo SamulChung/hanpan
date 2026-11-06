@@ -2954,7 +2954,7 @@ export const strings = {
     renameFailed: '이름 바꾸기에 실패했습니다',
     emptyStarred: '즐겨찾기가 없습니다 — 파일 행에 마우스를 올리고 별표를 클릭하세요.',
     emptyRecent: '최근 파일이 없습니다 — 새로 만들거나 파일을 열어 시작하세요.',
-    emptyFiltered: '이 유형의 파일이 없습니다.',
+    emptyFiltered: '이 종류의 최근 파일이 없습니다.',
     // Folders panel
     folders: '폴더',
     newFolder: '새 폴더',

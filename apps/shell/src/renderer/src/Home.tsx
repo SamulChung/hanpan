@@ -1127,6 +1127,8 @@ export function Home({
   const [listTotal, setListTotal] = useState(0)
   /** sidebar Recent / Starred counts under the active type filter */
   const [navCounts, setNavCounts] = useState({ recent: 0, starred: 0 })
+  /** recent files under no filter: an empty filter must not read as "no recent files" (#25) */
+  const [recentAll, setRecentAll] = useState(0)
   const [loadingMore, setLoadingMore] = useState(false)
   const [sidebarWidth, setSidebarWidth] = useState(readSidebarWidth)
   const sidebarRef = useRef<HTMLElement>(null)
@@ -1320,6 +1322,7 @@ export function Home({
       if (seq !== requestSeq.current) return
       setEntries(page.entries)
       setListTotal(page.total)
+      if (view === 'recent') setRecentAll(page.totalAll ?? page.total)
       setNavCounts((prev) =>
         view === 'recent'
           ? { ...prev, recent: visiblePageCount(page) }
@@ -1329,6 +1332,7 @@ export function Home({
     // The other view fetches only its count under the same active filter.
     void secondary({ offset: 0, limit: 0, ext }).then((page) => {
       if (seq !== requestSeq.current) return
+      if (view !== 'recent') setRecentAll(page.totalAll ?? page.total)
       setNavCounts((prev) =>
         view === 'recent'
           ? { ...prev, starred: visiblePageCount(page) }
@@ -3629,7 +3633,7 @@ export function Home({
             renderEmpty(
               view === 'starred'
                 ? t('emptyStarred')
-                : navCounts.recent === 0
+                : recentAll === 0
                   ? t('emptyRecent')
                   : t('emptyFiltered'),
             )
