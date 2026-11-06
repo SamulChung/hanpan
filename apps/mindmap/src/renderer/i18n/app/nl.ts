@@ -280,4 +280,5 @@ export const nl = {
     '‘{topic}’: de notitie bevat geen bron voor de afbeelding. Controleer de herkomst en voeg die toe.',
   mmCreditConditions: 'Afbeelding ‘{title}’ bij ‘{topic}’: heeft gebruiksvoorwaarden ({license}).',
   mmCreditGo: 'Ga naar',
+  tbSendToLabel: 'Send to a document',
 } satisfies Record<keyof typeof zh, string>

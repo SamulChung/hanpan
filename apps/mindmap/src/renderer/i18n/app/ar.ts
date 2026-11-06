@@ -273,4 +273,5 @@ export const ar = {
   mmCreditNoCredit: '«{topic}»: لا يوجد سطر مصدر للصورة في الملاحظة. تحقّق من مصدرها وأضِفه.',
   mmCreditConditions: 'الصورة «{title}» على «{topic}»: لها شروط استخدام ({license}).',
   mmCreditGo: 'انتقال',
+  tbSendToLabel: 'إرسال إلى مستند',
 } satisfies Record<keyof typeof zh, string>

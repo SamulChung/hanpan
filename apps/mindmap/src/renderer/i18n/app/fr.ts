@@ -281,4 +281,5 @@ export const fr = {
   mmCreditConditions:
     'Image « {title} » sur « {topic} » : soumise à des conditions d’utilisation ({license}).',
   mmCreditGo: 'Aller',
+  tbSendToLabel: 'Send to a document',
 } satisfies Record<keyof typeof zh, string>

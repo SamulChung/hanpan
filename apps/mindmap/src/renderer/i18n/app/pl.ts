@@ -278,4 +278,5 @@ export const pl = {
   mmCreditNoCredit: '„{topic}”: w notatce brak źródła obrazu. Sprawdź pochodzenie i dopisz je.',
   mmCreditConditions: 'Obraz „{title}” w „{topic}”: ma warunki użycia ({license}).',
   mmCreditGo: 'Przejdź',
+  tbSendToLabel: 'Send to a document',
 } satisfies Record<keyof typeof zh, string>

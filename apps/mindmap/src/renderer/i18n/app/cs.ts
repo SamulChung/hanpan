@@ -276,4 +276,5 @@ export const cs = {
   mmCreditNoCredit: '„{topic}“: obrázek nemá v poznámce zdroj. Ověřte původ a doplňte ho.',
   mmCreditConditions: 'Obrázek „{title}“ u „{topic}“: má podmínky užití ({license}).',
   mmCreditGo: 'Přejít',
+  tbSendToLabel: 'Send to a document',
 } satisfies Record<keyof typeof zh, string>

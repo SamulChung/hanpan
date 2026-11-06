@@ -278,4 +278,5 @@ export const ru = {
   mmCreditConditions:
     'Изображение «{title}» в теме «{topic}»: есть условия использования ({license}).',
   mmCreditGo: 'Перейти',
+  tbSendToLabel: 'Отправить в документ',
 } satisfies Record<keyof typeof zh, string>

@@ -274,4 +274,5 @@ export const ko = {
   mmCreditNoCredit: '「{topic}」: 그림의 출처가 메모에 없습니다. 출처를 확인해 메모에 적어 주세요.',
   mmCreditConditions: '「{topic}」의 그림 「{title}」: 이용 조건이 있습니다({license}).',
   mmCreditGo: '가기',
+  tbSendToLabel: '한판으로 보내기',
 } satisfies Record<keyof typeof zh, string>

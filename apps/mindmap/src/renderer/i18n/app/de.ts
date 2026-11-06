@@ -281,4 +281,5 @@ export const de = {
     '„{topic}“: Zum Bild steht kein Nachweis in der Notiz. Prüfen Sie die Herkunft und ergänzen Sie ihn.',
   mmCreditConditions: 'Bild „{title}“ bei „{topic}“: hat Nutzungsbedingungen ({license}).',
   mmCreditGo: 'Anzeigen',
+  tbSendToLabel: 'Send to a document',
 } satisfies Record<keyof typeof zh, string>

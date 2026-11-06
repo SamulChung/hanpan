@@ -271,4 +271,5 @@ export const he = {
   mmCreditNoCredit: '„{topic}“: אין קרדיט לתמונה בהערה. בדקו את המקור והוסיפו אותו.',
   mmCreditConditions: 'התמונה „{title}“ בנושא „{topic}“: יש לה תנאי שימוש ({license}).',
   mmCreditGo: 'מעבר',
+  tbSendToLabel: 'שליחה למסמך',
 } satisfies Record<keyof typeof zh, string>

@@ -276,4 +276,5 @@ export const ja = {
     '「{topic}」：メモに画像の出典がありません。出典を確かめてメモに書いてください。',
   mmCreditConditions: '「{topic}」の画像「{title}」：利用条件があります（{license}）。',
   mmCreditGo: '移動',
+  tbSendToLabel: '文書へ送る',
 } satisfies Record<keyof typeof zh, string>

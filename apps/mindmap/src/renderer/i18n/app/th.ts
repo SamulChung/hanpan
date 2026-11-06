@@ -274,4 +274,5 @@ export const th = {
   mmCreditNoCredit: '“{topic}”: บันทึกไม่มีแหล่งที่มาของภาพ ตรวจสอบที่มาแล้วเพิ่มให้',
   mmCreditConditions: 'ภาพ “{title}” ในหัวข้อ “{topic}”: มีเงื่อนไขการใช้ ({license})',
   mmCreditGo: 'ไปที่ภาพ',
+  tbSendToLabel: 'ส่งไปยังเอกสาร',
 } satisfies Record<keyof typeof zh, string>

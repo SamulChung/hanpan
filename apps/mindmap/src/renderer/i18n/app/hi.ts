@@ -275,4 +275,5 @@ export const hi = {
   mmCreditNoCredit: '“{topic}”: नोट में चित्र का स्रोत नहीं है। स्रोत जाँचकर जोड़ें।',
   mmCreditConditions: '“{topic}” पर चित्र “{title}”: इसके उपयोग की शर्तें हैं ({license})।',
   mmCreditGo: 'जाएँ',
+  tbSendToLabel: 'दस्तावेज़ में भेजें',
 } satisfies Record<keyof typeof zh, string>
