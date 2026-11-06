@@ -1429,4 +1429,11 @@ export const zhTW = {
   appVisualFlipV: '垂直翻轉',
   appVisualFlipH: '水平翻轉',
   appCtxPasteVisual: '貼上圖片/圖形',
+  appFileMenu: '檔案',
+  appFileOpen: '開啟…',
+  appFileSave: '儲存',
+  appFileSaveAs: '另存新檔…',
+  appFileExportPdf: '匯出為 PDF…',
+  appFileExportCsv: '匯出為 CSV…',
+  appFilePrint: '列印…',
 } satisfies Record<keyof typeof zh, string>

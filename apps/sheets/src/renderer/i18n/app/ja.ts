@@ -1572,4 +1572,11 @@ export const ja = {
   appVisualFlipV: '上下反転',
   appVisualFlipH: '左右反転',
   appCtxPasteVisual: '図または図形を貼り付け',
+  appFileMenu: 'ファイル',
+  appFileOpen: '開く…',
+  appFileSave: '保存',
+  appFileSaveAs: '名前を付けて保存…',
+  appFileExportPdf: 'PDF にエクスポート…',
+  appFileExportCsv: 'CSV にエクスポート…',
+  appFilePrint: '印刷…',
 } satisfies Record<keyof typeof zh, string>

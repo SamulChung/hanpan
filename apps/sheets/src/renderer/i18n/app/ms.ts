@@ -1524,4 +1524,11 @@ export const ms = {
   appVisualFlipV: 'Balikkan Menegak',
   appVisualFlipH: 'Balikkan Mendatar',
   appCtxPasteVisual: 'Tampal Gambar atau Bentuk',
+  appFileMenu: 'Fail',
+  appFileOpen: 'Buka…',
+  appFileSave: 'Simpan',
+  appFileSaveAs: 'Simpan sebagai…',
+  appFileExportPdf: 'Eksport sebagai PDF…',
+  appFileExportCsv: 'Eksport sebagai CSV…',
+  appFilePrint: 'Cetak…',
 } satisfies Record<keyof typeof zh, string>

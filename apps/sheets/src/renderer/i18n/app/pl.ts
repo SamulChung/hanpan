@@ -1549,4 +1549,11 @@ export const pl = {
   appVisualFlipV: 'Odbij w pionie',
   appVisualFlipH: 'Odbij w poziomie',
   appCtxPasteVisual: 'Wklej obraz lub kształt',
+  appFileMenu: 'Plik',
+  appFileOpen: 'Otwórz…',
+  appFileSave: 'Zapisz',
+  appFileSaveAs: 'Zapisz jako…',
+  appFileExportPdf: 'Eksportuj jako PDF…',
+  appFileExportCsv: 'Eksportuj jako CSV…',
+  appFilePrint: 'Drukuj…',
 } satisfies Record<keyof typeof zh, string>

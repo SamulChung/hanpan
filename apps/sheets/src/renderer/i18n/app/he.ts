@@ -1461,4 +1461,11 @@ export const he = {
   appVisualFlipV: 'הפוך אנכית',
   appVisualFlipH: 'הפוך אופקית',
   appCtxPasteVisual: 'הדבק תמונה או צורה',
+  appFileMenu: 'קובץ',
+  appFileOpen: 'פתיחה…',
+  appFileSave: 'שמירה',
+  appFileSaveAs: 'שמירה בשם…',
+  appFileExportPdf: 'ייצוא כ-PDF…',
+  appFileExportCsv: 'ייצוא כ-CSV…',
+  appFilePrint: 'הדפסה…',
 } satisfies Record<keyof typeof zh, string>

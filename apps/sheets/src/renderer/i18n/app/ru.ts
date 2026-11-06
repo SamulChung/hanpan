@@ -1541,4 +1541,11 @@ export const ru = {
   appVisualFlipV: 'Отразить сверху вниз',
   appVisualFlipH: 'Отразить слева направо',
   appCtxPasteVisual: 'Вставить рисунок или фигуру',
+  appFileMenu: 'Файл',
+  appFileOpen: 'Открыть…',
+  appFileSave: 'Сохранить',
+  appFileSaveAs: 'Сохранить как…',
+  appFileExportPdf: 'Экспорт в PDF…',
+  appFileExportCsv: 'Экспорт в CSV…',
+  appFilePrint: 'Печать…',
 } satisfies Record<keyof typeof zh, string>

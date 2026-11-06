@@ -1526,4 +1526,11 @@ export const id = {
   appVisualFlipV: 'Balik Vertikal',
   appVisualFlipH: 'Balik Horizontal',
   appCtxPasteVisual: 'Tempel Gambar atau Bentuk',
+  appFileMenu: 'File',
+  appFileOpen: 'Buka…',
+  appFileSave: 'Simpan',
+  appFileSaveAs: 'Simpan sebagai…',
+  appFileExportPdf: 'Ekspor sebagai PDF…',
+  appFileExportCsv: 'Ekspor sebagai CSV…',
+  appFilePrint: 'Cetak…',
 } satisfies Record<keyof typeof zh, string>

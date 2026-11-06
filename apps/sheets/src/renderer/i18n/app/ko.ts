@@ -1543,4 +1543,11 @@ export const ko = {
   appVisualFlipV: '상하 대칭',
   appVisualFlipH: '좌우 대칭',
   appCtxPasteVisual: '그림/도형 붙여넣기',
+  appFileMenu: '파일',
+  appFileOpen: '열기…',
+  appFileSave: '저장',
+  appFileSaveAs: '다른 이름으로 저장…',
+  appFileExportPdf: 'PDF로 내보내기…',
+  appFileExportCsv: 'CSV로 내보내기…',
+  appFilePrint: '인쇄…',
 } satisfies Record<keyof typeof zh, string>

@@ -1484,4 +1484,11 @@ export const ar = {
   appVisualFlipV: 'قلب رأسي',
   appVisualFlipH: 'قلب أفقي',
   appCtxPasteVisual: 'لصق صورة أو شكل',
+  appFileMenu: 'ملف',
+  appFileOpen: 'فتح…',
+  appFileSave: 'حفظ',
+  appFileSaveAs: 'حفظ باسم…',
+  appFileExportPdf: 'تصدير بتنسيق PDF…',
+  appFileExportCsv: 'تصدير بتنسيق CSV…',
+  appFilePrint: 'طباعة…',
 } satisfies Record<keyof typeof zh, string>

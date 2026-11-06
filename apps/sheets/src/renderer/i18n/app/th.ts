@@ -1484,4 +1484,11 @@ export const th = {
   appVisualFlipV: 'พลิกแนวตั้ง',
   appVisualFlipH: 'พลิกแนวนอน',
   appCtxPasteVisual: 'วางรูปภาพหรือรูปร่าง',
+  appFileMenu: 'ไฟล์',
+  appFileOpen: 'เปิด…',
+  appFileSave: 'บันทึก',
+  appFileSaveAs: 'บันทึกเป็น…',
+  appFileExportPdf: 'ส่งออกเป็น PDF…',
+  appFileExportCsv: 'ส่งออกเป็น CSV…',
+  appFilePrint: 'พิมพ์…',
 } satisfies Record<keyof typeof zh, string>

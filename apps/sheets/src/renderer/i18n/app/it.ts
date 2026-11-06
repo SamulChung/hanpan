@@ -1564,4 +1564,11 @@ export const it = {
   appVisualFlipV: 'Capovolgi verticalmente',
   appVisualFlipH: 'Capovolgi orizzontalmente',
   appCtxPasteVisual: 'Incolla immagine o forma',
+  appFileMenu: 'File',
+  appFileOpen: 'Apri…',
+  appFileSave: 'Salva',
+  appFileSaveAs: 'Salva con nome…',
+  appFileExportPdf: 'Esporta come PDF…',
+  appFileExportCsv: 'Esporta come CSV…',
+  appFilePrint: 'Stampa…',
 } satisfies Record<keyof typeof zh, string>

@@ -1521,4 +1521,11 @@ export const hi = {
   appVisualFlipV: 'लंबवत पलटें',
   appVisualFlipH: 'क्षैतिज पलटें',
   appCtxPasteVisual: 'चित्र या आकृति पेस्ट करें',
+  appFileMenu: 'फ़ाइल',
+  appFileOpen: 'खोलें…',
+  appFileSave: 'सहेजें',
+  appFileSaveAs: 'इस रूप में सहेजें…',
+  appFileExportPdf: 'PDF के रूप में निर्यात करें…',
+  appFileExportCsv: 'CSV के रूप में निर्यात करें…',
+  appFilePrint: 'प्रिंट करें…',
 } satisfies Record<keyof typeof zh, string>

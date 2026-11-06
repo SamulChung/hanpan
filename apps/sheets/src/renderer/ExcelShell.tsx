@@ -57,6 +57,7 @@ import {
 } from './paste-special'
 import { COLOR_SCHEMES, FONT_SCHEMES, THEME_PRESETS } from './themes'
 import { useI18n, type StringKey } from './i18n/locale'
+import { FileMenu, type FileMenuAction } from './FileMenu'
 import { NameManagerDialog, type DefinedNameAction, type DefinedNameRow } from './NameManagerDialog'
 import {
   NUMBER_FORMAT_LABEL,
@@ -328,6 +329,8 @@ interface ExcelShellProps {
   /// file-backed session (the in-memory demo workbook has nowhere to copy).
   readonly canSaveAs: boolean
   readonly onSaveAs: () => void
+  /// The on-screen File menu (0.17 #6): the same actions the shell's ☰ menu sends.
+  readonly onFileAction: (action: FileMenuAction) => void
   /// QAT redo (workbook history, same path as the app menu's ⇧⌘Z); undo
   /// shares the AI panel's onUndo above.
   readonly onRedo: () => void
@@ -565,6 +568,7 @@ export function ExcelShell({
   onSave,
   canSaveAs,
   onSaveAs,
+  onFileAction,
   onRedo,
   canUndo,
   canRedo,
@@ -889,6 +893,15 @@ export function ExcelShell({
           aria-label={t('appScopeWorkbook')}
           onDoubleClick={collapse.onTabsDoubleClick}
         >
+          {/* like the slide editor: on a Mac the system menu bar holds the File menu */}
+          {!IS_MAC && (
+            <FileMenu
+              hasWorkbook={!openingWorkbook}
+              canSave={canSave}
+              canSaveAs={canSaveAs}
+              onAction={onFileAction}
+            />
+          )}
           <button
             type="button"
             className="qa-btn"

@@ -5492,6 +5492,7 @@ export function App({
         onSave={() => void handleSave('save')}
         canSaveAs={workbookFile !== null}
         onSaveAs={() => void handleSave('save-as')}
+        onFileAction={(action) => menuActionRef.current(action)}
         onRedo={handleRedo}
         autoSave={autoSave}
         onAutoSaveChange={setAutoSave}

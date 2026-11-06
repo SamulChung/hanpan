@@ -1562,4 +1562,11 @@ export const nl = {
   appVisualFlipV: 'Verticaal spiegelen',
   appVisualFlipH: 'Horizontaal spiegelen',
   appCtxPasteVisual: 'Afbeelding of vorm plakken',
+  appFileMenu: 'Bestand',
+  appFileOpen: 'Openen…',
+  appFileSave: 'Opslaan',
+  appFileSaveAs: 'Opslaan als…',
+  appFileExportPdf: 'Exporteren als pdf…',
+  appFileExportCsv: 'Exporteren als csv…',
+  appFilePrint: 'Afdrukken…',
 } satisfies Record<keyof typeof zh, string>

@@ -1501,4 +1501,11 @@ export const en = {
   appVisualFlipV: 'Flip Vertical',
   appVisualFlipH: 'Flip Horizontal',
   appCtxPasteVisual: 'Paste Picture or Shape',
+  appFileMenu: 'File',
+  appFileOpen: 'Open…',
+  appFileSave: 'Save',
+  appFileSaveAs: 'Save As…',
+  appFileExportPdf: 'Export as PDF…',
+  appFileExportCsv: 'Export as CSV…',
+  appFilePrint: 'Print…',
 } satisfies Record<keyof typeof zh, string>

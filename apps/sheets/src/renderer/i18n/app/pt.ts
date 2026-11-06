@@ -1565,4 +1565,11 @@ export const pt = {
   appVisualFlipV: 'Inverter verticalmente',
   appVisualFlipH: 'Inverter horizontalmente',
   appCtxPasteVisual: 'Colar imagem ou forma',
+  appFileMenu: 'Arquivo',
+  appFileOpen: 'Abrir…',
+  appFileSave: 'Salvar',
+  appFileSaveAs: 'Salvar como…',
+  appFileExportPdf: 'Exportar como PDF…',
+  appFileExportCsv: 'Exportar como CSV…',
+  appFilePrint: 'Imprimir…',
 } satisfies Record<keyof typeof zh, string>

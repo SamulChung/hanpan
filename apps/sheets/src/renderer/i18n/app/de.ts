@@ -1580,4 +1580,11 @@ export const de = {
   appVisualFlipV: 'Vertikal spiegeln',
   appVisualFlipH: 'Horizontal spiegeln',
   appCtxPasteVisual: 'Bild oder Form einfügen',
+  appFileMenu: 'Datei',
+  appFileOpen: 'Öffnen…',
+  appFileSave: 'Speichern',
+  appFileSaveAs: 'Speichern unter…',
+  appFileExportPdf: 'Als PDF exportieren…',
+  appFileExportCsv: 'Als CSV exportieren…',
+  appFilePrint: 'Drucken…',
 } satisfies Record<keyof typeof zh, string>
