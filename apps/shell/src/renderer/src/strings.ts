@@ -355,7 +355,7 @@ export const strings = {
     setAiUseDesc:
       '“自动”会使用已连接的订阅：依次为 Claude、ChatGPT、Codex。它不会自动选择需要付费的连接。',
     setAiUseUnavailable: '{provider} · 目前无法使用',
-    setAiNotice: '首次连接说明',
+    setAiNotice: 'AI 隐私说明（哪些内容会外传）',
     setAiNoticeView: '再次查看',
     setAiAdvanced: '高级',
     setAiAdvancedDesc:
@@ -1024,7 +1024,7 @@ export const strings = {
     setAiUseDesc:
       'Automatic uses a connected subscription: Claude first, then ChatGPT, then Codex. It never picks a connection that costs money.',
     setAiUseUnavailable: '{provider} · cannot be used right now',
-    setAiNotice: 'First-connection notice',
+    setAiNotice: 'AI privacy notice (what leaves this PC)',
     setAiNoticeView: 'View again',
     setAiAdvanced: 'Advanced',
     setAiAdvancedDesc:
@@ -1713,7 +1713,7 @@ export const strings = {
     setAiUseDesc:
       '"Tự động" dùng gói đăng ký đã kết nối: Claude trước, sau đó đến ChatGPT, rồi đến Codex. Chế độ này không bao giờ tự chọn kết nối phải trả phí.',
     setAiUseUnavailable: '{provider} · hiện không dùng được',
-    setAiNotice: 'Thông báo khi kết nối lần đầu',
+    setAiNotice: 'Thông báo quyền riêng tư AI (dữ liệu gửi ra ngoài)',
     setAiNoticeView: 'Xem lại',
     setAiAdvanced: 'Nâng cao',
     setAiAdvancedDesc:
@@ -3113,7 +3113,7 @@ export const strings = {
     setAiUseDesc:
       '자동은 연결된 구독을 씁니다. Claude, ChatGPT, Codex 순서로 고릅니다. 요금이 나가는 연결은 자동으로 고르지 않습니다.',
     setAiUseUnavailable: '{provider} · 지금 쓸 수 없음',
-    setAiNotice: '첫 연결 안내',
+    setAiNotice: 'AI 개인정보 안내(밖으로 보내는 것)',
     setAiNoticeView: '다시 보기',
     setAiAdvanced: '고급',
     setAiAdvancedDesc:
