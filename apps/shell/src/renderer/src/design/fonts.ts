@@ -148,3 +148,23 @@ export function loadPcFonts(
   })
   return loading
 }
+
+/**
+ * Reads the installed fonts at the first press or key anywhere on the board (점검 v2
+ * hwp-design #17): read only from the font box itself, the box that opened still showed
+ * the fixed list. The Local Font Access API wants a user gesture, so it waits for one.
+ * Returns a function that stops listening.
+ */
+export function readPcFontsOnFirstGesture(target: EventTarget, read: () => void): () => void {
+  const once = () => {
+    stop()
+    read()
+  }
+  const stop = () => {
+    target.removeEventListener('pointerdown', once, { capture: true })
+    target.removeEventListener('keydown', once, { capture: true })
+  }
+  target.addEventListener('pointerdown', once, { capture: true })
+  target.addEventListener('keydown', once, { capture: true })
+  return stop
+}
