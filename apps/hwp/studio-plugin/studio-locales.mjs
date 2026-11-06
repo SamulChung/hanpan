@@ -10,6 +10,7 @@
  * dialogs, in Vietnamese) shows in English, never in Korean.
  */
 import { dialogStrings } from './studio-locales/dialog-strings.mjs'
+import { uxStrings } from './studio-locales/ux-strings.mjs'
 import vi from './studio-locales/vi.mjs'
 
 /** Studio languages beyond rhwp's own ko and en. */
@@ -207,6 +208,7 @@ export const APP_STRINGS = {
     'hanpan.pageSetup.marginGutter': '제본',
     'hanpan.editor.inputLabel': '문서 편집 입력',
     ...dialogStrings(0),
+    ...uxStrings(0),
     ...CATALOG_CORRECTIONS.ko,
   },
   en: {
@@ -224,6 +226,7 @@ export const APP_STRINGS = {
     'hanpan.pageSetup.marginGutter': 'Gutter',
     'hanpan.editor.inputLabel': 'Document editing input',
     ...dialogStrings(1),
+    ...uxStrings(1),
     ...CATALOG_CORRECTIONS.en,
   },
   vi: {
@@ -241,6 +244,7 @@ export const APP_STRINGS = {
     'hanpan.pageSetup.marginGutter': 'Gáy sách',
     'hanpan.editor.inputLabel': 'Ô nhập chỉnh sửa tài liệu',
     ...dialogStrings(2),
+    ...uxStrings(2),
     ...CATALOG_CORRECTIONS.vi,
   },
 }

@@ -937,6 +937,39 @@ export const DIALOG_THEME_CSS = `
   }
 }
 
+/* ─────────────────────────────────────────────────────────────
+   Menu items that are on (0.17 UI/UX review v2, hwp-design #29):
+   보기 > 조판 부호·문단 부호·투명 선·잘림 보기·격자 보기 and 도구 상자. rhwp marks
+   them .active or aria-checked but drew them like a hovered item; Hangul shows a
+   pressed box at the icon, and a check where an item has no icon.
+   ───────────────────────────────────────────────────────────── */
+:root[${DIALOG_THEME_ATTRIBUTE}] .menu-dropdown .md-item:is(.active, [aria-checked="true"]) > .md-icon {
+  outline: 1px solid var(--ieum-dialog-accent);
+  outline-offset: 1px;
+  border-radius: 2px;
+  background-color: var(--ieum-dialog-accent-soft);
+}
+
+:root[${DIALOG_THEME_ATTRIBUTE}] .menu-dropdown .md-item:is(.active, [aria-checked="true"]) > .md-icon:not([class*="icon-"])::after,
+:root[${DIALOG_THEME_ATTRIBUTE}] .menu-dropdown .md-item[aria-checked="true"]:not(:has(> .md-icon))::before {
+  content: '\\2713';
+  color: var(--ieum-dialog-accent);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+:root[${DIALOG_THEME_ATTRIBUTE}] .menu-dropdown .md-item:is(.active, [aria-checked="true"]) > .md-icon:not([class*="icon-"])::after {
+  display: block;
+  text-align: center;
+}
+
+:root[${DIALOG_THEME_ATTRIBUTE}] .menu-dropdown .md-item[aria-checked="true"]:not(:has(> .md-icon))::before {
+  position: absolute;
+  left: 8px;
+  width: 16px;
+  text-align: center;
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root[${DIALOG_THEME_ATTRIBUTE}] .modal-overlay,
   :root[${DIALOG_THEME_ATTRIBUTE}] .dialog-wrap {

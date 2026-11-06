@@ -16,6 +16,8 @@
  * (hancomHooks), and a release that renames one fails the build.
  */
 
+import { UX_CORRECTIONS } from './studio-locales/ux-strings.mjs'
+
 export const HANCOM_KEYS_MODULE = '@ieum/hancom-keys'
 
 /**
@@ -1618,6 +1620,88 @@ export function deleteLine(ih) {
   return true
 }
 
+const WORD_LETTER = /[\p{L}\p{N}]/u
+
+/** The text of the paragraph a caret is in: the body's, or a table cell's (by path when nested). */
+function caretParagraphText(wasm, pos) {
+  const sec = pos.sectionIndex
+  if (pos.parentParaIndex === undefined) {
+    return wasm.getTextRange(
+      sec,
+      pos.paragraphIndex,
+      0,
+      wasm.getParagraphLength(sec, pos.paragraphIndex),
+    )
+  }
+  const path = pos.cellPath ?? []
+  if (path.length > 0) {
+    const json = JSON.stringify(path)
+    const length = wasm.getCellParagraphLengthByPath(sec, pos.parentParaIndex, json)
+    return wasm.getTextInCellByPath(sec, pos.parentParaIndex, json, 0, length)
+  }
+  const { parentParaIndex: ppi, controlIndex: ci, cellIndex: cell, cellParaIndex: cpi } = pos
+  const length = wasm.getCellParagraphLength(sec, ppi, ci, cell, cpi)
+  return wasm.getTextInCell(sec, ppi, ci, cell, cpi, 0, length)
+}
+
+/**
+ * The word the caret is in, as a range: Hangul's 글자 모양 with no block works on that word. A
+ * caret right behind the last letter still means that word, as a double click does. Body text
+ * and table cells; null in a header, a note, a text box, a selected object or cell block, or
+ * when the caret is not at a word (a blank, an empty paragraph).
+ */
+export function caretWordRange(ih) {
+  const cursor = ih?.cursor
+  const wasm = ih?.wasm
+  if (!cursor || !wasm) return null
+  const elsewhere = [
+    'isInHeaderFooter',
+    'isInFootnote',
+    'isInPictureObjectSelection',
+    'isInTableObjectSelection',
+    'isInCellSelectionMode',
+  ].some((mode) => typeof cursor[mode] === 'function' && cursor[mode]())
+  if (elsewhere) return null
+  const pos = cursor.getPosition()
+  if (!pos || pos.isTextBox) return null
+  let text
+  try {
+    text = String(caretParagraphText(wasm, pos) ?? '')
+  } catch {
+    return null
+  }
+  let at = Math.min(pos.charOffset, text.length - 1)
+  if (at < 0) return null
+  if (!WORD_LETTER.test(text[at]) && at > 0 && WORD_LETTER.test(text[at - 1])) at -= 1
+  if (!WORD_LETTER.test(text[at])) return null
+  let start = at
+  let end = at + 1
+  while (start > 0 && WORD_LETTER.test(text[start - 1])) start -= 1
+  while (end < text.length && WORD_LETTER.test(text[end])) end += 1
+  return { start: { ...pos, charOffset: start }, end: { ...pos, charOffset: end } }
+}
+
+/**
+ * What the character shape dialog changes: the block, or with no block the word at the caret.
+ * Null leaves it to the editor's own path (the toolbar's font box does the same): in a cell block
+ * it changes the block's cells, between words it waits for what is typed next.
+ */
+export function charShapeTarget(ih) {
+  const selection = ih?.getSelection?.() ?? null
+  if (
+    selection &&
+    !(
+      samePlace(selection.start, selection.end) &&
+      paraOf(selection.start) === paraOf(selection.end) &&
+      selection.start.charOffset === selection.end.charOffset
+    )
+  ) {
+    return selection
+  }
+  if (ih?.cursor?.isInCellSelectionMode?.()) return null
+  return caretWordRange(ih)
+}
+
 /** What Hangul's 보통 모양 (Alt+Shift+C) takes off; size, font, ratio, spacing and shade stay. */
 export const NORMAL_SHAPE = {
   bold: false,
@@ -2262,6 +2346,61 @@ export function installHancomMenuItems(doc, locale, mac = onMac()) {
     label.textContent = ko ? nameKo : localText(nameEn, locale)
     item.append(icon, label)
     anchor.after(item)
+  }
+  tidyStudioMenus(doc)
+  showCorrectedLabels(doc, locale)
+}
+
+const LOCALE_COLUMN = { ko: 0, en: 1, vi: 2 }
+
+/**
+ * The words of UX_CORRECTIONS (studio-locales/ux-strings.mjs) in the page's own markup. The
+ * studio's catalogs carry them, but it translates its markup only outside Korean, so a Korean
+ * menu kept rhwp's "찾기(F)" and "필드 입력". Only the element's own text changes: an icon or a
+ * shortcut beside it stays.
+ */
+export function showCorrectedLabels(doc, locale) {
+  const column = LOCALE_COLUMN[locale] ?? 1
+  for (const [key, words] of Object.entries(UX_CORRECTIONS)) {
+    for (const el of doc.querySelectorAll(`[data-i18n="${key}"]`)) {
+      const texts = [...el.childNodes].filter(
+        (node) => node.nodeType === 3 && (node.nodeValue ?? '').trim() !== '',
+      )
+      if (texts.length === 0) el.prepend(doc.createTextNode(words[column]))
+      else {
+        texts[0].nodeValue = words[column]
+        for (const extra of texts.slice(1)) extra.nodeValue = ''
+      }
+    }
+  }
+}
+
+/**
+ * The studio's menus as the 0.17 UI/UX review v2 left them (hwp-design #14, #23):
+ * - 문서 이력 관리 (and 문서 비교) sat in the middle of the find items of the Edit menu and of
+ *   the toolbar's find button: they go to the Tools menu, above 환경 설정.
+ * - View > 테마 offered its own light/dark and skins beside the app's theme, which the app
+ *   already hands to the editor: it goes, with the separator before it.
+ * Running it again changes nothing.
+ */
+export function tidyStudioMenus(doc) {
+  const tools = doc.querySelector('.menu-item[data-menu="tool"] .menu-dropdown')
+  const moved = ['edit:compare-documents', 'edit:document-history']
+    .map((id) => doc.querySelector(`.menu-item[data-menu="edit"] .md-item[data-cmd="${id}"]`))
+    .filter(Boolean)
+  if (tools && moved.length > 0) {
+    const sep = doc.createElement('div')
+    sep.className = 'md-sep'
+    tools.prepend(...moved, sep)
+  }
+  for (const item of doc.querySelectorAll('.tb-split-item[data-cmd="edit:document-history"]')) {
+    item.remove()
+  }
+  const theme = doc.querySelector('[data-cmd="view:theme-system"]')?.closest('.md-sub')
+  if (theme) {
+    const before = theme.previousElementSibling
+    if (before?.classList.contains('md-sep')) before.remove()
+    theme.remove()
   }
 }
 

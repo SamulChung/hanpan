@@ -1,0 +1,196 @@
+/**
+ * 0.17 UI/UX review v2 (hwp-design): the build patches of scripts/studio-ux-patches.mjs, applied
+ * to the studio source the build fetched.
+ */
+import { existsSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { JSDOM } from 'jsdom'
+import { describe, expect, it } from 'vitest'
+import { showCorrectedLabels, tidyStudioMenus } from '../studio-plugin/hancom-keys.mjs'
+import { DIALOG_THEME_CSS } from '../studio-plugin/dialog-theme.mjs'
+import { STUDIO_PATCHES, applyPatch, patchTargets } from '../scripts/rhwp-patches.mjs'
+import { UX_PATCHES } from '../scripts/studio-ux-patches.mjs'
+
+const core = JSON.parse(
+  readFileSync(join(__dirname, '..', '..', '..', 'vendor', 'rhwp-core', 'package.json'), 'utf8'),
+)
+const studio = join(
+  __dirname,
+  '..',
+  'node_modules',
+  '.cache',
+  'rhwp-studio',
+  core.rhwp.tag,
+  'rhwp-studio',
+)
+const fetched = existsSync(studio)
+
+/** The file as the build compiles it: every studio patch that targets it, in build order. */
+function patched(file: string): string {
+  const path = join(studio, file)
+  let code = readFileSync(path, 'utf8')
+  for (const name of STUDIO_PATCHES) {
+    if (patchTargets(name, path)) code = applyPatch(name, code)
+  }
+  return code
+}
+
+describe('the UX patches', () => {
+  it('are all in the studio build', () => {
+    for (const name of Object.keys(UX_PATCHES)) expect(STUDIO_PATCHES, name).toContain(name)
+  })
+})
+
+describe.skipIf(!fetched)('the document history dialog (#4, #10)', () => {
+  const code = () => patched('src/ui/history-dialog.ts')
+
+  it('shows a note while nothing is saved', () => {
+    expect(code()).toContain("t('hanpan.history.empty')")
+  })
+
+  it('turns the buttons for a chosen entry off until one is chosen', () => {
+    const c = code()
+    expect(c).toContain('this.syncButtons();')
+    expect(c).toMatch(/for \(const btn of this\.chosenButtons\) btn\.disabled = !this\.selectedId;/)
+    expect(c).toContain('this.clearAllButton.disabled = this.entries.length === 0;')
+  })
+
+  it('closes with Esc, and stops listening when closed', () => {
+    const c = code()
+    expect(c).toContain("document.addEventListener('keydown', this.onEscape, true);")
+    expect(c).toContain("document.removeEventListener('keydown', this.onEscape, true);")
+    expect(c).toMatch(/if \(e\.key !== 'Escape'\) return;/)
+  })
+})
+
+describe.skipIf(!fetched)('Esc on the dialogs that missed it (#10)', () => {
+  it('reaches the paragraph shape dialog: it takes the focus when it opens', () => {
+    const c = patched('src/ui/para-shape-dialog.ts')
+    expect(c).toContain('this.dialog.tabIndex = -1;')
+    expect(c).toContain('this.dialog.focus({ preventScroll: true })')
+  })
+
+  it('reaches the table grid picker: it takes the focus when it opens', () => {
+    const c = patched('src/ui/table-create-dialog.ts')
+    expect(c).toContain('this.popup.focus({ preventScroll: true })')
+  })
+})
+
+describe.skipIf(!fetched)('the preferences dialog (#5)', () => {
+  it('leaves out the PDF section: the app writes PDFs itself, the browser print guide never shows', () => {
+    const c = patched('src/ui/options-dialog.ts')
+    expect(c).not.toContain('    panel.appendChild(pdfSection);')
+  })
+})
+
+describe('the studio menus (#14, #23)', () => {
+  const page = () =>
+    new JSDOM(
+      [
+        '<div class="menu-item" data-menu="edit"><div class="menu-dropdown">',
+        '<div class="md-item" data-cmd="edit:find"></div>',
+        '<div class="md-item" data-cmd="edit:compare-documents"></div>',
+        '<div class="md-item" data-cmd="edit:document-history"></div>',
+        '<div class="md-item" data-cmd="edit:find-replace"></div>',
+        '</div></div>',
+        '<div class="menu-item" data-menu="view"><div class="menu-dropdown">',
+        '<div class="md-item" data-cmd="view:zoom-in"></div><div class="md-sep"></div>',
+        '<div class="md-sub"><span class="md-label">테마</span><div class="md-sub-panel">',
+        '<div class="md-item" data-cmd="view:theme-system"></div><div class="md-item" data-cmd="view:skin-flat"></div>',
+        '</div></div><div class="md-sep"></div><div class="md-item" data-cmd="view:ctrl-mark"></div>',
+        '</div></div>',
+        '<div class="menu-item" data-menu="tool"><div class="menu-dropdown">',
+        '<div class="md-item" data-cmd="tool:options"></div>',
+        '</div></div>',
+        '<div class="tb-split-menu"><button class="tb-split-item" data-cmd="edit:find"></button>',
+        '<button class="tb-split-item" data-cmd="edit:document-history"></button>',
+        '<button class="tb-split-item" data-cmd="edit:find-replace"></button></div>',
+      ].join(''),
+    ).window.document
+
+  const cmds = (doc: Document, selector: string) =>
+    [...doc.querySelectorAll(`${selector} > *`)].map(
+      (el) => (el as HTMLElement).dataset.cmd ?? el.className,
+    )
+
+  it('move the document history out of the find items, to the Tools menu', () => {
+    const doc = page()
+    tidyStudioMenus(doc)
+    expect(cmds(doc, '[data-menu="edit"] .menu-dropdown')).toEqual([
+      'edit:find',
+      'edit:find-replace',
+    ])
+    expect(cmds(doc, '[data-menu="tool"] .menu-dropdown')).toEqual([
+      'edit:compare-documents',
+      'edit:document-history',
+      'md-sep',
+      'tool:options',
+    ])
+    expect(cmds(doc, '.tb-split-menu')).toEqual(['edit:find', 'edit:find-replace'])
+  })
+
+  it("drop the editor's own theme menu: the tab follows the app's theme", () => {
+    const doc = page()
+    tidyStudioMenus(doc)
+    expect(doc.querySelector('[data-cmd="view:theme-system"]')).toBeNull()
+    expect(cmds(doc, '[data-menu="view"] .menu-dropdown')).toEqual([
+      'view:zoom-in',
+      'md-sep',
+      'view:ctrl-mark',
+    ])
+  })
+
+  it('change nothing the second time', () => {
+    const doc = page()
+    tidyStudioMenus(doc)
+    const once = doc.body.innerHTML
+    tidyStudioMenus(doc)
+    expect(doc.body.innerHTML).toBe(once)
+  })
+})
+
+describe('menu items that are on (#29)', () => {
+  it('show a pressed box at their icon, or a check where they have none', () => {
+    const css = DIALOG_THEME_CSS.replace(/\s+/g, ' ')
+    expect(css).toContain('.menu-dropdown .md-item:is(.active, [aria-checked="true"]) > .md-icon')
+    expect(css).toContain(
+      '.menu-dropdown .md-item[aria-checked="true"]:not(:has(> .md-icon))::before',
+    )
+  })
+})
+
+describe('corrected menu names in the page markup (#21, #23)', () => {
+  // the studio translates its markup only outside Korean, so the Korean menu kept "찾기(F)"
+  it('replace the text the markup carries, keeping the shortcut beside it', () => {
+    const doc = new JSDOM(
+      [
+        '<div class="md-item" data-cmd="edit:find"><span class="md-icon"></span>',
+        '<span class="md-label" data-i18n="command.edit.find.label">찾기(F)</span>',
+        '<span class="md-shortcut">Ctrl+F</span></div>',
+        '<button class="tb-split-item" data-i18n="command.edit.find.splitLabel">찾기(F) <span class="tb-split-shortcut">Ctrl+F</span></button>',
+        '<span class="md-label" data-i18n="command.insert.field.label">필드 입력</span>',
+      ].join(''),
+    ).window.document
+    showCorrectedLabels(doc, 'ko')
+    expect(doc.querySelector('.md-label')?.textContent).toBe('찾기')
+    expect(doc.querySelector('.md-shortcut')?.textContent).toBe('Ctrl+F')
+    const split = doc.querySelector('.tb-split-item')!
+    expect(split.textContent).toBe('찾기 Ctrl+F')
+    expect(split.querySelector('.tb-split-shortcut')).not.toBeNull()
+    expect(doc.querySelector('[data-i18n="command.insert.field.label"]')?.textContent).toBe(
+      '누름틀 넣기',
+    )
+    showCorrectedLabels(doc, 'vi')
+    expect(doc.querySelector('.md-label')?.textContent).toBe('Tìm')
+  })
+})
+
+describe.skipIf(!fetched)('the status bar after Save As (#7)', () => {
+  it('names the file the document was saved under', () => {
+    const c = patched('src/main.ts')
+    const save = c.slice(c.indexOf('async function completeHostSave'))
+    expect(save.slice(0, 600)).toContain(
+      "sbMessage().textContent = t('ui.sbMessage.filePages', { p1: wasm.fileName, p2: wasm.pageCount });",
+    )
+  })
+})
