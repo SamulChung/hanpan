@@ -46,6 +46,12 @@ export const ru = {
   saveFailed: 'Не удалось сохранить: {error}',
   saveFailedStatus: 'Не удалось сохранить',
   exportFailed: 'Не удалось экспортировать',
+  exportDone: 'Exported: {name}',
+  exportOpen: 'Открыть',
+  exportReveal: 'Открыть папку',
+  scriptsBlocked: 'This file\'s scripts were not run.',
+  scriptsRun: 'Run scripts',
+  scriptsRunTip: 'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: 'Не удалось напечатать: {error}',
   exportHtmlSkipped:
     'Экспортировано, но {count} ресурс(ов) не удалось встроить (например, {first})',

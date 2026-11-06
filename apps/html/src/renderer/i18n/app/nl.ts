@@ -46,6 +46,12 @@ export const nl = {
   saveFailed: 'Opslaan mislukt: {error}',
   saveFailedStatus: 'Opslaan mislukt',
   exportFailed: 'Exporteren mislukt',
+  exportDone: 'Exported: {name}',
+  exportOpen: 'Openen',
+  exportReveal: 'Map openen',
+  scriptsBlocked: 'This file\'s scripts were not run.',
+  scriptsRun: 'Run scripts',
+  scriptsRunTip: 'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: 'Afdrukken mislukt: {error}',
   exportHtmlSkipped:
     'Geëxporteerd, maar {count} bron(nen) konden niet worden ingesloten (bijv. {first})',

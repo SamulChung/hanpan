@@ -45,6 +45,12 @@ export const pt = {
   saveFailed: 'Falha ao salvar: {error}',
   saveFailedStatus: 'Falha ao salvar',
   exportFailed: 'Falha na exportação',
+  exportDone: 'Exported: {name}',
+  exportOpen: 'Abrir',
+  exportReveal: 'Abrir pasta',
+  scriptsBlocked: 'This file\'s scripts were not run.',
+  scriptsRun: 'Run scripts',
+  scriptsRunTip: 'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: 'Falha ao imprimir: {error}',
   exportHtmlSkipped:
     'Exportado, mas {count} recurso(s) não puderam ser incorporados (ex.: {first})',

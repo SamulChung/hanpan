@@ -40,7 +40,7 @@ import {
   type SourceEditorHandle,
 } from './source/SourceEditor'
 import { PreviewFrame, type PreviewFrameHandle } from './preview/PreviewFrame'
-import { instrumentForPreview } from './preview/instrument'
+import { hasDocumentScripts, instrumentForPreview } from './preview/instrument'
 import { probePages } from './preview/page-probe'
 import { PageRail, usePageThumbs } from './preview/PageRail'
 import { SlideRail } from './preview/SlideRail'
@@ -86,6 +86,7 @@ import {
   type InsertKind,
 } from './document/insert-presets'
 import { isDocEmpty } from './document/blank'
+import { exportedFileLabel } from './export-offer'
 import { EmptyPageHint } from './components/EmptyPageHint'
 import { documentSkeleton, starterDocument } from './document/skeleton'
 import { pageAtScroll, readPageSetup, sheetPeriod } from './document/page-setup'
@@ -260,6 +261,11 @@ export default function App() {
   )
   const [panelDismissedSid, setPanelDismissedSid] = useState<number | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
+  /** the opened file's scripts are held back in the preview until "Run scripts" */
+  const [scriptsBlocked, setScriptsBlocked] = useState(false)
+  const scriptsBlockedRef = useRef(false)
+  /** Open / Open folder for the last export, while its status line is showing */
+  const [exportOffer, setExportOffer] = useState<{ path: string; message: string } | null>(null)
   /** a resize / reorder drag is in progress inside the frame: the floating chrome would only get in the way */
   const [dragging, setDragging] = useState(false)
   /** freshly inserted text element: opens for typing once the reloaded frame reports ready */
@@ -369,9 +375,16 @@ export default function App() {
         const doc = parseDocText(raw)
         envelopeRef.current = doc.envelope
         textRef.current = doc.text
+        // a file from disk (a mail attachment, a download) does not run its scripts in the
+        // preview until the user says so; pages made here (new, AI, template) do
+        const blockScripts = (pending !== null || recovered !== null) && hasDocumentScripts(doc.text)
+        scriptsBlockedRef.current = blockScripts
+        setScriptsBlocked(blockScripts)
         // the frame must never race the first push: serve the buffer before the URL is known to React
         const map0 = getMap()
-        window.htmlApi.updatePreview(instrumentForPreview(doc.text, map0, inspectorSource))
+        window.htmlApi.updatePreview(
+          instrumentForPreview(doc.text, map0, inspectorSource, { blockScripts }),
+        )
         pushedTextRef.current = doc.text
         pushedVersionRef.current = map0.version
         frameVersionsRef.current = new Set([map0.version])
@@ -415,7 +428,11 @@ export default function App() {
       }
       if (pushedTextRef.current === nextText) return
       const map = getMap()
-      window.htmlApi.updatePreview(instrumentForPreview(nextText, map, inspectorSource))
+      window.htmlApi.updatePreview(
+        instrumentForPreview(nextText, map, inspectorSource, {
+          blockScripts: scriptsBlockedRef.current,
+        }),
+      )
       pushedTextRef.current = nextText
       pushedVersionRef.current = map.version
       setServedVersion(map.version)
@@ -426,6 +443,14 @@ export default function App() {
     },
     [getMap],
   )
+  const allowScripts = () => {
+    scriptsBlockedRef.current = false
+    setScriptsBlocked(false)
+    // serve the same text again, now without the policy, and reload the frame
+    const current = textRef.current
+    pushedTextRef.current = null
+    pushPreview(current)
+  }
   // push the instrumented buffer to html-preview:// and reload the frame, debounced per keystroke
   useEffect(() => {
     if (status !== 'ready' || pushedTextRef.current === text) return
@@ -513,9 +538,11 @@ export default function App() {
 
   useEffect(() => {
     if (!notice) return
-    const id = window.setTimeout(() => setNotice(null), 4000)
+    // an export notice carries Open / Open folder: leave time to reach them
+    const offered = exportOffer !== null && exportOffer.message === notice
+    const id = window.setTimeout(() => setNotice(null), offered ? 20_000 : 4000)
     return () => window.clearTimeout(id)
-  }, [notice])
+  }, [notice, exportOffer])
 
   const refreshHistory = useCallback(() => {
     const editor = editorRef.current
@@ -990,8 +1017,9 @@ export default function App() {
             return
           }
           // the frame has focus, so a ribbon menu never sees this Esc: hand it to the window listeners
-          if (msg.command === 'escape')
+          if (msg.command === 'escape' || msg.command === 'dismiss')
             window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+          if (msg.command === 'dismiss') return
           const sid = selectedSidRef.current
           if (sid === null) return
           const map = getMap()
@@ -1596,6 +1624,11 @@ export default function App() {
         setNotice(
           t('exportHtmlSkipped', { count: result.skipped.length, first: result.skipped[0]! }),
         )
+      } else if ('path' in result && !outPath) {
+        // the tab stays put: the status bar names the file and offers to open it
+        const message = t('exportDone', { name: exportedFileLabel(result.path) })
+        setNotice(message)
+        setExportOffer({ path: result.path, message })
       }
       return !('canceled' in result)
     } finally {
@@ -2207,9 +2240,42 @@ export default function App() {
           <footer className="status-bar">
             <div className="status-left">
               {notice ? (
-                <span className="status-item status-notice">{notice}</span>
+                <span className="status-item status-notice">
+                  {notice}
+                  {exportOffer && exportOffer.message === notice && (
+                    <span className="status-export-actions">
+                      <button
+                        type="button"
+                        className="status-link-btn"
+                        onClick={() => void window.htmlApi.openExported(exportOffer.path)}
+                      >
+                        {t('exportOpen')}
+                      </button>
+                      <button
+                        type="button"
+                        className="status-link-btn"
+                        onClick={() => void window.htmlApi.revealExported(exportOffer.path)}
+                      >
+                        {t('exportReveal')}
+                      </button>
+                    </span>
+                  )}
+                </span>
               ) : (
                 !path && <span className="status-item status-hint">{t('previewNeedsSave')}</span>
+              )}
+              {scriptsBlocked && (
+                <span className="status-item status-scripts" data-hanpan="scripts-blocked">
+                  {t('scriptsBlocked')}
+                  <button
+                    type="button"
+                    className="status-link-btn"
+                    data-tip={t('scriptsRunTip')}
+                    onClick={allowScripts}
+                  >
+                    {t('scriptsRun')}
+                  </button>
+                </span>
               )}
             </div>
             <div className="status-right">
