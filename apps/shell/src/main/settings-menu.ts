@@ -35,11 +35,18 @@ export function settingsMenuLabel(lang: string): string {
   return LABELS[tag] ?? LABELS[tag.split('-')[0]!] ?? LABELS.en!
 }
 
-export function settingsMenuItem(lang: string, open: () => void): MenuItemConstructorOptions {
+/**
+ * `onHome`: the Ctrl+, hint shows only where the key opens Settings (Home and
+ * the strip); in an editor Word keeps Ctrl+, for subscript (0.17 리뷰 v2 shell #21).
+ */
+export function settingsMenuItem(
+  lang: string,
+  open: () => void,
+  onHome = true,
+): MenuItemConstructorOptions {
   return {
     label: settingsMenuLabel(lang),
-    accelerator: 'CmdOrCtrl+,',
-    registerAccelerator: false,
+    ...(onHome ? { accelerator: 'CmdOrCtrl+,', registerAccelerator: false } : {}),
     click: () => open(),
   }
 }

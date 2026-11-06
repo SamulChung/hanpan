@@ -1829,9 +1829,9 @@ const tMain = createI18n({
     menuClose: '닫기',
     menuEdit: '편집',
     menuView: '보기',
-    menuUiZoomIn: 'UI 확대',
-    menuUiZoomOut: 'UI 축소',
-    menuUiZoomReset: 'UI 배율을 100%로 다시 설정',
+    menuUiZoomIn: '화면 크게',
+    menuUiZoomOut: '화면 작게',
+    menuUiZoomReset: '화면 크기 원래대로(100%)',
     menuWindow: '창',
     menuHome: '홈',
     backToHome: '홈으로 돌아가기',
@@ -7954,8 +7954,18 @@ function registerTabsIpc(): void {
       ...(front ? [sendToAppItemFor(front, !!tabManager?.canDetachTab(front.id))] : []).filter(
         (item): item is MenuItemConstructorOptions => item !== null,
       ),
+      // 내 양식으로 저장… here too, as in the tab menu (0.17 리뷰 v2 shell #21)
+      ...(front && (front.kind === 'docs' || front.kind === 'hwp')
+        ? [
+            {
+              label: tm('menuTabSaveMyForm'),
+              enabled: !!front.filePath,
+              click: () => tabMenuActions().saveMyForm(front.id),
+            },
+          ]
+        : []),
       { type: 'separator' },
-      settingsMenuItem(currentLang(), () => openSettingsFromMenu()),
+      settingsMenuItem(currentLang(), () => openSettingsFromMenu(), front?.kind === 'home'),
     )
     Menu.buildFromTemplate(appMenuPopupTemplate(menus, appMenuLabels(currentLang()))).popup({
       window: shellWindow,
@@ -8228,8 +8238,9 @@ function buildHomeMenu(): void {
         },
       ],
     },
-    viewMenuTemplate(),
+    // File, Edit, View: the order every editor's menu uses (0.17 리뷰 v2 shell #21)
     editMenuTemplate(process.platform, appMenuLabels(currentLang())),
+    viewMenuTemplate(),
     windowMenuTemplate(process.platform, appMenuLabels(currentLang())),
     {
       role: 'help',
