@@ -586,6 +586,27 @@ describe('the studio source the build fetched', () => {
     'src/ui/toolbar.ts',
     'src/ui/about-dialog.ts',
     'src/ui/page-setup-dialog.ts',
+    // studio text moved to app keys (scripts/studio-dialog-text.mjs)
+    'src/ui/bookmark-dialog.ts',
+    'src/ui/cell-border-bg-dialog.ts',
+    'src/ui/char-shape-dialog.ts',
+    'src/ui/chart-data-dialog.ts',
+    'src/ui/compare-dialog.ts',
+    'src/ui/compare-result-window.ts',
+    'src/ui/equation-props-dialog.ts',
+    'src/ui/field-insert-dialog.ts',
+    'src/ui/font-set-edit-dialog.ts',
+    'src/ui/formula-dialog.ts',
+    'src/ui/history-dialog.ts',
+    'src/ui/hml-import-warning-message.ts',
+    'src/ui/hml-save-format-message.ts',
+    'src/ui/hyperlink-dialog.ts',
+    'src/ui/options-dialog.ts',
+    'src/ui/page-border-dialog.ts',
+    'src/ui/style-dialog.ts',
+    'src/ui/style-edit-dialog.ts',
+    'src/ui/table-cell-props-dialog.ts',
+    'src/ui/table-row-column-dialog.ts',
   ].map((file) => join(studio, file))
 
   // only where a build has fetched it; a fresh checkout has nothing to look at
@@ -612,6 +633,26 @@ describe('the studio source the build fetched', () => {
       .map((file) => readFileSync(join(commands, file), 'utf8'))
       .join('\n')
     expect(missingHancomCommands(sources)).toEqual([])
+  })
+})
+
+describe('a patch edit that names a count', () => {
+  it('replaces every occurrence when there are exactly that many', () => {
+    const code = [
+      "    this.guideInput.value = '입력하세요';",
+      '    this.guideInput.maxLength = 10;',
+      "    this.guideInput.value = '입력하세요';",
+    ].join(String.fromCharCode(10))
+    const next = applyPatch('studio-text-field-insert-dialog', code)
+    expect(next).not.toContain('입력하세요')
+    expect(next.match(/hanpan\.field\.defaultGuide/g)).toHaveLength(2)
+  })
+
+  it('stops the build when the count differs (the upstream source changed)', () => {
+    const one = "    this.guideInput.value = '입력하세요';"
+    expect(() => applyPatch('studio-text-field-insert-dialog', one)).toThrow(
+      /upstream source changed/,
+    )
   })
 })
 

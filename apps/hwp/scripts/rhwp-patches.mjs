@@ -122,9 +122,16 @@
  *   stayed Korean in an English or Vietnamese tab. They ask the catalogs for the app's own
  *   keys instead (APP_STRINGS in studio-plugin/studio-locales.mjs, registered with every
  *   language by studio-locale-register).
+ *
+ * studio-text-<file>
+ *   The other dialogs that write Korean straight into their markup (문서 비교·이력, 수식, 차트
+ *   데이터, 쪽 테두리 …) ask for app keys the same way; one patch per file, in
+ *   studio-dialog-text.mjs. An edit may name a count: it is then found exactly that many times
+ *   and every occurrence is replaced.
  */
 
 import { HANCOM_KEYS_MODULE, studioCommandIds } from '../studio-plugin/hancom-keys.mjs'
+import { DIALOG_TEXT_PATCHES } from './studio-dialog-text.mjs'
 
 /** Must equal RENDERER_SCHEME in packages/electron-utils/src/renderer-scheme.ts. */
 export const APP_SCHEME = 'genoffice-app'
@@ -145,6 +152,7 @@ export const FORMAT_COPY_MODULE = '@ieum/format-copy'
 export const STUDIO_LOCALES_MODULE = '@ieum/studio-locales'
 
 const PATCHES = {
+  ...DIALOG_TEXT_PATCHES,
   'sdk-scheme': {
     file: /[\\/]@rhwp[\\/]editor[\\/]transport\.js$/,
     find: "if (targetUrl.protocol !== 'http:' && targetUrl.protocol !== 'https:') {",
@@ -1029,6 +1037,8 @@ export const STUDIO_PATCHES = /** @type {const} */ ([
   'studio-about-hanpan',
   'studio-page-setup-labels',
   'studio-input-aria-label',
+  // after studio-style-display-names, which also patches toolbar.ts
+  ...Object.keys(DIALOG_TEXT_PATCHES),
 ])
 
 /** Whether a patch is written against this file. */
@@ -1317,18 +1327,20 @@ export function applyPatch(name, code) {
   // a checkout on Windows may carry CRLF; the patches are written with LF
   const eol = code.includes('\r\n') ? '\r\n' : '\n'
   // a patch is one replacement, or (edits) several in the same file, each found exactly once
+  // (or, for an edit that names a count, exactly that many times, every one replaced)
   let next = code
   for (const edit of patch.edits ?? [patch]) {
     const find = edit.find.replaceAll('\n', eol)
-    const first = next.indexOf(find)
-    if (first === -1 || next.indexOf(find, first + 1) !== -1) {
+    const count = edit.count ?? 1
+    const parts = next.split(find)
+    if (parts.length - 1 !== count) {
       throw new Error(
-        `rhwp patch ${name}: expected exactly one occurrence of the text to replace; ` +
+        `rhwp patch ${name}: expected ${count === 1 ? 'exactly one occurrence' : `exactly ${count} occurrences`} of the text to replace; ` +
           'the upstream source changed, review apps/hwp/scripts/rhwp-patches.mjs',
       )
     }
     const replace = edit.replace.replaceAll('\n', eol)
-    next = next.replace(find, () => replace)
+    next = parts.join(replace)
   }
   return next
 }

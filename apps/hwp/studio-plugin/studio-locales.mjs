@@ -9,6 +9,7 @@
  * (studio-locale-register in scripts/rhwp-patches.mjs), so a key a catalog leaves out (the
  * dialogs, in Vietnamese) shows in English, never in Korean.
  */
+import { dialogStrings } from './studio-locales/dialog-strings.mjs'
 import vi from './studio-locales/vi.mjs'
 
 /** Studio languages beyond rhwp's own ko and en. */
@@ -102,7 +103,8 @@ export function aboutText(locale, version) {
  * Text the studio writes straight into its markup instead of asking its catalogs, under keys
  * of the app's own (`hanpan.*`), in Korean, English and every added language. The build
  * registers them with each studio language (studio-locale-register) and patches the studio
- * to ask for them (studio-page-setup-labels, studio-input-aria-label).
+ * to ask for them (studio-page-setup-labels, studio-input-aria-label, and the dialogs' own in
+ * scripts/studio-dialog-text.mjs, whose words are in studio-locales/dialog-strings.mjs).
  */
 export const APP_STRINGS = {
   ko: {
@@ -119,6 +121,7 @@ export const APP_STRINGS = {
     'hanpan.pageSetup.marginFooter': '꼬리말',
     'hanpan.pageSetup.marginGutter': '제본',
     'hanpan.editor.inputLabel': '문서 편집 입력',
+    ...dialogStrings(0),
   },
   en: {
     'hanpan.pageSetup.portrait': 'Portrait',
@@ -134,6 +137,7 @@ export const APP_STRINGS = {
     'hanpan.pageSetup.marginFooter': 'Footer',
     'hanpan.pageSetup.marginGutter': 'Gutter',
     'hanpan.editor.inputLabel': 'Document editing input',
+    ...dialogStrings(1),
   },
   vi: {
     'hanpan.pageSetup.portrait': 'Dọc',
@@ -149,5 +153,6 @@ export const APP_STRINGS = {
     'hanpan.pageSetup.marginFooter': 'Chân trang',
     'hanpan.pageSetup.marginGutter': 'Gáy sách',
     'hanpan.editor.inputLabel': 'Ô nhập chỉnh sửa tài liệu',
+    ...dialogStrings(2),
   },
 }
