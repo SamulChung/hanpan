@@ -615,6 +615,8 @@ export default function App() {
 
   /** Where the presentation is: 0 is the whole map, n the n-th main topic. */
   const presentAt = useRef(0)
+  /** The editor's zoom when the show started, given back when it ends. */
+  const zoomBeforePresent = useRef<number | null>(null)
   const fitPresented = useCallback(() => {
     // the fullscreen bounds arrive after the event, so fit once the view has resized
     presentAt.current = 0
@@ -642,12 +644,24 @@ export default function App() {
   const enterPresent = useCallback(() => {
     // a title still being typed belongs to the map before the chrome goes away
     flushAll()
+    zoomBeforePresent.current = activeController()?.zoom ?? null
     setPresenting(true)
     const root = document.documentElement
     if (!document.fullscreenElement && root.requestFullscreen)
       void root.requestFullscreen().then(fitPresented, fitPresented)
     else fitPresented()
-  }, [flushAll, fitPresented])
+  }, [flushAll, fitPresented, activeController])
+
+  // the show enlarges the map step by step; the editor gets back the zoom it had
+  useEffect(() => {
+    if (presenting) return
+    const scale = zoomBeforePresent.current
+    if (scale === null) return
+    zoomBeforePresent.current = null
+    // leaving full screen resizes the view a moment after the event
+    const timer = window.setTimeout(() => activeController()?.restoreView(scale), 80)
+    return () => window.clearTimeout(timer)
+  }, [presenting, activeController])
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {

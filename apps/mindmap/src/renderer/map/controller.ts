@@ -1095,6 +1095,12 @@ export class MapController {
     this.mind.scaleFit()
   }
 
+  /** Back to the zoom the map had before a presentation, with the map in the middle. */
+  restoreView(scale: number): void {
+    this.mind.scale(Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, scale)))
+    this.mind.toCenter()
+  }
+
   /** How many steps a presentation of this sheet has after the whole map: one per main topic. */
   get presentSteps(): number {
     return this.mind.nodeData.children?.length ?? 0
@@ -1129,7 +1135,9 @@ export class MapController {
     const before = branch.getBoundingClientRect()
     if (before.width === 0 || before.height === 0) return
     // the rectangle is on screen, at the scale the map has now
-    mind.scale(Math.max(ZOOM_MIN, fill(before.width / mind.scaleVal, before.height / mind.scaleVal)))
+    mind.scale(
+      Math.max(ZOOM_MIN, fill(before.width / mind.scaleVal, before.height / mind.scaleVal)),
+    )
     const at = branch.getBoundingClientRect()
     const box = view.getBoundingClientRect()
     mind.move(

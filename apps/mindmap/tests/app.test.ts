@@ -798,7 +798,9 @@ describe('presentation mode', () => {
     await openWith(plainSheet())
     const key = async (name: string): Promise<void> => {
       await act(async () => {
-        window.dispatchEvent(new KeyboardEvent('keydown', { key: name, bubbles: true, cancelable: true }))
+        window.dispatchEvent(
+          new KeyboardEvent('keydown', { key: name, bubbles: true, cancelable: true }),
+        )
       })
       await settle()
     }
@@ -822,6 +824,26 @@ describe('presentation mode', () => {
     await key('Escape')
     expect(container.querySelector('[data-hint="present"]')).toBeNull()
     step.mockRestore()
+  })
+
+  it('ending the show puts the map back at the zoom it had before', async () => {
+    const restore = vi.spyOn(MapController.prototype, 'restoreView')
+    await openWith(plainSheet())
+    await act(async () => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'F5', bubbles: true }))
+    })
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 200))
+    })
+    await act(async () => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    })
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 200))
+    })
+    expect(restore).toHaveBeenCalledTimes(1)
+    expect(typeof restore.mock.calls[0]![0]).toBe('number')
+    restore.mockRestore()
   })
 
   it('F5 while presenting returns to the editor', async () => {
