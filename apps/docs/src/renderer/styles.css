@@ -12756,6 +12756,25 @@ tr > .page-gap-cut {
   overflow-y: auto;
 }
 
+/* Tall dialogs at 1366x768: only the body scrolls, OK/Cancel stay pinned to the
+   bottom edge (the footer covers the modal's bottom padding while it sticks) */
+.table-properties-dialog > .modal-actions,
+.modal.protect-dialog > .modal-actions {
+  position: sticky;
+  bottom: -24px;
+  z-index: 1;
+  margin-bottom: -24px;
+  padding: 12px 0 24px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+/* Korean labels break between words, never mid-word ("배/치") */
+.table-properties-segment span {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
 .table-properties-header {
   display: flex;
   align-items: center;
