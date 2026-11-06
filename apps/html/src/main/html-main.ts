@@ -86,6 +86,7 @@ import {
 } from './asset-mime'
 import { buildPreviewDocument } from './preview-document'
 import { closePromptDocName } from './close-prompt-name'
+import { ExportedFiles } from './exported-files'
 import { confirmOdtReport, exportOdt, odtFilterName } from './odt-export'
 import { inlineImagesForSingleFile, singleFileExportBaseName } from './single-file-html'
 import { registerHtmlHandoffIpc } from './generate-handoff-ipc'
@@ -901,18 +902,23 @@ export function configureHtmlRuntime(paths: RuntimePaths): void {
 
 export { registerPrivilegedSchemes }
 
-/** After a successful Html → PDF export: open the file in a PDF tab (shell)
- * or reveal it in the folder (standalone). Tab-opening failure must not
- * report the export itself as failed — the file is already persisted. */
-function openExportedPdf(path: string): void {
-  // Headless export must stay silent: no tab, no Finder window.
-  if (isHeadlessMode()) return
+/** what each tab exported, for the status bar's Open / Open folder */
+const exportedFiles = new ExportedFiles()
+
+/** The status bar's Open after an export: a PDF in a PDF tab, a Word/ODT file in
+ * a Word tab (shell), anything else (or standalone) with its own program. */
+function openExported(path: string): void {
+  const ext = extname(path).toLowerCase()
   try {
-    if (runtime.openGeneratedPath?.(path)) return
+    if (ext === '.pdf' && runtime.openGeneratedPath?.(path)) return
+    if ((ext === '.docx' || ext === '.odt') && docxExportedHook) {
+      docxExportedHook(path)
+      return
+    }
   } catch (err) {
-    console.warn('[html] Failed to open exported PDF:', err)
+    console.warn('[html] Failed to open exported file:', err)
   }
-  shell.showItemInFolder(path)
+  void shell.openPath(path)
 }
 
 /** Open path per view, queued at tab creation; the renderer consumes it after mount.
@@ -1056,19 +1062,6 @@ export function setHtmlDocxExportedHook(hook: (path: string) => void): void {
 
 export function setHtmlDocxExportPrepareHook(hook: (path: string) => Promise<boolean>): void {
   docxExportPrepareHook = hook
-}
-
-function openExportedDocx(path: string): void {
-  if (isHeadlessMode()) return
-  try {
-    if (docxExportedHook) {
-      docxExportedHook(path)
-      return
-    }
-  } catch (err) {
-    console.warn('[html] Failed to open exported Word file:', err)
-  }
-  shell.showItemInFolder(path)
 }
 
 function exportFileName(suggested: unknown): string {
@@ -1937,7 +1930,8 @@ function registerHtmlIpc(): void {
       try {
         const docx = await renderHtmlDocx(request.html, savePathByWc.get(e.sender.id), workDir)
         await writeFile(picked.filePath, docx)
-        openExportedDocx(picked.filePath)
+        // offered as status-bar Open / Open folder buttons, not opened in a new tab
+        if (!isHeadlessMode()) exportedFiles.remember(e.sender.id, picked.filePath)
         return { ok: true, path: picked.filePath }
       } catch (err) {
         return { ok: false, error: err instanceof Error ? err.message : String(err) }
@@ -1994,7 +1988,7 @@ function registerHtmlIpc(): void {
         prepare: async (path) => !docxExportPrepareHook || docxExportPrepareHook(path),
         write: (path, bytes) => writeFile(path, bytes),
       })
-      if ('path' in outcome) openExportedDocx(outcome.path)
+      if ('path' in outcome && !isHeadlessMode()) exportedFiles.remember(e.sender.id, outcome.path)
       return outcome
     },
   )
@@ -2026,7 +2020,8 @@ function registerHtmlIpc(): void {
       try {
         const docPath = savePathByWc.get(e.sender.id)
         await writeFile(picked.filePath, await renderPrintPdf(request.html, docPath, workDir))
-        openExportedPdf(picked.filePath)
+        // offered as status-bar Open / Open folder buttons, not opened in a new tab
+        if (!isHeadlessMode()) exportedFiles.remember(e.sender.id, picked.filePath)
         return { ok: true, path: picked.filePath }
       } catch (err) {
         return { ok: false, error: err instanceof Error ? err.message : String(err) }
@@ -2068,6 +2063,18 @@ function registerHtmlIpc(): void {
     },
   )
 
+  // status-bar buttons after an export: only for files this tab exported
+  ipcMain.handle(HTML_CHANNELS.openExported, (e, path: unknown) => {
+    if (!exportedFiles.allows(e.sender.id, path)) return false
+    openExported(path)
+    return true
+  })
+  ipcMain.handle(HTML_CHANNELS.revealExported, (e, path: unknown) => {
+    if (!exportedFiles.allows(e.sender.id, path)) return false
+    shell.showItemInFolder(path)
+    return true
+  })
+
   ipcMain.handle(
     HTML_CHANNELS.exportHtml,
     async (e, request: ExportHtmlRequest): Promise<ExportResult> => {
@@ -2099,7 +2106,7 @@ function registerHtmlIpc(): void {
       try {
         const { html, skipped } = await inlineImagesForSingleFile(request.html, docPath)
         await writeFile(picked.filePath, html, 'utf8')
-        if (!isHeadlessMode()) shell.showItemInFolder(picked.filePath)
+        if (!isHeadlessMode()) exportedFiles.remember(e.sender.id, picked.filePath)
         return skipped.length
           ? { ok: true, path: picked.filePath, skipped }
           : { ok: true, path: picked.filePath }
@@ -2167,6 +2174,7 @@ function grantAndTrack(wc: WebContents, openPath?: string | null): void {
     openPathByWc.delete(wcId)
     allowedByWc.delete(wcId)
     savePathByWc.delete(wcId)
+    exportedFiles.forget(wcId)
     dirtyByWc.delete(wcId)
     docDiskStates.delete(wcId)
     previewTextByWc.delete(wcId)
