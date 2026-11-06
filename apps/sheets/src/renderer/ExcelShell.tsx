@@ -4557,7 +4557,7 @@ function NumberFormatSelect({
   readonly pattern: string
   readonly onCommand: (command: string) => void
 }): React.JSX.Element {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const current = categoryOptionForPattern(pattern)
   const localized = (label: string): string => {
     const labelKey = NUMBER_FORMAT_LABEL[label]
@@ -4570,12 +4570,12 @@ function NumberFormatSelect({
       data-tip={pattern || t('dlgFcNumGeneral')}
       value={current}
       display={localized(current)}
-      options={numberFormatCategories().map((category) => ({
+      options={numberFormatCategories(lang).map((category) => ({
         value: category.label,
         label: localized(category.label),
       }))}
       onPick={(value) => {
-        const category = numberFormatCategories().find((candidate) => candidate.label === value)
+        const category = numberFormatCategories(lang).find((candidate) => candidate.label === value)
         if (category) onCommand(`format:${category.pattern}`)
       }}
     />

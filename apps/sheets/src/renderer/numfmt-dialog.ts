@@ -69,8 +69,15 @@ export const DATE_PATTERNS: readonly string[] = [
 /// applied by the ribbon's Short Date category classifies as Date.
 export function datePatterns(lang?: string): readonly string[] {
   const system = getSystemShortDate()
-  const base = lang === 'ko' ? KO_DATE_PATTERNS : DATE_PATTERNS
-  return base.includes(system) ? base : [system, ...base]
+  if (lang === 'ko') {
+    // 한국 지역 PC의 시스템 짧은 날짜(yyyy. m. d.)가 맨 앞을 차지하면 한국식
+    // 긴 날짜가 밀려났다(설치판 점검): 한국어 화면은 한국식을 맨 앞에 두고
+    // 시스템 짧은 날짜는 그다음에 둔다.
+    if (KO_DATE_PATTERNS.includes(system)) return KO_DATE_PATTERNS
+    const [first, ...rest] = KO_DATE_PATTERNS
+    return [first!, system, ...rest]
+  }
+  return DATE_PATTERNS.includes(system) ? DATE_PATTERNS : [system, ...DATE_PATTERNS]
 }
 
 /// 한국어 화면의 날짜 목록: 한국식("2026년 11월 7일")을 앞에, 중국식 年月日은 뺀다.
