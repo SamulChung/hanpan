@@ -1,10 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import {
-  AiConnectGuide,
-  AiMark,
-  aiSubscriptionProviderName,
-  aiSubscriptionText,
-} from '@genoffice/ui'
+import { AiConnectGuide, AiMark, aiSubscriptionProviderName } from '@genoffice/ui'
 import { FREE_AI_PROVIDERS, freeAiConnected } from '@genoffice/ai-provider/browser'
 import appIcon from './assets/app-icon.png'
 import { FirstConnectionDialog } from './FirstConnectionNotice'
@@ -89,7 +84,8 @@ export function Onboarding({
   ]
 
   const titles: Record<OnboardingStepId, string> = {
-    welcome: t('onbTitle1'),
+    // Hanpan's own copy (hanpan/strings.json): what Hanpan is, AI by account login or the PC model
+    welcome: t('hpOnbTitle'),
     connect: t('onbConnectTitle'),
     done: t('onbDoneTitle'),
   }
@@ -176,15 +172,15 @@ export function Onboarding({
     if (step === 'welcome') {
       return (
         <>
-          <p className="onb-subtitle">{t('onbWelcomeSubtitle')}</p>
-          <p className="onb-body">{t('onbWelcomeBody')}</p>
+          <p className="onb-subtitle">{t('hpOnbSubtitle')}</p>
+          <p className="onb-body">{t('hpOnbBody')}</p>
         </>
       )
     }
     if (step === 'connect') {
       return (
         <>
-          <p className="onb-body onb-body-lead">{aiSubscriptionText(lang, 'connectBody')}</p>
+          <p className="onb-body onb-body-lead">{t('hpOnbConnectBody')}</p>
           <div className="onb-connect">
             <AiConnectGuide
               statuses={connection.statuses}
@@ -226,9 +222,9 @@ export function Onboarding({
             ? t('onbDoneConnected', {
                 provider: connected.join(' · '),
               })
-            : t('onbDoneNotConnected')}
+            : t('hpOnbDoneNotConnected')}
         </p>
-        <p className="onb-body onb-body-dim">{t('onbBody3')}</p>
+        <p className="onb-body onb-body-dim">{t('hpOnbDoneBody')}</p>
       </>
     )
   }

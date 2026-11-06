@@ -521,6 +521,16 @@ export const strings = {
     onbStart: '开始使用',
     onbStepAria: '第 {n} 页，共 {total} 页',
     onbBody3: '无授权费用，无广告，无水印。',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: '上一步',
     onbConnectTitle: '连接 AI',
     onbConnectSkipNote: '可以跳过这一步，之后在“设置 → AI”中连接。',
@@ -1164,6 +1174,16 @@ export const strings = {
     onbStart: 'Get started',
     onbStepAria: 'Page {n} of {total}',
     onbBody3: 'No license fees. No ads. No watermarks.',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: 'Back',
     onbConnectTitle: 'Connect an AI',
     onbConnectSkipNote: 'You can skip this step and connect later in Settings → AI.',
@@ -1817,6 +1837,16 @@ export const strings = {
     onbStart: 'Bắt đầu',
     onbStepAria: 'Trang {n} / {total}',
     onbBody3: 'Không phí bản quyền. Không quảng cáo. Không hình mờ.',
+    hpOnbTitle: 'Chào mừng đến với Hanpan',
+    hpOnbSubtitle: 'Bộ văn phòng AI tiếng Hàn miễn phí',
+    hpOnbBody:
+      'Soạn tài liệu với AI Word, AI Excel, AI PowerPoint và AI Hangul, và dùng PDF, sơ đồ tư duy, bảng thiết kế, AI Photo và AI Illustration ở cùng một nơi.',
+    hpOnbConnectBody:
+      'AI chạy bằng tài khoản Claude hoặc ChatGPT bạn đăng nhập, hoặc bằng mô hình AI cài trên máy tính này (mô hình PC). Nếu có, Hanpan sẽ tự tìm và kết nối khi khởi động.',
+    hpOnbDoneNotConnected:
+      'AI chưa được kết nối. Bạn có thể đăng nhập tài khoản hoặc kết nối mô hình PC bất cứ lúc nào trong Cài đặt → AI.',
+    hpOnbDoneBody:
+      'Hãy bắt đầu từ sơ đồ tư duy ở Trang chủ: nội dung bạn sắp xếp có thể chuyển tiếp thành báo cáo HWP hoặc bài trình chiếu.',
     onbBack: 'Quay lại',
     onbConnectTitle: 'Kết nối AI',
     onbConnectSkipNote: 'Bạn có thể bỏ qua bước này và kết nối sau trong Cài đặt → AI.',
@@ -2483,6 +2513,16 @@ export const strings = {
     onbStart: 'はじめる',
     onbStepAria: '{total} ページ中 {n} ページ目',
     onbBody3: 'ライセンス料なし、広告なし、透かしなし。',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: '戻る',
     onbConnectTitle: 'AI を接続',
     onbConnectSkipNote: 'この手順はスキップして、あとで「設定 → AI」から接続できます。',
@@ -3140,6 +3180,16 @@ export const strings = {
     onbStart: '시작하기',
     onbStepAria: '총 {total}페이지 중 {n}페이지',
     onbBody3: '라이선스 비용 없음, 광고 없음, 워터마크 없음.',
+    hpOnbTitle: '한판에 오신 것을 환영합니다',
+    hpOnbSubtitle: '무료로 쓰는 한국어 AI 오피스',
+    hpOnbBody:
+      'AI 워드·AI 엑셀·AI 파워포인트·AI 한글로 문서를 만들고, PDF·마인드맵·디자인 보드·AI 포토·AI 일러스트까지 한곳에서 씁니다.',
+    hpOnbConnectBody:
+      'AI는 쓰고 있는 Claude·ChatGPT 계정으로 로그인하거나, 이 PC에 설치된 AI 모델(PC 모델)로 씁니다. PC 모델이 있으면 한판이 켤 때 찾아서 연결합니다.',
+    hpOnbDoneNotConnected:
+      '아직 AI가 연결되지 않았습니다. 설정 → AI에서 언제든 계정으로 로그인하거나 PC 모델을 연결할 수 있습니다.',
+    hpOnbDoneBody:
+      '홈의 마인드맵에서 시작해 보세요. 정리한 내용을 한글 보고서나 발표 자료로 이어서 만들 수 있습니다.',
     onbBack: '이전',
     onbConnectTitle: 'AI 연결',
     onbConnectSkipNote: '이 단계는 건너뛰고 나중에 설정 → AI에서 연결해도 됩니다.',
@@ -3810,6 +3860,16 @@ export const strings = {
     onbStart: 'Commencer',
     onbStepAria: 'Page {n} sur {total}',
     onbBody3: 'Pas de licence. Pas de publicité. Pas de filigrane.',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: 'Retour',
     onbConnectTitle: 'Connectez une IA',
     onbConnectSkipNote:
@@ -4488,6 +4548,16 @@ export const strings = {
     onbStart: 'Loslegen',
     onbStepAria: 'Seite {n} von {total}',
     onbBody3: 'Keine Lizenzgebühren. Keine Werbung. Keine Wasserzeichen.',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: 'Zurück',
     onbConnectTitle: 'KI verbinden',
     onbConnectSkipNote:
@@ -5165,6 +5235,16 @@ export const strings = {
     onbStart: 'Empezar',
     onbStepAria: 'Página {n} de {total}',
     onbBody3: 'Sin licencias. Sin anuncios. Sin marcas de agua.',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: 'Atrás',
     onbConnectTitle: 'Conecta una IA',
     onbConnectSkipNote: 'Puedes omitir este paso y conectarla más tarde en Configuración → IA.',
@@ -5818,6 +5898,16 @@ export const strings = {
     onbStart: 'เริ่มใช้งาน',
     onbStepAria: 'หน้า {n} จาก {total}',
     onbBody3: 'ไม่มีค่าลิขสิทธิ์ ไม่มีโฆษณา ไม่มีลายน้ำ',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: 'ย้อนกลับ',
     onbConnectTitle: 'เชื่อมต่อ AI',
     onbConnectSkipNote: 'คุณสามารถข้ามขั้นตอนนี้แล้วเชื่อมต่อภายหลังได้ที่ การตั้งค่า → AI',
@@ -6481,6 +6571,16 @@ export const strings = {
     onbStart: 'Mulai',
     onbStepAria: 'Halaman {n} dari {total}',
     onbBody3: 'Tanpa biaya lisensi. Tanpa iklan. Tanpa watermark.',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: 'Kembali',
     onbConnectTitle: 'Hubungkan AI',
     onbConnectSkipNote:
@@ -7150,6 +7250,16 @@ export const strings = {
     onbStart: 'Начать',
     onbStepAria: 'Страница {n} из {total}',
     onbBody3: 'Без лицензий. Без рекламы. Без водяных знаков.',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: 'Назад',
     onbConnectTitle: 'Подключите ИИ',
     onbConnectSkipNote:
@@ -7806,6 +7916,16 @@ export const strings = {
     onbStart: 'ابدأ الآن',
     onbStepAria: 'الصفحة {n} من {total}',
     onbBody3: 'بلا رسوم ترخيص، بلا إعلانات، بلا علامات مائية.',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: 'رجوع',
     onbConnectTitle: 'اربط ذكاءً اصطناعيًا',
     onbConnectSkipNote: 'يمكنك تخطي هذه الخطوة والربط لاحقًا من الإعدادات ← الذكاء الاصطناعي.',
@@ -8466,6 +8586,16 @@ export const strings = {
     onbStart: 'Começar',
     onbStepAria: 'Página {n} de {total}',
     onbBody3: "Sem licenças. Sem anúncios. Sem marcas d'água.",
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: 'Voltar',
     onbConnectTitle: 'Conecte uma IA',
     onbConnectSkipNote: 'Você pode pular esta etapa e conectar depois em Configurações → IA.',
@@ -9127,6 +9257,16 @@ export const strings = {
     onbStart: 'Inizia',
     onbStepAria: 'Pagina {n} di {total}',
     onbBody3: 'Nessuna licenza. Nessuna pubblicità. Nessuna filigrana.',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: 'Indietro',
     onbConnectTitle: 'Collega un’IA',
     onbConnectSkipNote:
@@ -9786,6 +9926,16 @@ export const strings = {
     onbStart: 'Rozpocznij',
     onbStepAria: 'Strona {n} z {total}',
     onbBody3: 'Bez opłat licencyjnych. Bez reklam. Bez znaków wodnych.',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: 'Wstecz',
     onbConnectTitle: 'Połącz AI',
     onbConnectSkipNote:
@@ -10393,6 +10543,16 @@ export const strings = {
     onbStart: 'Začít',
     onbStepAria: 'Stránka {n} z {total}',
     onbBody3: 'Žádné licenční poplatky. Žádné reklamy. Žádné vodoznaky.',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: 'Zpět',
     onbConnectTitle: 'Připojte AI',
     onbConnectSkipNote: 'Tento krok můžete přeskočit a připojit se později v Nastavení → AI.',
@@ -11098,6 +11258,16 @@ export const strings = {
     onbStart: 'Aan de slag',
     onbStepAria: 'Pagina {n} van {total}',
     onbBody3: 'Geen licentiekosten. Geen advertenties. Geen watermerken.',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: 'Terug',
     onbConnectTitle: 'Verbind een AI',
     onbConnectSkipNote: 'Je kunt deze stap overslaan en later verbinden via Instellingen → AI.',
@@ -11760,6 +11930,16 @@ export const strings = {
     onbStart: 'Mula',
     onbStepAria: 'Halaman {n} daripada {total}',
     onbBody3: 'Tiada yuran lesen. Tiada iklan. Tiada tera air.',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: 'Kembali',
     onbConnectTitle: 'Sambungkan AI',
     onbConnectSkipNote: 'Anda boleh langkau langkah ini dan menyambung kemudian di Tetapan → AI.',
@@ -12402,6 +12582,16 @@ export const strings = {
     onbStart: 'להתחיל',
     onbStepAria: 'עמוד {n} מתוך {total}',
     onbBody3: 'ללא דמי רישיון, ללא פרסומות, ללא סימני מים.',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: 'חזרה',
     onbConnectTitle: 'חיבור AI',
     onbConnectSkipNote: 'אפשר לדלג על השלב הזה ולהתחבר מאוחר יותר דרך הגדרות ← AI.',
@@ -13049,6 +13239,16 @@ export const strings = {
     onbStart: 'शुरू करें',
     onbStepAria: 'कुल {total} में से पृष्ठ {n}',
     onbBody3: 'कोई लाइसेंस शुल्क नहीं। कोई विज्ञापन नहीं। कोई वॉटरमार्क नहीं।',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: 'वापस',
     onbConnectTitle: 'AI कनेक्ट करें',
     onbConnectSkipNote: 'आप इस चरण को छोड़कर बाद में सेटिंग्स → AI में कनेक्ट कर सकते हैं।',
@@ -13679,6 +13879,16 @@ export const strings = {
     onbStart: '開始使用',
     onbStepAria: '第 {n} 頁，共 {total} 頁',
     onbBody3: '無授權費用，無廣告，無浮水印。',
+    hpOnbTitle: 'Welcome to Hanpan',
+    hpOnbSubtitle: 'A free Korean AI office suite',
+    hpOnbBody:
+      'Make documents with AI Word, AI Excel, AI PowerPoint and AI Hangul, and work with PDF, mind maps, the design board, AI Photo and AI Illustration in one place.',
+    hpOnbConnectBody:
+      'AI runs on the Claude or ChatGPT account you sign in with, or on an AI model installed on this PC (the PC model). If there is one, Hanpan finds and connects it when it starts.',
+    hpOnbDoneNotConnected:
+      'AI is not connected yet. You can sign in with an account or connect a PC model any time in Settings → AI.',
+    hpOnbDoneBody:
+      'Start from a mind map on Home: what you sort out there carries on into an HWP report or a slide deck.',
     onbBack: '上一步',
     onbConnectTitle: '連接 AI',
     onbConnectSkipNote: '可以略過這個步驟，之後在「設定 → AI」中連接。',
