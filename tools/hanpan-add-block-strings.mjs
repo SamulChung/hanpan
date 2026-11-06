@@ -9,7 +9,13 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { propertyPattern, quote, replacePlaceholders, valueFor } from './hanpan-strings-core.mjs'
+import {
+  escapeRegExp,
+  propertyPattern,
+  quote,
+  replacePlaceholders,
+  valueFor,
+} from './hanpan-strings-core.mjs'
 
 const BLOCK_START = /^ {2}(?:'([a-zA-Z-]+)'|([a-zA-Z]+)): \{$/
 const BLOCK_END = /^ {2}\},?$/
@@ -19,7 +25,7 @@ const INDENT = ' {4}'
 function insertionPoint(body, afterKey) {
   const found = propertyPattern(afterKey, INDENT).exec(body)
   if (found) return found.index + found[0].length
-  const line = new RegExp(`^ {4}${afterKey}:.*$`, 'm').exec(body)
+  const line = new RegExp(`^ {4}${escapeRegExp(afterKey)}:.*$`, 'm').exec(body)
   return line ? line.index + line[0].length : body.length
 }
 
