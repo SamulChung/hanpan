@@ -342,6 +342,30 @@ describe('blankXlsxBuffer', () => {
     const zip = await JSZip.loadAsync(await blankXlsxBuffer('Sheet1'))
     expect(await zip.file('xl/workbook.xml')?.async('text')).toContain('<sheet name="Sheet1"')
   })
+
+  // the first sheet's name and the Normal font follow the UI language
+  const firstFontOf = async (lang: string) => {
+    const zip = await JSZip.loadAsync(await blankXlsxBuffer(undefined, lang))
+    const styles = (await zip.file('xl/styles.xml')?.async('text')) ?? ''
+    return {
+      workbook: (await zip.file('xl/workbook.xml')?.async('text')) ?? '',
+      font: styles.slice(styles.indexOf('<font>'), styles.indexOf('</font>')),
+    }
+  }
+  it.each([
+    ['ko', '시트1', '맑은 고딕'],
+    ['vi', 'Trang tính1', 'Arial'],
+    ['ja', 'Sheet1', '游ゴシック'],
+    ['zh', 'Sheet1', '等线'],
+    ['zh-TW', '工作表1', '新細明體'],
+    ['en', 'Sheet1', 'Calibri'],
+    ['de', 'Sheet1', 'Calibri'],
+  ])('a %s UI starts with %s in %s', async (lang, sheet, font) => {
+    const { workbook, font: first } = await firstFontOf(lang)
+    expect(workbook).toContain(`<sheet name="${sheet}"`)
+    expect(first).toContain(`<name val="${font}"/>`)
+    expect(first).not.toContain('<scheme')
+  })
 })
 
 describe('sheetCsvToXlsxBuffer (AI create_document)', () => {

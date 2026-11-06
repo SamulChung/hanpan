@@ -6,7 +6,8 @@ import JSZip from 'jszip'
 
 import { encodeXlsxEscapes } from './xlsx-escapes'
 import { DEFAULT_THEME_XML } from './xlsx-default-theme'
-import { MINIMAL_STYLESHEET_XML, NEW_WORKBOOK_STYLESHEET_XML } from './xlsx-default-styles'
+import { MINIMAL_STYLESHEET_XML } from './xlsx-default-styles'
+import { firstSheetNameFor, newWorkbookStylesheetXml } from './new-workbook-lang'
 import { validateSheetName } from './xlsx-sheets'
 
 const DELIMITERS = [',', ';', '\t'] as const
@@ -411,12 +412,15 @@ export async function sheetCsvToXlsxBuffer(csvText: string, sheetName = 'Sheet1'
 }
 
 /**
- * minimal empty workbook: the backing file for a "new blank spreadsheet" tab. It starts in
- * Korean (Hanpan 0.17): the first sheet is 시트1 unless the caller names it, and the Normal
- * font is 맑은 고딕.
+ * minimal empty workbook: the backing file for a "new blank spreadsheet" tab. The first
+ * sheet's name (unless the caller gives one) and the Normal font follow the UI language
+ * (Hanpan 0.17, new-workbook-lang.ts); without a language it starts in Korean: 시트1, 맑은 고딕.
  */
-export async function blankXlsxBuffer(sheetName = '시트1'): Promise<Buffer> {
-  return xlsxBufferFromSheets([{ name: sheetName, rows: [] }], NEW_WORKBOOK_STYLESHEET_XML)
+export async function blankXlsxBuffer(sheetName?: string, lang = 'ko'): Promise<Buffer> {
+  return xlsxBufferFromSheets(
+    [{ name: sheetName ?? firstSheetNameFor(lang), rows: [] }],
+    newWorkbookStylesheetXml(lang),
+  )
 }
 
 export interface MinimalWorksheet {

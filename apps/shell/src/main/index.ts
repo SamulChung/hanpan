@@ -5537,7 +5537,7 @@ async function newSheetTab(recoverAs?: string): Promise<void> {
     // the first Save As starts from the name the file would have had
     markSheetsUnsavedNew(backingPath, suggestedPath, tempDir)
     try {
-      await atomicWriteFile(backingPath, await blankXlsxBuffer())
+      await atomicWriteFile(backingPath, await blankXlsxBuffer(undefined, currentLang()))
     } catch (err) {
       unmarkSheetsUnsavedNew(backingPath)
       throw err
@@ -5550,7 +5550,7 @@ async function newSheetTab(recoverAs?: string): Promise<void> {
   } catch (err) {
     console.warn('[shell] temp workbook create failed, writing to the default folder:', err)
     try {
-      await atomicWriteFile(suggestedPath, await blankXlsxBuffer())
+      await atomicWriteFile(suggestedPath, await blankXlsxBuffer(undefined, currentLang()))
       markSheetsUntitledPath(suggestedPath)
       routeDocumentPath(suggestedPath)
     } catch (fallbackErr) {
@@ -5605,7 +5605,7 @@ function openBlankDocsTabForMcp(): number {
 async function openBlankSheetsTabForMcp(): Promise<number> {
   if (!tabManager) throw new Error('GenOffice is not ready')
   const filePath = uniquePathIn(defaultSaveDir(), `${tm('untitledSheet')}.xlsx`)
-  await atomicWriteFile(filePath, await blankXlsxBuffer())
+  await atomicWriteFile(filePath, await blankXlsxBuffer(undefined, currentLang()))
   const tabId = tabManager.openSheetsTab(filePath)
   const view = tabManager.sheetsTabs().find((t) => t.id === tabId)
   if (!view) {

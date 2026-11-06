@@ -181,6 +181,7 @@ import {
   type CellBounds,
 } from '@genoffice/xlsx-gateway/domain/chart-visual'
 import { InMemoryWorkbookAdapter } from '@genoffice/xlsx-gateway/domain/in-memory-workbook'
+import { isDefaultFirstSheetName } from '@genoffice/xlsx-gateway/gateway/new-workbook-lang'
 import { cfRuleUnsaveableReason, iconSetSaveable } from '@genoffice/xlsx-gateway/gateway/xlsx-cf'
 import { installLazyFindBridge } from './lazy-find'
 import { startFullLoad } from './full-load'
@@ -264,7 +265,7 @@ import {
   EMPTY_CHART_EDITS,
   FILTER_COMMAND_PATTERN,
   FILTER_MUTATIONS,
-  initialSnapshot,
+  initialSnapshotFor,
   MERGE_MUTATIONS,
   MOVE_RANGE_COMMAND,
   RANGE_SHIFT_COMMAND_PATTERN,
@@ -291,7 +292,6 @@ import {
   SORT_COMMAND_PATTERN,
   STRUCTURAL_EDIT_COMMAND_PATTERN,
   STRUCTURE_LOCK_COMMANDS,
-  DEFAULT_FIRST_SHEET_NAME,
 } from './app-constants'
 import {
   fullLoadGate,
@@ -610,7 +610,7 @@ export function App({
 }): React.JSX.Element {
   // Split panes: fallback focus reporting for this screen (decision 0036)
   useSplitPaneFocusPing()
-  const adapterRef = useRef(new InMemoryWorkbookAdapter(initialSnapshot))
+  const adapterRef = useRef(new InMemoryWorkbookAdapter(initialSnapshotFor(getLang())))
   const univerRef = useRef<UniverRuntime | null>(null)
   const lazyWorkbookRef = useRef<LazyWorkbookState | null>(null)
   /// Univer undo/redo stack occupancy (subscribed at mount): drives the QAT button gray states
@@ -2065,7 +2065,7 @@ export function App({
     // lifecycle Rendered, and Excel draws no outline around a filtered range
     installFilterRangeOutlineSuppression(runtime)
     installVeryHiddenSheetGuard(runtime, lazyWorkbookRef)
-    loadSnapshotIntoUniver(runtime, initialSnapshot, 'new-workbook', 'Untitled')
+    loadSnapshotIntoUniver(runtime, initialSnapshotFor(getLang()), 'new-workbook', 'Untitled')
     univerRef.current = runtime
     // The hidden spare can have a canvas/editor before Univer finishes booting.
     // Expose its lifecycle readiness only to explicitly enabled e2e drivers.
@@ -3798,7 +3798,7 @@ export function App({
     const snapshot = adapterRef.current.getSnapshot()
     if (snapshot.sheets.length < 2) return null
     const defaultSheet = snapshot.sheets.find((sheet) => sheet.id === 'sheet-1')
-    if (!defaultSheet || defaultSheet.name !== DEFAULT_FIRST_SHEET_NAME) return null
+    if (!defaultSheet || !isDefaultFirstSheetName(defaultSheet.name)) return null
     if (Object.keys(defaultSheet.cells).length > 0) return null
     if ((defaultSheet.visuals?.length ?? 0) > 0) return null
     const touched =
