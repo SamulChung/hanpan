@@ -11,9 +11,11 @@ import {
   useDismissablePopover,
   useRibbonCollapse,
 } from '@genoffice/ui'
+import { platformShortcuts } from '@genoffice/i18n'
 import { useI18n } from '../i18n/locale'
 import { MARKDOWN_THEME_IDS, type MarkdownTheme } from '../../shared/markdown-theme'
 import type { StringKey } from '../i18n/locale'
+import type { ExportFormat } from '../../shared/ipc'
 import { uiOp, type BlockType, type ListKind, type StylableMark } from '../editor/ops'
 import {
   IconBullets,
@@ -45,6 +47,12 @@ interface Props {
   dirty: boolean
   onSave: () => void
   onSaveAs: () => void
+  /** File menu: the tab bar menu's Open (the shell's open dialog) */
+  onOpen?: () => void
+  /** File menu exports: the same requests the tab bar menu sends (docs = convert and open in Word) */
+  onExport?: (format: ExportFormat) => void
+  /** File menu Print: the same flow as the tab bar menu and Ctrl+P */
+  onPrint?: () => void
   onFind: () => void
   autoSave: boolean
   onToggleAutoSave: (on: boolean) => void
@@ -254,12 +262,101 @@ function IconBtn({
   )
 }
 
+/** File menu exports, in the tab bar menu's order */
+const FILE_EXPORTS: ReadonlyArray<readonly [ExportFormat, StringKey]> = [
+  ['docx', 'fileMenuExportDocx'],
+  ['odt', 'fileMenuExportOdt'],
+  ['pdf', 'fileMenuExportPdf'],
+  ['png', 'fileMenuExportImages'],
+  ['docs', 'fileMenuOpenInDocs'],
+]
+
+/** The on-screen File menu: the tab bar menu's file commands (Hanpan 0.17 #6) */
+function FileMenu(p: {
+  disabled: boolean
+  dirty: boolean
+  onOpen?: () => void
+  onSave: () => void
+  onSaveAs: () => void
+  onExport?: (format: ExportFormat) => void
+  onPrint?: () => void
+}) {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open])
+  const run = (action?: () => void) => () => {
+    setOpen(false)
+    action?.()
+  }
+  const key = (text: string) => <span className="file-menu-key">{platformShortcuts(text)}</span>
+  return (
+    <div className="file-tab-wrap" ref={wrapRef}>
+      <button
+        type="button"
+        className={open ? 'ribbon-tab-file open' : 'ribbon-tab-file'}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={() => setOpen((v) => !v)}
+      >
+        {t('fileMenu')}
+      </button>
+      {open && (
+        <div className="file-menu" role="menu">
+          <button type="button" role="menuitem" onClick={run(p.onOpen)}>
+            {t('fileMenuOpen')} {key('⌘O')}
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            disabled={p.disabled || !p.dirty}
+            onClick={run(p.onSave)}
+          >
+            {t('fileMenuSave')} {key('⌘S')}
+          </button>
+          <button type="button" role="menuitem" disabled={p.disabled} onClick={run(p.onSaveAs)}>
+            {t('fileMenuSaveAs')} {key('⇧⌘S')}
+          </button>
+          <div className="file-menu-sep" role="separator" />
+          {FILE_EXPORTS.map(([format, label]) => (
+            <button
+              key={format}
+              type="button"
+              role="menuitem"
+              disabled={p.disabled}
+              onClick={run(() => p.onExport?.(format))}
+            >
+              {t(label)}
+            </button>
+          ))}
+          <div className="file-menu-sep" role="separator" />
+          <button type="button" role="menuitem" disabled={p.disabled} onClick={run(p.onPrint)}>
+            {t('fileMenuPrint')} {key('⌘P')}
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function Ribbon({
   editor,
   disabled,
   dirty,
   onSave,
   onSaveAs,
+  onOpen,
+  onExport,
+  onPrint,
   onFind,
   autoSave,
   onToggleAutoSave,
@@ -377,6 +474,15 @@ export function Ribbon({
     <div className={`ribbon ${collapse.rootClass}`} ref={collapse.rootRef}>
       {/* quick-access row above the toolbar (save / undo / redo / autosave), same as the docs QAT row */}
       <div className="ribbon-tabs">
+        <FileMenu
+          disabled={disabled}
+          dirty={dirty}
+          onOpen={onOpen}
+          onSave={onSave}
+          onSaveAs={onSaveAs}
+          onExport={onExport}
+          onPrint={onPrint}
+        />
         <button
           type="button"
           className="qa-btn"

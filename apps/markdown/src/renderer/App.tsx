@@ -1362,6 +1362,9 @@ export default function App() {
         dirty={dirty}
         onSave={() => void doSave('save')}
         onSaveAs={() => void doSave('saveAs')}
+        onOpen={() => void window.markdownApi.openFileDialog().catch(() => {})}
+        onExport={(format) => void runExport(format)}
+        onPrint={() => void printDoc()}
         onFind={() => openFind(false)}
         autoSave={autoSave}
         onToggleAutoSave={setAutoSave}

@@ -98,6 +98,7 @@ const api: MarkdownApi = {
     return () => ipcRenderer.removeListener(MARKDOWN_CHANNELS.noteAppendReady, listener)
   },
   openSourcePath: (path: string) => ipcRenderer.invoke('home:open-path', path),
+  openFileDialog: () => ipcRenderer.invoke('app:open-file-dialog'),
   resolveWikiLinks: (request) => ipcRenderer.invoke(MARKDOWN_CHANNELS.resolveWikiLinks, request),
   rememberWikiFragment: (path, fragment) =>
     ipcRenderer.invoke(MARKDOWN_CHANNELS.rememberWikiFragment, path, fragment),

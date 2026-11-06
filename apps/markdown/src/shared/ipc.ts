@@ -324,6 +324,8 @@ export interface MarkdownApi {
   onNoteAppendReady?(handler: () => void): () => void
   /** open any shell-routed document path (an AI answer's filenav citation) */
   openSourcePath(path: string): Promise<void>
+  /** File menu Open: the shell's open dialog (the same as the tab bar menu and Ctrl+O) */
+  openFileDialog(): Promise<void>
   /**
    * Resolve every `[[target]]` in this document to a file. One walk for the
    * whole batch: a fifty-link document would otherwise pay fifty root
