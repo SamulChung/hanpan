@@ -941,16 +941,20 @@ function RibbonInner({
       ]),
   })
 
-  // 화면 안 파일 메뉴는 Esc로 닫고 포커스를 파일 버튼으로 돌려준다(엑셀·한글과 같게)
+  // 열린 리본 드롭다운(파일 메뉴·여백·글꼴 등)은 Esc로 닫는다. 드롭다운을 열어도 포커스가
+  // 본문에 남으므로 문서 수준에서 받는다. 파일 메뉴는 포커스를 파일 버튼으로 돌려준다(엑셀·한글과 같게)
   const fileTabRef = useRef<HTMLButtonElement>(null)
   useEffect(() => {
-    if (dropdown !== 'file') return
+    if (dropdown == null) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape' || e.isComposing) return
+      // a modal opened from the dropdown owns Esc
+      if (document.querySelector('.modal-backdrop, [role="dialog"][aria-modal="true"]')) return
       e.preventDefault()
       e.stopPropagation()
+      const wasFile = dropdown === 'file'
       setDropdown(null)
-      fileTabRef.current?.focus()
+      if (wasFile) fileTabRef.current?.focus()
     }
     document.addEventListener('keydown', onKey, true)
     return () => document.removeEventListener('keydown', onKey, true)
