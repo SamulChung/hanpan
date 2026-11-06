@@ -1,7 +1,7 @@
 import type { zh } from './zh'
 
 export const vi = {
-  mathInsert: 'Chèn công thức',
+  mathInsert: 'Công thức',
   mathEdit: 'Sửa công thức',
   mathHelp: 'Nhập trực quan hoặc sửa LaTeX. HTML giữ mã nguồn để chỉnh sửa sau.',
   mathVisualInput: 'Nhập công thức trực quan',
