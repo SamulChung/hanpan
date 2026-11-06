@@ -1644,7 +1644,7 @@ export function SettingsModal({
     if (target) setSection(target.section)
   }, [target])
   const [theme, setTheme] = useState<UiTheme>('system')
-  const [docTheme, setDocTheme] = useState<DocTheme>('follow')
+  const [docTheme, setDocTheme] = useState<DocTheme>('light')
   const [saveDir, setSaveDir] = useState('')
   const [autoSaveOn, setAutoSaveOn] = useState(false)
   // Hanpan: the Korean document features switch as stored (null: the UI language decides)

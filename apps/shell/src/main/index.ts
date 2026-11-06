@@ -133,6 +133,7 @@ import { SPLIT_PANE_CHANNELS } from '@genoffice/electron-utils/split-pane-bridge
 import {
   agentSkillNoticeDue,
   markAgentSkillNoticeSeen,
+  documentThemeOf,
   readAppSettings,
   writeAgentPrefs,
   writeAppSetting,
@@ -1016,7 +1017,7 @@ let cachedDocTheme: DocTheme | null = null
 function currentDocTheme(): DocTheme {
   if (cachedDocTheme) return cachedDocTheme
   const saved = readAppSettings(APP_SETTINGS_PATH()).documentTheme
-  cachedDocTheme = saved === 'light' || saved === 'dark' ? saved : 'follow'
+  cachedDocTheme = documentThemeOf(saved)
   return cachedDocTheme
 }
 
@@ -1398,7 +1399,7 @@ const tMain = createI18n({
       'The selected folder is not writable and cannot be used as the default save location',
     saveDirFallbackMsg: "Can't save to the Documents folder",
     saveDirFallbackDetail:
-      'GenOffice could not create or write {blocked}, so new files are saved in {using}. If Windows Security\'s "Controlled folder access" blocked it, add GenOffice under "Allow an app through Controlled folder access" and restart the app. You can also pick another folder in Settings → General → Save Location.',
+      'GenOffice could not create or write {blocked}, so new files are saved in {using}. If Windows Security\'s "Controlled folder access" blocked it, add GenOffice (Hanpan.exe) under "Allow an app through Controlled folder access" and restart the app. You can also pick another folder in Settings → General → Save Location.',
   },
   vi: {
     menuTabSave: 'Lưu',
@@ -1918,7 +1919,7 @@ const tMain = createI18n({
     errSaveDirUnusable: '선택한 폴더에 쓸 수 없어 기본 저장 위치로 사용할 수 없습니다',
     saveDirFallbackMsg: '문서 폴더에 저장할 수 없습니다',
     saveDirFallbackDetail:
-      '{blocked} 폴더를 만들거나 쓰지 못해서, 새 파일은 {using}에 저장합니다. Windows 보안의 "제어된 폴더 액세스"가 막은 것이라면 "제어된 폴더 액세스를 통해 앱 허용"에 GenOffice를 추가한 뒤 앱을 다시 시작하세요. 설정 → 일반 → 저장 위치에서 다른 폴더를 고를 수도 있습니다.',
+      '{blocked} 폴더를 만들거나 쓰지 못해서, 새 파일은 {using}에 저장합니다. Windows 보안의 "제어된 폴더 액세스"가 막은 것이라면 "제어된 폴더 액세스를 통해 앱 허용"에 GenOffice(Hanpan.exe)를 추가한 뒤 앱을 다시 시작하세요. 설정 → 일반 → 저장 위치에서 다른 폴더를 고를 수도 있습니다.',
   },
   fr: {
     menuTabSave: 'Enregistrer',
