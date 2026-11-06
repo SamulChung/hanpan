@@ -483,6 +483,7 @@ import { runTabDocumentAction, type TabDocumentAction } from './tab-document-act
 import { duplicateDocumentFile } from './tab-duplicate'
 import { closeTabsInOrder, createRecentlyClosedTracker } from './tab-lifecycle'
 import { handleTabShortcut } from './tab-shortcuts'
+import { settingsMenuItem } from './settings-menu'
 import { readSplitMemory, writeSplitMemory, type SplitMemory } from './split-memory'
 import { SPLIT_EVEN_RATIO, decideSplitDrop, paneRects, splitDropZone } from './split-layout'
 import { configureGenerateWindow } from './generate/generate-window'
@@ -5090,6 +5091,7 @@ function installTabShortcuts(): void {
         activeKind: () => manager.list().find((tab) => tab.active)?.kind,
         cycle: (direction) => manager.cycleTab(direction),
         closeActive: () => manager.closeActiveTab(),
+        openSettings: () => openSettingsFromMenu(),
       })
       if (handled) event.preventDefault()
     })
@@ -7592,6 +7594,8 @@ function registerTabsIpc(): void {
           !!tabManager?.canDetachTab(front.id),
         click: () => front && void shareTabFromShell(front.id),
       },
+      { type: 'separator' },
+      settingsMenuItem(currentLang(), () => openSettingsFromMenu()),
     )
     Menu.buildFromTemplate(appMenuPopupTemplate(menus, appMenuLabels(currentLang()))).popup({
       window: shellWindow,
@@ -9137,6 +9141,17 @@ app.on('second-instance', (_event, argv, _cwd, additionalData) => {
 installNavigationGuard(app)
 installContextMenu(app, () => contextMenuLabels(currentLang()))
 registerAiIpc()
+/** ☰ 메뉴 "설정…"과 Ctrl+,: 홈을 앞으로 가져와 설정의 일반 항목을 연다 */
+function openSettingsFromMenu(): void {
+  const win = shellWindow
+  if (!win || win.isDestroyed()) return
+  if (win.isMinimized()) win.restore()
+  win.show()
+  win.focus()
+  tabManager?.openHomeTab()
+  win.webContents.send(HOME_CHANNELS.openSettings, { section: 'general' })
+}
+
 ipcMain.handle('ai:open-model-settings', () => {
   const win = shellWindow
   if (!win || win.isDestroyed()) return

@@ -24,7 +24,7 @@ export interface TabShortcutInput {
   shift: boolean
 }
 
-export type TabShortcut = 'next' | 'previous' | 'close'
+export type TabShortcut = 'next' | 'previous' | 'close' | 'settings'
 
 export function tabShortcutOf(
   input: TabShortcutInput,
@@ -36,6 +36,12 @@ export function tabShortcutOf(
     // Ctrl only: ⌘Tab is the OS app switcher and Alt+Tab is the window switcher
     if (!input.control || input.meta) return null
     return input.shift ? 'previous' : 'next'
+  }
+
+  // Settings: ⌘, on macOS, Ctrl+, elsewhere (the platforms' usual preferences chord)
+  if (input.key === ',' && !input.shift) {
+    if (platform === 'darwin') return input.meta && !input.control ? 'settings' : null
+    return input.control && !input.meta ? 'settings' : null
   }
 
   if (input.key.toLowerCase() !== 'w' || input.shift) return null
@@ -54,6 +60,8 @@ export interface TabShortcutHost {
   activeKind(): string | undefined
   cycle(direction: 1 | -1): void
   closeActive(): void
+  /** Home's settings dialog */
+  openSettings(): void
 }
 
 /**
@@ -71,6 +79,12 @@ export function handleTabShortcut(
 ): boolean {
   const shortcut = tabShortcutOf(input)
   if (!shortcut) return false
+  if (shortcut === 'settings') {
+    // only from Home or the strip: Word uses Ctrl+, for subscript inside a document
+    if (!host.isShellContents(webContentsId)) return false
+    host.openSettings()
+    return true
+  }
   if (!host.isShellContents(webContentsId) && !host.hasTab(webContentsId)) return false
   if (shortcut === 'close') {
     if (host.activeKind() === 'home') return false
