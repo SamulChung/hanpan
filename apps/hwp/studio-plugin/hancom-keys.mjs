@@ -104,13 +104,94 @@ const locallyResizedTables = new WeakMap()
 
 /** The studio's locale, so a message from a key handler speaks the same language. */
 let koreanUi = false
+/** The studio's locale itself: English names and messages show in Vietnamese where it is 'vi'. */
+let uiLocale = 'en'
+
+/**
+ * The Vietnamese of this module's English names and messages (the studio's own text is in
+ * studio-locales/vi.mjs). Keyed by the English, so every `ko ? '…' : '…'` stays as it is and
+ * `localText` swaps the English at the edge: command labels, menu items, the page number
+ * dialog and the toasts.
+ */
+export const VI_TEXT = {
+  // commands and menu items
+  'Delete Line': 'Xóa dòng',
+  'Black Text': 'Chữ màu đen',
+  'Red Text': 'Chữ màu đỏ',
+  'Blue Text': 'Chữ màu xanh dương',
+  'Plum Text': 'Chữ màu mận',
+  'Green Text': 'Chữ màu xanh lá',
+  'Yellow Text': 'Chữ màu vàng',
+  'Teal Text': 'Chữ màu xanh mòng két',
+  'White Text': 'Chữ màu trắng',
+  'Normal Shape': 'Định dạng thường',
+  'Date String': 'Chuỗi ngày/giờ',
+  'Find Backward': 'Tìm ngược lại',
+  'Page Numbering': 'Đánh số trang',
+  'Flip Table': 'Lật bảng',
+  'Cell Border': 'Viền ô',
+  'Cell Background': 'Nền ô',
+  'Insert Row Below': 'Chèn hàng bên dưới',
+  'Resize Table': 'Đổi kích thước bảng',
+  'Table Order': 'Thứ tự bảng',
+  'Table Text Wrap': 'Bố trí chữ quanh bảng',
+  'Resize Cell Block': 'Đổi kích thước khối ô',
+  'Resize Row/Column': 'Đổi kích thước hàng/cột',
+  'Resize Cell': 'Đổi kích thước ô',
+  'Sum Left': 'Tổng theo hàng',
+  'Sum Above': 'Tổng theo cột',
+  'Average Left': 'Trung bình theo hàng',
+  'Average Above': 'Trung bình theo cột',
+  'Product Left': 'Tích theo hàng',
+  'Product Above': 'Tích theo cột',
+  // the page number dialog
+  Position: 'Vị trí',
+  'Number format': 'Kiểu số',
+  'Dashes (- 1 -)': 'Thêm gạch ngang (- 1 -)',
+  'Top left': 'Trên bên trái',
+  'Top center': 'Trên ở giữa',
+  'Top right': 'Trên bên phải',
+  'Bottom left': 'Dưới bên trái',
+  'Bottom center': 'Dưới ở giữa',
+  'Bottom right': 'Dưới bên phải',
+  'Outside top': 'Trên phía ngoài',
+  'Outside bottom': 'Dưới phía ngoài',
+  'Inside top': 'Trên phía trong',
+  'Inside bottom': 'Dưới phía trong',
+  None: 'Không',
+  // messages
+  'A table inside a cell cannot be moved by cell yet.':
+    'Chưa thể di chuyển theo ô trong bảng nằm trong ô.',
+  'A table inside a cell cannot be copied yet.': 'Chưa thể sao chép bảng nằm trong ô.',
+  'Not copied: the table has merged cells.': 'Không sao chép: bảng có ô đã gộp.',
+  'A table inside a cell cannot be sized equally yet.':
+    'Chưa thể chia đều kích thước bảng nằm trong ô.',
+  'Not changed: the table has merged cells.': 'Không thay đổi: bảng có ô đã gộp.',
+  'Select the whole table to equalize row heights.':
+    'Hãy chọn toàn bộ bảng để chia đều chiều cao hàng.',
+  'Select the whole table to equalize column widths.':
+    'Hãy chọn toàn bộ bảng để chia đều chiều rộng cột.',
+  'A table inside a cell cannot be resized yet.': 'Chưa thể đổi kích thước bảng nằm trong ô.',
+  'Not changed: Shift+arrow cannot resize a table with merged cells.':
+    'Không thay đổi: Shift+mũi tên không đổi được kích thước bảng có ô đã gộp.',
+  'A table inside a cell cannot be flipped yet.': 'Chưa thể lật bảng nằm trong ô.',
+  'A table inside a cell cannot be changed yet.': 'Chưa thể thay đổi bảng nằm trong ô.',
+}
+
+/** The English of this module in the studio's language: Vietnamese where there is one. */
+function localText(en, locale = uiLocale) {
+  if (locale !== 'vi' || typeof en !== 'string') return en
+  const style = /^Apply Style (\d+)$/.exec(en)
+  if (style) return `Áp dụng kiểu ${style[1]}`
+  return VI_TEXT[en] ?? en
+}
 
 /** The studio's tab command, for Ctrl+Tab in a cell (the main process takes that key first). */
 let insertTabCommand = null
 
 function tellUser(message) {
   try {
-    toastSink?.({ message })
+    toastSink?.({ message: localText(message) })
   } catch {
     // the editor is closing; nothing to tell
   }
@@ -1876,7 +1957,7 @@ function wrapSelectedTable(services, mode) {
 function pageNumberDialog(ModalDialog, ko, start, onApply) {
   class PageNumberDialog extends ModalDialog {
     constructor() {
-      super(ko ? '쪽 번호 매기기' : 'Page Numbering', 380)
+      super(ko ? '쪽 번호 매기기' : localText('Page Numbering'), 380)
       this.setting = { ...start }
     }
 
@@ -1890,7 +1971,7 @@ function pageNumberDialog(ModalDialog, ko, start, onApply) {
         h.textContent = text
         return h
       }
-      body.appendChild(heading(ko ? '번호 위치' : 'Position'))
+      body.appendChild(heading(ko ? '번호 위치' : localText('Position')))
       const grid = doc.createElement('div')
       grid.style.cssText =
         'display:grid;grid-template-columns:repeat(3,1fr);gap:4px 12px;margin:6px 0 12px'
@@ -1905,11 +1986,11 @@ function pageNumberDialog(ModalDialog, ko, start, onApply) {
         input.addEventListener('change', () => {
           if (input.checked) this.setting.position = p.code
         })
-        label.append(input, ko ? p.ko : p.en)
+        label.append(input, ko ? p.ko : localText(p.en))
         grid.appendChild(label)
       }
       body.appendChild(grid)
-      body.appendChild(heading(ko ? '번호 모양' : 'Number format'))
+      body.appendChild(heading(ko ? '번호 모양' : localText('Number format')))
       const select = doc.createElement('select')
       select.className = 'dialog-select'
       select.style.margin = '6px 0 12px'
@@ -1932,7 +2013,7 @@ function pageNumberDialog(ModalDialog, ko, start, onApply) {
       box.addEventListener('change', () => {
         this.setting.dash = box.checked
       })
-      dash.append(box, ko ? '줄표 넣기 (- 1 -)' : 'Dashes (- 1 -)')
+      dash.append(box, ko ? '줄표 넣기 (- 1 -)' : localText('Dashes (- 1 -)'))
       body.appendChild(dash)
       return body
     }
@@ -1946,14 +2027,15 @@ function pageNumberDialog(ModalDialog, ko, start, onApply) {
 }
 
 /**
- * The commands behind the keys the studio has no command for. `locale` is the studio's, which
- * shows itself in Korean or English only; the labels show in its command palette. `studio` hands
+ * The commands behind the keys the studio has no command for. `locale` is the studio's: Korean,
+ * English, or Vietnamese through VI_TEXT; the labels show in its command palette and menus. `studio` hands
  * over what of the studio a command builds on (the studio-hancom-commands patch passes it):
  * InsertTextCommand, ModalDialog, FindDialog and navigateToSearchHit.
  */
 export function hancomCommands(locale, studio = {}) {
   const ko = locale === 'ko'
   koreanUi = ko
+  uiLocale = locale
   toastSink = studio.showToast ?? toastSink
   insertTabCommand = studio.InsertTabCommand ?? insertTabCommand
   const commands = [
@@ -2139,6 +2221,9 @@ export function hancomCommands(locale, studio = {}) {
       },
     })
   }
+  if (locale === 'vi') {
+    for (const command of commands) command.label = localText(command.label, locale)
+  }
   return commands
 }
 
@@ -2174,7 +2259,7 @@ export function installHancomMenuItems(doc, locale, mac = onMac()) {
     icon.className = 'md-icon'
     const label = doc.createElement('span')
     label.className = 'md-label'
-    label.textContent = ko ? nameKo : nameEn
+    label.textContent = ko ? nameKo : localText(nameEn, locale)
     item.append(icon, label)
     anchor.after(item)
   }

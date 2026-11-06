@@ -100,11 +100,96 @@ export function aboutText(locale, version) {
 }
 
 /**
+ * Layout the studio's style bar needs in the added languages. rhwp sizes the style box (88px)
+ * and the font-set box (64px) for Korean and widens the font-set box to 84px for English
+ * (style-bar.css, html[lang='en']); Vietnamese ran its words under the boxes' arrows ("Bình
+ * thường" 69px, "Bộ phông" 49px; a box keeps about 40px for its padding and arrow on Windows).
+ * The same rules for Vietnamese with a 112px style box (its own 88px rule, by id, gives way to the
+ * grid column); a longer style name ends in an ellipsis.
+ */
+export const LOCALE_LAYOUT_CSS = `
+html[lang='vi'] .sb-field-ribbon-group {
+  width: min(520px, 100%);
+}
+html[lang='vi'] .sb-field-grid {
+  grid-template-columns:
+    minmax(68px, 112px)
+    minmax(74px, 84px)
+    136px
+    minmax(72px, 86px)
+    minmax(72px, 86px);
+  width: min(520px, 100%);
+}
+html[lang='vi'] #style-name {
+  width: 100%;
+}
+html[lang='vi'] #style-name,
+html[lang='vi'] .sb-font-lang {
+  text-overflow: ellipsis;
+}
+@media (max-width: 459px) {
+  html[lang='vi'] .sb-field-grid {
+    grid-template-columns:
+      minmax(54px, 1fr)
+      minmax(40px, 0.75fr)
+      136px
+      minmax(54px, 0.95fr)
+      minmax(54px, 0.95fr);
+  }
+}
+@media (min-width: 808px) {
+  html[lang='vi'] .sb-field-ribbon-group {
+    flex: 0 0 525px;
+    width: 525px;
+    min-width: 525px;
+  }
+  html[lang='vi'] .sb-field-grid {
+    grid-template-columns: 112px 84px 136px 86px 86px;
+    width: 100%;
+  }
+}
+`
+
+const LOCALE_LAYOUT_STYLE_ID = 'ieum-locale-layout'
+
+/** Puts LOCALE_LAYOUT_CSS into the editor page, once. */
+export function installLocaleLayout(doc = globalThis.document) {
+  if (!doc?.documentElement) return false
+  const style = doc.getElementById(LOCALE_LAYOUT_STYLE_ID) ?? doc.createElement('style')
+  style.id = LOCALE_LAYOUT_STYLE_ID
+  if (style.textContent !== LOCALE_LAYOUT_CSS) style.textContent = LOCALE_LAYOUT_CSS
+  if (!style.parentNode) (doc.head ?? doc.documentElement).appendChild(style)
+  return true
+}
+
+/**
+ * rhwp catalog entries the app words differently, by studio key, in Korean, English and every
+ * added language. The cell properties' vertical-writing options are Hangul's 영문 눕힘 and
+ * 영문 세움 (Latin letters turned sideways or kept upright); rhwp wrote 문 눕힘/문 세움 and its
+ * English catalog read the 문 as a door ("Door flat(Q)", "Door upright(U)").
+ */
+const CATALOG_CORRECTIONS = {
+  ko: {
+    'dialog.tableCellProps.buildCellTab.label.x872cd2': '영문 눕힘(Q)',
+    'dialog.tableCellProps.buildCellTab.label.xd9f9d6': '영문 세움(U)',
+  },
+  en: {
+    'dialog.tableCellProps.buildCellTab.label.x872cd2': 'Latin text sideways(Q)',
+    'dialog.tableCellProps.buildCellTab.label.xd9f9d6': 'Latin text upright(U)',
+  },
+  vi: {
+    'dialog.tableCellProps.buildCellTab.label.x872cd2': 'Chữ Latinh nằm ngang(Q)',
+    'dialog.tableCellProps.buildCellTab.label.xd9f9d6': 'Chữ Latinh dựng đứng(U)',
+  },
+}
+
+/**
  * Text the studio writes straight into its markup instead of asking its catalogs, under keys
  * of the app's own (`hanpan.*`), in Korean, English and every added language. The build
  * registers them with each studio language (studio-locale-register) and patches the studio
  * to ask for them (studio-page-setup-labels, studio-input-aria-label, and the dialogs' own in
- * scripts/studio-dialog-text.mjs, whose words are in studio-locales/dialog-strings.mjs).
+ * scripts/studio-dialog-text.mjs, whose words are in studio-locales/dialog-strings.mjs). The
+ * CATALOG_CORRECTIONS ride along under rhwp's own keys and win over its catalogs.
  */
 export const APP_STRINGS = {
   ko: {
@@ -122,6 +207,7 @@ export const APP_STRINGS = {
     'hanpan.pageSetup.marginGutter': '제본',
     'hanpan.editor.inputLabel': '문서 편집 입력',
     ...dialogStrings(0),
+    ...CATALOG_CORRECTIONS.ko,
   },
   en: {
     'hanpan.pageSetup.portrait': 'Portrait',
@@ -138,6 +224,7 @@ export const APP_STRINGS = {
     'hanpan.pageSetup.marginGutter': 'Gutter',
     'hanpan.editor.inputLabel': 'Document editing input',
     ...dialogStrings(1),
+    ...CATALOG_CORRECTIONS.en,
   },
   vi: {
     'hanpan.pageSetup.portrait': 'Dọc',
@@ -154,6 +241,7 @@ export const APP_STRINGS = {
     'hanpan.pageSetup.marginGutter': 'Gáy sách',
     'hanpan.editor.inputLabel': 'Ô nhập chỉnh sửa tài liệu',
     ...dialogStrings(2),
+    ...CATALOG_CORRECTIONS.vi,
   },
 }
 

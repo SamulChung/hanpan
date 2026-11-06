@@ -37,7 +37,7 @@ import {
 import { runSave, type SaveEditorPort } from './save-flow'
 import { AUTOSAVE_IDLE_MS, startAutosave } from './autosave-flow'
 import { PASSWORD_FLAG } from '../../scripts/rhwp-patches.mjs'
-import { languageSwitchPlan } from './language-switch'
+import { languageSwitchPlan, reopenNoticeAfter } from './language-switch'
 import {
   STUDIO_SETTINGS_KEY,
   seededStudioSettings,
@@ -277,7 +277,14 @@ export default function App() {
   useEffect(() => {
     const from = bootedLocaleRef.current
     const to = studioLocale(lang)
-    if (!from || from === to) return
+    if (!from) return
+    const clearReopenNotice = () =>
+      setNotice((shown) => (shown?.key === 'languageOnReopen' ? null : shown))
+    if (from === to) {
+      // back in the language the editor was opened with: nothing waits for a reopen any more
+      clearReopenNotice()
+      return
+    }
     let cancelled = false
     void (async () => {
       const editor = editorRef.current
@@ -293,6 +300,7 @@ export default function App() {
         passwordProtected: context?.[PASSWORD_FLAG] === true,
         untitledCopy: copyNameRef.current !== null,
       })
+      if (reopenNoticeAfter(plan) === 'clear') clearReopenNotice()
       if (plan === 'none') return
       if (plan === 'later') {
         setNotice({ tone: 'info', key: 'languageOnReopen', sticky: true })
