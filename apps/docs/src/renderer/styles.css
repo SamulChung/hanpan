@@ -7050,6 +7050,20 @@ body.docs-crop-active .doc-protected[data-doc-protected='image'] .doc-img-wrap {
   font-family: 'Segoe UI', var(--ui-cjk), sans-serif;
 }
 
+/* The page preview and the print dialog show what prints: no editor-only type
+   chip, dashed box or chip fill (same as @media print; geometry stays because
+   pagination sliced the pages with these boxes in the flow) */
+.pagination-preview .doc-protected-label,
+.print-preview-zoom .doc-protected-label {
+  display: none !important;
+}
+
+.pagination-preview .doc-protected,
+.print-preview-zoom .doc-protected {
+  border-color: transparent !important;
+  background: none !important;
+}
+
 .doc-protected-preview {
   font-size: 12px;
   color: var(--text-dim);
