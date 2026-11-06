@@ -2398,7 +2398,9 @@ export function registerSlidesIpc(): void {
   ipcMain.handle(
     'slides:new-blank',
     async (e, fitWidthPx: number, size?: unknown): Promise<OpenResult> => {
-      const opened = await openPptx(await createBlankPptx())
+      // 화면 언어의 기본 글꼴(한국어 맑은 고딕)과, 하얀 빈 화면 대신 "제목을 추가하려면 클릭"이
+      // 보이는 제목 슬라이드로 시작한다
+      const opened = await openPptx(await createBlankPptx({ lang: getUiLang(), titleSlide: true }))
       // the renderer's saved default size; anything a .pptx cannot store keeps the template
       const side = (v: unknown): v is number =>
         typeof v === 'number' && Number.isInteger(v) && v >= 914400 && v <= 51206400

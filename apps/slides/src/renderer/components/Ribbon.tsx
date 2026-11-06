@@ -3,6 +3,7 @@
  * (local state switches tabs, .ribbon-body dispatches); content is trimmed to slide capabilities,
  * unimplemented items are grayed placeholders.
  */
+import { useEscapeToClose } from './use-escape-close'
 import React, {
   useCallback,
   useEffect,
@@ -1270,6 +1271,8 @@ export function Ribbon({
 
   const [tab, setTab] = useState<MainTab | ContextTab>('home')
   const [fileOpen, setFileOpen] = useState(false)
+  const fileTabRef = useRef<HTMLButtonElement>(null)
+  useEscapeToClose(fileOpen, () => setFileOpen(false), fileTabRef)
   const [colorOpen, setColorOpen] = useState(false)
   const [fontOpen, setFontOpen] = useState(false)
   const [sizeOpen, setSizeOpen] = useState(false)
@@ -1757,6 +1760,9 @@ export function Ribbon({
         {!IS_MAC && (
           <div className="file-tab-wrap">
             <button
+              ref={fileTabRef}
+              aria-haspopup="menu"
+              aria-expanded={fileOpen}
               className={`ribbon-tab ribbon-tab-file ${fileOpen ? 'open' : ''}`}
               onMouseDown={(e) => {
                 e.stopPropagation()
@@ -1807,19 +1813,19 @@ export function Ribbon({
                   disabled={!hasDoc}
                   onClick={() => {
                     setFileOpen(false)
-                    onPrint()
+                    onExportImages()
                   }}
                 >
-                  {t('ribbonFilePrint')} <span className="file-menu-key">Ctrl+P</span>
+                  {t('ribbonFileExportImages')}
                 </button>
                 <button
                   disabled={!hasDoc}
                   onClick={() => {
                     setFileOpen(false)
-                    onExportImages()
+                    onPrint()
                   }}
                 >
-                  {t('ribbonFileExportImages')}
+                  {t('ribbonFilePrint')} <span className="file-menu-key">Ctrl+P</span>
                 </button>
               </div>
             )}
