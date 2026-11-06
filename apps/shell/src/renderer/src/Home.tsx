@@ -82,6 +82,7 @@ import { QuickLookView } from './quick-look/QuickLookView'
 import { quickLookText } from './i18n/strings-quick-look'
 import type { QuickLookPayload } from '../../shared/quick-look-api'
 import { agentText } from './i18n/strings-agent'
+import { homeNavText } from './hanpan/home-nav-words'
 import { DriveNavIcon, DrivePanel, useDriveState } from './DrivePanel'
 import { driveUiText } from './i18n/strings-drive'
 
@@ -1162,6 +1163,12 @@ export function Home({
   const composingRef = useRef(false)
   const searchSeq = useRef(0)
   const searchActive = searchQuery.trim().length > 0
+  // 0.17 리뷰 #19: on a 768-high screen the results sat below the fold; a search
+  // that starts brings its box and results up (once, not on every key)
+  useEffect(() => {
+    if (!searchActive) return
+    searchInputRef.current?.closest('section')?.scrollIntoView?.({ block: 'start' })
+  }, [searchActive])
   // modified-column sort (WPS-style header popover), shared by the global and folder tables
   const [fileSort, setFileSort] = useState<'recent' | 'oldest'>('recent')
   const [fileSortMenuOpen, setFileSortMenuOpen] = useState(false)
@@ -3759,7 +3766,8 @@ export function Home({
           {window.aiOfficeAgent ? (
             <button
               className="nav-item"
-              title={agentText(lang, 'homeCardSub')}
+              data-nav="agent"
+              title={homeNavText(lang, 'agentTip') ?? agentText(lang, 'homeCardSub')}
               onClick={() => void window.aiOfficeAgent?.open()}
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -3774,7 +3782,9 @@ export function Home({
                   fill="currentColor"
                 />
               </svg>
-              <span className="nav-label">{agentText(lang, 'windowTitle')}</span>
+              <span className="nav-label">
+                {homeNavText(lang, 'agent') ?? agentText(lang, 'windowTitle')}
+              </span>
               <span className="nav-count nav-external">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                   <path
