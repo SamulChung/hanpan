@@ -433,6 +433,7 @@ import {
   matchesExtFamily,
   normalizeRecentQuery,
   pageRecentPaths,
+  recentNameHits,
   statPathEntries,
 } from './recent-files'
 import { HOME_FILTER_GROUPS } from '../shared/home-filter-groups'
@@ -6157,10 +6158,17 @@ function registerHomeIpc(): void {
     const limit = Number.isFinite(query.limit) ? Math.max(0, Math.floor(query.limit!)) : 50
     const starred = new Set(readStarredFiles())
     const result = q ? fileIndexStore.search(q, { exts, offset, limit }) : { hits: [], total: 0 }
+    const progress = indexer.progress()
+    const hits = result.hits.map((h) => ({ ...h, starred: starred.has(h.path) }))
+    // while the index is still being built, recent files found by name come first (#16)
+    const early =
+      q && offset === 0 && (progress.scanning || progress.pending > 0)
+        ? recentNameHits(readRecentFiles(), q, exts, starred, new Set(hits.map((h) => h.path)))
+        : []
     return {
-      hits: result.hits.map((h) => ({ ...h, starred: starred.has(h.path) })),
-      total: result.total,
-      index: indexer.progress(),
+      hits: [...early, ...hits],
+      total: result.total + early.length,
+      index: progress,
     }
   })
 

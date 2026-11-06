@@ -3202,7 +3202,9 @@ export function Home({
         {busy && (
           <div className="search-status">
             <span className="load-more-spinner" />
-            {t('searchIndexing', { n: page.index.pending })}
+            {/* "0 files" read as broken while the scan still counts: say what is shown instead */}
+            {page.index.pending > 0 && t('searchIndexing', { n: page.index.pending })}{' '}
+            {t('searchIndexingMore')}
           </div>
         )}
         {page && page.hits.length === 0 && !busy

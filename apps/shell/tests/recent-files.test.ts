@@ -95,3 +95,21 @@ describe('the Hanpan file tab groups', () => {
     expect(matchesExtFamily('docx', 'others')).toBe(false)
   })
 })
+
+describe('recent files found by name while the index is still building (0.17 review v2 shell #16)', () => {
+  it('finds a recent file by part of its name and leaves out ones already found', async () => {
+    const { mkdtempSync, writeFileSync } = await import('node:fs')
+    const { join } = await import('node:path')
+    const { tmpdir } = await import('node:os')
+    const { recentNameHits } = await import('../src/main/recent-files')
+    const dir = mkdtempSync(join(tmpdir(), 'hp-recent-'))
+    const a = join(dir, '엑셀샘플.xlsx')
+    const b = join(dir, '보고서.docx')
+    const c = join(dir, '샘플2.pptx')
+    for (const p of [a, b, c]) writeFileSync(p, 'x')
+    const hits = recentNameHits([a, b, c], '샘플', undefined, new Set(), new Set([c]))
+    expect(hits.map((h) => h.name)).toEqual(['엑셀샘플.xlsx'])
+    expect(hits[0]!.snippet).toBeNull()
+    expect(recentNameHits([a, b, c], '샘플', ['docx'], new Set(), new Set())).toEqual([])
+  })
+})
