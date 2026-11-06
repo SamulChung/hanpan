@@ -46,6 +46,13 @@ export const it = {
   saveFailed: 'Salvataggio non riuscito: {error}',
   saveFailedStatus: 'Salvataggio non riuscito',
   exportFailed: 'Esportazione non riuscita',
+  exportDone: 'Exported: {name}',
+  exportOpen: 'Apri',
+  exportReveal: 'Apri cartella',
+  scriptsBlocked: "This file's scripts were not run.",
+  scriptsRun: 'Run scripts',
+  scriptsRunTip:
+    'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: 'Stampa non riuscita: {error}',
   exportHtmlSkipped:
     'Esportato, ma {count} risorsa/e non è stato possibile incorporarle (es. {first})',
@@ -174,7 +181,8 @@ export const it = {
   insertPlaceholderParagraph: 'Scrivi qui il tuo testo.',
   insertPlaceholderListItem: 'Voce elenco',
   insertPlaceholderButton: 'Pulsante',
-  insertNoBody: 'La pagina non ha un <body> in cui inserire',
+  insertNoBody:
+    'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Tabella',
   insertImageUrl: 'Immagine da URL…',
   insertConfirm: 'Inserisci',

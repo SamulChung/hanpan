@@ -123,6 +123,8 @@ export const hi = {
   appExportingImages: 'छवियाँ निर्यात की जा रही हैं…',
   appExportImagesProgress: '{count} छवियाँ निर्यात की जा रही हैं…',
   appExportImagesDone: '{count} छवियाँ {dir} में निर्यात की गईं',
+  appOpenExported: 'खोलें',
+  appRevealExported: 'फ़ोल्डर खोलें',
   appExportImagesFailed: 'छवि निर्यात विफल: {error}',
   appMixedExportOpening:
     'मिश्रित कागज़ आकार: पृष्ठ अनुसार मर्ज करके निर्यात के लिए पृष्ठांकन पूर्वावलोकन खोला जा रहा है…',
@@ -488,6 +490,7 @@ export const hi = {
   appMatchCase: 'अक्षर के आकार का मिलान करें',
   appWholeWord: 'केवल पूर्ण शब्द',
   appNoResults: 'कोई परिणाम नहीं',
+  appReplacedCount: '{count} बदले गए',
   appPrevMatch: 'पिछला (Shift+Enter)',
   appNextMatch: 'अगला (Enter)',
   appCloseEsc: 'बंद करें (Esc)',

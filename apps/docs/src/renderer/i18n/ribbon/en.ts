@@ -493,7 +493,8 @@ export const en = {
   ribbonShapeFlowPunchedTape: 'Flowchart: Punched Tape',
   ribbonShapeCloudCallout: 'Cloud Callout',
   ribbonThemes: 'Themes',
-  ribbonThemesTip: 'Change the document theme (fonts + colors); applies in Word after saving',
+  ribbonThemesTip:
+    'Change the document theme (fonts + colors); text that uses theme fonts and colors changes right away',
   ribbonFonts: 'Fonts',
   ribbonThemeFontsTip: 'Change theme fonts (heading + body pair)',
   ribbonColors: 'Colors',
@@ -948,4 +949,10 @@ export const en = {
   ribbonMailingsMerged: '{n} documents merged',
   ribbonMailingsMergeFailed: 'The merge failed',
   ribbonMailingsClose: 'Close',
+  ribbonThemeFontOfficeKo: 'Office (Malgun Gothic)',
+  ribbonThemeFontMalgun: 'Malgun Gothic',
+  ribbonThemeFontPretendard: 'Pretendard',
+  ribbonThemeFontNoto: 'Noto Sans KR · Noto Serif KR',
+  ribbonThemeFontDotumBatang: 'Dotum · Batang',
+  ribbonStyleTableGrid: 'Table Grid',
 } satisfies Record<keyof typeof zh, string>

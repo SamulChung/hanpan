@@ -1,7 +1,7 @@
 import type { zh } from './zh'
 
 export const vi = {
-  mathInsert: 'Chèn công thức',
+  mathInsert: 'Công thức',
   mathEdit: 'Sửa công thức',
   mathHelp: 'Nhập trực quan hoặc sửa LaTeX. HTML giữ mã nguồn để chỉnh sửa sau.',
   mathVisualInput: 'Nhập công thức trực quan',
@@ -44,6 +44,13 @@ export const vi = {
   saveFailed: 'Lưu thất bại: {error}',
   saveFailedStatus: 'Lưu thất bại',
   exportFailed: 'Xuất thất bại',
+  exportDone: 'Đã xuất: {name}',
+  exportOpen: 'Mở',
+  exportReveal: 'Mở thư mục',
+  scriptsBlocked: 'Chưa chạy các script của tệp này.',
+  scriptsRun: 'Chạy script',
+  scriptsRunTip:
+    'Chỉ chạy với tệp bạn tin cậy. HTML từ email hoặc Internet có thể dùng script để làm giả nội dung hiển thị.',
   printFailed: 'In thất bại: {error}',
   exportHtmlSkipped: 'Đã xuất, nhưng {count} tài nguyên không thể nhúng (ví dụ {first})',
   viewPreview: 'Xem trước',
@@ -170,7 +177,7 @@ export const vi = {
   insertPlaceholderParagraph: 'Nhập văn bản của bạn tại đây.',
   insertPlaceholderListItem: 'Mục danh sách',
   insertPlaceholderButton: 'Nút',
-  insertNoBody: 'Trang không có thẻ <body> để chèn vào',
+  insertNoBody: 'Tài liệu này chưa có chỗ để chèn. Hãy gõ một dòng nội dung rồi thử lại.',
   insertTable: 'Bảng',
   insertImageUrl: 'Hình ảnh từ URL…',
   insertConfirm: 'Chèn',

@@ -44,6 +44,13 @@ export const th = {
   saveFailed: 'บันทึกไม่สำเร็จ: {error}',
   saveFailedStatus: 'บันทึกไม่สำเร็จ',
   exportFailed: 'ส่งออกไม่สำเร็จ',
+  exportDone: 'Exported: {name}',
+  exportOpen: 'เปิด',
+  exportReveal: 'เปิดโฟลเดอร์',
+  scriptsBlocked: "This file's scripts were not run.",
+  scriptsRun: 'Run scripts',
+  scriptsRunTip:
+    'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: 'พิมพ์ไม่สำเร็จ: {error}',
   exportHtmlSkipped: 'ส่งออกแล้ว แต่ฝังทรัพยากรไม่ได้ {count} รายการ (เช่น {first})',
   viewPreview: 'ตัวอย่าง',
@@ -167,7 +174,8 @@ export const th = {
   insertPlaceholderParagraph: 'พิมพ์ข้อความของคุณที่นี่',
   insertPlaceholderListItem: 'รายการ',
   insertPlaceholderButton: 'ปุ่ม',
-  insertNoBody: 'หน้านี้ไม่มี <body> ให้แทรก',
+  insertNoBody:
+    'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'ตาราง',
   insertImageUrl: 'รูปภาพจาก URL…',
   insertConfirm: 'แทรก',

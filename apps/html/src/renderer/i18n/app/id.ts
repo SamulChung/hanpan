@@ -45,6 +45,13 @@ export const id = {
   saveFailed: 'Gagal menyimpan: {error}',
   saveFailedStatus: 'Gagal menyimpan',
   exportFailed: 'Ekspor gagal',
+  exportDone: 'Exported: {name}',
+  exportOpen: 'Buka',
+  exportReveal: 'Buka folder',
+  scriptsBlocked: "This file's scripts were not run.",
+  scriptsRun: 'Run scripts',
+  scriptsRunTip:
+    'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: 'Gagal mencetak: {error}',
   exportHtmlSkipped: 'Diekspor, tetapi {count} aset tidak dapat disematkan (mis. {first})',
   viewPreview: 'Pratinjau',
@@ -170,7 +177,8 @@ export const id = {
   insertPlaceholderParagraph: 'Ketik teks Anda di sini.',
   insertPlaceholderListItem: 'Item daftar',
   insertPlaceholderButton: 'Tombol',
-  insertNoBody: 'Halaman tidak memiliki <body> untuk disisipi',
+  insertNoBody:
+    'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Tabel',
   insertImageUrl: 'Gambar dari URL…',
   insertConfirm: 'Sisipkan',

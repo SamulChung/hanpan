@@ -72,6 +72,8 @@ export const en = {
   usageWindowFiveHour: '5-hour limit',
   usageWindowSevenDay: '7-day limit',
   noticeTitle: 'Before you use AI with your subscription',
+  noticeSummary: 'Documents and chats go to Anthropic or OpenAI under your own account.',
+  noticeMore: 'More',
   noticeSend:
     'Document content and your conversation are sent to Anthropic or OpenAI under your own account. Each request also carries the name, title and description of every skill set to “AI decides”; skills in use, and skill files the AI reads, go along with them.',
   noticeTraining:

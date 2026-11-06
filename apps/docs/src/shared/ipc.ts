@@ -459,6 +459,13 @@ export interface DesktopApi {
   onZoteroRequest(handler: (request: ZoteroRendererRequest) => void): () => void
   respondToZotero(response: ZoteroRendererResponse): void
   openDocx(): Promise<OpenDocxResult>
+  /** Review → Compare: pick a .docx and read it on the side (no recovery prompt, recents or write grant) */
+  openCompareDocx(): Promise<
+    | { name: string; dataUrl: string }
+    | { needsPassword: true; name: string }
+    | { error: string }
+    | null
+  >
   openDocxPath(path: string): Promise<OpenDocxResult>
   confirmDocumentReplace(): Promise<boolean>
   /** decrypt-and-open a password-protected docx (path from a needsPassword result) */
@@ -637,6 +644,10 @@ export interface DesktopApi {
     scale?: number,
     links?: PdfInternalLink[],
   ): Promise<{ ok: boolean; path?: string; error?: string }>
+  /** status-bar "Open" after an export (only files this tab exported) */
+  openExported(path: string): Promise<boolean>
+  /** status-bar "Open folder" after an export */
+  revealExported(path: string): Promise<boolean>
   exportHtml(
     defaultName: string,
     html: string,

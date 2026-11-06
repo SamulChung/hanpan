@@ -125,6 +125,8 @@ export const ru = {
   appExportingImages: 'Экспорт изображений…',
   appExportImagesProgress: 'Экспорт {count} изображений…',
   appExportImagesDone: 'Экспортировано {count} изображений в {dir}',
+  appOpenExported: 'Открыть',
+  appRevealExported: 'Открыть папку',
   appExportImagesFailed: 'Не удалось экспортировать изображения: {error}',
   appMixedExportOpening:
     'Смешанные форматы бумаги: открывается предварительный просмотр страниц для постраничного объединения при экспорте…',
@@ -493,6 +495,7 @@ export const ru = {
   appMatchCase: 'Учитывать регистр',
   appWholeWord: 'Только слово целиком',
   appNoResults: 'Нет результатов',
+  appReplacedCount: 'Заменено: {count}',
   appPrevMatch: 'Назад (Shift+Enter)',
   appNextMatch: 'Далее (Enter)',
   appCloseEsc: 'Закрыть (Esc)',

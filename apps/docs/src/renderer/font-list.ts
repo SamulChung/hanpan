@@ -5,16 +5,38 @@ import type { FontFamilyInfoMap } from '@genoffice/ui'
  * The suite-wide candidate lists live in @genoffice/ui so every app offers the
  * same fonts; this module re-exports them and keeps the docx-specific helpers.
  */
+import { fontFamiliesFor as suiteFontFamiliesFor } from '@genoffice/ui'
+
 export {
   BUILTIN_FONT_FAMILIES,
   familyForTypedName,
   findFontMatch,
-  fontFamiliesFor,
   fontFamilyLabel,
   partitionFontFamilies,
   splitHangulFamilies,
   systemFamiliesBesidesCandidates,
 } from '@genoffice/ui'
+
+/** faces only macOS ships: off the Mac they are never installed by default */
+const MAC_ONLY_FONT_RE =
+  /^(apple ?sd gothic|applemyungjo|applegothic|pingfang|songti|heiti|kaiti (sc|tc)|hiragino|osaka)/i
+
+const IS_MAC = typeof navigator !== 'undefined' && /mac/i.test(navigator.platform)
+
+/**
+ * The candidate fonts the pickers list first. Off the Mac the macOS-only faces
+ * drop out (a Korean list on Windows must not open with Apple SD Gothic Neo);
+ * one installed anyway still shows in the system section.
+ */
+export function candidateFontFamilies(lang: Lang, mac = IS_MAC): readonly string[] {
+  const all = suiteFontFamiliesFor(lang)
+  return mac ? all : all.filter((name) => !MAC_ONLY_FONT_RE.test(name))
+}
+
+/** the pickers' candidate list for the UI language on this platform */
+export function fontFamiliesFor(lang: Lang): readonly string[] {
+  return candidateFontFamilies(lang)
+}
 
 const EAST_ASIAN_FONT_RE =
   /[\u2E80-\u9FFF\uF900-\uFAFF\u3040-\u30FF\u31F0-\u31FF\uAC00-\uD7AF]|sim(sun|hei)|nsimsun|kaiti|fangsong|dengxian|yahei|songti|heiti|xingkai|lisu|youyuan|st(zhongsong|song|kai|fangsong|xihei|hupo|liti|caiyun)|pingfang|hiragino|meiryo|osaka|kozuka|yu (gothic|mincho)|yugoth|ms (ui )?p?(gothic|mincho)|biz ud|malgun|batang|gulim|dotum|gungsuh|m(ye|yu)ngjo|nanum|apple (sd )?gothic|applemyungjo|jhenghei|p?mingliu|biaukai|dfkai|kaiu|source han|noto (sans|serif) (cjk|sc|tc|hk|jp|kr)|wenquanyi/i

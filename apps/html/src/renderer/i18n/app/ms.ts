@@ -45,6 +45,13 @@ export const ms = {
   saveFailed: 'Gagal menyimpan: {error}',
   saveFailedStatus: 'Gagal menyimpan',
   exportFailed: 'Eksport gagal',
+  exportDone: 'Exported: {name}',
+  exportOpen: 'Buka',
+  exportReveal: 'Buka folder',
+  scriptsBlocked: "This file's scripts were not run.",
+  scriptsRun: 'Run scripts',
+  scriptsRunTip:
+    'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: 'Gagal mencetak: {error}',
   exportHtmlSkipped: 'Dieksport, tetapi {count} aset tidak dapat disisipkan (cth. {first})',
   viewPreview: 'Pratonton',
@@ -169,7 +176,8 @@ export const ms = {
   insertPlaceholderParagraph: 'Taip teks anda di sini.',
   insertPlaceholderListItem: 'Item senarai',
   insertPlaceholderButton: 'Butang',
-  insertNoBody: 'Halaman tiada <body> untuk disisipkan',
+  insertNoBody:
+    'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Jadual',
   insertImageUrl: 'Imej daripada URL…',
   insertConfirm: 'Sisipkan',

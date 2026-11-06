@@ -121,6 +121,8 @@ export const th = {
   appExportingImages: 'กำลังส่งออกรูปภาพ…',
   appExportImagesProgress: 'กำลังส่งออกรูปภาพ {count} รูป…',
   appExportImagesDone: 'ส่งออกรูปภาพ {count} รูปไปยัง {dir} แล้ว',
+  appOpenExported: 'เปิด',
+  appRevealExported: 'เปิดโฟลเดอร์',
   appExportImagesFailed: 'ส่งออกรูปภาพไม่สำเร็จ: {error}',
   appMixedExportOpening:
     'เอกสารมีขนาดกระดาษผสม: กำลังเปิดตัวอย่างการแบ่งหน้าเพื่อส่งออกแบบรวมทีละหน้า…',
@@ -486,6 +488,7 @@ export const th = {
   appMatchCase: 'ตรงตามตัวพิมพ์ใหญ่-เล็ก',
   appWholeWord: 'ทั้งคำเท่านั้น',
   appNoResults: 'ไม่พบผลลัพธ์',
+  appReplacedCount: 'แทนที่ {count} รายการ',
   appPrevMatch: 'ก่อนหน้า (Shift+Enter)',
   appNextMatch: 'ถัดไป (Enter)',
   appCloseEsc: 'ปิด (Esc)',

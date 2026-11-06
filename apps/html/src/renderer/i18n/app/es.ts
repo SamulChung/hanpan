@@ -46,6 +46,13 @@ export const es = {
   saveFailed: 'Error al guardar: {error}',
   saveFailedStatus: 'Error al guardar',
   exportFailed: 'Error al exportar',
+  exportDone: 'Exported: {name}',
+  exportOpen: 'Abrir',
+  exportReveal: 'Abrir carpeta',
+  scriptsBlocked: "This file's scripts were not run.",
+  scriptsRun: 'Run scripts',
+  scriptsRunTip:
+    'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: 'Error al imprimir: {error}',
   exportHtmlSkipped: 'Exportado, pero {count} recurso(s) no se pudieron incrustar (p. ej. {first})',
   viewPreview: 'Vista previa',
@@ -173,7 +180,8 @@ export const es = {
   insertPlaceholderParagraph: 'Escribe tu texto aquí.',
   insertPlaceholderListItem: 'Elemento de lista',
   insertPlaceholderButton: 'Botón',
-  insertNoBody: 'La página no tiene <body> donde insertar',
+  insertNoBody:
+    'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Tabla',
   insertImageUrl: 'Imagen desde URL…',
   insertConfirm: 'Insertar',

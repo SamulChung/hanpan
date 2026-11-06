@@ -124,6 +124,8 @@ export const id = {
   appExportingImages: 'Mengekspor gambar…',
   appExportImagesProgress: 'Mengekspor {count} gambar…',
   appExportImagesDone: '{count} gambar diekspor ke {dir}',
+  appOpenExported: 'Buka',
+  appRevealExported: 'Buka folder',
   appExportImagesFailed: 'Gagal mengekspor gambar: {error}',
   appMixedExportOpening:
     'Ukuran kertas campuran: membuka pratinjau paginasi untuk mengekspor halaman yang digabungkan…',
@@ -489,6 +491,7 @@ export const id = {
   appMatchCase: 'Cocokkan huruf besar/kecil',
   appWholeWord: 'Hanya kata utuh',
   appNoResults: 'Tidak ada hasil',
+  appReplacedCount: '{count} diganti',
   appPrevMatch: 'Sebelumnya (Shift+Enter)',
   appNextMatch: 'Berikutnya (Enter)',
   appCloseEsc: 'Tutup (Esc)',

@@ -957,4 +957,10 @@ export const ru = {
   ribbonMailingsMerged: 'Объединено документов: {n}',
   ribbonMailingsMergeFailed: 'Слияние не удалось',
   ribbonMailingsClose: 'Закрыть',
+  ribbonThemeFontOfficeKo: 'Office (Malgun Gothic)',
+  ribbonThemeFontMalgun: 'Malgun Gothic',
+  ribbonThemeFontPretendard: 'Pretendard',
+  ribbonThemeFontNoto: 'Noto Sans KR · Noto Serif KR',
+  ribbonThemeFontDotumBatang: 'Dotum · Batang',
+  ribbonStyleTableGrid: 'Table Grid',
 } satisfies Record<keyof typeof zh, string>

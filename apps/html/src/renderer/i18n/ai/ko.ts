@@ -147,10 +147,10 @@ export const ko = {
   aiChipRecolor: '색상 조정',
   aiChipUnify: '스타일 통일',
   aiAskCancel: '취소',
-  aiRestyleBtn: 'UI 다듬기',
+  aiRestyleBtn: 'AI 다듬기',
   aiRestylePrompt:
     '페이지 전체를 다듬어 주세요. 먼저 모든 <style>을 읽고 여백, 정렬, 글자 크기 체계, 색상, 반응형 중단점을 apply_ops 한 번으로 통일합니다. 텍스트는 바꾸지 말고 요소를 추가·삭제하지 마세요. 구조를 바꿔야 하면 먼저 plan_page로 제안해 주세요.',
-  aiThemeBtn: '스타일 변경',
+  aiThemeBtn: 'AI 스타일',
   aiThemePrompt:
     '페이지 전체를 "{direction}" 스타일로 바꿔 주세요. 먼저 plan_page로 새 style을 제안하고(기존 섹션 유지), 확인 후에는 --brief-* 변수와 관련 CSS 규칙만 수정하며 내용과 섹션 순서는 그대로 두세요.',
   aiThemeMinimal: '미니멀',

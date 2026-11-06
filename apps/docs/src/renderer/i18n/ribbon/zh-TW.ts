@@ -930,4 +930,10 @@ export const zhTW = {
   ribbonMailingsMerged: '已合併 {n} 個文件',
   ribbonMailingsMergeFailed: '合併失敗',
   ribbonMailingsClose: '關閉',
+  ribbonThemeFontOfficeKo: 'Office (Malgun Gothic)',
+  ribbonThemeFontMalgun: 'Malgun Gothic',
+  ribbonThemeFontPretendard: 'Pretendard',
+  ribbonThemeFontNoto: 'Noto Sans KR · Noto Serif KR',
+  ribbonThemeFontDotumBatang: 'Dotum · Batang',
+  ribbonStyleTableGrid: '表格格線',
 } satisfies Record<keyof typeof zh, string>

@@ -171,6 +171,10 @@ const api: MarkdownApi = {
     ipcRenderer.on(MARKDOWN_CHANNELS.printRequest, listener)
     return () => ipcRenderer.removeListener(MARKDOWN_CHANNELS.printRequest, listener)
   },
+  listPrinters: () => ipcRenderer.invoke(MARKDOWN_CHANNELS.listPrinters),
+  printDocument: (request) => ipcRenderer.invoke(MARKDOWN_CHANNELS.printDocument, request),
+  openExported: (path) => ipcRenderer.invoke(MARKDOWN_CHANNELS.openExported, path),
+  revealExported: (path) => ipcRenderer.invoke(MARKDOWN_CHANNELS.revealExported, path),
   exportDocx: (request) => ipcRenderer.invoke(MARKDOWN_CHANNELS.exportDocx, request),
   exportOdt: (request) => ipcRenderer.invoke(MARKDOWN_CHANNELS.exportOdt, request),
   exportPdf: (request) => ipcRenderer.invoke(MARKDOWN_CHANNELS.exportPdf, request),

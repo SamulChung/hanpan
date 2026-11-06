@@ -503,7 +503,7 @@ export const zh = {
   ribbonShapeCloudCallout: '云形标注',
   // Design
   ribbonThemes: '主题',
-  ribbonThemesTip: '更改文档主题(字体 + 颜色),保存后在 Word 中生效',
+  ribbonThemesTip: '更改文档主题（字体 + 颜色）；使用主题字体和颜色的文字立即更新',
   ribbonFonts: '字体',
   ribbonThemeFontsTip: '更改主题字体(标题 + 正文字体对)',
   ribbonColors: '颜色',
@@ -952,4 +952,10 @@ export const zh = {
   ribbonMailingsMerged: '已合并 {n} 个文档',
   ribbonMailingsMergeFailed: '合并失败',
   ribbonMailingsClose: '关闭',
+  ribbonThemeFontOfficeKo: 'Office（Malgun Gothic）',
+  ribbonThemeFontMalgun: 'Malgun Gothic',
+  ribbonThemeFontPretendard: 'Pretendard',
+  ribbonThemeFontNoto: 'Noto Sans KR · Noto Serif KR',
+  ribbonThemeFontDotumBatang: 'Dotum · Batang',
+  ribbonStyleTableGrid: '网格型',
 }

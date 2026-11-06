@@ -946,4 +946,10 @@ export const ar = {
   ribbonMailingsMerged: 'تم دمج {n} مستندًا',
   ribbonMailingsMergeFailed: 'فشل الدمج',
   ribbonMailingsClose: 'إغلاق',
+  ribbonThemeFontOfficeKo: 'Office (Malgun Gothic)',
+  ribbonThemeFontMalgun: 'Malgun Gothic',
+  ribbonThemeFontPretendard: 'Pretendard',
+  ribbonThemeFontNoto: 'Noto Sans KR · Noto Serif KR',
+  ribbonThemeFontDotumBatang: 'Dotum · Batang',
+  ribbonStyleTableGrid: 'Table Grid',
 } satisfies Record<keyof typeof zh, string>

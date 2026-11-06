@@ -44,6 +44,13 @@ export const zhTW = {
   saveFailed: '儲存失敗：{error}',
   saveFailedStatus: '儲存失敗',
   exportFailed: '匯出失敗',
+  exportDone: '已匯出：{name}',
+  exportOpen: '開啟',
+  exportReveal: '開啟資料夾',
+  scriptsBlocked: "This file's scripts were not run.",
+  scriptsRun: 'Run scripts',
+  scriptsRunTip:
+    'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: '列印失敗：{error}',
   exportHtmlSkipped: '已匯出，但有 {count} 個資源無法內嵌（如 {first}）',
   viewPreview: '預覽',
@@ -167,7 +174,8 @@ export const zhTW = {
   insertPlaceholderParagraph: '在此輸入文字。',
   insertPlaceholderListItem: '清單項目',
   insertPlaceholderButton: '按鈕',
-  insertNoBody: '頁面沒有 <body>，無法插入元素',
+  insertNoBody:
+    'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: '表格',
   insertImageUrl: '圖片連結…',
   insertConfirm: '插入',

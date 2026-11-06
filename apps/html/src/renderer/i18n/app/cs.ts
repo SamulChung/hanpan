@@ -44,6 +44,13 @@ export const cs = {
   saveFailed: 'Uložení se nezdařilo: {error}',
   saveFailedStatus: 'Uložení se nezdařilo',
   exportFailed: 'Export se nezdařil',
+  exportDone: 'Exported: {name}',
+  exportOpen: 'Otevřít',
+  exportReveal: 'Otevřít složku',
+  scriptsBlocked: "This file's scripts were not run.",
+  scriptsRun: 'Run scripts',
+  scriptsRunTip:
+    'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: 'Tisk se nezdařil: {error}',
   exportHtmlSkipped: 'Exportováno, ale {count} zdrojů se nepodařilo vložit (např. {first})',
   viewPreview: 'Náhled',
@@ -157,7 +164,8 @@ export const cs = {
   insertPlaceholderParagraph: 'Sem napište text.',
   insertPlaceholderListItem: 'Položka seznamu',
   insertPlaceholderButton: 'Tlačítko',
-  insertNoBody: 'Stránka nemá <body>, kam vložit',
+  insertNoBody:
+    'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Tabulka',
   insertImageUrl: 'Obrázek z adresy URL…',
   insertConfirm: 'Vložit',

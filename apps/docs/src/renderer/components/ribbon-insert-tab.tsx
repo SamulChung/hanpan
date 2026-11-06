@@ -723,7 +723,7 @@ export function InsertTab({
   return (
     <>
       {/* Word: Pages (cover page / blank page / page break) sits leftmost */}
-      <div className="ribbon-group">
+      <div className="ribbon-group ribbon-group-pages">
         <div className="ribbon-group-items">
           <div className="rb-split-wrap">
             <button

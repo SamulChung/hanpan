@@ -47,6 +47,13 @@ export const de = {
   saveFailed: 'Speichern fehlgeschlagen: {error}',
   saveFailedStatus: 'Speichern fehlgeschlagen',
   exportFailed: 'Export fehlgeschlagen',
+  exportDone: 'Exported: {name}',
+  exportOpen: 'Öffnen',
+  exportReveal: 'Ordner öffnen',
+  scriptsBlocked: "This file's scripts were not run.",
+  scriptsRun: 'Run scripts',
+  scriptsRunTip:
+    'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: 'Druck fehlgeschlagen: {error}',
   exportHtmlSkipped:
     'Exportiert, aber {count} Ressource(n) konnten nicht eingebettet werden (z. B. {first})',
@@ -174,7 +181,8 @@ export const de = {
   insertPlaceholderParagraph: 'Text hier eingeben.',
   insertPlaceholderListItem: 'Listenpunkt',
   insertPlaceholderButton: 'Schaltfläche',
-  insertNoBody: 'Die Seite hat kein <body> zum Einfügen',
+  insertNoBody:
+    'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Tabelle',
   insertImageUrl: 'Bild von URL…',
   insertConfirm: 'Einfügen',

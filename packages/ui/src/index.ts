@@ -446,6 +446,13 @@ export {
   type ImagePrintDialogProps,
 } from './image-print-dialog'
 export {
+  DocumentPrintDialog,
+  type DocumentPrintDialogLabels,
+  type DocumentPrintDialogProps,
+  type DocumentPrinter,
+  type DocumentPrintJob,
+} from './document-print-dialog'
+export {
   PRINT_MAX_SIDE,
   autoOrientation,
   buildImagePrintHtml,

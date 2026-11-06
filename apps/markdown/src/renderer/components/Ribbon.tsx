@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
-import type { ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import type { Editor } from '@tiptap/core'
 import { useEditorState } from '@tiptap/react'
 import {
@@ -171,13 +172,41 @@ function AiFeatureIcon({ kind }: { kind: 'summarize' | 'polish' | 'tidy' | 'mind
   )
 }
 
-const MARKDOWN_THEME_LABELS: Record<Exclude<MarkdownTheme, 'default'>, string> = {
-  'notion-light': 'Notion Light',
-  'notion-dark': 'Notion Dark',
-  'drake-dark': 'Drake Dark',
-  blubook: 'Blubook',
-  nord: 'Nord',
-  newsprint: 'Newsprint',
+const MARKDOWN_THEME_LABELS: Record<Exclude<MarkdownTheme, 'default'>, StringKey> = {
+  'notion-light': 'mdThemeNotionLight',
+  'notion-dark': 'mdThemeNotionDark',
+  'drake-dark': 'mdThemeDrakeDark',
+  blubook: 'mdThemeBlubook',
+  nord: 'mdThemeNord',
+  newsprint: 'mdThemeNewsprint',
+}
+
+/** A ribbon popover rendered into <body> at a fixed position under its button:
+ *  inside the ribbon it was clipped by the ribbon's overflow and covered by the
+ *  AI panel, and near the right edge it ran out of the window. */
+function useAnchoredMenu(open: boolean, close: () => void) {
+  const wrapRef = useRef<HTMLDivElement | null>(null)
+  const menuRef = useRef<HTMLDivElement | null>(null)
+  const [style, setStyle] = useState<CSSProperties>({ position: 'fixed', visibility: 'hidden' })
+  useDismissablePopover(open, close, { inside: () => [wrapRef.current, menuRef.current] })
+  useLayoutEffect(() => {
+    if (!open) return
+    const place = () => {
+      const anchor = wrapRef.current?.getBoundingClientRect()
+      const menu = menuRef.current
+      if (!anchor || !menu) return
+      const margin = 8
+      const left = Math.max(
+        margin,
+        Math.min(anchor.left, window.innerWidth - menu.offsetWidth - margin),
+      )
+      setStyle({ position: 'fixed', top: anchor.bottom + 6, left })
+    }
+    place()
+    window.addEventListener('resize', place)
+    return () => window.removeEventListener('resize', place)
+  }, [open])
+  return { wrapRef, menuRef, style }
 }
 
 /** Paper theme picker: a ribbon button with a small theme list. Selecting a
@@ -194,10 +223,7 @@ function ThemePicker({
 }) {
   const { t } = useI18n()
   const [open, setOpen] = useState(false)
-  const wrapRef = useRef<HTMLDivElement | null>(null)
-  useDismissablePopover(open, () => setOpen(false), {
-    inside: () => [wrapRef.current],
-  })
+  const { wrapRef, menuRef, style } = useAnchoredMenu(open, () => setOpen(false))
   return (
     <div className="md-theme-wrap" ref={wrapRef}>
       <IconBtn
@@ -208,28 +234,118 @@ function ThemePicker({
       >
         <IconPalette size={18} />
       </IconBtn>
-      {open && (
-        <div className="md-theme-menu" role="menu" aria-label={t('mdThemeTitle')}>
-          {(
-            ['default', ...MARKDOWN_THEME_IDS.filter((id) => id !== 'default')] as MarkdownTheme[]
-          ).map((id) => (
+      {open &&
+        createPortal(
+          <div
+            className="md-theme-menu"
+            role="menu"
+            aria-label={t('mdThemeTitle')}
+            ref={menuRef}
+            style={style}
+          >
+            {(
+              ['default', ...MARKDOWN_THEME_IDS.filter((id) => id !== 'default')] as MarkdownTheme[]
+            ).map((id) => (
+              <button
+                key={id}
+                type="button"
+                role="menuitemradio"
+                aria-checked={mdTheme === id}
+                className={`md-theme-item${mdTheme === id ? ' on' : ''}`}
+                onClick={() => {
+                  setOpen(false)
+                  if (id !== mdTheme) onPick(id)
+                }}
+              >
+                {id === 'default' ? t('mdThemeDefault') : t(MARKDOWN_THEME_LABELS[id])}
+                {mdTheme === id && <span className="md-theme-check">✓</span>}
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )}
+    </div>
+  )
+}
+
+/** Tools most office users never need (links between notes, the note graph,
+ *  an image upload server) behind one labelled menu instead of bare icons. */
+function AdvancedMenu({
+  disabled,
+  backlinksOpen,
+  onImageHost,
+  onToggleBacklinks,
+  onOpenGraph,
+}: {
+  disabled?: boolean
+  backlinksOpen?: boolean
+  onImageHost: () => void
+  onToggleBacklinks?: () => void
+  onOpenGraph?: () => void
+}) {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+  const { wrapRef, menuRef, style } = useAnchoredMenu(open, () => setOpen(false))
+  const run = (fn?: () => void) => () => {
+    setOpen(false)
+    fn?.()
+  }
+  return (
+    <div className="md-theme-wrap" ref={wrapRef}>
+      <button
+        type="button"
+        className={`rb-btn md-advanced-btn${open ? ' active' : ''}`}
+        data-tip={t('ribbonAdvancedTip')}
+        aria-label={t('ribbonAdvancedTip')}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={() => setOpen((v) => !v)}
+      >
+        {t('ribbonAdvanced')}
+        <span aria-hidden="true"> ▾</span>
+      </button>
+      {open &&
+        createPortal(
+          <div
+            className="md-theme-menu md-advanced-menu"
+            role="menu"
+            aria-label={t('ribbonAdvanced')}
+            ref={menuRef}
+            style={style}
+          >
             <button
-              key={id}
               type="button"
-              role="menuitemradio"
-              aria-checked={mdTheme === id}
-              className={`md-theme-item${mdTheme === id ? ' on' : ''}`}
-              onClick={() => {
-                setOpen(false)
-                if (id !== mdTheme) onPick(id)
-              }}
+              role="menuitem"
+              className={`md-theme-item${backlinksOpen ? ' on' : ''}`}
+              disabled={disabled}
+              onClick={run(onToggleBacklinks)}
             >
-              {id === 'default' ? t('mdThemeDefault') : MARKDOWN_THEME_LABELS[id]}
-              {mdTheme === id && <span className="md-theme-check">✓</span>}
+              <IconBacklinks size={16} />
+              {t('backlinks')}
             </button>
-          ))}
-        </div>
-      )}
+            <button
+              type="button"
+              role="menuitem"
+              className="md-theme-item"
+              disabled={disabled}
+              onClick={run(onOpenGraph)}
+            >
+              <IconGraph size={16} />
+              {t('graph')}
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              className="md-theme-item"
+              onClick={run(onImageHost)}
+            >
+              <IconCloudUpload size={16} />
+              {t('imageHostTitle')}
+            </button>
+          </div>,
+          document.body,
+        )}
     </div>
   )
 }
@@ -733,9 +849,6 @@ export function Ribbon({
               >
                 <IconPicture size={ICON} />
               </IconBtn>
-              <IconBtn title={t('imageHostTitle')} onClick={onImageHost}>
-                <IconCloudUpload size={ICON} />
-              </IconBtn>
               <IconBtn
                 title={t('insertHr')}
                 disabled={off}
@@ -788,21 +901,6 @@ export function Ribbon({
               disabled={disabled || sourceMode || sourceViewOpen}
               onPick={onMarkdownTheme}
             />
-            {!sourceMode && (
-              <IconBtn
-                title={t('backlinks')}
-                active={backlinksOpen}
-                disabled={disabled}
-                onClick={onToggleBacklinks}
-              >
-                <IconBacklinks size={ICON} />
-              </IconBtn>
-            )}
-            {!sourceMode && (
-              <IconBtn title={t('graph')} disabled={disabled} onClick={onOpenGraph}>
-                <IconGraph size={ICON} />
-              </IconBtn>
-            )}
             <IconBtn
               title={t('spellcheck')}
               active={spellcheck}
@@ -820,6 +918,16 @@ export function Ribbon({
               >
                 <IconEyeOff size={ICON} />
               </IconBtn>
+            )}
+            {/* a .txt/.json file has no notes to link and no pictures to upload */}
+            {!sourceMode && (
+              <AdvancedMenu
+                disabled={disabled}
+                backlinksOpen={backlinksOpen}
+                onImageHost={onImageHost}
+                onToggleBacklinks={onToggleBacklinks}
+                onOpenGraph={onOpenGraph}
+              />
             )}
           </div>
         </div>

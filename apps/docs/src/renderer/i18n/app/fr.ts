@@ -126,6 +126,8 @@ export const fr = {
   appExportingImages: 'Exportation des images…',
   appExportImagesProgress: 'Exportation de {count} images…',
   appExportImagesDone: '{count} images exportées vers {dir}',
+  appOpenExported: 'Ouvrir',
+  appRevealExported: 'Ouvrir le dossier',
   appExportImagesFailed: 'Échec de l’exportation des images : {error}',
   appMixedExportOpening:
     "Formats de papier mixtes : ouverture de l'aperçu de pagination pour exporter les pages fusionnées…",
@@ -498,6 +500,7 @@ export const fr = {
   appMatchCase: 'Respecter la casse',
   appWholeWord: 'Mot entier',
   appNoResults: 'Aucun résultat',
+  appReplacedCount: '{count} remplacé(s)',
   appPrevMatch: 'Précédent (Maj+Entrée)',
   appNextMatch: 'Suivant (Entrée)',
   appCloseEsc: 'Fermer (Échap)',
