@@ -458,3 +458,20 @@ describe('홈 꾸미기 panel', () => {
     expect(host.querySelector('.hp-cards [data-new="pdf"]')).not.toBeNull()
   })
 })
+
+describe('0.17 review v2: deleting a file that is open in a tab', () => {
+  it('says the tab closes first, and the button says so too', async () => {
+    window.aiOffice = new Proxy(window.aiOffice as object, {
+      get: (target, name: string) =>
+        name === 'openTabPaths'
+          ? async (paths: string[]) => paths
+          : (target as Record<string, unknown>)[name],
+    }) as typeof window.aiOffice
+    await renderHome()
+    await click(host.querySelector('.recent-row .more-btn, .more-btn'))
+    await click(host.querySelector('.row-menu button.danger'))
+    const dialog = host.querySelector('[role="dialog"]')!
+    expect(dialog.querySelector('[data-delete-open-tabs]')?.textContent).toContain('report.hwp')
+    expect(dialog.querySelector('.btn-danger')?.textContent).toBe('탭 닫고 삭제')
+  })
+})

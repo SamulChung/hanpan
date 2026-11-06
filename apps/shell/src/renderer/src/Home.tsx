@@ -1179,6 +1179,8 @@ export function Home({
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set())
   const [renaming, setRenaming] = useState<{ path: string; value: string } | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string[] | null>(null)
+  /** of the files about to be deleted, those open in a tab */
+  const [deleteOpenInTabs, setDeleteOpenInTabs] = useState<string[]>([])
   // unavailable recent entry (missing flag) the user clicked — offer list removal
   const [confirmMissing, setConfirmMissing] = useState<RecentEntry | null>(null)
   const [greetAskKey] = useState(
@@ -1714,11 +1716,17 @@ export function Home({
   const deleteFiles = (paths: string[]) => {
     setRowMenu(null)
     setConfirmDelete(paths)
+    setDeleteOpenInTabs([])
+    // the question names files open in a tab: deleting closes those tabs first
+    void Promise.resolve(window.aiOffice.openTabPaths?.(paths))
+      .then((open) => setDeleteOpenInTabs(Array.isArray(open) ? open : []))
+      .catch(() => undefined)
   }
 
   const confirmDeleteNow = () => {
     const paths = confirmDelete ?? []
     setConfirmDelete(null)
+    setDeleteOpenInTabs([])
     setSelected(new Set())
     void window.aiOffice.deleteFiles(paths).then(refresh)
   }
@@ -3870,6 +3878,11 @@ export function Home({
                 )}
               </ul>
             )}
+            {deleteOpenInTabs.length > 0 && (
+              <p className="modal-warn" data-delete-open-tabs="">
+                {t('deleteOpenTabs', { names: deleteOpenInTabs.map(fileName).join(', ') })}
+              </p>
+            )}
             <div className="modal-buttons">
               <button
                 className="btn btn-secondary"
@@ -3879,7 +3892,7 @@ export function Home({
                 {t('cancel')}
               </button>
               <button className="btn btn-danger" onClick={confirmDeleteNow}>
-                {t('delete')}
+                {deleteOpenInTabs.length > 0 ? t('deleteCloseTabs') : t('delete')}
               </button>
             </div>
           </div>

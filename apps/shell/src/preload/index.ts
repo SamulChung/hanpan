@@ -292,6 +292,10 @@ const homeApi: HomeApi = {
   async deleteFiles(paths) {
     await ipcRenderer.invoke(HOME_CHANNELS.deleteFiles, paths)
   },
+  async openTabPaths(paths) {
+    const open: unknown = await ipcRenderer.invoke(HOME_CHANNELS.openTabPaths, paths)
+    return Array.isArray(open) ? open.filter((p): p is string => typeof p === 'string') : []
+  },
   async folderRoots() {
     return (await ipcRenderer.invoke(HOME_CHANNELS.folderRoots)) as FolderRoot[]
   },

@@ -488,6 +488,7 @@ import {
 } from './knowledge-base'
 import { runHeadlessExport, type HeadlessExporters } from './headless-export'
 import { TabManager, canonicalPath, type DetachedTab } from './tab-manager'
+import { pathsOpenInTabs, trashFilesClosingTabs } from './delete-open-files'
 import { tabMenuTemplate, type TabMenuActions, isProgramFile } from './tab-menu'
 import { runTabDocumentAction, type TabDocumentAction } from './tab-document-actions'
 import { duplicateDocumentFile } from './tab-duplicate'
@@ -6399,17 +6400,27 @@ function registerHomeIpc(): void {
     const list = stringPaths(paths).filter(
       (p) => isUserVisibleFile(p, targets) && statMaybeFile(p)?.isFile() !== false,
     )
-    for (const p of list) {
-      try {
-        await shell.trashItem(p)
-      } catch {
-        // file already gone or trash unavailable; still drop it from the list
-      }
-    }
-    removeRecentFiles(list)
+    // a file open in a tab: its tab closes first (asking about unsaved changes);
+    // a file whose tab stays open is left where it is
+    const trashed = await trashFilesClosingTabs(list, {
+      tabs: () => tabManager?.list() ?? [],
+      canonical: (p) => canonicalPath(p),
+      closeTab: async (id) => {
+        await tabManager?.closeTab(id)
+      },
+      trash: (p) => shell.trashItem(p),
+    })
+    removeRecentFiles(trashed)
     // the files were deliberately destroyed — stars must not survive as ghosts
-    removeStarredFiles(list)
+    removeStarredFiles(trashed)
   })
+
+  ipcMain.handle(HOME_CHANNELS.openTabPaths, (_event, paths: unknown) =>
+    pathsOpenInTabs(stringPaths(paths), {
+      tabs: () => tabManager?.list() ?? [],
+      canonical: (p) => canonicalPath(p),
+    }),
+  )
 
   ipcMain.handle(HOME_CHANNELS.openTrash, () => {
     if (process.platform === 'darwin') {
@@ -9980,8 +9991,21 @@ app.whenReady().then(async () => {
     parentWindow: () => shellWindow,
     lang: () => currentLang(),
     theme: () => currentTheme(),
-    title: (lang) => `${lang === 'ko' ? '디자인' : 'Design'} - ${productName(lang as never)}`,
+    title: (lang) =>
+      `${lang === 'ko' ? '디자인' : lang === 'vi' ? 'Thiết kế' : 'Design'} - ${productName(lang as never)}`,
     gonguKey: () => readStoredAiSettings().gongu?.apiKey ?? '',
+    // a first save starts in the save folder Settings names, not a fixed Documents\Hanpan
+    saveDir: () => defaultSaveDir(),
+    // "Open Settings" beside the board's Gongu error: the shell comes forward on Integrations
+    openSettings: (section) => {
+      const target = shellWindow
+      if (!target || target.isDestroyed()) return
+      if (target.isMinimized()) target.restore()
+      target.show()
+      target.focus()
+      tabManager?.openHomeTab()
+      target.webContents.send(HOME_CHANNELS.openSettings, { section })
+    },
   })
   // Hanpan: Insert ▸ Gongu pictures in the Word and PowerPoint editors, the board's search
   registerGonguPictureIpc({ gonguKey: () => readStoredAiSettings().gongu?.apiKey ?? '' })

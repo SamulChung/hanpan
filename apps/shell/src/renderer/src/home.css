@@ -2351,3 +2351,14 @@ html[dir='rtl'] .quick-title-row {
 .kb-ask-assistant a:hover {
   text-decoration: underline;
 }
+
+/* the delete question names files that are open in a tab (they close first) */
+.modal-warn {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border: 1px solid var(--danger-border);
+  border-radius: 6px;
+  background: var(--danger-bg);
+  font-size: 13px;
+  color: var(--text);
+}
