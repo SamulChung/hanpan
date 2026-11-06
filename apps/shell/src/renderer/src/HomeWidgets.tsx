@@ -773,7 +773,6 @@ export function HomeWidgets({
   )
 }
 
-
 /** "위젯 추가": every widget type, with what it does */
 export function WidgetGallery({
   layout,
