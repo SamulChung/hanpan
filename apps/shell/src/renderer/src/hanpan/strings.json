@@ -46,8 +46,8 @@
     "ms": "Surat rasmi · laporan · kertas cadangan"
   },
   "hpTemplatesTitle": {
-    "ko": "양식으로 새 문서 만들기",
-    "en": "New document from a template",
+    "ko": "한판 양식",
+    "en": "Hanpan templates",
     "zh": "用模板新建文档",
     "zh-TW": "用範本新增文件",
     "ja": "テンプレートから新規文書",
@@ -56,7 +56,7 @@
     "ar": "مستند جديد من قالب",
     "he": "מסמך חדש מתבנית",
     "hi": "टेम्पलेट से नया दस्तावेज़",
-    "vi": "Tài liệu mới từ mẫu",
+    "vi": "Mẫu Hanpan",
     "fr": "Nouveau document à partir d’un modèle",
     "de": "Neues Dokument aus Vorlage",
     "es": "Nuevo documento a partir de una plantilla",

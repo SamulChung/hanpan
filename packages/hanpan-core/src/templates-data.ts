@@ -21,7 +21,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "business-plan",
     "title": "3개년 사업계획서",
     "category": "사업기획",
-    "description": "회사명·비전·시장분석·SWOT·재무추정·인력계획·위험관리 — 자금조달·이사회 보고용",
+    "description": "투자 유치나 이사회 보고를 앞두고 앞으로 3년 계획을 정리할 때",
     "icon": "📈",
     "tags": [
       "사업계획",
@@ -35,7 +35,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "ir-pitch",
     "title": "IR 피치 (투자유치)",
     "category": "사업기획",
-    "description": "시리즈 A 라운드용 — 회사·문제·해결·시장·진척·BM·재무·팀·조건",
+    "description": "투자자에게 회사와 사업을 짧게 소개할 때",
     "icon": "💎",
     "tags": [
       "IR",
@@ -49,7 +49,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "market-analysis",
     "title": "시장 분석 보고서",
     "category": "사업기획",
-    "description": "TAM/SAM/SOM·고객 세그먼트·경쟁 환경(Porter)·SWOT·트렌드 5선·전략 권고",
+    "description": "새 시장의 크기, 고객, 경쟁 상황을 살펴볼 때",
     "icon": "📊",
     "tags": [
       "시장조사",
@@ -62,7 +62,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "feasibility-study",
     "title": "사업타당성 분석",
     "category": "사업기획",
-    "description": "해외 진출 등 신규 사업 평가 — 시장성·기술성·재무성·법적·운영 종합 7.85/10",
+    "description": "해외 진출 같은 새 사업을 할지 말지 따져 볼 때",
     "icon": "🔍",
     "tags": [
       "타당성",
@@ -76,7 +76,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "weekly-report",
     "title": "주간 업무 보고",
     "category": "보고서",
-    "description": "Done/Doing/Blocked + KPI 표 + 이슈·위험 + 다음주 계획 — 팀장 보고용",
+    "description": "한 주 동안 한 일, 막힌 일, 다음 주 계획을 팀장에게 보고할 때",
     "icon": "📊",
     "tags": [
       "주간보고",
@@ -89,7 +89,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "quarterly-report",
     "title": "분기 실적 보고서",
     "category": "보고서",
-    "description": "대시보드 + 손익·영업·제품·인력·자금 - 위험모니터링 + 차분기 과제 (이사회·임원)",
+    "description": "분기마다 실적과 위험을 임원·이사회에 보고할 때",
     "icon": "📋",
     "tags": [
       "분기보고",
@@ -102,7 +102,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "annual-report",
     "title": "연간 사업보고서",
     "category": "보고서",
-    "description": "경영요약·사업영역별 실적·재무·이슈·차년도 방향 — 이사회 결의 요청 양식",
+    "description": "한 해 실적을 정리하고 다음 해 방향을 이사회에 올릴 때",
     "icon": "📚",
     "tags": [
       "연간보고",
@@ -116,7 +116,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "rnd-report",
     "title": "R&D 결과 보고서",
     "category": "보고서",
-    "description": "과제 개요·연구 내용·결과·한계·후속·예산 집행 — 정부과제 결과 보고 양식",
+    "description": "정부 연구과제를 마치고 결과를 보고할 때",
     "icon": "🔬",
     "tags": [
       "R&D",
@@ -130,7 +130,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "marketing-strategy",
     "title": "마케팅 전략 기획서",
     "category": "보고서",
-    "description": "STP·4P·분기별 실행·예산·ROI·메시지 프레임 — 마케팅 임원 보고용",
+    "description": "분기 마케팅 계획과 예산을 임원에게 올릴 때",
     "icon": "🎯",
     "tags": [
       "마케팅",
@@ -144,7 +144,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "business-proposal",
     "title": "B2B 사업 제안서 (공공·기업)",
     "category": "제안서",
-    "description": "배경·솔루션·추진방안·사업비·기대효과·보안·위험 — 4.5억원 입찰 양식",
+    "description": "공공기관이나 기업 입찰에 사업을 제안할 때",
     "icon": "💼",
     "tags": [
       "입찰",
@@ -158,7 +158,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "policy-proposal",
     "title": "정책 제안서 (정부 제출)",
     "category": "제안서",
-    "description": "배경·목표·추진방안·B/C 13.5 분석·예산·거버넌스 — 부처 정책사업 제안 양식",
+    "description": "정부 부처에 정책 사업을 제안할 때",
     "icon": "🏛️",
     "tags": [
       "정책",
@@ -172,7 +172,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "gongmun-cooperation",
     "title": "협조 요청 공문",
     "category": "공문",
-    "description": "수신·발신·근거·요청사항·기대효과·보안 - 시범도입 협조 요청 표준 양식",
+    "description": "다른 기관에 협조를 요청하는 공문을 보낼 때",
     "icon": "📜",
     "tags": [
       "공공",
@@ -185,7 +185,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "gongmun-notice",
     "title": "안내·통보 공문",
     "category": "공문",
-    "description": "행사 안내 표준 양식 — 일시·장소·일정·신청·유의사항 — 전사 워크숍 양식",
+    "description": "행사나 일정을 안내하는 공문을 보낼 때",
     "icon": "📋",
     "tags": [
       "공공",
@@ -198,7 +198,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "budget-request",
     "title": "예산 요구서 (공공)",
     "category": "공문",
-    "description": "사업개요·전년 실적·차년 계획·산출근거·B/C·자금흐름·위험관리 — 예산편성 양식",
+    "description": "다음 해 사업 예산을 요구할 때",
     "icon": "💰",
     "tags": [
       "예산",
@@ -211,7 +211,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "meeting-minutes",
     "title": "임원진 정기 회의록",
     "category": "회의록",
-    "description": "참석자·안건·논의·결의·미결·다음회의 — 6개 안건 상세 + 결의 9건 — 이사회/임원진",
+    "description": "이사회나 임원 회의의 안건과 결정을 기록할 때",
     "icon": "🗒️",
     "tags": [
       "회의",
@@ -225,7 +225,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "short-memo",
     "title": "내부 메모 (팀 스프린트)",
     "category": "메모",
-    "description": "한 주 마무리·다음주 계획·블로커·회고 — 데일리/스프린트 짧은 메모 양식",
+    "description": "팀의 한 주를 짧게 돌아보고 다음 할 일을 적을 때",
     "icon": "✏️",
     "tags": [
       "메모",
@@ -236,9 +236,9 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
   },
   {
     "id": "newsletter-template",
-    "title": "조합원 뉴스레터 (役關目條分 + PASA)",
+    "title": "조합원 뉴스레터",
     "category": "콘텐츠",
-    "description": "역관목조분 5요소 + PASA 4단 메시지 구조 — 농협·공공기관 뉴스레터 표준 골격",
+    "description": "조합원이나 주민에게 소식지를 보낼 때",
     "icon": "📧",
     "tags": [
       "뉴스레터",
@@ -253,7 +253,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "video-plan-template",
     "title": "홍보 영상 기획서 (1분 숏폼)",
     "category": "콘텐츠",
-    "description": "후크 0~3초·메시지 3~50초·CTA 50~60초 — 9컷 스토리보드 + 자막 5원칙",
+    "description": "1분짜리 홍보 영상의 장면과 자막을 계획할 때",
     "icon": "🎬",
     "tags": [
       "영상기획",
@@ -267,7 +267,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     "id": "press-release-template",
     "title": "보도자료 (언론 배포용)",
     "category": "콘텐츠",
-    "description": "제목·부제목·본문·인용구·담당자 연락처 — A4 1.5페이지 표준 보도자료 양식",
+    "description": "언론사에 보낼 보도자료를 쓸 때",
     "icon": "📰",
     "tags": [
       "보도자료",
