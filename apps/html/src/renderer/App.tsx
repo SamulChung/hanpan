@@ -377,7 +377,8 @@ export default function App() {
         textRef.current = doc.text
         // a file from disk (a mail attachment, a download) does not run its scripts in the
         // preview until the user says so; pages made here (new, AI, template) do
-        const blockScripts = (pending !== null || recovered !== null) && hasDocumentScripts(doc.text)
+        const blockScripts =
+          (pending !== null || recovered !== null) && hasDocumentScripts(doc.text)
         scriptsBlockedRef.current = blockScripts
         setScriptsBlocked(blockScripts)
         // the frame must never race the first push: serve the buffer before the URL is known to React

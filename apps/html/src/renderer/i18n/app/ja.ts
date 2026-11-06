@@ -47,9 +47,10 @@ export const ja = {
   exportDone: '書き出しました: {name}',
   exportOpen: '開く',
   exportReveal: 'フォルダーを開く',
-  scriptsBlocked: 'This file\'s scripts were not run.',
+  scriptsBlocked: "This file's scripts were not run.",
   scriptsRun: 'Run scripts',
-  scriptsRunTip: 'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
+  scriptsRunTip:
+    'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: '印刷に失敗しました: {error}',
   exportHtmlSkipped:
     'エクスポートしましたが、{count} 個のアセットを埋め込めませんでした（例: {first}）',
@@ -176,7 +177,8 @@ export const ja = {
   insertPlaceholderParagraph: 'ここにテキストを入力します。',
   insertPlaceholderListItem: 'リスト項目',
   insertPlaceholderButton: 'ボタン',
-  insertNoBody: 'この文書には挿入できる場所がありません。本文を1行入力してからもう一度お試しください。',
+  insertNoBody:
+    'この文書には挿入できる場所がありません。本文を1行入力してからもう一度お試しください。',
   insertTable: '表',
   insertImageUrl: 'URL から画像…',
   insertConfirm: '挿入',

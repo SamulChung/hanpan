@@ -50,9 +50,10 @@ export const fr = {
   exportDone: 'Exported: {name}',
   exportOpen: 'Ouvrir',
   exportReveal: 'Ouvrir le dossier',
-  scriptsBlocked: 'This file\'s scripts were not run.',
+  scriptsBlocked: "This file's scripts were not run.",
   scriptsRun: 'Run scripts',
-  scriptsRunTip: 'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
+  scriptsRunTip:
+    'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: "Échec de l'impression : {error}",
   exportHtmlSkipped: 'Exporté, mais {count} ressource(s) n’ont pas pu être intégrées (ex. {first})',
   viewPreview: 'Aperçu',
@@ -180,7 +181,8 @@ export const fr = {
   insertPlaceholderParagraph: 'Saisissez votre texte ici.',
   insertPlaceholderListItem: 'Élément de liste',
   insertPlaceholderButton: 'Bouton',
-  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
+  insertNoBody:
+    'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Tableau',
   insertImageUrl: 'Image depuis une URL…',
   insertConfirm: 'Insérer',

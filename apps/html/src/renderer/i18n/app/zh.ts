@@ -46,9 +46,10 @@ export const zh = {
   exportDone: '已导出：{name}',
   exportOpen: '打开',
   exportReveal: '打开文件夹',
-  scriptsBlocked: 'This file\'s scripts were not run.',
+  scriptsBlocked: "This file's scripts were not run.",
   scriptsRun: 'Run scripts',
-  scriptsRunTip: 'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
+  scriptsRunTip:
+    'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: '打印失败：{error}',
   exportHtmlSkipped: '已导出，但有 {count} 个资源无法内嵌（如 {first}）',
   viewPreview: '预览',

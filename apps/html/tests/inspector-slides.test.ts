@@ -379,6 +379,8 @@ describe('Esc typed into the preview', () => {
       new win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
     )
     await new Promise((r) => setTimeout(r, 20))
-    expect(messages).toContainEqual(expect.objectContaining({ type: 'gx:keyCommand', command: 'escape' }))
+    expect(messages).toContainEqual(
+      expect.objectContaining({ type: 'gx:keyCommand', command: 'escape' }),
+    )
   })
 })

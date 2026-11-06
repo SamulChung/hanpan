@@ -98,7 +98,8 @@ export function instrumentForPreview(
   if (!nonce) return out
   const policy = `<meta http-equiv="Content-Security-Policy" content="script-src 'nonce-${nonce}'">`
   // as early as the parser allows: right after <head>, else <html>, else the doctype
-  const anchor = /<head(\s[^>]*)?>/i.exec(out) ?? /<html(\s[^>]*)?>/i.exec(out) ?? /<!doctype[^>]*>/i.exec(out)
+  const anchor =
+    /<head(\s[^>]*)?>/i.exec(out) ?? /<html(\s[^>]*)?>/i.exec(out) ?? /<!doctype[^>]*>/i.exec(out)
   if (!anchor) return policy + out
   const at = anchor.index + anchor[0].length
   return out.slice(0, at) + policy + out.slice(at)

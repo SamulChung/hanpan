@@ -11,9 +11,8 @@ describe('scripts of an opened HTML file stay off in the preview until allowed',
     const out = instrumentForPreview(DOC, buildParseMap(DOC, 1), 'INSPECTOR', {
       blockScripts: true,
     })
-    const meta = /<meta http-equiv="Content-Security-Policy" content="script-src 'nonce-([\w-]+)'">/.exec(
-      out,
-    )
+    const meta =
+      /<meta http-equiv="Content-Security-Policy" content="script-src 'nonce-([\w-]+)'">/.exec(out)
     expect(meta).not.toBeNull()
     // before the author's own <script> in <head>
     expect(out.indexOf(meta![0])).toBeLessThan(out.indexOf('document.title'))

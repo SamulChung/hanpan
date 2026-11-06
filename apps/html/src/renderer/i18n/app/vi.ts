@@ -49,7 +49,8 @@ export const vi = {
   exportReveal: 'Mở thư mục',
   scriptsBlocked: 'Chưa chạy các script của tệp này.',
   scriptsRun: 'Chạy script',
-  scriptsRunTip: 'Chỉ chạy với tệp bạn tin cậy. HTML từ email hoặc Internet có thể dùng script để làm giả nội dung hiển thị.',
+  scriptsRunTip:
+    'Chỉ chạy với tệp bạn tin cậy. HTML từ email hoặc Internet có thể dùng script để làm giả nội dung hiển thị.',
   printFailed: 'In thất bại: {error}',
   exportHtmlSkipped: 'Đã xuất, nhưng {count} tài nguyên không thể nhúng (ví dụ {first})',
   viewPreview: 'Xem trước',

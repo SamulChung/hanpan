@@ -47,9 +47,10 @@ export const hi = {
   exportDone: 'Exported: {name}',
   exportOpen: 'खोलें',
   exportReveal: 'फ़ोल्डर खोलें',
-  scriptsBlocked: 'This file\'s scripts were not run.',
+  scriptsBlocked: "This file's scripts were not run.",
   scriptsRun: 'Run scripts',
-  scriptsRunTip: 'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
+  scriptsRunTip:
+    'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: 'प्रिंट विफल: {error}',
   exportHtmlSkipped: 'निर्यात हो गया, लेकिन {count} संसाधन एम्बेड नहीं हो सके (जैसे {first})',
   viewPreview: 'पूर्वावलोकन',
@@ -176,7 +177,8 @@ export const hi = {
   insertPlaceholderParagraph: 'यहाँ अपना टेक्स्ट लिखें।',
   insertPlaceholderListItem: 'सूची आइटम',
   insertPlaceholderButton: 'बटन',
-  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
+  insertNoBody:
+    'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'तालिका',
   insertImageUrl: 'URL से छवि…',
   insertConfirm: 'सम्मिलित करें',

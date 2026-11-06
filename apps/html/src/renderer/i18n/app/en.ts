@@ -48,9 +48,10 @@ export const en = {
   exportDone: 'Exported: {name}',
   exportOpen: 'Open',
   exportReveal: 'Open folder',
-  scriptsBlocked: 'This file\'s scripts were not run.',
+  scriptsBlocked: "This file's scripts were not run.",
   scriptsRun: 'Run scripts',
-  scriptsRunTip: 'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
+  scriptsRunTip:
+    'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: 'Print failed: {error}',
   exportHtmlSkipped: 'Exported, but {count} asset(s) could not be inlined (e.g. {first})',
   viewPreview: 'Preview',
@@ -176,7 +177,8 @@ export const en = {
   insertPlaceholderParagraph: 'Type your text here.',
   insertPlaceholderListItem: 'List item',
   insertPlaceholderButton: 'Button',
-  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
+  insertNoBody:
+    'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Table',
   insertImageUrl: 'Image from URL…',
   insertConfirm: 'Insert',

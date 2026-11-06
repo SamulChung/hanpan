@@ -48,9 +48,10 @@ export const pt = {
   exportDone: 'Exported: {name}',
   exportOpen: 'Abrir',
   exportReveal: 'Abrir pasta',
-  scriptsBlocked: 'This file\'s scripts were not run.',
+  scriptsBlocked: "This file's scripts were not run.",
   scriptsRun: 'Run scripts',
-  scriptsRunTip: 'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
+  scriptsRunTip:
+    'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: 'Falha ao imprimir: {error}',
   exportHtmlSkipped:
     'Exportado, mas {count} recurso(s) não puderam ser incorporados (ex.: {first})',
@@ -178,7 +179,8 @@ export const pt = {
   insertPlaceholderParagraph: 'Digite seu texto aqui.',
   insertPlaceholderListItem: 'Item da lista',
   insertPlaceholderButton: 'Botão',
-  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
+  insertNoBody:
+    'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Tabela',
   insertImageUrl: 'Imagem da URL…',
   insertConfirm: 'Inserir',

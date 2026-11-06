@@ -47,9 +47,10 @@ export const he = {
   exportDone: 'Exported: {name}',
   exportOpen: 'פתח',
   exportReveal: 'פתח תיקייה',
-  scriptsBlocked: 'This file\'s scripts were not run.',
+  scriptsBlocked: "This file's scripts were not run.",
   scriptsRun: 'Run scripts',
-  scriptsRunTip: 'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
+  scriptsRunTip:
+    'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: 'הדפסה נכשלה: {error}',
   exportHtmlSkipped: 'יוצא, אך לא ניתן היה להטמיע {count} משאבים (למשל {first})',
   viewPreview: 'תצוגה מקדימה',
@@ -173,7 +174,8 @@ export const he = {
   insertPlaceholderParagraph: 'הקלידו את הטקסט כאן.',
   insertPlaceholderListItem: 'פריט רשימה',
   insertPlaceholderButton: 'כפתור',
-  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
+  insertNoBody:
+    'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'טבלה',
   insertImageUrl: 'תמונה מכתובת URL…',
   insertConfirm: 'הוספה',

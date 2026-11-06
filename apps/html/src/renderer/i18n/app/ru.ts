@@ -49,9 +49,10 @@ export const ru = {
   exportDone: 'Exported: {name}',
   exportOpen: 'Открыть',
   exportReveal: 'Открыть папку',
-  scriptsBlocked: 'This file\'s scripts were not run.',
+  scriptsBlocked: "This file's scripts were not run.",
   scriptsRun: 'Run scripts',
-  scriptsRunTip: 'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
+  scriptsRunTip:
+    'Run them only for files you trust. HTML from mail or the web can use scripts to fake what you see.',
   printFailed: 'Не удалось напечатать: {error}',
   exportHtmlSkipped:
     'Экспортировано, но {count} ресурс(ов) не удалось встроить (например, {first})',
@@ -177,7 +178,8 @@ export const ru = {
   insertPlaceholderParagraph: 'Введите текст здесь.',
   insertPlaceholderListItem: 'Элемент списка',
   insertPlaceholderButton: 'Кнопка',
-  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
+  insertNoBody:
+    'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Таблица',
   insertImageUrl: 'Изображение по URL…',
   insertConfirm: 'Вставить',
