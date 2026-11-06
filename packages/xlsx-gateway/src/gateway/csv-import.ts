@@ -346,18 +346,21 @@ function columnIndexFromLabel(label: string): number {
 
 /**
  * The first sheet of a workbook this package makes from nothing (a blank workbook, a CSV
- * opened or imported, the AI's create_document): Korean, as Hanpan 0.17 starts new
- * workbooks. A sheet of an existing file keeps its own name; only new ones take this.
+ * opened or imported, the AI's create_document) follows the UI language the caller passes
+ * (firstSheetNameFor, new-workbook-lang.ts); without one it is Korean, as Hanpan 0.17
+ * starts new workbooks. A sheet of an existing file keeps its own name; only new ones
+ * take this.
  */
-export const NEW_WORKBOOK_SHEET_NAME = '시트1'
+export const NEW_WORKBOOK_SHEET_NAME = firstSheetNameFor('ko')
 
 export async function csvToXlsxBuffer(
   csvText: string,
-  sheetName = NEW_WORKBOOK_SHEET_NAME,
+  sheetName?: string,
+  lang = 'ko',
 ): Promise<Buffer> {
   const rows = parseCsv(csvText, resolveImportDelimiter(csvText))
   if (rows.length === 0) throw new Error('The CSV file has no data rows.')
-  return xlsxBufferFromRows(rows, sheetName)
+  return xlsxBufferFromRows(rows, sheetName ?? firstSheetNameFor(lang))
 }
 
 /**
@@ -368,11 +371,15 @@ export async function csvToXlsxBuffer(
  */
 export async function csvToXlsxBufferForOpen(
   csvText: string,
-  sheetName = NEW_WORKBOOK_SHEET_NAME,
+  sheetName?: string,
   delimiter?: string,
+  lang = 'ko',
 ): Promise<{ buffer: Buffer; empty: boolean }> {
   const rows = parseCsv(csvText, delimiter ?? resolveImportDelimiter(csvText))
-  return { buffer: await xlsxBufferFromRows(rows, sheetName), empty: rows.length === 0 }
+  return {
+    buffer: await xlsxBufferFromRows(rows, sheetName ?? firstSheetNameFor(lang)),
+    empty: rows.length === 0,
+  }
 }
 
 /**
@@ -419,9 +426,10 @@ function bodyRowsAgreeOnWidth(rows: readonly (readonly string[])[]): boolean {
  */
 export async function sheetCsvToXlsxBuffer(
   csvText: string,
-  sheetName = NEW_WORKBOOK_SHEET_NAME,
+  sheetName?: string,
+  lang = 'ko',
 ): Promise<Buffer> {
-  return xlsxBufferFromRows(parseCsv(csvText, ','), sheetName)
+  return xlsxBufferFromRows(parseCsv(csvText, ','), sheetName ?? firstSheetNameFor(lang))
 }
 
 /**

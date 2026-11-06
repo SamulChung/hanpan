@@ -3873,7 +3873,7 @@ export function registerSheetsIpc(): void {
           return { ok: true, path: filePath }
         }
         if (request.type === 'xlsx') {
-          const buffer = await sheetCsvToXlsxBuffer(request.content, request.sheetName)
+          const buffer = await sheetCsvToXlsxBuffer(request.content, request.sheetName, getUiLang())
           const filePath = uniquePathIn(
             configuredDefaultSaveDir(app),
             `${sanitizeGeneratedFileBase(request.title)}.xlsx`,
@@ -5253,7 +5253,10 @@ async function openEmptyXlsx(path: string): Promise<{
   await mkdir(directory, { recursive: true })
   const openPath = join(directory, basename(path))
   try {
-    await writeFile(openPath, (await csvToXlsxBufferForOpen('')).buffer)
+    await writeFile(
+      openPath,
+      (await csvToXlsxBufferForOpen('', undefined, undefined, getUiLang())).buffer,
+    )
   } catch (error) {
     await cleanupImportTempDirectory(app.getPath('temp'), directory)
     throw error
@@ -5444,6 +5447,7 @@ async function prepareWorkbookForOpen(
           decodeCsvBuffer(await readFile(path), legacyCsvCharset()),
           undefined,
           copyExtension === 'tsv' ? '\t' : undefined,
+          getUiLang(),
         )
         await writeFile(openPath, converted.buffer)
       }
@@ -5494,6 +5498,7 @@ async function prepareWorkbookForOpen(
         // every row shatters on the comma. A .csv keeps the sniff — the prose
         // guard in resolveImportDelimiter is what that path needs.
         extension === 'tsv' ? '\t' : undefined,
+        getUiLang(),
       )
       emptyCsv = converted.empty
       await writeFile(openPath, converted.buffer)
