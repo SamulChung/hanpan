@@ -655,6 +655,43 @@ button {
   height: 22px;
 }
 
+/* The denser layouts of the full band (ribbon-fit.ts sets data-fit when the band runs past
+ * the window edge; the compact density has its own). A 1366 window in Korean needs the
+ * first; longer labels (English, Vietnamese) the second. A label is never removed.
+ *
+ * First layout: the buttons, groups and separators give up side padding. */
+.ribbon:not(.ribbon-compact) .ribbon-body[data-fit] .rb-big {
+  padding: 4px 4px 6px;
+}
+
+.ribbon:not(.ribbon-compact) .ribbon-body[data-fit] .ribbon-group {
+  padding: 2px 2px;
+}
+
+.ribbon:not(.ribbon-compact) .ribbon-body[data-fit] .ribbon-sep {
+  margin: 8px 3px;
+}
+
+/* Second layout: a label of more than one word takes two lines, broken between words
+ * (keep-all), under a shorter icon plate, so the button is as wide as its longest word. */
+.ribbon:not(.ribbon-compact) .ribbon-body[data-fit='2'] .rb-big {
+  gap: 2px;
+  padding: 2px 3px 3px;
+  white-space: normal;
+}
+
+.ribbon:not(.ribbon-compact) .ribbon-body[data-fit='2'] .rb-big > span:not(.rb-big-icon) {
+  max-width: 64px;
+  line-height: 1.15;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.ribbon:not(.ribbon-compact) .ribbon-body[data-fit='2'] .rb-big-icon {
+  min-height: 24px;
+  padding: 2px 4px;
+}
+
 .rb-icon {
   min-width: 27px;
   height: 26px;

@@ -209,6 +209,14 @@ body {
 .dz-left {
   width: 250px;
   border-inline-end: 1px solid var(--border);
+  /* the tiles' Korean labels (외곽선 제목) break between words, never inside one */
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+/* a template's preview is a page: its text breaks as it does on the board */
+.dz-left .dz-page {
+  word-break: normal;
+  overflow-wrap: normal;
 }
 .dz-right {
   width: 272px;
@@ -328,7 +336,8 @@ body {
 }
 .dz-pv-outlined {
   color: var(--dz-sample-light);
-  font-size: 20px;
+  /* the shadowed sample's size: "외곽선 제목" fits its tile on one line at 1366 */
+  font-size: 18px;
   font-weight: 900;
   -webkit-text-stroke: 3px var(--dz-sample-dark);
   paint-order: stroke fill;

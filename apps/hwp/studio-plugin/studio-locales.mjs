@@ -97,3 +97,57 @@ export function aboutText(locale, version) {
   const release = String(version).replace(/-.*$/, '')
   return { ...words, engine: words.engine.replace('{version}', release) }
 }
+
+/**
+ * Text the studio writes straight into its markup instead of asking its catalogs, under keys
+ * of the app's own (`hanpan.*`), in Korean, English and every added language. The build
+ * registers them with each studio language (studio-locale-register) and patches the studio
+ * to ask for them (studio-page-setup-labels, studio-input-aria-label).
+ */
+export const APP_STRINGS = {
+  ko: {
+    'hanpan.pageSetup.portrait': '세로',
+    'hanpan.pageSetup.landscape': '가로',
+    'hanpan.pageSetup.bindingSingle': '한쪽',
+    'hanpan.pageSetup.bindingFacing': '맞쪽',
+    'hanpan.pageSetup.bindingTop': '위로',
+    'hanpan.pageSetup.marginTop': '위쪽',
+    'hanpan.pageSetup.marginBottom': '아래쪽',
+    'hanpan.pageSetup.marginLeft': '왼쪽',
+    'hanpan.pageSetup.marginRight': '오른쪽',
+    'hanpan.pageSetup.marginHeader': '머리말',
+    'hanpan.pageSetup.marginFooter': '꼬리말',
+    'hanpan.pageSetup.marginGutter': '제본',
+    'hanpan.editor.inputLabel': '문서 편집 입력',
+  },
+  en: {
+    'hanpan.pageSetup.portrait': 'Portrait',
+    'hanpan.pageSetup.landscape': 'Landscape',
+    'hanpan.pageSetup.bindingSingle': 'Single-sided',
+    'hanpan.pageSetup.bindingFacing': 'Facing pages',
+    'hanpan.pageSetup.bindingTop': 'Top-bound',
+    'hanpan.pageSetup.marginTop': 'Top',
+    'hanpan.pageSetup.marginBottom': 'Bottom',
+    'hanpan.pageSetup.marginLeft': 'Left',
+    'hanpan.pageSetup.marginRight': 'Right',
+    'hanpan.pageSetup.marginHeader': 'Header',
+    'hanpan.pageSetup.marginFooter': 'Footer',
+    'hanpan.pageSetup.marginGutter': 'Gutter',
+    'hanpan.editor.inputLabel': 'Document editing input',
+  },
+  vi: {
+    'hanpan.pageSetup.portrait': 'Dọc',
+    'hanpan.pageSetup.landscape': 'Ngang',
+    'hanpan.pageSetup.bindingSingle': 'Một mặt',
+    'hanpan.pageSetup.bindingFacing': 'Hai mặt',
+    'hanpan.pageSetup.bindingTop': 'Gáy trên',
+    'hanpan.pageSetup.marginTop': 'Trên',
+    'hanpan.pageSetup.marginBottom': 'Dưới',
+    'hanpan.pageSetup.marginLeft': 'Trái',
+    'hanpan.pageSetup.marginRight': 'Phải',
+    'hanpan.pageSetup.marginHeader': 'Đầu trang',
+    'hanpan.pageSetup.marginFooter': 'Chân trang',
+    'hanpan.pageSetup.marginGutter': 'Gáy sách',
+    'hanpan.editor.inputLabel': 'Ô nhập chỉnh sửa tài liệu',
+  },
+}

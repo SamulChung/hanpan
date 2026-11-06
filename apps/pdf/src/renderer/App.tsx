@@ -353,6 +353,7 @@ import type { LocalTextEdit, LocalTextInsert, TextDraft } from './text-edit-prev
 import { planEditOps, reduceBucket } from './edit-ops'
 import type { Bucket, Op, OpContext, PlanResult } from './edit-ops'
 import { rectsNear } from './edit-state'
+import { useRibbonFit } from './ribbon-fit'
 import type {
   StampConfig,
   SavedMarkupAnnot,
@@ -622,6 +623,9 @@ export default function App() {
   /** One-shot prompt pushed by the ribbon AI buttons; the panel auto-runs it (docs preset pattern) */
   const [aiPreset, setAiPreset] = useState<{ text: string; nonce: number } | null>(null)
   const [ribbonTab, setRibbonTab] = useState<RibbonTab>('home')
+  /** the ribbon band: it takes a denser layout when its tools run past the window edge */
+  const [ribbonBody, setRibbonBody] = useState<HTMLDivElement | null>(null)
+  useRibbonFit(ribbonBody, [lang, ribbonTab, collapse.rootClass])
   const [spread, setSpread] = useState<1 | 2>(1)
   // side-by-side translation view; the revision rebuilds its tree after a save
   const [bilingualOn, setBilingualOn] = useState(false)
@@ -8561,7 +8565,7 @@ export default function App() {
             </span>
           )}
         </div>
-        <div className="ribbon-body" data-ribbon-body="">
+        <div className="ribbon-body" data-ribbon-body="" ref={setRibbonBody}>
           {ribbonTab === 'home' && (
             <>
               {/* ---- AI (first slot: entry + one-click AI actions, docs parity) ---- */}

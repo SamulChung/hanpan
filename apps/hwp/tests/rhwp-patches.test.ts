@@ -585,6 +585,7 @@ describe('the studio source the build fetched', () => {
     'src/ui/style-toolbar-overflow.ts',
     'src/ui/toolbar.ts',
     'src/ui/about-dialog.ts',
+    'src/ui/page-setup-dialog.ts',
   ].map((file) => join(studio, file))
 
   // only where a build has fetched it; a fresh checkout has nothing to look at

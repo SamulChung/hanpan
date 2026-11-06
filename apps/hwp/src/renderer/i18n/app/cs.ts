@@ -36,6 +36,8 @@ export const cs = {
   backupKept: 'Uloženo. Předchozí verze byla zachována jako {name}.',
   openedTracked:
     'Tento dokument obsahuje sledované změny. Vidíte jeho aktuální text s použitými změnami; uložením se tento text zachová a záznam změn se odstraní.',
+  languageOnReopen:
+    'Nabídky editoru se přepnou do nového jazyka, až tento dokument zavřete a znovu otevřete. Nyní nebyl znovu načten, aby se neztratilo nic neuloženého (ani heslo).',
   saveTracked:
     'Neuloženo: tento dokument obsahuje sledované změny; uložením zde by se ztratily a soubor by Hancom Hangul nemusel otevřít.',
   savedTailsLost:

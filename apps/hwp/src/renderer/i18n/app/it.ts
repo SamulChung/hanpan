@@ -36,6 +36,8 @@ export const it = {
   backupKept: 'Salvato. La versione precedente è stata conservata come {name}.',
   openedTracked:
     'Questo documento contiene revisioni. Vedi il testo attuale, con le modifiche applicate; salvando si conserva questo testo e si perde la cronologia delle revisioni.',
+  languageOnReopen:
+    "I menu dell'editor passeranno alla nuova lingua quando chiuderai e riaprirai questo documento. Non è stato ricaricato ora per non perdere nulla di non salvato (né la password).",
   saveTracked:
     'Non salvato: questo documento contiene revisioni; salvandolo qui andrebbero perse e il file potrebbe non aprirsi in Hancom Hangul.',
   savedTailsLost:

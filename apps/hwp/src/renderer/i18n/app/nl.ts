@@ -36,6 +36,8 @@ export const nl = {
   backupKept: 'Opgeslagen. De vorige versie is bewaard als {name}.',
   openedTracked:
     'Dit document bevat bijgehouden wijzigingen. U ziet de huidige tekst, met de wijzigingen verwerkt; bij opslaan blijft deze tekst behouden en vervalt het overzicht van wijzigingen.',
+  languageOnReopen:
+    "De menu's van de editor schakelen over naar de nieuwe taal wanneer u dit document sluit en opnieuw opent. Het is nu niet opnieuw geladen, zodat niets onopgeslagens (of het wachtwoord) verloren gaat.",
   saveTracked:
     'Niet opgeslagen: dit document bevat bijgehouden wijzigingen; door het hier op te slaan gaan ze verloren en kan Hancom Hangul het bestand mogelijk niet openen.',
   savedTailsLost:

@@ -37,7 +37,13 @@ import {
 import { runSave, type SaveEditorPort } from './save-flow'
 import { AUTOSAVE_IDLE_MS, startAutosave } from './autosave-flow'
 import { PASSWORD_FLAG } from '../../scripts/rhwp-patches.mjs'
-import { STUDIO_SETTINGS_KEY, seededStudioSettings, studioUrl } from './studio-settings'
+import { languageSwitchPlan } from './language-switch'
+import {
+  STUDIO_SETTINGS_KEY,
+  seededStudioSettings,
+  studioLocale,
+  studioUrl,
+} from './studio-settings'
 import { hwpFormatOfPath } from '../shared/ipc'
 import type { HwpFormat, PrintJob, SaveMode, UiTheme } from '../shared/ipc'
 
@@ -175,18 +181,29 @@ export default function App() {
     rememberMemoPanelOpen(memoOpen)
   }, [memoOpen])
 
-  // boot the editor once and load the file queued for this view
+  /** bumped to open the editor again (a UI language change): the boot effect runs anew */
+  const [bootGen, setBootGen] = useState(0)
+  /** the file a reboot reads back (null: the blank new document); unset on the first boot */
+  const reloadRef = useRef<{ path: string | null } | null>(null)
+  /** the studio language the editor in the tab was opened with */
+  const bootedLocaleRef = useRef<ReturnType<typeof studioLocale> | null>(null)
+
+  // boot the editor and load the file queued for this view; again, from the same file, when
+  // a language change reopens it
   useEffect(() => {
     let disposed = false
     let editor: RhwpEditor | null = null
     let stopDrop: (() => void) | null = null
+    const reload = reloadRef.current
+    reloadRef.current = null
     void (async () => {
       try {
         const [path, theme, lang] = await Promise.all([
-          window.hwpApi.consumePending(),
+          reload ? reload.path : window.hwpApi.consumePending(),
           window.hwpApi.getTheme().catch((): UiTheme => 'system'),
           window.hwpApi.getLanguage(),
         ])
+        bootedLocaleRef.current = studioLocale(lang)
         // the studio reads its settings before first paint, so they are seeded before it exists
         localStorage.setItem(
           STUDIO_SETTINGS_KEY,
@@ -213,7 +230,10 @@ export default function App() {
         formatRef.current = hwpFormatOfPath(path) ?? 'hwp'
         // an untitled copy (a skill template's, spec 5.7) is read from its temp file but
         // has no file of its own: the AI conversation and the first save treat it as new
-        const copy = (await window.hwpApi.untitledCopy?.().catch(() => null)) ?? null
+        // (a reload never reads one back: languageSwitchPlan leaves a copy alone)
+        const copy = reload
+          ? null
+          : ((await window.hwpApi.untitledCopy?.().catch(() => null)) ?? null)
         if (copy) {
           formatRef.current = copy.format
           copyNameRef.current = copy.name
@@ -224,6 +244,7 @@ export default function App() {
         })
         if (disposed) return
         setPhase('ready')
+        if (reload) return
         if (await window.hwpApi.trackingDropped().catch(() => false)) {
           if (!disposed) setNotice({ tone: 'info', key: 'openedTracked', sticky: true })
         }
@@ -244,7 +265,48 @@ export default function App() {
       stopDrop?.()
       editor?.destroy()
     }
-  }, [])
+  }, [bootGen])
+
+  // the studio picks its language when its page loads: a language change opens the editor
+  // again, from the document's file, when nothing would be lost; otherwise it waits for the
+  // tab to be opened again and says so
+  const phaseRef = useRef(phase)
+  phaseRef.current = phase
+  const filePathRef = useRef(filePath)
+  filePathRef.current = filePath
+  useEffect(() => {
+    const from = bootedLocaleRef.current
+    const to = studioLocale(lang)
+    if (!from || from === to) return
+    let cancelled = false
+    void (async () => {
+      const editor = editorRef.current
+      const ready = phaseRef.current === 'ready' && !!editor && !savingRef.current
+      const context = ready ? await editor.commands.context().catch(() => null) : null
+      if (cancelled) return
+      const plan = languageSwitchPlan({
+        from,
+        to,
+        ready: ready && !!context,
+        dirty: context?.isDirty !== false,
+        restored: restoredRef.current,
+        passwordProtected: context?.[PASSWORD_FLAG] === true,
+        untitledCopy: copyNameRef.current !== null,
+      })
+      if (plan === 'none') return
+      if (plan === 'later') {
+        setNotice({ tone: 'info', key: 'languageOnReopen', sticky: true })
+        return
+      }
+      bootedLocaleRef.current = to
+      reloadRef.current = { path: filePathRef.current }
+      setPhase('booting')
+      setBootGen((gen) => gen + 1)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [lang])
 
   // a document can arrive after the load call gave up or failed (a password
   // entered late, a second try in the editor's own prompt): notice it and go on

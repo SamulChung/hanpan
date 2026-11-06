@@ -115,6 +115,13 @@
  *   for Rust", "Version 0.8.7-ieum.12", "Rust + WebAssembly + TypeScript"). Its head
  *   lines name Hanpan and the rhwp release it is built on; rhwp's licence list,
  *   copyright line and the HWP specification notice stay as they are.
+ *
+ * studio-page-setup-labels, studio-input-aria-label
+ *   The page setup dialog writes its orientation, binding and margin names in Korean
+ *   straight into the markup, and the editing input's accessible name likewise, so they
+ *   stayed Korean in an English or Vietnamese tab. They ask the catalogs for the app's own
+ *   keys instead (APP_STRINGS in studio-plugin/studio-locales.mjs, registered with every
+ *   language by studio-locale-register).
  */
 
 import { HANCOM_KEYS_MODULE, studioCommandIds } from '../studio-plugin/hancom-keys.mjs'
@@ -836,16 +843,21 @@ const PATCHES = {
         find: "import enCatalog from './locales/en.ts';",
         replace: [
           "import enCatalog from './locales/en.ts';",
-          `import { EXTRA_LOCALES } from '${STUDIO_LOCALES_MODULE}';`,
+          `import { APP_STRINGS, EXTRA_LOCALES } from '${STUDIO_LOCALES_MODULE}';`,
         ].join('\n'),
+      },
+      {
+        find: "registerCatalog('ko', koCatalog as Record<string, string>);",
+        replace:
+          "registerCatalog('ko', { ...koCatalog, ...APP_STRINGS.ko } as Record<string, string>);",
       },
       {
         find: "registerCatalog('en', enCatalog as Record<string, string>);",
         replace: [
-          "registerCatalog('en', enCatalog as Record<string, string>);",
+          "registerCatalog('en', { ...enCatalog, ...APP_STRINGS.en } as Record<string, string>);",
           '// the app adds languages over English: a key a catalog leaves out shows in English',
           'for (const [locale, catalog] of Object.entries(EXTRA_LOCALES)) {',
-          '  registerCatalog(locale as Locale, { ...enCatalog, ...catalog } as Record<string, string>);',
+          '  registerCatalog(locale as Locale, { ...enCatalog, ...APP_STRINGS.en, ...catalog, ...APP_STRINGS[locale as keyof typeof APP_STRINGS] } as Record<string, string>);',
           '}',
         ].join('\n'),
       },
@@ -870,6 +882,80 @@ const PATCHES = {
       {
         find: '        opt.textContent = style.name;',
         replace: '        opt.textContent = styleDisplayName(style, getLocale());',
+      },
+    ],
+  },
+  'studio-page-setup-labels': {
+    file: /[\\/]rhwp-studio[\\/]src[\\/]ui[\\/]page-setup-dialog\.ts$/,
+    edits: [
+      {
+        find: "this.iconRadio('orient', '세로',",
+        replace: "this.iconRadio('orient', i18nText('hanpan.pageSetup.portrait'),",
+      },
+      {
+        find: "this.iconRadio('orient', '가로',",
+        replace: "this.iconRadio('orient', i18nText('hanpan.pageSetup.landscape'),",
+      },
+      {
+        find: "this.iconRadio('binding', '한쪽',",
+        replace: "this.iconRadio('binding', i18nText('hanpan.pageSetup.bindingSingle'),",
+      },
+      {
+        find: "this.iconRadio('binding', '맞쪽',",
+        replace: "this.iconRadio('binding', i18nText('hanpan.pageSetup.bindingFacing'),",
+      },
+      {
+        find: "this.iconRadio('binding', '위로',",
+        replace: "this.iconRadio('binding', i18nText('hanpan.pageSetup.bindingTop'),",
+      },
+      {
+        find: "      ['marginTop', '위쪽'],",
+        replace: "      ['marginTop', i18nText('hanpan.pageSetup.marginTop')],",
+      },
+      {
+        find: "      ['marginBottom', '아래쪽'],",
+        replace: "      ['marginBottom', i18nText('hanpan.pageSetup.marginBottom')],",
+      },
+      {
+        find: "      ['marginLeft', '왼쪽'],",
+        replace: "      ['marginLeft', i18nText('hanpan.pageSetup.marginLeft')],",
+      },
+      {
+        find: "      ['marginRight', '오른쪽'],",
+        replace: "      ['marginRight', i18nText('hanpan.pageSetup.marginRight')],",
+      },
+      {
+        find: "      ['marginHeader', '머리말'],",
+        replace: "      ['marginHeader', i18nText('hanpan.pageSetup.marginHeader')],",
+      },
+      {
+        find: "      ['marginFooter', '꼬리말'],",
+        replace: "      ['marginFooter', i18nText('hanpan.pageSetup.marginFooter')],",
+      },
+      {
+        find: "      ['marginGutter', '제본'],",
+        replace: "      ['marginGutter', i18nText('hanpan.pageSetup.marginGutter')],",
+      },
+    ],
+  },
+  'studio-input-aria-label': {
+    file: /[\\/]rhwp-studio[\\/]src[\\/]engine[\\/]input-handler\.ts$/,
+    edits: [
+      {
+        find: "import { isBodyControl } from './picture-hit-policy';",
+        replace: [
+          "import { isBodyControl } from './picture-hit-policy';",
+          "import { t as i18nText } from '../i18n/index.ts';",
+        ].join('\n'),
+      },
+      {
+        find: "      div.setAttribute('aria-label', '문서 편집 입력');",
+        replace: "      div.setAttribute('aria-label', i18nText('hanpan.editor.inputLabel'));",
+      },
+      {
+        find: "      this.textarea.setAttribute('aria-label', '문서 편집 입력');",
+        replace:
+          "      this.textarea.setAttribute('aria-label', i18nText('hanpan.editor.inputLabel'));",
       },
     ],
   },
@@ -941,6 +1027,8 @@ export const STUDIO_PATCHES = /** @type {const} */ ([
   'studio-locale-toolbar-overflow',
   'studio-style-display-names',
   'studio-about-hanpan',
+  'studio-page-setup-labels',
+  'studio-input-aria-label',
 ])
 
 /** Whether a patch is written against this file. */

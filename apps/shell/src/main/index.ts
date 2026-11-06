@@ -145,6 +145,7 @@ import { KOREAN_DOC_FEATURES_KEY, readKoreanDocFeatures } from './korean-doc-fea
 import { fallbackUiLang } from './ui-lang-fallback'
 import {
   builtinSkillsDirFor,
+  copyFileNameOf,
   createTemplateTabs,
   createUserSkillsService,
   registerTemplateTabsIpc,
@@ -5963,18 +5964,46 @@ function newIllustTab(): void {
 }
 
 /**
- * "New PDF" creates a blank single-page .pdf in the default folder up front and
- * opens it as a regular file tab — the PDF module has no in-memory blank mode
- * (openPdfTab requires a path), same pattern as the blank workbook above.
+ * "New PDF": the PDF module has no in-memory blank mode (openPdfTab requires a
+ * path), so the blank single-page .pdf is a file from the start. Without a
+ * folder the person picked it is an untitled copy in a temp folder, like a
+ * template's copy: the tab edits it, its first save asks where the document
+ * goes, and nothing lands in the documents folder or the recents before that.
+ * A folder picked for the new file (a project folder) still gets the file at
+ * once, opted into content-derived naming on its first save.
  */
 async function newPdfTab(): Promise<void> {
+  const pending = takePendingDir('pdf')
+  let tempDir: string | null = null
   try {
-    const filePath = untitledPathIn(newFileDir('pdf'), tm('untitledPdf'), '.pdf')
-    await atomicWriteFile(filePath, await blankPdfBuffer())
-    // Opt the file into content-derived auto-naming on its first save
-    markPdfUntitledPath(filePath)
-    routeDocumentPath(filePath)
+    const bytes = await blankPdfBuffer()
+    if (pending) {
+      const filePath = untitledPathIn(pending.dir, tm('untitledPdf'), '.pdf')
+      await atomicWriteFile(filePath, bytes)
+      // Opt the file into content-derived auto-naming on its first save
+      markPdfUntitledPath(filePath)
+      routeDocumentPath(filePath)
+      return
+    }
+    const dir = join(app.getPath('temp'), 'genoffice-imports', randomUUID())
+    tempDir = dir
+    mkdirSync(dir, { recursive: true })
+    const title = tm('untitledPdf')
+    const fileName = copyFileNameOf(title, '.pdf')
+    const filePath = join(dir, fileName)
+    await atomicWriteFile(filePath, bytes)
+    const opened = ensureTabManager().openTemplateCopy({
+      editor: 'pdf',
+      path: filePath,
+      bytes,
+      fileName,
+      title,
+    })
+    if (!opened) throw new Error('the new PDF tab could not be opened')
+    tempDir = null
+    opened.contents.once('destroyed', () => rmSync(dir, { recursive: true, force: true }))
   } catch (err) {
+    if (tempDir) rmSync(tempDir, { recursive: true, force: true })
     surfaceNewTabError(err)
   }
 }
