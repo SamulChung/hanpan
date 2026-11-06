@@ -7,6 +7,7 @@ import {
   SHAPE_GALLERY_GROUPS,
   ShapePreview,
   useDismissablePopover,
+  RibbonExpandButton,
   useRibbonCollapse,
   aiPanelInitiallyOpen,
   aiSubscriptionText,
@@ -973,7 +974,9 @@ export function ExcelShell({
               data-tip={collapse.tabTip(tab === activeTab)}
               key={tab}
               onClick={() => {
-                collapse.onTabPress(tab === activeTab)
+                // Excel: 한 번 누르면 탭만 고르고, 접기는 두 번 누르기·Ctrl+F1로만(X3).
+                // 접혀 있으면 어느 탭이든 눌러 편다.
+                collapse.onTabPress(false)
                 setActiveTab(tab)
               }}
             >
@@ -984,6 +987,8 @@ export function ExcelShell({
           <span className="workbook-status" role="status" aria-live="polite">
             {statusMessage}
           </span>
+          {/* 접혀 있을 때 펼치는 단추가 보이게 */}
+          <RibbonExpandButton state={collapse} label={t('appRibbonExpand')} />
         </nav>
 
         <Ribbon
@@ -2022,6 +2027,9 @@ function Ribbon({
   // the Home band takes a denser layout when its labels do not fit the window
   const homeBandRef = useRef<HTMLDivElement>(null)
   useRibbonFit(homeBandRef, [lang, activeTab])
+  // 수식 탭도 1366에서 넘치지 않게 같은 규칙으로 줄인다(X6)
+  const formulasBandRef = useRef<HTMLDivElement>(null)
+  useRibbonFit(formulasBandRef, [lang, activeTab])
   const [fontColor, setFontColor] = useState('#C00000')
   const [fillColor, setFillColor] = useState('#FFF2CC')
   const [borderColor, setBorderColor] = useState('#000000')
@@ -2223,7 +2231,7 @@ function Ribbon({
                     ? t('appChangeChartType')
                     : t('appScatterKeepType')
               }
-              symbol={type === 'line' || type === 'area' ? '🗠' : '📊'}
+              symbol={CHART_TYPE_SYMBOL[type]}
               active={selectedChart?.currentType === type}
               disabled={!canConvert}
               onClick={() => onCommand(`chart-type-${type}`)}
@@ -2902,8 +2910,8 @@ function Ribbon({
       />
     )
     return (
-      <div className="ribbon" data-ribbon-body="">
-        <RibbonGroup label={t('appGroupFunctionLibrary')}>
+      <div className="ribbon" data-ribbon-body="" ref={formulasBandRef}>
+        <RibbonGroup label={t('appGroupFunctionLibrary')} name="fnlib">
           <RibbonButton
             large
             label={t('appInsertFunction')}
@@ -2935,7 +2943,7 @@ function Ribbon({
           {functionCategory(t('appFnCatMathTrig'), 'θ', 'Math')}
           {functionCategory(t('appFnCatMore'), '⋯', 'All')}
         </RibbonGroup>
-        <RibbonGroup label={t('appGroupDefinedNames')}>
+        <RibbonGroup label={t('appGroupDefinedNames')} name="names">
           <RibbonButton
             large
             label={t('appNameManager')}
@@ -2984,7 +2992,7 @@ function Ribbon({
             </span>
           </div>
         </RibbonGroup>
-        <RibbonGroup label={t('appGroupFormulaAuditing')}>
+        <RibbonGroup label={t('appGroupFormulaAuditing')} name="audit">
           <div className="row-stack">
             <button
               className="styles-row as-button"
@@ -3033,7 +3041,7 @@ function Ribbon({
             onClick={() => onCommand('watch-window')}
           />
         </RibbonGroup>
-        <RibbonGroup label={t('appGroupCalculation')}>
+        <RibbonGroup label={t('appGroupCalculation')} name="calc">
           {largeMenu(t('appCalculationOptions'), '🧮', t('appCalculationOptionsTitle'), [
             { value: 'calc-mode:auto', label: t('appCalcAuto') + (calcManual ? '' : ' ✓') },
             { value: 'calc-mode:manual', label: t('appCalcManual') + (calcManual ? ' ✓' : '') },
@@ -3916,15 +3924,28 @@ function Ribbon({
       </RibbonGroup>
       <RibbonGroup label={t('appGroupStyles')} name="styles">
         <div className="styles-stack">
-          <button
-            className="styles-row as-button"
-            data-tip={t('appConditionalFormatting')}
-            onClick={() => onCommand('cf-open')}
-          >
+          {/* Excel처럼 단추 아래 빠른 메뉴(X7): 규칙 종류를 고르면 그 종류로 새 규칙 패널이 열린다 */}
+          <div className="styles-row as-button" data-tip={t('appConditionalFormatting')}>
             <ToolSymbol symbol="▤" />
             <span className="tool-label">{t('appConditionalFormatting')}</span>
             <CaretIcon />
-          </button>
+            <MenuSelect
+              cover
+              label={t('appConditionalFormatting')}
+              options={[
+                { value: 'cf-open:highlight', label: t('appCfMenuHighlight') },
+                { value: 'cf-open:top-bottom', label: t('appCfMenuTopBottom') },
+                { value: 'cf-open:data-bar', label: t('appCfMenuDataBars') },
+                { value: 'cf-open:color-scale', label: t('appCfMenuColorScales') },
+                { value: 'cf-open:icon-set', label: t('appCfMenuIconSets') },
+                { value: 'cf-open:formula', label: t('appCfMenuFormula') },
+                { value: 'cf-open:clear-selection', label: t('appCfMenuClearSelection') },
+                { value: 'cf-open:clear-sheet', label: t('appCfMenuClearSheet') },
+                { value: 'cf-open', label: t('appCfMenuManage') },
+              ]}
+              onPick={onCommand}
+            />
+          </div>
           <div className="styles-row as-button" data-tip={t('appFormatAsTableTitle')}>
             <ToolSymbol symbol="▦" />
             <span className="tool-label">{t('appFormatAsTable')}</span>
@@ -4157,6 +4178,16 @@ function autoSumOptions(t: (key: StringKey) => string): { value: string; label: 
     { value: 'MIN', label: t('appFnMin') },
   ]
 }
+
+/// 차트 디자인 › 차트 종류 변경: 삽입 탭의 차트 격자와 같은 아이콘(X4)
+const CHART_TYPE_SYMBOL = {
+  column: '▮▬',
+  bar: '▤',
+  line: '📈',
+  area: '◪',
+  pie: '◔',
+  doughnut: '◍',
+} as const
 
 const STAT_LABEL: Record<StatusBarFunc, StringKey> = {
   AVERAGE: 'appStatAverage',

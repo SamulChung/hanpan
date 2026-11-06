@@ -70,6 +70,8 @@ import { isNumericIdentifierText } from './cell-warning'
 import { consumePendingUndoCarry, undoStackDepth } from './undo-carry'
 import { createSaveGate, shouldRunSaveTick } from './save-scheduler'
 import { createReloadInputGuard, type ReloadInputGuard } from './reload-input-guard'
+import { installEscapePopupGuard } from './escape-popup-guard'
+import { selectionClientRect } from './selection-client-rect'
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import {
   useAutoSavePref,
@@ -705,7 +707,10 @@ export function App({
       onBlocked: () => setMessage(t('appReloadInputPaused')),
     })
     reloadInputGuardRef.current = guard
+    // 패널 안 드롭다운의 Esc가 패널까지 닫지 않게(X7)
+    const escapePopupGuard = installEscapePopupGuard(window, document)
     return () => {
+      escapePopupGuard.dispose()
       guard.dispose()
       if (reloadInputGuardRef.current === guard) reloadInputGuardRef.current = null
     }
@@ -3529,6 +3534,8 @@ export function App({
           const finalRangeKey = activeRangeKey()
           if (!gesture.selectionChanged && finalRangeKey === gesture.initialRangeKey) return
           const viewport = gridHost.getBoundingClientRect()
+          // 범위 옆에 두려고 선택 사각형도 넘긴다(X8)
+          const selection = selectionClientRect(runtime, bounds)
           setAiSelectionAskAnchor({
             pointer,
             bounds: {
@@ -3537,6 +3544,7 @@ export function App({
               right: viewport.right,
               bottom: viewport.bottom,
             },
+            ...(selection ? { selection } : {}),
           })
         } catch {
           setAiSelectionAskAnchor(null)

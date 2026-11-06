@@ -1915,6 +1915,7 @@ function ChartVisual({
   const [isEditing, setIsEditing] = useState(false)
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null)
   const bodyRef = useRef<HTMLDivElement | null>(null)
+  const figureRef = useRef<HTMLElement | null>(null)
   useEffect(() => {
     if (openEditorSignal > 0) setIsEditing(true)
   }, [openEditorSignal])
@@ -2126,6 +2127,7 @@ function ChartVisual({
   const plotAreaFill = chart.plotAreaFill
   return (
     <figure
+      ref={figureRef}
       className="xlsx-chart"
       style={areaStyle}
       onClick={() => {
@@ -2154,7 +2156,13 @@ function ChartVisual({
           ✎
         </button>
       )}
-      {canEdit && isEditing && chartEditing && (
+      {canEdit &&
+        isEditing &&
+        chartEditing &&
+        createPortal(
+          // 차트 상자 안에 끼우면 작은 창에 안쪽 스크롤이 생기고 차트를 가렸다(X4):
+          // 차트 옆에 뜨는 작업창으로 띄운다.
+          <div className="chart-editor-float" style={chartEditorFloatStyle(figureRef.current)}>
         <ChartEditor
           chart={chart}
           isPie={isPie}
@@ -2167,7 +2175,9 @@ function ChartVisual({
           }}
           onCancel={() => setIsEditing(false)}
         />
-      )}
+          </div>,
+          document.body,
+        )}
       {chart.title !== '' && (
         <figcaption
           className={selectedEl?.kind === 'title' ? 'chart-el-selected' : undefined}
@@ -2659,6 +2669,28 @@ function pieSliceColor(series: SeriesLike, index: number): string {
 interface SeriesRangeInput {
   readonly values: string
   readonly categories: string
+}
+
+const CHART_EDITOR_WIDTH = 280
+
+/// 차트 오른쪽(자리가 없으면 왼쪽)에 붙는 편집 창 위치
+export function chartEditorFloatPosition(
+  rect: { left: number; right: number; top: number },
+  viewport: { width: number; height: number },
+): { left: number; top: number; maxHeight: number } {
+  const gap = 8
+  const left =
+    rect.right + gap + CHART_EDITOR_WIDTH <= viewport.width - gap
+      ? rect.right + gap
+      : Math.max(gap, rect.left - gap - CHART_EDITOR_WIDTH)
+  const top = Math.min(Math.max(gap, rect.top), Math.max(gap, viewport.height - 240))
+  return { left, top, maxHeight: viewport.height - top - gap * 2 }
+}
+
+function chartEditorFloatStyle(figure: HTMLElement | null): React.CSSProperties {
+  const rect = figure?.getBoundingClientRect() ?? { left: 0, right: 0, top: 80 }
+  const at = chartEditorFloatPosition(rect, { width: window.innerWidth, height: window.innerHeight })
+  return { left: at.left, top: at.top, maxHeight: at.maxHeight, width: CHART_EDITOR_WIDTH }
 }
 
 function ChartEditor({
