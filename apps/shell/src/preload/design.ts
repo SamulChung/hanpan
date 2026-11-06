@@ -33,7 +33,12 @@ contextBridge.exposeInMainWorld('hanpanDesign', {
   savePdf: (pages: Uint8Array[], size: { width: number; height: number }, name: string) =>
     ipcRenderer.invoke('hanpan-design:save-pdf', pages, size, name),
   copyImage: (bytes: Uint8Array) => ipcRenderer.invoke('hanpan-design:copy-image', bytes),
-  saveDesign: (text: string, name: string) => ipcRenderer.invoke('hanpan-design:save', text, name),
+  // 'save' writes over the design's own file (main keeps the path); 'saveAs' always asks
+  saveDesign: (text: string, name: string, mode?: 'save' | 'saveAs') =>
+    ipcRenderer.invoke('hanpan-design:save', text, name, mode),
+  newDesign: () => ipcRenderer.invoke('hanpan-design:new'),
+  // Korean names of installed fonts, read from the files (registered by the docs main)
+  fontFamilyInfo: (families: string[]) => ipcRenderer.invoke('app:font-family-info', families),
   openDesign: () => ipcRenderer.invoke('hanpan-design:open'),
   pickImage: () => ipcRenderer.invoke('hanpan-design:pick-image'),
   // Gongu pictures: main searches with the key from Settings and fetches the pictures

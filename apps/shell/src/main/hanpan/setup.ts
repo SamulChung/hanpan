@@ -30,7 +30,7 @@ import type { Op } from '@genoffice/pptx-ops'
 import { createXmindDocumentFromOutline } from '@genoffice/xmind-engine'
 import { app } from 'electron'
 import { randomUUID } from 'node:crypto'
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, rmSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { join } from 'node:path'
 import { atomicWriteFile } from '../atomic-write'
@@ -38,7 +38,7 @@ import { buildDeck } from '../generate/convert'
 import { outlineToOps } from '../mcp/pptx-outline'
 import { readStoredAiSettings, writeStoredAiSettings } from '../../../../docs/src/main/docs-main'
 import { createLinkStore, type LinkStore, type TabContents } from './link-store'
-import { adoptLocalAiOnce, defaultChoose } from './local-ai-first'
+import { defaultAiDeps, settleDefaultAi } from './local-ai-first'
 import { createMapSender, type SendMapDeps } from './send-map'
 import { createSyncService, type SyncTab } from './sync-service'
 import { hwpReadBytes, hwpReplaceDocument } from '../../../../hwp/src/main/hwp-main'
@@ -436,15 +436,14 @@ export function setupHanpan(deps: HanpanShellDeps): HanpanSetup {
     documentSaved: (wc, path) => links.documentSaved(wc.id, path, Date.now()),
     mapSaved: (wc, path) => links.mapSaved(wc.id, path, Date.now()),
     adoptLocalAi: () => {
-      const mark = join(app.getPath('userData'), 'hanpan-local-ai.json')
-      void adoptLocalAiOnce({
-        readSettings: readStoredAiSettings,
-        writeSettings: writeStoredAiSettings,
-        settled: () => existsSync(mark),
-        markSettled: (outcome) =>
-          writeFileSync(mark, JSON.stringify({ outcome, at: new Date().toISOString() })),
-        choose: defaultChoose,
-      }).catch((error: unknown) => console.warn('[hanpan] local AI detection failed', error))
+      // the default AI, the same for every editor: a signed-in account, else the PC model
+      void settleDefaultAi(
+        defaultAiDeps({
+          markPath: join(app.getPath('userData'), 'hanpan-local-ai.json'),
+          readSettings: readStoredAiSettings,
+          writeSettings: writeStoredAiSettings,
+        }),
+      ).catch((error: unknown) => console.warn('[hanpan] default AI failed', error))
     },
   }
 }

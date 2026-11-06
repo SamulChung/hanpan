@@ -8,7 +8,6 @@
 import type { ReactNode } from 'react'
 import {
   IMAGE_FILTERS,
-  FONTS,
   PALETTE,
   SHAPES,
   type DesignElement,
@@ -16,7 +15,7 @@ import {
   type ShadowKind,
 } from './model'
 import { REWRITE_MODES, type RewriteMode } from './ai'
-import { BUNDLED_FONTS, GONGU_FONTS, SYSTEM_FONTS } from './fonts'
+import { BUNDLED_FONTS, GONGU_FONTS, SYSTEM_FONTS, type FontChoice } from './fonts'
 import type { AlignMode } from './geometry'
 import type { Words } from './words'
 
@@ -44,6 +43,10 @@ export interface InspectorProps {
   /** fonts the person added to this design (font files kept in it) */
   fonts: string[]
   addFont(): void
+  /** the fonts installed on this PC, empty until read (then the fixed list shows) */
+  pcFonts: readonly FontChoice[]
+  /** reads them; called from the font list's click, which the reading needs */
+  loadPcFonts(): void
   group(): void
   ungroup(): void
   /** a picture in crop mode: dragging it picks what shows */
@@ -330,6 +333,8 @@ export function Inspector(p: InspectorProps) {
   }
 
   const e = p.selection[0]!
+  const pcList = p.pcFonts.length ? p.pcFonts : SYSTEM_FONTS
+  const listed = new Set([...BUNDLED_FONTS, ...GONGU_FONTS, ...pcList].map((f) => f.family))
   const set = (patch: Partial<DesignElement>, merge?: string) =>
     p.change(e.id, patch, merge && `${e.id}:${merge}`)
   const shadowOptions: { id: ShadowKind | undefined; label: string }[] = [
@@ -406,6 +411,8 @@ export function Inspector(p: InspectorProps) {
               onChange={(ev) =>
                 ev.target.value === ADD_FONT ? p.addFont() : set({ fontFamily: ev.target.value })
               }
+              onMouseDown={p.loadPcFonts}
+              onKeyDown={p.loadPcFonts}
               data-hanpan="font-select"
             >
               <optgroup label={w.bundledFonts}>
@@ -423,7 +430,7 @@ export function Inspector(p: InspectorProps) {
                 ))}
               </optgroup>
               <optgroup label={w.systemFonts}>
-                {SYSTEM_FONTS.map((f) => (
+                {pcList.map((f) => (
                   <option key={f.family} value={f.family}>
                     {f.label}
                   </option>
@@ -436,7 +443,7 @@ export function Inspector(p: InspectorProps) {
                   ))}
                 </optgroup>
               )}
-              {e.fontFamily && !FONTS.includes(e.fontFamily) && !p.fonts.includes(e.fontFamily) && (
+              {e.fontFamily && !listed.has(e.fontFamily) && !p.fonts.includes(e.fontFamily) && (
                 <option>{e.fontFamily}</option>
               )}
               <option value={ADD_FONT}>{w.addFont}</option>
