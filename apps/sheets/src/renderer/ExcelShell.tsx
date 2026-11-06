@@ -124,7 +124,12 @@ import { useModalDialog } from './modal-dialog'
 import type { SelectedTableRibbon } from './table-design-actions'
 import type { TableOptionKey } from './table-design'
 import { builtinTablePalette, tableStyleNames, type TableStyleFamily } from './table-styles'
-import { STATUS_BAR_FUNCS, type StatusBarFunc } from './status-bar-stats'
+import {
+  STATUS_BAR_FUNCS,
+  statusBarDisplayItems,
+  type StatusBarFunc,
+  type StatusBarState,
+} from './status-bar-stats'
 import { SHEET_ZOOM_MAX, SHEET_ZOOM_MIN, clampZoomPercent } from './zoom-range'
 import { ZoomDialog } from './ZoomDialog'
 
@@ -324,6 +329,8 @@ interface ExcelShellProps {
   readonly zoomPercent: number
   /// Aggregates ticked in the status bar's right-click menu (Excel parity).
   readonly statusBarFuncs: readonly StatusBarFunc[]
+  /** 선택 범위 집계(필터를 거친 Univer 통계 상태) */
+  readonly statusBarState?: StatusBarState | null
   readonly onToggleStatusBarFunc: (func: StatusBarFunc) => void
   /// True when the edit journal has unsaved changes (enables the QAT Save).
   readonly canSave: boolean
@@ -567,6 +574,7 @@ export function ExcelShell({
   onDismissRecoveryNotice,
   zoomPercent,
   statusBarFuncs,
+  statusBarState = null,
   onToggleStatusBarFunc,
   canSave,
   onSave,
@@ -591,7 +599,7 @@ export function ExcelShell({
   onFillSeries,
   onGetFillSeriesContext,
 }: ExcelShellProps): React.JSX.Element {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const [activeTab, setActiveTab] = useState<RibbonTab>('Home')
   const collapse = useRibbonCollapse('ai-sheets-ribbon-collapsed', {
     collapse: t('appRibbonCollapse'),
@@ -1111,6 +1119,15 @@ export function ExcelShell({
               <span className="status-msg">{statusMessage}</span>
             </div>
             <div className="status-right">
+              <div className="status-stats" aria-live="polite">
+                {statusBarDisplayItems(statusBarState, statusBarFuncs, (func) => t(STAT_LABEL[func]), lang).map(
+                  (item) => (
+                    <span key={item.func} className="status-stat">
+                      {item.text}
+                    </span>
+                  ),
+                )}
+              </div>
               {/* One-of-N view switcher, so it is a radiogroup rather than a
                   second set of buttons named like the View tab's. */}
               <div

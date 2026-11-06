@@ -429,9 +429,11 @@ import { installStatusBarFileStats } from './statusbar-file-stats'
 import {
   installStatusBarStatsFilter,
   readStatusBarFuncs,
+  subscribeStatusBarState,
   toggleStatusBarFunc,
   writeStatusBarFuncs,
   type StatusBarFunc,
+  type StatusBarState,
   type StatusBarStatsFilter,
 } from './status-bar-stats'
 import { applyUniverLocale, insertRowsBelowLocale, numberAsTextAlertLocale } from './univer-locales'
@@ -809,6 +811,8 @@ export function App({
   )
   const statusBarFuncsRef = useRef(statusBarFuncs)
   const statusBarStatsFilterRef = useRef<StatusBarStatsFilter | null>(null)
+  // 선택 범위 집계(Univer 통계 상태)를 우리 상태 표시줄이 그린다(X2)
+  const [statusBarState, setStatusBarState] = useState<StatusBarState | null>(null)
   const toggleStatusBarStat = (func: StatusBarFunc): void => {
     const next = toggleStatusBarFunc(statusBarFuncsRef.current, func)
     statusBarFuncsRef.current = next
@@ -2062,7 +2066,8 @@ export function App({
             // zoom lives in the custom full-width status bar (unified with docs/slides)
             zoomSlider: false,
           },
-          statusBarStatistic: true,
+          // 집계는 우리 상태 표시줄이 그린다(Univer 막대는 좁다고 보면 한 항목만, ko 이름표는 영어)
+          statusBarStatistic: false,
           // OOXML resolves style defaults as cell over row over column; the
           // render skeleton defaults to column-wins unless this flag is set.
           sheets: { isRowStylePrecedeColumnStyle: true },
@@ -2332,6 +2337,7 @@ export function App({
       runtime,
       () => statusBarFuncsRef.current,
     )
+    const statusBarStateSubscription = subscribeStatusBarState(runtime, setStatusBarState)
     // Footer statistics on streamed workbooks aggregate the real file, not
     // the loaded window (a whole-column count read 191 on a 185k-row file).
     const statusBarFileStatsDisposable = installStatusBarFileStats({
@@ -3652,6 +3658,7 @@ export function App({
       nullResultDisposable.dispose()
       copyMaterializeDisposable.dispose()
       statusBarFileStatsDisposable.dispose()
+      statusBarStateSubscription.dispose()
       statusBarStatsFilterRef.current?.dispose()
       statusBarStatsFilterRef.current = null
       dataValidationChromeDisposable.dispose()
@@ -5512,6 +5519,7 @@ export function App({
         onIsCellEditing={isCellEditing}
         zoomPercent={zoomPercent}
         statusBarFuncs={statusBarFuncs}
+        statusBarState={statusBarState}
         onToggleStatusBarFunc={toggleStatusBarStat}
         canSave={pendingEdits > 0 || workbookFile?.unsavedNew === true}
         onSave={() => void handleSave('save')}

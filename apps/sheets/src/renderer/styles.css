@@ -1909,6 +1909,19 @@ button.check-item:hover {
   flex-shrink: 0;
 }
 
+/* 선택 범위 집계: 평균·개수·합계 (Excel 상태 표시줄) */
+.status-stats {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-right: 10px;
+  white-space: nowrap;
+}
+
+.status-stat {
+  font-variant-numeric: tabular-nums;
+}
+
 .zoom-btn {
   border: none;
   background: none;
