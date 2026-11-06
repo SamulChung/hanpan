@@ -7,6 +7,7 @@
  */
 import { useDeferredValue, useEffect, useMemo, useState, type DragEvent } from 'react'
 import { markdownToBlocks, type DocBlock } from '@genoffice/hanpan-core/renderer'
+import { useDialogKeys } from '../dialog-keys'
 import { useI18n } from '../locale'
 
 export type ConvertFormat = 'hwp' | 'hwpx' | 'docx' | 'odt' | 'pdf' | 'html'
@@ -144,6 +145,7 @@ export function MarkdownConverter(p: { api: MarkdownConverterApi; onClose(): voi
   const [theme, setTheme] = useState<ConvertTheme>('report')
   const [folder, setFolder] = useState('')
   const [busy, setBusy] = useState(false)
+  const dialogRef = useDialogKeys(p.onClose, { canClose: !busy })
   const [outcome, setOutcome] = useState<ConvertOutcome | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [dropping, setDropping] = useState(false)
@@ -222,7 +224,7 @@ export function MarkdownConverter(p: { api: MarkdownConverterApi; onClose(): voi
         aria-modal="true"
         aria-label={t('hpConvTitle')}
         data-hanpan="md-converter"
-        onKeyDown={(e) => e.key === 'Escape' && !busy && p.onClose()}
+        ref={dialogRef}
       >
         <div className="hp-tpl-head">
           <h2>{t('hpConvTitle')}</h2>
