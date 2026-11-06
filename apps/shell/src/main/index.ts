@@ -7813,6 +7813,21 @@ function buildHwpMenu(): void {
           },
         },
         {
+          label: tm('menuExportDocx'),
+          click: () => {
+            const tab = activeHwpTarget()
+            if (tab) requestHwpPrint(tab.webContents, 'docx')
+          },
+        },
+        {
+          // every page as a PNG; this page alone is in the editor's own File menu
+          label: tm('menuExportImages'),
+          click: () => {
+            const tab = activeHwpTarget()
+            if (tab) requestHwpPrint(tab.webContents, 'png')
+          },
+        },
+        {
           label: tm('menuPrint'),
           click: () => {
             const tab = activeHwpTarget()

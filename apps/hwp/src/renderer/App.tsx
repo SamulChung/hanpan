@@ -26,7 +26,8 @@ import { MEMO_INSERT_EVENT, memoNoticeOf, type MemoNotice } from './MemoPanel'
 import { MemoSide, MemoToggle, memoPanelInitiallyOpen, rememberMemoPanelOpen } from './MemoSide'
 import { openDocumentsDroppedOn } from './editor-drop'
 import { hwpPresentationKeyOf } from './presentation-keys'
-import { gatherPrintJob } from './print-flow'
+import { gatherPageJob, gatherPrintJob } from './print-flow'
+import { PrintPreview } from './PrintPreview'
 import {
   RECOVERY_TICK_MS,
   createRecoveryCopier,
@@ -38,7 +39,7 @@ import { AUTOSAVE_IDLE_MS, startAutosave } from './autosave-flow'
 import { PASSWORD_FLAG } from '../../scripts/rhwp-patches.mjs'
 import { STUDIO_SETTINGS_KEY, seededStudioSettings, studioUrl } from './studio-settings'
 import { hwpFormatOfPath } from '../shared/ipc'
-import type { HwpFormat, SaveMode, UiTheme } from '../shared/ipc'
+import type { HwpFormat, PrintJob, SaveMode, UiTheme } from '../shared/ipc'
 
 /**
  * booting: the editor itself is starting. loading: the editor is up and working
@@ -437,6 +438,9 @@ export default function App() {
         save: t('fileSave'),
         saveAs: t('fileSaveAs'),
         pdf: t('fileExportPdf'),
+        docx: t('fileExportDocx'),
+        png: t('fileExportPng'),
+        pngPage: t('fileExportPngPage'),
         print: t('filePrint'),
       })
       .catch(() => {})
@@ -447,6 +451,9 @@ export default function App() {
         command === 'save' ||
         command === 'saveAs' ||
         command === 'pdf' ||
+        command === 'docx' ||
+        command === 'png' ||
+        command === 'pngPage' ||
         command === 'print'
       ) {
         window.hwpApi.requestFileCommand(command)
@@ -588,37 +595,89 @@ export default function App() {
     }
   }, [phase, save, showMemoBlocked])
 
-  // PDF and print asked for by the menu and Ctrl+P: the pages are gathered here, and the
-  // main process makes the PDF or opens the print dialog
+  // PDF, Word, pictures and print asked for by the menu and Ctrl+P: the pages (or, for Word,
+  // the document's HTML) are gathered here, and the main process writes the file or opens
+  // the print dialog. Print first shows the pages in the app's own preview (0.17).
   const printingRef = useRef(false)
+  const [previewJob, setPreviewJob] = useState<PrintJob | null>(null)
   useEffect(
     () =>
       window.hwpApi.onPrintRequest((mode) => {
         if (phase !== 'ready' || printingRef.current) return
         printingRef.current = true
+        let previewing = false
         void (async () => {
-          const failed = mode === 'pdf' ? 'pdfFailed' : 'printFailed'
+          const failed =
+            mode === 'pdf'
+              ? 'pdfFailed'
+              : mode === 'docx'
+                ? 'docxFailed'
+                : mode === 'png' || mode === 'pngPage'
+                  ? 'pngFailed'
+                  : 'printFailed'
           try {
-            const job = await gatherPrintJob(agentBridge, mode, (done, total) =>
-              setNotice({
-                tone: 'info',
-                key: 'printPreparing',
-                params: { done, total },
-                sticky: true,
-              }),
-            )
+            if (mode === 'docx') {
+              setNotice({ tone: 'info', key: 'docxPreparing', sticky: true })
+              const { html } = await agentBridge.exportHtml()
+              const result = await window.hwpApi.exportDocx(html)
+              setNotice(result.ok ? null : { tone: 'error', key: failed, detail: result.error })
+              return
+            }
+            const job =
+              mode === 'pngPage'
+                ? await gatherPageJob(agentBridge, mode, await agentBridge.currentPage())
+                : await gatherPrintJob(agentBridge, mode, (done, total) =>
+                    setNotice({
+                      tone: 'info',
+                      key: 'printPreparing',
+                      params: { done, total },
+                      sticky: true,
+                    }),
+                  )
+            if (mode === 'print') {
+              // the pages go to the printer only from the preview's Print button
+              setNotice(null)
+              previewing = true
+              setPreviewJob(job)
+              return
+            }
             setNotice({ tone: 'info', key: 'printSending', sticky: true })
             const result = await window.hwpApi.printPages(job)
             setNotice(result.ok ? null : { tone: 'error', key: failed, detail: result.error })
           } catch (error) {
             setNotice({ tone: 'error', key: failed, detail: detailOf(error) })
           } finally {
-            printingRef.current = false
+            if (!previewing) printingRef.current = false
           }
         })()
       }),
     [phase, agentBridge],
   )
+
+  const closePreview = useCallback(() => {
+    setPreviewJob(null)
+    printingRef.current = false
+  }, [])
+
+  const printPreviewed = useCallback(() => {
+    const job = previewJob
+    setPreviewJob(null)
+    if (!job) {
+      printingRef.current = false
+      return
+    }
+    void (async () => {
+      try {
+        setNotice({ tone: 'info', key: 'printSending', sticky: true })
+        const result = await window.hwpApi.printPages(job)
+        setNotice(result.ok ? null : { tone: 'error', key: 'printFailed', detail: result.error })
+      } catch (error) {
+        setNotice({ tone: 'error', key: 'printFailed', detail: detailOf(error) })
+      } finally {
+        printingRef.current = false
+      }
+    })()
+  }, [previewJob])
 
   // autosave to the document's own file: 30 s and window blur, after the user has
   // paused (exporting a whole HWP document costs more than the other editors' saves)
@@ -841,6 +900,9 @@ export default function App() {
         <div className="hwp-stage">
           <div ref={hostRef} className="hwp-editor-host" />
           {phase === 'booting' && <div className="hwp-cover">{t('loading')}</div>}
+          {previewJob && (
+            <PrintPreview job={previewJob} onPrint={printPreviewed} onCancel={closePreview} />
+          )}
           {notice && (
             <div
               className={`hwp-notice hwp-notice-${notice.tone}`}

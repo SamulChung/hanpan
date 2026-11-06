@@ -2,7 +2,7 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import type { BrowserWindow } from 'electron'
-import { MAX_PRINT_CHARS, MAX_PRINT_PAGES } from '../shared/ipc'
+import { IMAGE_PRINT_MODES, MAX_PRINT_CHARS, MAX_PRINT_PAGES } from '../shared/ipc'
 import type { PrintJob, PrintPage } from '../shared/ipc'
 
 /**
@@ -62,7 +62,9 @@ export function imageFile(dataUrl: string, index: number): { name: string; bytes
 export function badJob(job: unknown): string | null {
   if (!job || typeof job !== 'object') return 'not a print job'
   const { mode, pages, images } = job as Partial<PrintJob>
-  if (mode !== 'pdf' && mode !== 'print') return 'unknown print mode'
+  if (mode !== 'pdf' && mode !== 'print' && !IMAGE_PRINT_MODES.includes(mode as never)) {
+    return 'unknown print mode'
+  }
   if (!Array.isArray(pages) || pages.length === 0) return 'no pages'
   if (pages.length > MAX_PRINT_PAGES) return 'too many pages'
   if (!Array.isArray(images) || images.some((image) => typeof image !== 'string')) {
@@ -129,7 +131,9 @@ export function printableHtml(pages: PrintPage[], picture: (index: number) => st
 }
 
 export type PrintWindow = Pick<BrowserWindow, 'loadFile' | 'destroy'> & {
-  webContents: Pick<BrowserWindow['webContents'], 'printToPDF' | 'print'>
+  webContents: Pick<BrowserWindow['webContents'], 'printToPDF' | 'print'> & {
+    debugger: Pick<BrowserWindow['webContents']['debugger'], 'attach' | 'detach' | 'sendCommand'>
+  }
 }
 
 /**
@@ -140,7 +144,8 @@ export type PrintWindow = Pick<BrowserWindow, 'loadFile' | 'destroy'> & {
 async function withPrintWindow<T>(
   job: PrintJob,
   createWindow: () => PrintWindow,
-  use: (win: PrintWindow) => Promise<T>,
+  use: (win: PrintWindow, load: (pages: PrintPage[]) => Promise<void>) => Promise<T>,
+  first: PrintPage[] = job.pages,
 ): Promise<T> {
   const dir = await mkdtemp(join(tmpdir(), 'ieum-hwp-print-'))
   let win: PrintWindow | undefined
@@ -153,15 +158,20 @@ async function withPrintWindow<T>(
         return file.name
       }),
     )
-    const htmlPath = join(dir, 'print.html')
-    await writeFile(
-      htmlPath,
-      printableHtml(job.pages, (index) => names[index] ?? ''),
-      'utf8',
-    )
-    win = createWindow()
-    await win.loadFile(htmlPath)
-    return await use(win)
+    let loads = 0
+    const load = async (pages: PrintPage[]) => {
+      // a file of its own each time: the window must not show the page it showed before
+      const htmlPath = join(dir, `print-${loads++}.html`)
+      await writeFile(
+        htmlPath,
+        printableHtml(pages, (index) => names[index] ?? ''),
+        'utf8',
+      )
+      win ??= createWindow()
+      await win.loadFile(htmlPath)
+    }
+    await load(first)
+    return await use(win!, load)
   } finally {
     win?.destroy()
     await rm(dir, { recursive: true, force: true })
@@ -200,5 +210,54 @@ export function printJobToPrinter(
           },
         )
       }),
+  )
+}
+
+/** The sharpness a page is drawn at for a picture: twice its CSS size. */
+const PNG_SCALE = 2
+
+/**
+ * Each page as PNG bytes, in order (0.17): every page alone in the hidden window, the
+ * window's screen made the page's size (a hidden window cannot be made larger than the
+ * screen; the devtools protocol can) and drawn at twice that, so text stays sharp.
+ */
+export function printJobToPngs(job: PrintJob, createWindow: () => PrintWindow): Promise<Buffer[]> {
+  return withPrintWindow(
+    job,
+    createWindow,
+    async (win, load) => {
+      const cdp = win.webContents.debugger
+      cdp.attach('1.3')
+      try {
+        const pngs: Buffer[] = []
+        for (let index = 0; index < job.pages.length; index++) {
+          const page = job.pages[index]!
+          if (index > 0) await load([page])
+          await cdp.sendCommand('Emulation.setDeviceMetricsOverride', {
+            width: Math.ceil(page.width),
+            height: Math.ceil(page.height),
+            deviceScaleFactor: PNG_SCALE,
+            mobile: false,
+          })
+          const shot = (await cdp.sendCommand('Page.captureScreenshot', { format: 'png' })) as {
+            data: string
+          }
+          pngs.push(Buffer.from(shot.data, 'base64'))
+        }
+        return pngs
+      } finally {
+        cdp.detach()
+      }
+    },
+    job.pages.slice(0, 1),
+  )
+}
+
+/** File names for the pages of a picture export: `<name>-<n>.png`, numbered to the same width. */
+export function pngPageNames(base: string, count: number): string[] {
+  const width = String(count).length
+  return Array.from(
+    { length: count },
+    (_, i) => `${base}-${String(i + 1).padStart(width, '0')}.png`,
   )
 }

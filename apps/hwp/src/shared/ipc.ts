@@ -19,6 +19,8 @@ export const HWP_CHANNELS = {
   printRequest: 'hwp:print-request',
   fileCommand: 'hwp:file-command',
   printPages: 'hwp:print-pages',
+  /** invoke(html) → PrintResult: the document's HTML written as a Word file (0.17) */
+  exportDocx: 'hwp:export-docx',
   dirtyChanged: 'hwp:dirty-changed',
   closeSaveRequest: 'hwp:close-save-request',
   closeSaveResult: 'hwp:close-save-result',
@@ -98,10 +100,19 @@ export type UiTheme = 'light' | 'dark' | 'system'
 export type SaveMode = 'save' | 'saveAs'
 
 /** What the editor's File menu asks for (see the plugin's FILE_COMMAND_EVENT). */
-export type FileCommand = 'open' | SaveMode | PrintMode
+export type FileCommand = 'open' | SaveMode | ExportCommand
 
-/** Where the pages go: a PDF file, or the printer through the system print dialog. */
-export type PrintMode = 'pdf' | 'print'
+/** What a print request asks the tab for: pages (see PrintMode), or the document as Word. */
+export type ExportCommand = PrintMode | 'docx'
+
+/**
+ * Where the pages go: a PDF file, the printer through the system print dialog (after the
+ * app's own preview), PNG files of every page in a folder, or one PNG of the current page.
+ */
+export type PrintMode = 'pdf' | 'print' | 'png' | 'pngPage'
+
+/** Print modes that write pictures. */
+export const IMAGE_PRINT_MODES: readonly PrintMode[] = ['png', 'pngPage']
 
 /** One page as the editor draws it for printing: SVG, and its size in CSS pixels. */
 export interface PrintPage {
@@ -335,9 +346,11 @@ export interface HwpApi {
    */
   requestFileCommand(command: FileCommand): void
   /** the File menu or Ctrl+P asks for a PDF or a print */
-  onPrintRequest(handler: (mode: PrintMode) => void): () => void
+  onPrintRequest(handler: (mode: ExportCommand) => void): () => void
   /** make the PDF (asking where) or open the print dialog for these pages */
   printPages(job: PrintJob): Promise<PrintResult>
+  /** the document's HTML (agentBridge.exportHtml) written as a .docx where the user picks */
+  exportDocx(html: string): Promise<PrintResult>
   onCloseSaveRequest(handler: () => void): () => void
   sendCloseSaveResult(ok: boolean): void
   /** the memo editor opened or closed in this tab: main holds back save, close and quit */
