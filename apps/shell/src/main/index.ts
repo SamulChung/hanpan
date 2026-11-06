@@ -125,6 +125,7 @@ import {
   writeAppSettings,
   writeAppSettingThen,
 } from './app-settings'
+import { readHomeLayout, writeHomeLayout } from './home-layout'
 import { KOREAN_DOC_FEATURES_KEY, readKoreanDocFeatures } from './korean-doc-features'
 import { fallbackUiLang } from './ui-lang-fallback'
 import {
@@ -6268,6 +6269,12 @@ function registerHomeIpc(): void {
     })
     for (const wc of webContents.getAllWebContents()) wc.send('app:auto-save-default-changed', next)
   })
+
+  // 0.17: Home's widgets and app card arrangement; a damaged value reads as the defaults
+  ipcMain.handle(HOME_CHANNELS.getHomeLayout, () => readHomeLayout(APP_SETTINGS_PATH()))
+  ipcMain.handle(HOME_CHANNELS.setHomeLayout, (_event, layout: unknown) =>
+    writeHomeLayout(APP_SETTINGS_PATH(), layout),
+  )
 
   // Hanpan: the Korean document features switch (decision 0091); editors read it too
   ipcMain.handle(HOME_CHANNELS.getKoreanDocFeatures, () =>

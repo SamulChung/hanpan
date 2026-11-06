@@ -20,6 +20,7 @@ import type {
 import type { UpdateChannel, UpdateUiState } from './update-api'
 import type { KbFileInfo, KbReadPage, KbSearchHit } from '@genoffice/agent-core'
 import type { AiPanelPrefs } from '@genoffice/ui/ai-panel-prefs'
+import type { HomeLayout } from './home-layout'
 
 /** UI language; kept self-contained here (mirrors Lang in @genoffice/i18n) */
 
@@ -362,6 +363,10 @@ export interface HomeApi {
   /** persist the switch; broadcasts 'app:korean-doc-features-changed' to all web contents */
   setKoreanDocFeatures?(on: boolean): Promise<void>
   onKoreanDocFeaturesChanged?(handler: (stored: boolean | null) => void): () => void
+  /** 0.17: Home's widgets, app card arrangement and quick memo (userData/app-settings.json `homeLayout`) */
+  getHomeLayout?(): Promise<HomeLayout>
+  /** store the layout (cleaned up in main); resolves to what was stored */
+  setHomeLayout?(layout: HomeLayout): Promise<HomeLayout>
   /** current local MCP server state (running/enabled/port/url) */
   getMcpStatus(): Promise<McpStatus>
   /** enable/disable the MCP server and/or change its port/background/logging; applies and persists, returns the new state */
@@ -613,6 +618,8 @@ export const HOME_CHANNELS = {
   getAutoSaveDefault: 'home:get-auto-save-default',
   setAutoSaveDefault: 'home:set-auto-save-default',
   getKoreanDocFeatures: 'home:get-korean-doc-features',
+  getHomeLayout: 'home:get-home-layout',
+  setHomeLayout: 'home:set-home-layout',
   setKoreanDocFeatures: 'home:set-korean-doc-features',
   getMcpStatus: 'home:get-mcp-status',
   setMcpSettings: 'home:set-mcp-settings',

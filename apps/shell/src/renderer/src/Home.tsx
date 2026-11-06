@@ -8,6 +8,14 @@ import logoLockup from './assets/genoffice-logo.svg'
 import { KbAskPanel } from './KbAskPanel'
 import { TemplatePicker } from './hanpan/TemplatePicker'
 import { StartBoard } from './hanpan/StartBoard'
+import {
+  HomeCustomizePanel,
+  HomeWidgets,
+  arrangeCards,
+  useHomeLayout,
+  type HomeAppCard,
+} from './HomeWidgets'
+import { homeCustomText } from './i18n/strings-home-custom'
 import { MarkdownConverter, type MarkdownConverterApi } from './hanpan/MarkdownConverter'
 import './hanpan/hanpan.css'
 import iconDocx from './assets/file-docx.svg'
@@ -1949,6 +1957,9 @@ export function Home({
 
   // Hanpan: the template picker
   const [templatesOpen, setTemplatesOpen] = useState(false)
+  // 0.17: the widgets and the app card arrangement ("홈 꾸미기")
+  const [homeLayout, updateHomeLayout] = useHomeLayout()
+  const [customizeOpen, setCustomizeOpen] = useState(false)
   const [converterOpen, setConverterOpen] = useState(false)
   const hp = window.hanpanApi
   const converterApi: MarkdownConverterApi | null =
@@ -1962,7 +1973,7 @@ export function Home({
    * documents and tools follow in a compact row. Every card keeps `quick-card`
    * and names what it makes in `data-new`.
    */
-  function renderQuickCards() {
+  function quickCardDefs() {
     const made = (ext: string) => NEW_ITEMS.find((item) => item.ext === ext)!
     const primary = [
       {
@@ -2125,33 +2136,70 @@ export function Home({
         action: () => window.aiOffice.browse(),
       },
     ]
+    return { primary, secondary }
+  }
+
+  /** every app card as the 홈 꾸미기 panel and the favorites widget list them */
+  function homeAppCards(): { primary: HomeAppCard[]; secondary: HomeAppCard[] } {
+    const defs = quickCardDefs()
+    return {
+      primary: defs.primary.map((card) => ({
+        key: card.key,
+        title: card.title,
+        icon: card.badge,
+        action: card.action,
+      })),
+      secondary: defs.secondary.map((card) => ({
+        key: card.key,
+        title: card.title,
+        icon: card.icon,
+        action: card.action,
+      })),
+    }
+  }
+
+  /** the cards in the person's order, hidden ones left out (0.17 홈 꾸미기) */
+  function renderQuickCards() {
+    const defs = quickCardDefs()
+    const primary = arrangeCards(defs.primary, homeLayout)
+    const secondary = arrangeCards(defs.secondary, homeLayout)
     return (
       <div className="hp-cards">
-        <div className="quick-cards hp-primary">
-          {primary.map((card) => (
-            <button
-              key={card.key}
-              className={
-                card.start ? 'quick-card hp-primary-card is-start' : 'quick-card hp-primary-card'
-              }
-              data-new={card.key}
-              data-hanpan={card.key === 'templates' ? 'templates' : undefined}
-              onClick={() => void card.action()}
-            >
-              {card.start && <span className="hp-start-badge">{t('hpStartBadge')}</span>}
-              {card.badge}
-              <span className="quick-text">
-                <span className="quick-title-row">
-                  <span className="quick-title">{card.title}</span>
-                  {card.ai && <span className="ai-chip">AI</span>}
+        {primary.length > 0 && (
+          <div className="quick-cards hp-primary">
+            {primary.map((card) => (
+              <button
+                key={card.key}
+                className={
+                  card.start ? 'quick-card hp-primary-card is-start' : 'quick-card hp-primary-card'
+                }
+                data-new={card.key}
+                data-hanpan={card.key === 'templates' ? 'templates' : undefined}
+                onClick={() => void card.action()}
+              >
+                {card.start && <span className="hp-start-badge">{t('hpStartBadge')}</span>}
+                {card.badge}
+                <span className="quick-text">
+                  <span className="quick-title-row">
+                    <span className="quick-title">{card.title}</span>
+                    {card.ai && <span className="ai-chip">AI</span>}
+                  </span>
+                  <span className="quick-sub">{card.sub}</span>
                 </span>
-                <span className="quick-sub">{card.sub}</span>
-              </span>
-            </button>
-          ))}
-        </div>
+              </button>
+            ))}
+          </div>
+        )}
         <div className="section-head hp-more-head">
           <span className="section-label">{t('hpMoreTools')}</span>
+          <button
+            type="button"
+            className="home-custom-open"
+            data-home-custom="open"
+            onClick={() => setCustomizeOpen(true)}
+          >
+            {homeCustomText(lang, 'customize')}
+          </button>
         </div>
         <div className="quick-cards hp-secondary">
           {secondary.map((card) => {
@@ -2194,11 +2242,47 @@ export function Home({
             )
           })}
         </div>
+        {customizeOpen && renderCustomizePanel()}
         {templatesOpen && <TemplatePicker onClose={() => setTemplatesOpen(false)} />}
         {converterOpen && converterApi && (
           <MarkdownConverter api={converterApi} onClose={() => setConverterOpen(false)} />
         )}
       </div>
+    )
+  }
+
+  function renderCustomizePanel() {
+    const apps = homeAppCards()
+    return (
+      <HomeCustomizePanel
+        layout={homeLayout}
+        update={updateHomeLayout}
+        groups={[
+          { label: homeCustomText(lang, 'mainCards'), cards: apps.primary },
+          { label: t('hpMoreTools'), cards: apps.secondary },
+        ]}
+        lang={lang}
+        themeLabels={{
+          title: t('theme'),
+          light: t('themeLight'),
+          dark: t('themeDark'),
+          system: t('themeSystem'),
+        }}
+        onClose={() => setCustomizeOpen(false)}
+      />
+    )
+  }
+
+  function renderWidgets() {
+    const apps = homeAppCards()
+    return (
+      <HomeWidgets
+        layout={homeLayout}
+        update={updateHomeLayout}
+        cards={[...apps.primary, ...apps.secondary]}
+        lang={lang}
+        reloadKey={`${navCounts.recent}:${navCounts.starred}`}
+      />
     )
   }
 
@@ -3355,6 +3439,8 @@ export function Home({
           )}
           {renderQuickCards()}
         </section>
+
+        {renderWidgets()}
 
         <section
           className="recents"
