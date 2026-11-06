@@ -258,4 +258,10 @@ export const ko = {
   hpTaskGenerate: '생성',
   hpTaskExplain: '설명',
   untitledHwp: '제목 없는 한글 문서',
+  savedNotice: '저장했습니다: {name}',
+  exportedPdf: 'PDF로 내보냈습니다: {name}',
+  exportedDocx: 'Word 문서로 내보냈습니다: {name}',
+  exportedPng: '쪽 그림 {count}장을 저장했습니다.',
+  noticeOpen: '열기',
+  noticeOpenFolder: '폴더 열기',
 } satisfies Record<keyof typeof zh, string>

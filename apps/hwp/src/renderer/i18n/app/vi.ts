@@ -261,4 +261,10 @@ export const vi = {
   hpTaskGenerate: 'Tạo nội dung',
   hpTaskExplain: 'Giải thích',
   untitledHwp: 'HWP chưa có tiêu đề',
+  savedNotice: 'Đã lưu: {name}',
+  exportedPdf: 'Đã xuất PDF: {name}',
+  exportedDocx: 'Đã xuất tài liệu Word: {name}',
+  exportedPng: 'Đã lưu {count} ảnh trang.',
+  noticeOpen: 'Mở',
+  noticeOpenFolder: 'Mở thư mục',
 } satisfies Record<keyof typeof zh, string>
