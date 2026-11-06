@@ -52,7 +52,9 @@ export async function trashFilesClosingTabs(
   const done: string[] = []
   for (const path of paths) {
     const key = deps.canonical(path)
-    const holding = deps.tabs().filter((tab) => tab.filePath && deps.canonical(tab.filePath) === key)
+    const holding = deps
+      .tabs()
+      .filter((tab) => tab.filePath && deps.canonical(tab.filePath) === key)
     for (const tab of holding) await deps.closeTab(tab.id)
     const stillOpen = deps
       .tabs()

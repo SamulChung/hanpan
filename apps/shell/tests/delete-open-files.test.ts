@@ -20,10 +20,7 @@ function setup(open: OpenTabRef[], refuse: string[] = []) {
 
 describe('deleting files open in tabs', () => {
   it('names the files that are open, in any spelling of their path', () => {
-    const { deps } = setup([
-      { id: 'home' },
-      { id: 't1', filePath: 'C:\\Docs\\Plan.docx' },
-    ])
+    const { deps } = setup([{ id: 'home' }, { id: 't1', filePath: 'C:\\Docs\\Plan.docx' }])
     expect(pathsOpenInTabs(['c:/docs/plan.docx', 'C:\\docs\\other.hwp'], deps)).toEqual([
       'c:/docs/plan.docx',
     ])

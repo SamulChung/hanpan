@@ -300,12 +300,7 @@ function UnsetBody({ text, onSetUp }: { text: Text; onSetUp: () => void }) {
   return (
     <div className="hw-unset">
       <p className="hw-empty">{text('notSet')}</p>
-      <button
-        type="button"
-        className="hw-small-btn hw-done"
-        data-widget-setup=""
-        onClick={onSetUp}
-      >
+      <button type="button" className="hw-small-btn hw-done" data-widget-setup="" onClick={onSetUp}>
         {text('setUp')}
       </button>
     </div>

@@ -72,6 +72,21 @@ export interface TabShortcutHost {
  * Home deliberately returns false for the close chord: its File > Close closes
  * the window, and that is the behaviour Home had before tab shortcuts existed.
  */
+/**
+ * Home's File > Close (Ctrl+W on Home) closes the window, as it always has —
+ * but a press meant for the last document tab that lands on Home used to take
+ * every open document with it. With documents open it now asks first
+ * (0.17 리뷰 v2 shell #3); a lone Home closes at once.
+ */
+export async function closeFromHome(options: {
+  openDocuments: number
+  ask: (openDocuments: number) => Promise<boolean>
+  close: () => void
+}): Promise<void> {
+  if (options.openDocuments > 0 && !(await options.ask(options.openDocuments))) return
+  options.close()
+}
+
 export function handleTabShortcut(
   input: TabShortcutInput,
   webContentsId: number,

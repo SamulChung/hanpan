@@ -493,7 +493,7 @@ import { tabMenuTemplate, type TabMenuActions, isProgramFile } from './tab-menu'
 import { runTabDocumentAction, type TabDocumentAction } from './tab-document-actions'
 import { duplicateDocumentFile } from './tab-duplicate'
 import { closeTabsInOrder, createRecentlyClosedTracker } from './tab-lifecycle'
-import { handleTabShortcut } from './tab-shortcuts'
+import { closeFromHome, handleTabShortcut } from './tab-shortcuts'
 import { settingsMenuItem } from './settings-menu'
 import { installDefaultDialogTitle } from './dialog-title'
 import { readSplitMemory, writeSplitMemory, type SplitMemory } from './split-memory'
@@ -1135,6 +1135,9 @@ const tMain = createI18n({
     menuOpen: '打开…',
     menuSave: '保存',
     menuSaveAs: '另存为…',
+    closeWindowAsk: '要关闭 Hanpan 窗口吗？',
+    closeWindowAskDetail: '{n} 个打开的文档也会一起关闭。未保存的文档会另外询问。',
+    closeWindowYes: '关闭窗口',
     menuClose: '关闭',
     menuEdit: '编辑',
     menuView: '视图',
@@ -1300,6 +1303,10 @@ const tMain = createI18n({
     menuOpen: 'Open…',
     menuSave: 'Save',
     menuSaveAs: 'Save As…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Close',
     menuEdit: 'Edit',
     menuWindow: 'Window',
@@ -1465,6 +1472,10 @@ const tMain = createI18n({
     menuOpen: 'Mở…',
     menuSave: 'Lưu',
     menuSaveAs: 'Lưu dưới dạng…',
+    closeWindowAsk: 'Đóng cửa sổ Hanpan?',
+    closeWindowAskDetail:
+      '{n} tài liệu đang mở cũng sẽ đóng. Bạn sẽ được hỏi về các thay đổi chưa lưu.',
+    closeWindowYes: 'Đóng cửa sổ',
     menuClose: 'Đóng',
     menuEdit: 'Chỉnh sửa',
     menuView: 'Hiển thị',
@@ -1635,6 +1646,10 @@ const tMain = createI18n({
     menuOpen: '開く…',
     menuSave: '保存',
     menuSaveAs: '名前を付けて保存…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: '閉じる',
     menuEdit: '編集',
     menuView: '表示',
@@ -1806,6 +1821,9 @@ const tMain = createI18n({
     menuOpen: '열기…',
     menuSave: '저장',
     menuSaveAs: '다른 이름으로 저장…',
+    closeWindowAsk: '한판 창을 닫을까요?',
+    closeWindowAskDetail: '열린 문서 {n}개도 함께 닫힙니다. 저장하지 않은 문서는 따로 묻습니다.',
+    closeWindowYes: '창 닫기',
     menuClose: '닫기',
     menuEdit: '편집',
     menuView: '보기',
@@ -1975,6 +1993,10 @@ const tMain = createI18n({
     menuOpen: 'Ouvrir…',
     menuSave: 'Enregistrer',
     menuSaveAs: 'Enregistrer sous…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Fermer',
     menuEdit: 'Édition',
     menuView: 'Affichage',
@@ -2147,6 +2169,10 @@ const tMain = createI18n({
     menuOpen: 'Öffnen…',
     menuSave: 'Speichern',
     menuSaveAs: 'Speichern unter…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Schließen',
     menuEdit: 'Bearbeiten',
     menuView: 'Ansicht',
@@ -2319,6 +2345,10 @@ const tMain = createI18n({
     menuOpen: 'Abrir…',
     menuSave: 'Guardar',
     menuSaveAs: 'Guardar como…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Cerrar',
     menuEdit: 'Edición',
     menuView: 'Ver',
@@ -2490,6 +2520,10 @@ const tMain = createI18n({
     menuOpen: 'เปิด…',
     menuSave: 'บันทึก',
     menuSaveAs: 'บันทึกเป็น…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'ปิด',
     menuEdit: 'แก้ไข',
     menuView: 'มุมมอง',
@@ -2657,6 +2691,10 @@ const tMain = createI18n({
     menuOpen: 'Buka…',
     menuSave: 'Simpan',
     menuSaveAs: 'Simpan Sebagai…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Tutup',
     menuEdit: 'Edit',
     menuView: 'Tampilan',
@@ -2828,6 +2866,10 @@ const tMain = createI18n({
     menuOpen: 'Открыть…',
     menuSave: 'Сохранить',
     menuSaveAs: 'Сохранить как…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Закрыть',
     menuEdit: 'Правка',
     menuView: 'Вид',
@@ -2998,6 +3040,10 @@ const tMain = createI18n({
     menuOpen: 'فتح…',
     menuSave: 'حفظ',
     menuSaveAs: 'حفظ باسم…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'إغلاق',
     menuEdit: 'تحرير',
     menuView: 'عرض',
@@ -3165,6 +3211,10 @@ const tMain = createI18n({
     menuOpen: 'Abrir…',
     menuSave: 'Salvar',
     menuSaveAs: 'Salvar Como…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Fechar',
     menuEdit: 'Editar',
     menuView: 'Visualização',
@@ -3336,6 +3386,10 @@ const tMain = createI18n({
     menuOpen: 'Apri…',
     menuSave: 'Salva',
     menuSaveAs: 'Salva con nome…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Chiudi',
     menuEdit: 'Modifica',
     menuView: 'Vista',
@@ -3507,6 +3561,10 @@ const tMain = createI18n({
     menuOpen: 'Otwórz…',
     menuSave: 'Zapisz',
     menuSaveAs: 'Zapisz jako…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Zamknij',
     menuEdit: 'Edycja',
     menuView: 'Widok',
@@ -3677,6 +3735,10 @@ const tMain = createI18n({
     menuOpen: 'Otevřít…',
     menuSave: 'Uložit',
     menuSaveAs: 'Uložit jako…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Zavřít',
     menuEdit: 'Úpravy',
     menuView: 'Zobrazení',
@@ -3846,6 +3908,10 @@ const tMain = createI18n({
     menuOpen: 'Openen…',
     menuSave: 'Opslaan',
     menuSaveAs: 'Opslaan als…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Sluiten',
     menuEdit: 'Bewerken',
     menuView: 'Weergave',
@@ -4018,6 +4084,10 @@ const tMain = createI18n({
     menuOpen: 'Buka…',
     menuSave: 'Simpan',
     menuSaveAs: 'Simpan Sebagai…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'Tutup',
     menuEdit: 'Edit',
     menuView: 'Paparan',
@@ -4187,6 +4257,10 @@ const tMain = createI18n({
     menuOpen: 'פתיחה…',
     menuSave: 'שמירה',
     menuSaveAs: 'שמירה בשם…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'סגירה',
     menuEdit: 'עריכה',
     menuView: 'תצוגה',
@@ -4355,6 +4429,10 @@ const tMain = createI18n({
     menuOpen: 'खोलें…',
     menuSave: 'सहेजें',
     menuSaveAs: 'इस रूप में सहेजें…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: 'बंद करें',
     menuEdit: 'संपादन',
     menuView: 'व्यू',
@@ -4524,6 +4602,10 @@ const tMain = createI18n({
     menuOpen: '開啟…',
     menuSave: '儲存',
     menuSaveAs: '另存新檔…',
+    closeWindowAsk: 'Close the Hanpan window?',
+    closeWindowAskDetail:
+      '{n} open documents close with it. You will be asked about any unsaved changes.',
+    closeWindowYes: 'Close window',
     menuClose: '關閉',
     menuEdit: '編輯',
     menuView: '檢視',
@@ -8037,6 +8119,33 @@ async function openFileViaDialog(): Promise<void> {
   if (!result.canceled) for (const path of result.filePaths) openDocumentPath(path)
 }
 
+/** Home's File > Close: the window goes, after a question when documents are open */
+async function closeShellFromHome(): Promise<void> {
+  const win = shellWindow
+  if (!win || win.isDestroyed()) return
+  await closeFromHome({
+    openDocuments: (tabManager?.list() ?? []).filter(
+      (tab) => tab.kind !== 'home' && tab.kind !== 'help',
+    ).length,
+    ask: async (n) => {
+      const { response } = await dialog.showMessageBox(win, {
+        type: 'question',
+        title: productName(currentLang() as never),
+        message: tm('closeWindowAsk'),
+        detail: tm('closeWindowAskDetail', { n }),
+        buttons: [tm('closeWindowYes'), tm('btnCancel')],
+        defaultId: 1,
+        cancelId: 1,
+        noLink: true,
+      })
+      return response === 0
+    },
+    close: () => {
+      if (!win.isDestroyed()) win.close()
+    },
+  })
+}
+
 function buildHomeMenu(): void {
   const isMac = process.platform === 'darwin'
   const template: MenuItemConstructorOptions[] = [
@@ -8069,7 +8178,11 @@ function buildHomeMenu(): void {
           click: () => void openFileViaDialog(),
         },
         { type: 'separator' },
-        { role: 'close', label: tm('menuClose') },
+        {
+          label: tm('menuClose'),
+          accelerator: 'CmdOrCtrl+W',
+          click: () => void closeShellFromHome(),
+        },
       ],
     },
     viewMenuTemplate(),
