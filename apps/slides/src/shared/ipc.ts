@@ -1,4 +1,9 @@
-import type { AiPanelPrefs, FontFamilyInfo } from '@genoffice/ui'
+import type {
+  AiPanelPrefs,
+  FontFamilyInfo,
+  GonguPickerPictureAnswer,
+  GonguPickerSearchAnswer,
+} from '@genoffice/ui'
 /**
  * slides main-process <-> renderer IPC contract (Phase 3: open/save/edit, AI not included yet).
  *
@@ -1566,6 +1571,10 @@ export interface SlidesApi {
     kind: 'video' | 'audio',
     fitWidthPx: number,
   ) => Promise<{ slide: RenderSlide; sourceId: string } | null>
+  /** Hanpan: Insert ▸ Gongu pictures — main searches on the key from Settings (no handler outside the shell) */
+  gonguSearch: (query: string, page: number) => Promise<GonguPickerSearchAnswer | null>
+  /** Hanpan: the large picture of one Gongu work, fetched by main */
+  gonguPicture: (workId: string) => Promise<GonguPickerPictureAnswer | null>
   /** Hanpan: embed one of the bundled sound effects (`shared/sound-effects.ts`) into the page */
   insertSoundEffect: (
     slideIndex: number,

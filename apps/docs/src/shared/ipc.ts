@@ -102,7 +102,12 @@ import type {
 import type { AiToolCapabilities, MediaToolErrorCode } from '@genoffice/ai-search'
 import type { HeadlessExportTarget } from '@genoffice/electron-utils/headless-export'
 import type { FaceVerticalMetrics } from '@genoffice/font-metrics'
-import type { AiPanelPrefs, FontFamilyInfo } from '@genoffice/ui'
+import type {
+  AiPanelPrefs,
+  FontFamilyInfo,
+  GonguPickerPictureAnswer,
+  GonguPickerSearchAnswer,
+} from '@genoffice/ui'
 import type { DocFormat } from './open-file'
 
 export type { FaceVerticalMetrics }
@@ -596,6 +601,10 @@ export interface DesktopApi {
   signalMcpReady(): void
   getRecentFiles(): Promise<string[]>
   pickImage(): Promise<PickImageResult | null>
+  /** Hanpan: Insert ▸ Gongu pictures — main searches on the key from Settings (no handler outside the shell) */
+  gonguSearch(query: string, page: number): Promise<GonguPickerSearchAnswer | null>
+  /** Hanpan: the large picture of one Gongu work, fetched by main */
+  gonguPicture(workId: string): Promise<GonguPickerPictureAnswer | null>
   /** Mailings tab: pick a local .xlsx or .csv and read it as a recipient list */
   pickMergeDataSource(): Promise<MergeDataSourceResponse>
   /** Mailings tab: write the merged documents (one file, or one per record) */

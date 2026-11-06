@@ -18,12 +18,12 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { basename, extname, join } from 'node:path'
 import { PDFDocument } from 'pdf-lib'
 import {
-  gonguImageDetail,
-  gonguImageSearch,
-  type GonguErrorKind,
-  type GonguWork,
-} from '@genoffice/ai-search'
-import { fetchImageBytes } from '@genoffice/electron-utils/fetch-image-bytes'
+  fetchGonguPicture,
+  searchGonguPictures,
+  type GonguPictureAnswer,
+  type GonguSearchAnswer,
+} from './gongu-pictures'
+
 import {
   printHtmlDocument,
   withPrintOptions,
@@ -36,6 +36,8 @@ import {
   printPageOptions,
   type PrintSheet,
 } from '@genoffice/ui/image-print'
+
+export type { GonguHit, GonguPictureAnswer, GonguSearchAnswer } from './gongu-pictures'
 
 export const DESIGN_CHANNELS = {
   getInit: 'hanpan-design:get-init',
@@ -64,18 +66,6 @@ export interface DesignWindowDeps {
   /** prints a finished page through the system dialog; left out: a hidden window here */
   printHtml?: (html: string, sheet: PrintSheet) => Promise<PrintDialogOutcome>
 }
-
-/** A search hit for the board: the work and its thumbnail as a data URL (the page loads no remote picture). */
-export interface GonguHit extends GonguWork {
-  thumb: string | null
-}
-
-export type GonguSearchAnswer =
-  { ok: true; works: GonguHit[]; total: number | null } | { ok: false; error: GonguErrorKind }
-
-export type GonguPictureAnswer =
-  | { ok: true; dataUrl: string; width: number; height: number; work: GonguWork }
-  | { ok: false; error: GonguErrorKind | 'picture' }
 
 let deps: DesignWindowDeps | null = null
 let win: BrowserWindow | null = null
@@ -112,36 +102,6 @@ function looksLikeDesign(text: string): boolean {
   } catch {
     return false
   }
-}
-
-const GONGU_PER_PAGE = 20
-
-/** A picture the service pointed at, as a data URL with its size; null when it is not a picture. */
-async function pictureOf(
-  url: string | undefined,
-): Promise<{ dataUrl: string; width: number; height: number } | null> {
-  if (!url) return null
-  const fetched = await fetchImageBytes(url)
-  if (!fetched) return null
-  const image = nativeImage.createFromBuffer(Buffer.from(fetched.base64, 'base64'))
-  if (image.isEmpty()) return null
-  const { width, height } = image.getSize()
-  // the file as it came (a JPEG stays a JPEG); nativeImage only proved it is a picture
-  return { dataUrl: `data:${fetched.mime};base64,${fetched.base64}`, width, height }
-}
-
-/** Runs `work` over `items` with at most `limit` at once, keeping their order. */
-async function mapLimited<T, R>(items: T[], limit: number, work: (item: T) => Promise<R>) {
-  const out: R[] = new Array(items.length)
-  let next = 0
-  const lanes = Array.from({ length: Math.min(limit, items.length) }, async () => {
-    while (next < items.length) {
-      const i = next++
-      out[i] = await work(items[i]!)
-    }
-  })
-  await Promise.all(lanes)
-  return out
 }
 
 async function saveAs(
@@ -303,28 +263,15 @@ function registerIpc(): void {
   ipcMain.handle(
     DESIGN_CHANNELS.gonguSearch,
     async (event, query: unknown, page: unknown): Promise<GonguSearchAnswer | null> => {
-      if (!fromWindow(event) || !deps || typeof query !== 'string') return null
-      const result = await gonguImageSearch(query.slice(0, 100), deps.gonguKey(), {
-        page: Math.min(1000, Math.max(1, Math.floor(Number(page) || 1))),
-        perPage: GONGU_PER_PAGE,
-      })
-      if (!result.ok) return { ok: false, error: result.error }
-      const works = await mapLimited(result.value.works, 4, async (work) => ({
-        ...work,
-        thumb: (await pictureOf(work.thumbUrl))?.dataUrl ?? null,
-      }))
-      return { ok: true, works, total: result.value.total ?? null }
+      if (!fromWindow(event) || !deps) return null
+      return searchGonguPictures(query, page, deps.gonguKey())
     },
   )
   ipcMain.handle(
     DESIGN_CHANNELS.gonguPicture,
     async (event, workId: unknown): Promise<GonguPictureAnswer | null> => {
-      if (!fromWindow(event) || !deps || typeof workId !== 'string') return null
-      const detail = await gonguImageDetail(workId, deps.gonguKey())
-      if (!detail.ok) return { ok: false, error: detail.error }
-      const picture = await pictureOf(detail.value.imageUrl ?? detail.value.thumbUrl)
-      if (!picture) return { ok: false, error: 'picture' }
-      return { ok: true, ...picture, work: detail.value }
+      if (!fromWindow(event) || !deps) return null
+      return fetchGonguPicture(workId, deps.gonguKey())
     },
   )
   ipcMain.handle(DESIGN_CHANNELS.open, (event) => {

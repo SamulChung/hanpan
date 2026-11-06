@@ -1,7 +1,9 @@
 /** Insert tab of the slides ribbon. Extracted from Ribbon.tsx. */
 import type { InsertKind } from '../../shared/ipc'
 import { platformShortcuts } from '@genoffice/i18n'
-import { WORDART_PRESETS, wordArtStrokePx } from '@genoffice/ui'
+import { useState } from 'react'
+import { GonguPicker, WORDART_PRESETS, gonguPickerText, wordArtStrokePx } from '@genoffice/ui'
+import { useI18n } from '../i18n/locale'
 import {
   CHART_GALLERY,
   ICON_COLORS,
@@ -82,6 +84,7 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
     onInsertImage,
     onInsertMedia,
     onInsertSoundEffect,
+    onInsertGonguPicture,
     onInsertModel3d,
     onInsertSmartArt,
     onInsertTable,
@@ -108,6 +111,9 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
     tableHover,
     tableOpen,
   } = rb
+  /** Hanpan: the Gongu picture picker */
+  const [gonguOpen, setGonguOpen] = useState(false)
+  const { lang } = useI18n()
   return (
     <>
       <Group label={t('ribbonGroupSlides')}>
@@ -231,6 +237,26 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
           </span>
           <span>{t('ribbonPicture')}</span>
         </button>
+        <button
+          className="rb-big"
+          disabled={!hasDoc}
+          onClick={() => setGonguOpen(true)}
+          data-tip={gonguPickerText(lang, 'find')}
+          data-action="insert-gongu"
+        >
+          <span className="rb-big-icon">
+            <IconPicture size={BIG} />
+          </span>
+          <span>{gonguPickerText(lang, 'title')}</span>
+        </button>
+        {gonguOpen && (
+          <GonguPicker
+            lang={lang}
+            api={window.slidesApi}
+            onInsert={onInsertGonguPicture}
+            onClose={() => setGonguOpen(false)}
+          />
+        )}
         {dropBig(
           'icons',
           <IconIconLib size={BIG} />,
