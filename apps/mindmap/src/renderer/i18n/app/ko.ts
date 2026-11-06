@@ -36,7 +36,7 @@ export const ko = {
   tbMakeFromDocument: '이 문서로 다른 문서 만들기',
   zoomReset: '원래 크기',
   tbExport: '내보내기',
-  exportPng: '이미지(PNG)로 내보내기…',
+  exportPng: '이미지로 내보내기…',
   exportPdf: 'PDF로 내보내기…',
   exportMarkdown: '마크다운 개요로 내보내기…',
   exportDone: '내보냈습니다',

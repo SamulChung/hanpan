@@ -190,4 +190,21 @@ describe('the File menu in the toolbar', () => {
     expect(onExport).toHaveBeenCalledWith('pdf')
     expect(onPrint).toHaveBeenCalledTimes(1)
   })
+
+  it('shows the shortcut of each item that has one, as the slide editor does', async () => {
+    await render('ko', props(() => {}))
+    await act(async () => {
+      container.querySelector<HTMLButtonElement>('[data-action="file-menu"]')!.click()
+    })
+    const kbd = (id: string) =>
+      container.querySelector(`[data-file="${id}"] .mm-file-kbd`)?.textContent ?? null
+    expect(kbd('open')).toBe('Ctrl+O')
+    expect(kbd('save')).toBe('Ctrl+S')
+    expect(kbd('save-as')).toBe('Ctrl+Shift+S')
+    expect(kbd('print')).toBe('Ctrl+P')
+    expect(kbd('export-png')).toBeNull()
+    expect(container.querySelector('[data-file="export-png"]')!.textContent).toBe(
+      '이미지로 내보내기…',
+    )
+  })
 })

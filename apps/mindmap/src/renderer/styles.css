@@ -318,8 +318,21 @@ html.genoffice-popover-open .ribbon-tabs {
 }
 
 .mm-file-item {
+  display: flex;
+  align-items: center;
+  gap: 24px;
   font-size: 13px;
   padding: 6px 10px;
+}
+
+.mm-file-label {
+  flex: 1;
+  text-align: start;
+}
+
+.mm-file-kbd {
+  color: var(--text-tertiary);
+  font-size: 12px;
 }
 
 .mm-file-item:disabled {

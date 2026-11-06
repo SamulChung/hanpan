@@ -58,7 +58,7 @@ async function openMenu(): Promise<void> {
 const items = () =>
   [...container.querySelectorAll<HTMLButtonElement>('[data-file]')].map((item) => ({
     id: item.dataset.file,
-    label: item.textContent,
+    label: item.querySelector('.mm-file-label')?.textContent ?? item.textContent,
     disabled: item.disabled,
   }))
 
