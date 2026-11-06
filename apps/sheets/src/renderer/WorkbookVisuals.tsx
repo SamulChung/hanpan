@@ -1919,6 +1919,15 @@ function ChartVisual({
   useEffect(() => {
     if (openEditorSignal > 0) setIsEditing(true)
   }, [openEditorSignal])
+  // 차트 옆 편집 창은 Esc로 닫는다(취소와 같음)
+  useEffect(() => {
+    if (!isEditing) return
+    const onKey = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') setIsEditing(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [isEditing])
   const selectedEl = useSyncExternalStore(subscribeChartElementSelection, () =>
     selectedChartElement?.visualId === visualId ? selectedChartElement.element : null,
   )

@@ -2072,8 +2072,9 @@ export function App({
           formulaBar: true,
           footer: {
             sheetBar: true,
-            // 집계는 앱 상태 표시줄이 그린다(X2)
-            statisticBar: false,
+            // the statistic bar also registers IStatusBarService, which the
+            // app status bar reads; styles.css hides Univer's own copy (X2)
+            statisticBar: true,
             menus: true,
             // zoom lives in the custom full-width status bar (unified with docs/slides)
             zoomSlider: false,

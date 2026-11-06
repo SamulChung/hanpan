@@ -2540,7 +2540,8 @@ textarea:focus {
 /* 차트 옆에 뜨는 편집 창: 상자 안 작은 창 대신(X4) */
 .chart-editor-float {
   position: fixed;
-  z-index: 60;
+  /* 대화상자(.dialog-backdrop 40)보다 아래 */
+  z-index: 30;
   display: flex;
 }
 
@@ -7493,4 +7494,11 @@ body:has(.note-pictures-pane) .threaded-comments-pane {
    한 덩어리로 두어 인수 사이에서만 줄을 바꾼다. */
 [class*='univer-w-[250px]'] > [style*='overflow-wrap: anywhere'] > div > span {
   display: inline-block;
+}
+
+/* Univer의 시트 탭 줄 통계(영어 "Count: 12", 좁다고 보면 한 항목만)는 숨긴다.
+   선택 범위 집계는 앱 상태 표시줄(.status-stats)이 앱 언어로 그린다(X2).
+   IStatusBarService를 등록하는 statisticBar 자체는 켜 둬야 한다. */
+[data-range-selector] > div:has(> .univer-gap-x-2 .univer-truncate.univer-cursor-pointer) {
+  display: none !important;
 }
