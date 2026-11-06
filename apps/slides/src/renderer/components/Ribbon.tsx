@@ -4,6 +4,7 @@
  * unimplemented items are grayed placeholders.
  */
 import { useEscapeToClose } from './use-escape-close'
+import { useEscOverlay } from '../esc-overlay'
 import React, {
   useCallback,
   useEffect,
@@ -1406,6 +1407,10 @@ export function Ribbon({
   // commits). The shared installer covers outside mousedown, window blur and
   // the shell app:chrome-pressed relay; panels survive via stopPropagation.
   useDismissablePopover(anyPanelOpen, closePanels)
+  // Esc closes whichever ribbon popup is open (chart, SmartArt, zoom, translate …
+  // used to ignore it); registering as an Esc overlay keeps the canvas from also
+  // treating that Esc as "deselect"
+  useEscOverlay(anyPanelOpen || penFlyout != null, () => closePanels())
 
   // ── Responsive collapse (PowerPoint model): the collapsed set is a pure
   // function of the current width, never of resize history — pick the fewest

@@ -16,6 +16,7 @@ import { IconShapes, IconTextBox } from './components/icons'
 import { defaultShapeStyle } from './default-shape'
 import { isLineDrawKind, type DrawRect } from './draw-shape'
 import { textBoxInsertSpec } from './textbox-insert'
+import { masterEscapeAction } from './escape-targets'
 import type { EditParagraph, MasterPartItem } from '../shared/ipc'
 import { t } from './i18n/locale'
 
@@ -206,6 +207,36 @@ export function MasterView({ initialItems, onClose }: Props) {
     document.addEventListener('mousedown', onDown)
     return () => document.removeEventListener('mousedown', onDown)
   }, [shapesOpen])
+
+  // Esc: shapes dropdown → selection → leave the master view (like PowerPoint's Close Master View)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || e.isComposing || e.defaultPrevented) return
+      const action = masterEscapeAction({
+        editing: !!editing,
+        drawing: drawKind != null,
+        shapesOpen,
+        menuOpen: ctxMenu != null,
+        selected: selectedIds.length,
+      })
+      switch (action) {
+        case 'closeShapes':
+          setShapesOpen(false)
+          break
+        case 'deselect':
+          setSelectedIds([])
+          break
+        case 'close':
+          onClose()
+          break
+        default:
+          return
+      }
+      e.preventDefault()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [editing, drawKind, shapesOpen, ctxMenu, selectedIds, onClose])
 
   // Delete/Backspace deletes selected elements (not intercepted while editing)
   useEffect(() => {

@@ -172,6 +172,7 @@ import {
   type NotesDraft,
 } from '../shared/notes-draft'
 import { useEscOverlay, useEscOverlayOpen } from './esc-overlay'
+import { bgPaneClosesOnEscape } from './escape-targets'
 import { buildCtxItems } from './context-menu-items'
 import { isMac, nextSelection } from './platform-modifiers'
 import * as placeholderNav from './placeholder-nav'
@@ -2529,6 +2530,26 @@ export function App() {
   }, [mediaPlay])
   useEscOverlay(!!mediaPlay || !!drawKind || viewMode === 'reading')
   const overlayOpen = useEscOverlayOpen()
+  // Format Background pane: Esc closes it (from inside the pane, or from the canvas once
+  // there is no selection or edit for that Esc to undo); an open menu/dialog takes Esc first
+  useEffect(() => {
+    if (!showBgFormat || overlayOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || e.isComposing) return
+      const inPane = (e.target as Element | null)?.closest?.('.format-pane') != null
+      if (
+        bgPaneClosesOnEscape({
+          inPane,
+          editing: editing != null,
+          selected: selectedIds.length,
+          defaultPrevented: e.defaultPrevented,
+        })
+      )
+        setShowBgFormat(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [showBgFormat, overlayOpen, editing, selectedIds])
 
   const startEditCell = useCallback((sourceId: string, row: number, col: number) => {
     setEditing(null)
