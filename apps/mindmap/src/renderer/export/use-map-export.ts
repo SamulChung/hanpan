@@ -22,6 +22,7 @@ import { t as translate, type StringKey } from '../i18n/locale'
 import type { DocumentSession } from '../document/session'
 import { setThumbnailProvider } from '../document/thumbnail'
 import type { MapController } from '../map/controller'
+import type { Params } from '@genoffice/i18n'
 import type { ExportFormat, ExportResult } from '../../shared/ipc'
 import { documentName, sheetExportName } from './names'
 import { documentOutline } from './outline'
@@ -39,7 +40,7 @@ export interface MapExportHost {
   /** takes what is being typed and what the screen shows into the map */
   flushAll(): void
   /** a short message in the status line */
-  say(key: StringKey): void
+  say(key: StringKey, params?: Params): void
   /** shows the print dialog for this page */
   openPrint(html: string): void
 }
@@ -100,12 +101,13 @@ function mapNameOf(session: DocumentSession, path: string | null): string {
   })
 }
 
-function report(say: (key: StringKey) => void, result: ExportResult): void {
+function report(say: MapExportHost['say'], result: ExportResult): void {
   if (!result.ok) {
     console.error('[mindmap] export failed:', result.error)
     say('exportFailed')
   } else if ('path' in result) {
-    say('exportDone')
+    // the file's own name, so it is clear what was written where
+    say('exportDoneNamed', { name: result.path.split(/[\\/]/).pop() ?? result.path })
   }
 }
 

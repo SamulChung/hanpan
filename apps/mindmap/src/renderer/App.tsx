@@ -25,6 +25,7 @@ import type { ThemeId, ViewLayout } from '@genoffice/xmind-engine'
 import { t as translate, useI18n } from './i18n/locale'
 import { mapStrings } from './i18n/map-strings'
 import type { StringKey } from './i18n/locale'
+import type { Params } from '@genoffice/i18n'
 import { linkFromInput, linkInputKind } from './document/link-input'
 import { newMap, type OpenFailure, type OpenNotices, openMapBytes } from './document/open'
 import { openCopiedMap, seededMap } from './document/open'
@@ -129,7 +130,7 @@ export default function App() {
   const [notices, setNotices] = useState<OpenNotices>({ preserved: 0, unknownTheme: false })
   const [confirm, setConfirm] = useState<ConfirmRequest | null>(null)
   const [fieldRequest, setFieldRequest] = useState<TopicFieldRequest | null>(null)
-  const [toast, setToast] = useState<StringKey | null>(null)
+  const [toast, setToast] = useState<{ key: StringKey; params?: Params } | null>(null)
   // Hanpan: the "send to a document" dialog's target, and the line told after a send
   const [sendTarget, setSendTarget] = useState<SendTarget | null>(null)
   const [sendNotice, setSendNotice] = useState<string | null>(null)
@@ -192,7 +193,7 @@ export default function App() {
     resolve?.(ok)
   }, [])
 
-  const say = useCallback((key: StringKey) => setToast(key), [])
+  const say = useCallback((key: StringKey, params?: Params) => setToast({ key, params }), [])
   useEffect(() => {
     if (toast === null) return
     const timer = window.setTimeout(() => setToast(null), TOAST_MS)
@@ -1053,7 +1054,7 @@ export default function App() {
   // computed on every render: `t` is a new function each time and must not be a hook dependency
   const statusText =
     toast !== null
-      ? t(toast)
+      ? t(toast.key, toast.params)
       : saveState === 'saving'
         ? t('saving')
         : saveState === 'failed'

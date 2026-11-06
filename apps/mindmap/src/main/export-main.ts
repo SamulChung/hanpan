@@ -39,9 +39,9 @@ import type { ExportResult, PrinterInfo, PrintResult } from '../shared/ipc'
 
 /** What each kind of export is saved as. The format names are the formats' own and are not translated. */
 export const EXPORT_KINDS = {
-  png: { extension: '.png', filter: 'PNG' },
-  pdf: { extension: '.pdf', filter: 'PDF' },
-  markdown: { extension: '.md', filter: 'Markdown' },
+  png: { extension: '.png', filter: 'PNG', title: 'exportTitlePng' },
+  pdf: { extension: '.pdf', filter: 'PDF', title: 'exportTitlePdf' },
+  markdown: { extension: '.md', filter: 'Markdown', title: 'exportTitleMarkdown' },
 } as const
 
 export type ExportKind = keyof typeof EXPORT_KINDS
@@ -111,13 +111,14 @@ async function pickTarget(
   suggestedName: unknown,
   options: ExportIpcOptions,
 ): Promise<string | null> {
-  const { extension, filter } = EXPORT_KINDS[kind]
+  const { extension, filter, title } = EXPORT_KINDS[kind]
   const win =
     BrowserWindow.fromWebContents(e.sender) ?? BrowserWindow.getFocusedWindow() ?? undefined
   const picked = await showSaveDialogWithMemory(
     dialog,
     win,
     {
+      title: tm(title),
       defaultPath: saveAsSuggestion(
         options.filePathOf(e.sender.id),
         `${exportFileBase(suggestedName)}${extension}`,

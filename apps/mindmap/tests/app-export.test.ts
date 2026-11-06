@@ -208,7 +208,7 @@ describe('the Markdown outline', () => {
       suggestedName: string
     }
     expect(suggestedName).toBe('test')
-    expect(status()).toBe('Exported')
+    expect(status()).toBe('Exported: map.md')
 
     // what the save right after it writes, read back with the engine
     await click('[data-action="save"]')

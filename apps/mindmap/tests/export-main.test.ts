@@ -92,6 +92,21 @@ describe('the outline', () => {
     expect(options.filters).toEqual([{ name: 'Markdown', extensions: ['md'] }])
   })
 
+  it('each save dialog is titled with what it exports, not a bare "Save As"', async () => {
+    const titles: unknown[] = []
+    for (const [channel, request] of [
+      [MINDMAP_CHANNELS.exportPng, { bytes: PNG, suggestedName: 'x' }],
+      [MINDMAP_CHANNELS.exportPdf, { html: '<p>x</p>', suggestedName: 'x' }],
+      [MINDMAP_CHANNELS.exportMarkdown, { text: 'x', suggestedName: 'x' }],
+    ] as const) {
+      showSaveDialog.mockReset()
+      pick(null)
+      await call(channel, request)
+      titles.push((dialogOptions() as unknown as { title?: string }).title)
+    }
+    expect(titles).toEqual(['Export as Image', 'Export as PDF', 'Export as Markdown Outline'])
+  })
+
   it('a cancelled dialog writes nothing and is no failure', async () => {
     pick(null)
     const result = await call(MINDMAP_CHANNELS.exportMarkdown, { text: 'x', suggestedName: 'x' })
