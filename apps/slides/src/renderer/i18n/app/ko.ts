@@ -30,7 +30,7 @@ export const ko = {
   appExportPdfDone: 'PDF 내보내기 완료: {path}',
   appExportPdfFailed: 'PDF 내보내기 실패: {error}',
   appStatusBgAppliedAll: '배경색을 모든 슬라이드에 적용했습니다',
-  appStatusThemeApplied: '테마 "{name}"을(를) 적용했습니다',
+  appStatusThemeApplied: '테마를 적용했습니다: {name}',
   appStatusThemeApplyFailed: '테마 적용 실패: {error}',
   appStatusCopied: '요소 {count}개를 복사했습니다',
   appStatusCut: '요소 {count}개를 잘라냈습니다',
