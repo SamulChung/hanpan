@@ -36,6 +36,8 @@ function actions(): TabMenuActions {
     move: vi.fn(),
     closeTabs: vi.fn(),
     reopenClosed: vi.fn(),
+    share: vi.fn(),
+    saveMyForm: vi.fn(),
   }
 }
 
@@ -55,6 +57,7 @@ function menu(
     canDetach: true,
     fileExists: true,
     canReopen: true,
+    canShare: true,
     tm,
     actions: given,
     ...extra,
@@ -250,6 +253,36 @@ describe('the tab context menu', () => {
     expect(enabled(items.get(tm('menuTabPrint')))).toBe(true)
     expect(enabled(items.get(tm('menuTabSave')))).toBe(true)
   })
+
+  it('shares the clicked tab, saved or not, where the system can share', () => {
+    for (const current of [a, b]) {
+      const { items, actions: given } = menu(current, all)
+      expect(enabled(items.get('Share…'))).toBe(true)
+      click(items.get('Share…'))
+      expect(given.share).toHaveBeenCalledWith(current.id)
+    }
+    // no share sheet on this system (Linux), the manual, the Present tab
+    expect(enabled(menu(a, all, { canShare: false }).items.get('Share…'))).toBe(false)
+    const help = tab('help', { kind: 'help' })
+    expect(enabled(menu(help, [home, help]).items.get('Share…'))).toBe(false)
+    expect(enabled(menu(a, all, { canDetach: false }).items.get('Share…'))).toBe(false)
+  })
+
+  it.each(['docs', 'hwp'] as const)('offers Save as My Form for a %s tab', (kind) => {
+    const current = tab('a', { kind, filePath: '/x/a' })
+    const { items, actions: given } = menu(current, [home, current])
+    expect(enabled(items.get('Save as My Form…'))).toBe(true)
+    click(items.get('Save as My Form…'))
+    expect(given.saveMyForm).toHaveBeenCalledWith('a')
+  })
+
+  it.each(['sheets', 'slides', 'pdf', 'markdown', 'mindmap', 'photo'] as const)(
+    'has no Save as My Form for a %s tab (forms are Word or HWP)',
+    (kind) => {
+      const current = tab('a', { kind, filePath: '/x/a' })
+      expect(menu(current, [home, current]).items.has('Save as My Form…')).toBe(false)
+    },
+  )
 
   it('disables document commands for the chrome-free Present tab', () => {
     const preview = tab('preview', { kind: 'html', filePath: '/tmp/x/page.html' })

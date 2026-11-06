@@ -13,6 +13,8 @@ export const MY_FORMS_CHANNELS = {
   import: 'hanpan:my-forms-import',
   open: 'hanpan:my-forms-open',
   remove: 'hanpan:my-forms-delete',
+  /** main → Home: a tab menu asked to save that tab as a form (payload: tab id) */
+  saveRequest: 'hanpan:my-forms-save-request',
 } as const
 
 /** 양식으로 저장할 수 있는 열린 문서 탭 */

@@ -865,6 +865,13 @@ contextBridge.exposeInMainWorld('hanpanApi', {
   importMyForm: () => ipcRenderer.invoke('hanpan:my-forms-import'),
   openMyForm: (id: string) => ipcRenderer.invoke('hanpan:my-forms-open', id),
   deleteMyForm: (id: string) => ipcRenderer.invoke('hanpan:my-forms-delete', id),
+  onSaveMyFormRequest: (listener: (tabId: string) => void) => {
+    const handler = (_event: unknown, tabId: unknown) => {
+      if (typeof tabId === 'string') listener(tabId)
+    }
+    ipcRenderer.on('hanpan:my-forms-save-request', handler)
+    return () => ipcRenderer.removeListener('hanpan:my-forms-save-request', handler)
+  },
   mdFolder: () => ipcRenderer.invoke('hanpan:md-folder'),
   mdPickFile: () => ipcRenderer.invoke('hanpan:md-pick-file'),
   mdPickFolder: () => ipcRenderer.invoke('hanpan:md-pick-folder'),

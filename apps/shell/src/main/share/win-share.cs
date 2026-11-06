@@ -13,6 +13,7 @@
  *
  * stdout, one JSON object per line:
  *   {"type":"shown"}                      the sheet was asked to open
+ *   {"type":"sheet","class":"…","pid":n}  the sheet's window was found (diagnostics)
  *   {"type":"chosen","app":"…"}           the user picked a target app
  *   {"type":"closed"}                     the sheet went away (done or dismissed)
  *   {"type":"error","code":"…","message":"…"}
