@@ -115,7 +115,7 @@ import {
 } from '@univerjs/core'
 import { FormulaExecutedStateType } from '@univerjs/engine-formula'
 import { FindReplaceController, IFindReplaceService } from '@univerjs/find-replace'
-import { ILayoutService } from '@univerjs/ui'
+import { ILayoutService, ISidebarService } from '@univerjs/ui'
 import { UniverSheetsConditionalFormattingPreset } from '@univerjs/preset-sheets-conditional-formatting'
 import UniverPresetSheetsConditionalFormattingEnUS from '@univerjs/preset-sheets-conditional-formatting/locales/en-US'
 import '@univerjs/preset-sheets-conditional-formatting/lib/index.css'
@@ -822,6 +822,8 @@ export function App({
   const statusBarStatsFilterRef = useRef<StatusBarStatsFilter | null>(null)
   // 선택 범위 집계(Univer 통계 상태)를 우리 상태 표시줄이 그린다(X2)
   const [statusBarState, setStatusBarState] = useState<StatusBarState | null>(null)
+  // Univer 작업창(데이터 유효성·조건부 서식 등)이 열려 있는지(X21: AI 창 자동 접기)
+  const [taskPaneOpen, setTaskPaneOpen] = useState(false)
   const toggleStatusBarStat = (func: StatusBarFunc): void => {
     const next = toggleStatusBarFunc(statusBarFuncsRef.current, func)
     statusBarFuncsRef.current = next
@@ -2347,6 +2349,13 @@ export function App({
       () => statusBarFuncsRef.current,
     )
     const statusBarStateSubscription = subscribeStatusBarState(runtime, setStatusBarState)
+    const taskPaneSubscription = (
+      runtime.univer.__getInjector().get(ISidebarService) as unknown as {
+        sidebarOptions$: {
+          subscribe(next: (options: { visible?: boolean }) => void): { unsubscribe(): void }
+        }
+      }
+    ).sidebarOptions$.subscribe((options) => setTaskPaneOpen(options.visible === true))
     // Footer statistics on streamed workbooks aggregate the real file, not
     // the loaded window (a whole-column count read 191 on a 185k-row file).
     const statusBarFileStatsDisposable = installStatusBarFileStats({
@@ -3671,6 +3680,7 @@ export function App({
       copyMaterializeDisposable.dispose()
       statusBarFileStatsDisposable.dispose()
       statusBarStateSubscription.dispose()
+      taskPaneSubscription.unsubscribe()
       statusBarStatsFilterRef.current?.dispose()
       statusBarStatsFilterRef.current = null
       dataValidationChromeDisposable.dispose()
@@ -5532,6 +5542,7 @@ export function App({
         zoomPercent={zoomPercent}
         statusBarFuncs={statusBarFuncs}
         statusBarState={statusBarState}
+        taskPaneOpen={taskPaneOpen}
         onToggleStatusBarFunc={toggleStatusBarStat}
         canSave={pendingEdits > 0 || workbookFile?.unsavedNew === true}
         onSave={() => void handleSave('save')}

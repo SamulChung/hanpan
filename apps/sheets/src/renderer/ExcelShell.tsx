@@ -44,6 +44,7 @@ import { useAiDock } from './ai/use-ai-dock'
 
 import { ColorDropdown } from './ColorDropdown'
 import { useRibbonFit } from './ribbon-fit'
+import { taskPaneDockStep } from './task-pane-ai-dock'
 import { FormatCellsDialog } from './FormatCellsDialog'
 import { AllowEditRangesDialog } from './AllowEditRangesDialog'
 import { ProtectSheetDialog } from './ProtectSheetDialog'
@@ -332,6 +333,8 @@ interface ExcelShellProps {
   readonly statusBarFuncs: readonly StatusBarFunc[]
   /** 선택 범위 집계(필터를 거친 Univer 통계 상태) */
   readonly statusBarState?: StatusBarState | null
+  /** Univer 작업창이 열려 있다(좁은 창이면 AI 창을 잠시 접는다) */
+  readonly taskPaneOpen?: boolean
   readonly onToggleStatusBarFunc: (func: StatusBarFunc) => void
   /// True when the edit journal has unsaved changes (enables the QAT Save).
   readonly canSave: boolean
@@ -576,6 +579,7 @@ export function ExcelShell({
   zoomPercent,
   statusBarFuncs,
   statusBarState = null,
+  taskPaneOpen = false,
   onToggleStatusBarFunc,
   canSave,
   onSave,
@@ -621,6 +625,20 @@ export function ExcelShell({
   // Split panes (decision 0036): as the secondary pane the dock is forced to
   // the rail, and the rail's click asks the shell to focus this pane first.
   const aiDock = useAiDock(isCopilotOpen, setIsCopilotOpen)
+  // 작업창을 열면 좁은 창에서 AI 창을 접고, 닫으면 되돌린다(X21)
+  const taskPaneAutoCollapsedRef = useRef(false)
+  const isCopilotOpenRef = useRef(isCopilotOpen)
+  isCopilotOpenRef.current = isCopilotOpen
+  useEffect(() => {
+    const step = taskPaneDockStep({
+      paneOpen: taskPaneOpen,
+      aiOpen: isCopilotOpenRef.current,
+      autoCollapsed: taskPaneAutoCollapsedRef.current,
+      width: window.innerWidth,
+    })
+    taskPaneAutoCollapsedRef.current = step.autoCollapsed
+    if (step.setAiOpen !== undefined) setIsCopilotOpen(step.setAiOpen)
+  }, [taskPaneOpen])
   // the "show the AI sidebar" setting off hides the copilot rail (soft hide):
   // an explicit AI action (ribbon run, toggle) still opens the panel, and
   // closing it returns to hidden — no dead affordances, no invisible runs
@@ -986,9 +1004,7 @@ export function ExcelShell({
             </button>
           ))}
           <span className="ribbon-tabs-spacer" />
-          <span className="workbook-status" role="status" aria-live="polite">
-            {statusMessage}
-          </span>
+          {/* 상태 문구는 아래 상태 표시줄 한 곳에만(X16) */}
           {/* 접혀 있을 때 펼치는 단추가 보이게 */}
           <RibbonExpandButton state={collapse} label={t('appRibbonExpand')} />
         </nav>
@@ -1123,7 +1139,9 @@ export function ExcelShell({
           {/* Status bar spans the sheet column only — the AI dock keeps the full window height (unified with docs/slides). */}
           <footer className="status-bar" onContextMenu={openStatsMenu}>
             <div className="status-left">
-              <span className="status-msg">{statusMessage}</span>
+              <span className="status-msg" role="status" aria-live="polite">
+                {statusMessage}
+              </span>
             </div>
             <div className="status-right">
               <div className="status-stats" aria-live="polite">

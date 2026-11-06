@@ -507,7 +507,7 @@ export const ko = {
     '데스크톱 파일 브리지를 사용할 수 없습니다. Electron 앱을 다시 시작하십시오.',
   appOpenCanceled: '통합 문서 선택을 취소했습니다.',
   appOpeningWorkbook: '통합 문서를 여는 중…',
-  appOpened: '{name}을(를) 열었습니다 — 셀 편집은 ⌘S로 파일에 저장합니다.',
+  appOpened: '{name}을(를) 열었습니다.',
   appOpenFailed: '통합 문서를 열 수 없습니다.',
   appPageSetupNeedsFile: '먼저 XLSX 파일을 여십시오. 페이지 설정은 파일에 저장됩니다.',
   appPageSetupRecorded: '{note} — ⌘S로 저장합니다.',
@@ -639,16 +639,14 @@ export const ko = {
   appLinkSheetNotFound: '시트 "{name}"을(를) 찾을 수 없습니다.',
   appLinkJumpFailed: '{location}(으)로 이동할 수 없습니다.',
   // Loading / recalc status
-  appClosureActive:
-    '수식 {count}개를 실시간으로 다시 계산합니다(클로저 모드). 나머지는 필요할 때 스트리밍 방식으로 로드됩니다.',
+  appClosureActive: '수식 {count}개를 실시간으로 계산합니다.',
   appRecalcPartial:
     '편집에 따라 수식을 다시 계산했습니다 — {count}개는 캐시된 값을 유지했습니다(대체 엔진이 지원하지 않는 함수).',
   appRecalcDone: '편집에 따라 수식을 다시 계산했습니다({count}개 셀, 엔진 대체).',
   appIndexing: '파일을 여는 중… ({rows}행)',
   appStreamingRows: '파일을 여는 중… ({rows}행)',
   appLoadRangeFailed: '표시 범위를 로드할 수 없습니다.',
-  appFullyLoaded:
-    '통합 문서를 모두 로드했습니다 — 수식이 실시간으로 다시 계산되고 행/열을 편집할 수 있습니다.',
+  appFullyLoaded: '통합 문서를 모두 불러왔습니다.',
   appRangeMustBeVector: '{range}은(는) 단일 행 또는 단일 열의 셀이어야 합니다.',
   appRangeTooManyCells: '{range}이(가) 셀 {max}개를 초과합니다.',
   appCopyLoadingRange: '복사를 위해 {range}을(를) 불러오는 중…',

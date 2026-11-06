@@ -493,7 +493,7 @@ export const vi = {
     'Cầu nối tệp trên máy tính để bàn không khả dụng. Khởi động lại ứng dụng Electron.',
   appOpenCanceled: 'Đã hủy chọn sổ làm việc.',
   appOpeningWorkbook: 'Đang mở sổ làm việc…',
-  appOpened: 'Đã mở {name} — các chỉnh sửa ô được lưu lại bằng ⌘S.',
+  appOpened: 'Đã mở {name}.',
   appOpenFailed: 'Không thể mở sổ làm việc.',
   appPageSetupNeedsFile: 'Trước tiên hãy mở tệp XLSX — thiết lập trang sẽ lưu vào tệp.',
   appPageSetupRecorded: '{note} — lưu bằng ⌘S.',
@@ -622,8 +622,7 @@ export const vi = {
   appLinkInternal: 'Liên kết trỏ vào bên trong sổ làm việc: {location}',
   appLinkSheetNotFound: 'Không tìm thấy trang tính "{name}".',
   appLinkJumpFailed: 'Không thể nhảy tới {location}.',
-  appClosureActive:
-    '{count} công thức được tính toán lại trực tiếp (chế độ bao đóng); phần còn lại của sổ làm việc tải theo yêu cầu.',
+  appClosureActive: 'Đang tính lại trực tiếp {count} công thức.',
   appRecalcPartial:
     'Các công thức được tính toán lại từ các chỉnh sửa của bạn — {count} công thức giữ lại giá trị đệm (các hàm mà công cụ dự phòng còn thiếu).',
   appRecalcDone:
@@ -631,8 +630,7 @@ export const vi = {
   appIndexing: 'Đang lập chỉ mục {name}: {rows} hàng đã sẵn sàng.',
   appStreamingRows: 'Đang tải theo luồng {name}: {rows} hàng khả dụng.',
   appLoadRangeFailed: 'Không thể tải vùng hiển thị.',
-  appFullyLoaded:
-    'Đã tải đầy đủ sổ làm việc — công thức tính toán trực tiếp, có thể chỉnh sửa hàng/cột.',
+  appFullyLoaded: 'Đã tải xong sổ làm việc.',
   appRangeMustBeVector: '{range} phải là một hàng đơn hoặc một cột ô đơn.',
   appRangeTooManyCells: '{range} bao gồm nhiều hơn {max} ô.',
   appCopyLoadingRange: 'Đang tải {range} để sao chép…',
