@@ -1530,4 +1530,5 @@ export const cs = {
   appFileExportPdf: 'Exportovat jako PDF…',
   appFileExportCsv: 'Exportovat jako CSV…',
   appFilePrint: 'Tisk…',
+  appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

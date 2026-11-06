@@ -33,12 +33,15 @@ export const CHART_PALETTES: Record<string, readonly string[]> = {
   gray: ['#404040', '#7f7f7f', '#a6a6a6', '#bfbfbf', '#d0cece', '#595959'],
 }
 
+/// The first sheet of a new workbook (0.17: Korean, like the blank file the shell creates).
+export const DEFAULT_FIRST_SHEET_NAME = '시트1'
+
 export const initialSnapshot: WorkbookSnapshot = {
   revision: 0,
   sheets: [
     {
       id: 'sheet-1',
-      name: 'Sheet1',
+      name: DEFAULT_FIRST_SHEET_NAME,
       cells: {},
     },
   ],

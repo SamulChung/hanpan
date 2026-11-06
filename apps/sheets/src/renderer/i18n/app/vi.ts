@@ -1519,4 +1519,5 @@ export const vi = {
   appFileExportPdf: 'Xuất PDF…',
   appFileExportCsv: 'Xuất CSV…',
   appFilePrint: 'In…',
+  appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

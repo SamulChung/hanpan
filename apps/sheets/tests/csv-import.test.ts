@@ -1,3 +1,4 @@
+import { XMLValidator } from 'fast-xml-parser'
 import JSZip from 'jszip'
 import { describe, expect, it } from 'vitest'
 
@@ -312,9 +313,34 @@ describe('csvToXlsxBufferForOpen', () => {
 describe('blankXlsxBuffer', () => {
   it('produces a one-sheet workbook with an empty grid', async () => {
     const zip = await JSZip.loadAsync(await blankXlsxBuffer())
-    expect(await zip.file('xl/workbook.xml')?.async('text')).toContain('<sheet name="Sheet1"')
     const sheet = await zip.file('xl/worksheets/sheet1.xml')?.async('text')
     expect(sheet).toContain('<dimension ref="A1:A1"/><sheetData></sheetData>')
+  })
+
+  // 0.17 #9: a new workbook starts in Korean — first sheet 시트1, Normal font 맑은 고딕
+  it('names the first sheet 시트1 and sets the Normal font to 맑은 고딕', async () => {
+    const zip = await JSZip.loadAsync(await blankXlsxBuffer())
+    expect(await zip.file('xl/workbook.xml')?.async('text')).toContain('<sheet name="시트1"')
+    const styles = (await zip.file('xl/styles.xml')?.async('text')) ?? ''
+    const firstFont = styles.slice(styles.indexOf('<font>'), styles.indexOf('</font>'))
+    expect(firstFont).toContain('<name val="맑은 고딕"/>')
+    expect(firstFont).toContain('<charset val="129"/>')
+    // a scheme font would be replaced by the theme's Latin face (Calibri)
+    expect(firstFont).not.toContain('<scheme')
+  })
+
+  it('stays a well-formed package', async () => {
+    const zip = await JSZip.loadAsync(await blankXlsxBuffer())
+    for (const name of Object.keys(zip.files).filter((file) => /\.(xml|rels)$/.test(file))) {
+      expect(XMLValidator.validate(await zip.file(name)!.async('text')), name).toBe(true)
+    }
+    const types = await zip.file('[Content_Types].xml')!.async('text')
+    expect(types).toContain('PartName="/xl/styles.xml"')
+  })
+
+  it('keeps a name the caller gives', async () => {
+    const zip = await JSZip.loadAsync(await blankXlsxBuffer('Sheet1'))
+    expect(await zip.file('xl/workbook.xml')?.async('text')).toContain('<sheet name="Sheet1"')
   })
 })
 

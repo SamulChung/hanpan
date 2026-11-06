@@ -65,7 +65,7 @@ import {
   numberFormatCategories,
 } from './number-format'
 import { setContextMenuCommandSink, registerPasteSpecialOpener } from './cell-context-menu'
-import { numberFormatLabel, type SelectionFormat } from './selection-format'
+import { echoFontFamily, numberFormatLabel, type SelectionFormat } from './selection-format'
 import { fontFamilyGroups, useSystemFontFamilies } from './system-fonts'
 import {
   isFormulaBarKeyTarget,
@@ -245,6 +245,8 @@ interface ExcelShellProps {
   readonly prompt: string
   readonly preview: ChangePlan | null
   readonly selectionFormat: SelectionFormat | null
+  /// The workbook's Normal font: what a cell with no font of its own is drawn in.
+  readonly normalFontFamily: string | undefined
   readonly formatPainterActive: boolean
   /// True when the workbook has any cell content (the one-click AI action
   /// buttons are greyed out on an empty sheet).
@@ -485,6 +487,7 @@ export function ExcelShell({
   presenting,
   preview,
   selectionFormat,
+  normalFontFamily,
   formatPainterActive,
   sheetHasContent,
   aiBusy,
@@ -977,6 +980,7 @@ export function ExcelShell({
         <Ribbon
           activeTab={activeTab}
           selectionFormat={selectionFormat}
+          normalFontFamily={normalFontFamily}
           formatPainterActive={formatPainterActive}
           sheetHasContent={sheetHasContent}
           sheetProtected={onGetSheetProtection()?.protected ?? null}
@@ -1945,6 +1949,7 @@ function LinkDialog({
 function Ribbon({
   activeTab,
   selectionFormat,
+  normalFontFamily,
   formatPainterActive,
   sheetHasContent,
   sheetProtected,
@@ -1967,6 +1972,8 @@ function Ribbon({
 }: {
   readonly activeTab: RibbonTab
   readonly selectionFormat: SelectionFormat | null
+  /// The workbook's Normal font: what a cell with no font of its own is drawn in.
+  readonly normalFontFamily: string | undefined
   readonly formatPainterActive: boolean
   readonly sheetHasContent: boolean
   readonly sheetProtected: boolean | null
@@ -3418,7 +3425,7 @@ function Ribbon({
   }
 
   const fontSizes = [9, 10, 11, 12, 14, 16, 18, 22, 26]
-  const echoFamily = selectionFormat?.fontFamily ?? 'Aptos'
+  const echoFamily = echoFontFamily(selectionFormat, normalFontFamily)
   const echoSize = selectionFormat?.fontSize ?? 11
   // Korean UI: installed Korean fonts are listed right below the common ones,
   // each with its Korean name beside the English one the system reports

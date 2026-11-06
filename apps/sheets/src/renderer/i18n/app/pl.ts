@@ -1556,4 +1556,5 @@ export const pl = {
   appFileExportPdf: 'Eksportuj jako PDF…',
   appFileExportCsv: 'Eksportuj jako CSV…',
   appFilePrint: 'Drukuj…',
+  appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

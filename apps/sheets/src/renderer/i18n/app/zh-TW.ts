@@ -1436,4 +1436,5 @@ export const zhTW = {
   appFileExportPdf: '匯出為 PDF…',
   appFileExportCsv: '匯出為 CSV…',
   appFilePrint: '列印…',
+  appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

@@ -1491,4 +1491,5 @@ export const th = {
   appFileExportPdf: 'ส่งออกเป็น PDF…',
   appFileExportCsv: 'ส่งออกเป็น CSV…',
   appFilePrint: 'พิมพ์…',
+  appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

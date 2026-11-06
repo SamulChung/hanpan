@@ -1550,4 +1550,5 @@ export const ko = {
   appFileExportPdf: 'PDF로 내보내기…',
   appFileExportCsv: 'CSV로 내보내기…',
   appFilePrint: '인쇄…',
+  appSheetNamePrefix: '시트',
 } satisfies Record<keyof typeof zh, string>

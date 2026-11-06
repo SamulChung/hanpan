@@ -1572,4 +1572,5 @@ export const pt = {
   appFileExportPdf: 'Exportar como PDF…',
   appFileExportCsv: 'Exportar como CSV…',
   appFilePrint: 'Imprimir…',
+  appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

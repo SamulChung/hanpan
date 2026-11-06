@@ -1548,4 +1548,5 @@ export const ru = {
   appFileExportPdf: 'Экспорт в PDF…',
   appFileExportCsv: 'Экспорт в CSV…',
   appFilePrint: 'Печать…',
+  appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

@@ -1571,4 +1571,5 @@ export const it = {
   appFileExportPdf: 'Esporta come PDF…',
   appFileExportCsv: 'Esporta come CSV…',
   appFilePrint: 'Stampa…',
+  appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

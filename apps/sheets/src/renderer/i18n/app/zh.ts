@@ -1464,4 +1464,5 @@ export const zh = {
   appFileExportPdf: '导出为 PDF…',
   appFileExportCsv: '导出为 CSV…',
   appFilePrint: '打印…',
+  appSheetNamePrefix: 'Sheet',
 }

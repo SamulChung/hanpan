@@ -1491,4 +1491,5 @@ export const ar = {
   appFileExportPdf: 'تصدير بتنسيق PDF…',
   appFileExportCsv: 'تصدير بتنسيق CSV…',
   appFilePrint: 'طباعة…',
+  appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>

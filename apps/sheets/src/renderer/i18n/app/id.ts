@@ -1533,4 +1533,5 @@ export const id = {
   appFileExportPdf: 'Ekspor sebagai PDF…',
   appFileExportCsv: 'Ekspor sebagai CSV…',
   appFilePrint: 'Cetak…',
+  appSheetNamePrefix: 'Sheet',
 } satisfies Record<keyof typeof zh, string>
