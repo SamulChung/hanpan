@@ -139,9 +139,9 @@ describe('Home sidebar navigation', () => {
     expect(selected()).toEqual([from])
     expect(nav(from).getAttribute('aria-current')).toBe('page')
     expect(container.querySelector('.kb-ask')).toBeNull()
-    expect(container.querySelector('.content')?.textContent).toContain('brief.docx')
+    expect(container.querySelector('.content .recents')?.textContent).toContain('brief.docx')
     if (from === 'Starred')
-      expect(container.querySelector('.content')?.textContent).not.toContain('budget.xlsx')
+      expect(container.querySelector('.content .recents')?.textContent).not.toContain('budget.xlsx')
   })
 
   it('keeps the file-type filter when returning from Ask AI', async () => {
@@ -149,16 +149,18 @@ describe('Home sidebar navigation', () => {
       (button) => button.textContent === 'Documents',
     )!
     await click(docs)
-    expect(container.querySelector('.content')?.textContent).toContain('brief.docx')
-    expect(container.querySelector('.content')?.textContent).not.toContain('budget.xlsx')
+    expect(container.querySelector('.content .recents')?.textContent).toContain('brief.docx')
+    expect(container.querySelector('.content .recents')?.textContent).not.toContain('budget.xlsx')
     await click(nav('Ask AI'))
     expect(selected()).toEqual(['Ask AI'])
     await click(nav('Recent'))
     expect(container.querySelector('.filter-pill.active')?.textContent).toBe('Documents')
-    expect(container.querySelector('.content')?.textContent).toContain('brief.docx')
-    expect(container.querySelector('.content')?.textContent).not.toContain('budget.xlsx')
-    expect(window.aiOffice.recents).toHaveBeenLastCalledWith(
-      expect.objectContaining({ ext: 'documents' }),
-    )
+    expect(container.querySelector('.content .recents')?.textContent).toContain('brief.docx')
+    expect(container.querySelector('.content .recents')?.textContent).not.toContain('budget.xlsx')
+    // the list's own requests page with an offset; the recent documents widget asks without one
+    const listCalls = vi
+      .mocked(window.aiOffice.recents)
+      .mock.calls.filter(([query]) => query && 'offset' in query)
+    expect(listCalls.at(-1)?.[0]).toEqual(expect.objectContaining({ ext: 'documents' }))
   })
 })

@@ -439,6 +439,14 @@ const homeApi: HomeApi = {
   async setHomeLayout(layout) {
     return normalizeHomeLayout(await ipcRenderer.invoke(HOME_CHANNELS.setHomeLayout, layout))
   },
+  async openWidgetTarget(target) {
+    return (await ipcRenderer.invoke(HOME_CHANNELS.openWidgetTarget, target)) === true
+  },
+  async pickWidgetTarget(kind) {
+    if (kind !== 'file' && kind !== 'folder') throw new Error('Invalid shortcut kind.')
+    const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.pickWidgetTarget, kind)
+    return typeof result === 'string' && result ? result : null
+  },
   onKoreanDocFeaturesChanged(handler) {
     const listener = (_event: Electron.IpcRendererEvent, stored: unknown) =>
       handler(typeof stored === 'boolean' ? stored : null)

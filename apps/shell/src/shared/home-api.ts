@@ -20,7 +20,7 @@ import type {
 import type { UpdateChannel, UpdateUiState } from './update-api'
 import type { KbFileInfo, KbReadPage, KbSearchHit } from '@genoffice/agent-core'
 import type { AiPanelPrefs } from '@genoffice/ui/ai-panel-prefs'
-import type { HomeLayout } from './home-layout'
+import type { HomeLayout, ShortcutTarget } from './home-layout'
 
 /** UI language; kept self-contained here (mirrors Lang in @genoffice/i18n) */
 
@@ -367,6 +367,10 @@ export interface HomeApi {
   getHomeLayout?(): Promise<HomeLayout>
   /** store the layout (cleaned up in main); resolves to what was stored */
   setHomeLayout?(layout: HomeLayout): Promise<HomeLayout>
+  /** open a shortcut widget's file, folder or http(s) link; main checks it again. false when refused */
+  openWidgetTarget?(target: ShortcutTarget): Promise<boolean>
+  /** a file or folder picker for a shortcut widget; null when cancelled */
+  pickWidgetTarget?(kind: 'file' | 'folder'): Promise<string | null>
   /** current local MCP server state (running/enabled/port/url) */
   getMcpStatus(): Promise<McpStatus>
   /** enable/disable the MCP server and/or change its port/background/logging; applies and persists, returns the new state */
@@ -620,6 +624,8 @@ export const HOME_CHANNELS = {
   getKoreanDocFeatures: 'home:get-korean-doc-features',
   getHomeLayout: 'home:get-home-layout',
   setHomeLayout: 'home:set-home-layout',
+  openWidgetTarget: 'home:open-widget-target',
+  pickWidgetTarget: 'home:pick-widget-target',
   setKoreanDocFeatures: 'home:set-korean-doc-features',
   getMcpStatus: 'home:get-mcp-status',
   setMcpSettings: 'home:set-mcp-settings',

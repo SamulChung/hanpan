@@ -11,7 +11,10 @@ import { StartBoard } from './hanpan/StartBoard'
 import {
   HomeCustomizePanel,
   HomeWidgets,
+  WidgetGallery,
+  addWidgetTo,
   arrangeCards,
+  configuresOnAdd,
   useHomeLayout,
   type HomeAppCard,
 } from './HomeWidgets'
@@ -1292,6 +1295,8 @@ export function Home({
   entriesLen.current = entries.length
 
   /** reload the list; keepCount keeps the loaded row count (refresh), otherwise back to page one */
+  /** bumps whenever everything re-pulls, so the file widgets re-read too (not on filter changes) */
+  const [widgetTick, setWidgetTick] = useState(0)
   const reload = (keepCount: boolean) => {
     const seq = ++requestSeq.current
     const ext = filter === 'all' ? undefined : filter
@@ -1335,6 +1340,7 @@ export function Home({
   /** everything on screen re-pulls: the paged list, the root and every loaded folder */
   const refresh = () => {
     reloadRef.current(true)
+    setWidgetTick((tick) => tick + 1)
     loadRoot()
     invalidateFolders([...listings.keys()])
   }
@@ -1960,6 +1966,9 @@ export function Home({
   // 0.17: the widgets and the app card arrangement ("홈 꾸미기")
   const [homeLayout, updateHomeLayout] = useHomeLayout()
   const [customizeOpen, setCustomizeOpen] = useState(false)
+  const [galleryOpen, setGalleryOpen] = useState(false)
+  /** the widget whose settings are open */
+  const [editingWidget, setEditingWidget] = useState<string | null>(null)
   const [converterOpen, setConverterOpen] = useState(false)
   const hp = window.hanpanApi
   const converterApi: MarkdownConverterApi | null =
@@ -2243,6 +2252,18 @@ export function Home({
           })}
         </div>
         {customizeOpen && renderCustomizePanel()}
+        {galleryOpen && (
+          <WidgetGallery
+            layout={homeLayout}
+            lang={lang}
+            onPick={(type) => {
+              setGalleryOpen(false)
+              const id = addWidgetTo(updateHomeLayout, type)
+              if (id && configuresOnAdd(type)) setEditingWidget(id)
+            }}
+            onClose={() => setGalleryOpen(false)}
+          />
+        )}
         {templatesOpen && <TemplatePicker onClose={() => setTemplatesOpen(false)} />}
         {converterOpen && converterApi && (
           <MarkdownConverter api={converterApi} onClose={() => setConverterOpen(false)} />
@@ -2261,7 +2282,12 @@ export function Home({
           { label: homeCustomText(lang, 'mainCards'), cards: apps.primary },
           { label: t('hpMoreTools'), cards: apps.secondary },
         ]}
+        cards={[...apps.primary, ...apps.secondary]}
         lang={lang}
+        onOpenGallery={() => {
+          setCustomizeOpen(false)
+          setGalleryOpen(true)
+        }}
         themeLabels={{
           title: t('theme'),
           light: t('themeLight'),
@@ -2281,7 +2307,11 @@ export function Home({
         update={updateHomeLayout}
         cards={[...apps.primary, ...apps.secondary]}
         lang={lang}
-        reloadKey={`${navCounts.recent}:${navCounts.starred}`}
+        dateLocale={i18n.dateLocale}
+        reloadKey={widgetTick}
+        editingId={editingWidget}
+        onEdit={setEditingWidget}
+        onOpenGallery={() => setGalleryOpen(true)}
       />
     )
   }

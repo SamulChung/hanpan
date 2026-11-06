@@ -6,49 +6,183 @@ import {
   DEFAULT_HOME_LAYOUT,
   HOME_LAYOUT_SETTING_KEY,
   HOME_MEMO_MAX,
+  HOME_WIDGET_MAX,
+  addWidget,
   arrangeKeys,
   moveKey,
+  moveWidget,
+  moveWidgetTo,
   normalizeHomeLayout,
+  removeWidget,
   resetHomeLayout,
   toggleKey,
+  updateWidget,
+  validLinkUrl,
+  type HomeWidget,
 } from '../src/shared/home-layout'
 import { readHomeLayout, writeHomeLayout } from '../src/main/home-layout'
 
 /**
- * 0.17 위젯 및 인터페이스 사용자화: the home layout (widgets, app cards, the
- * quick memo) lives in userData/app-settings.json under `homeLayout`. A
- * corrupt or missing value falls back to the defaults piece by piece.
+ * 0.17 위젯 및 인터페이스 사용자화: the home layout (widget instances, app
+ * cards) lives in userData/app-settings.json under `homeLayout`. A corrupt or
+ * missing value falls back to the defaults piece by piece.
  */
 
+const types = (widgets: readonly HomeWidget[]) => widgets.map((w) => w.type)
+
 describe('normalizeHomeLayout', () => {
-  it.each([undefined, null, 'x', 3, [], { widgetOrder: 'nope' }])(
+  it.each([undefined, null, 'x', 3, [], { widgets: 'nope' }])(
     'gives the defaults for %j',
     (raw) => {
       expect(normalizeHomeLayout(raw)).toEqual(DEFAULT_HOME_LAYOUT)
     },
   )
 
-  it('keeps every widget exactly once, appending missing ones in default order', () => {
-    const layout = normalizeHomeLayout({ widgetOrder: ['memo', 'memo', 'weather', 7] })
-    expect(layout.widgetOrder).toEqual([
-      'memo',
-      ...DEFAULT_HOME_LAYOUT.widgetOrder.filter((id) => id !== 'memo'),
+  it('starts with recent documents, favorites and a quick memo', () => {
+    expect(types(DEFAULT_HOME_LAYOUT.widgets).sort()).toEqual(['favorites', 'memo', 'recent'])
+  })
+
+  it('keeps an empty widget list (everything removed on purpose)', () => {
+    expect(normalizeHomeLayout({ widgets: [] }).widgets).toEqual([])
+  })
+
+  it('drops broken widgets and repeated ids, and caps text and count', () => {
+    const layout = normalizeHomeLayout({
+      widgets: [
+        { id: 'a', type: 'memo', title: 't'.repeat(200), text: 'm'.repeat(HOME_MEMO_MAX + 9) },
+        { id: 'a', type: 'clock' },
+        { id: 'b', type: 'weather' },
+        { type: 'clock' },
+        { id: 'BAD ID', type: 'clock' },
+        { id: 'c', type: 'clock', size: 'huge' },
+        null,
+      ],
+    })
+    expect(layout.widgets.map((w) => w.id)).toEqual(['a', 'c'])
+    const memo = layout.widgets[0]!
+    expect(memo.type === 'memo' && memo.text.length).toBe(HOME_MEMO_MAX)
+    expect(memo.title.length).toBeLessThanOrEqual(60)
+    expect(layout.widgets[1]!.size).toBe('small')
+    const many = Array.from({ length: HOME_WIDGET_MAX + 5 }, (_, k) => ({
+      id: `w${k}`,
+      type: 'clock',
+    }))
+    expect(normalizeHomeLayout({ widgets: many }).widgets).toHaveLength(HOME_WIDGET_MAX)
+  })
+
+  it('keeps a shortcut but clears a target that is not safe to open', () => {
+    const layout = normalizeHomeLayout({
+      widgets: [
+        { id: 's1', type: 'shortcut', target: { kind: 'link', value: 'https://example.com/a' } },
+        { id: 's2', type: 'shortcut', target: { kind: 'link', value: 'javascript:alert(1)' } },
+        { id: 's3', type: 'shortcut', target: { kind: 'file', value: 'relative\\x.docx' } },
+        { id: 's4', type: 'shortcut', target: { kind: 'file', value: 'C:\\docs\\x.docx' } },
+        { id: 's5', type: 'shortcut', target: { kind: 'app', value: 'xmind' } },
+        { id: 's6', type: 'shortcut', target: { kind: 'folder', value: '/home/me/docs' } },
+      ],
+    })
+    const targets = layout.widgets.map((w) => (w.type === 'shortcut' ? w.target : undefined))
+    expect(targets).toEqual([
+      { kind: 'link', value: 'https://example.com/a' },
+      null,
+      null,
+      { kind: 'file', value: 'C:\\docs\\x.docx' },
+      { kind: 'app', value: 'xmind' },
+      { kind: 'folder', value: '/home/me/docs' },
     ])
   })
 
-  it('drops unknown hidden widgets and bad card keys, and caps the memo', () => {
+  it('keeps only an absolute folder for the folder view', () => {
     const layout = normalizeHomeLayout({
-      hiddenWidgets: ['memo', 'news', 'memo'],
+      widgets: [
+        { id: 'f1', type: 'folder', path: 'D:\\work' },
+        { id: 'f2', type: 'folder', path: '..\\up' },
+      ],
+    })
+    expect(layout.widgets.map((w) => (w.type === 'folder' ? w.path : null))).toEqual([
+      'D:\\work',
+      '',
+    ])
+  })
+
+  it('reads the earlier single-memo layout', () => {
+    const layout = normalizeHomeLayout({
+      widgetOrder: ['memo', 'favorites', 'recent'],
+      hiddenWidgets: ['recent'],
+      memo: '예전 메모',
+      hiddenCards: ['pdf'],
+    })
+    expect(types(layout.widgets)).toEqual(['memo', 'favorites'])
+    const memo = layout.widgets[0]!
+    expect(memo.type === 'memo' && memo.text).toBe('예전 메모')
+    expect(layout.hiddenCards).toEqual(['pdf'])
+  })
+
+  it('drops bad card keys', () => {
+    const layout = normalizeHomeLayout({
       hiddenCards: ['pdf', '', 'pdf', 42, '../x', 'a'.repeat(80)],
       cardOrder: ['html', 'docx', 'html'],
       pinnedApps: ['xmind', null],
-      memo: 'm'.repeat(HOME_MEMO_MAX + 50),
     })
-    expect(layout.hiddenWidgets).toEqual(['memo'])
     expect(layout.hiddenCards).toEqual(['pdf'])
     expect(layout.cardOrder).toEqual(['html', 'docx'])
     expect(layout.pinnedApps).toEqual(['xmind'])
-    expect(layout.memo).toHaveLength(HOME_MEMO_MAX)
+  })
+})
+
+describe('validLinkUrl', () => {
+  it.each([
+    ['https://example.com', 'https://example.com/'],
+    ['http://intra.local:8080/x?y=1', 'http://intra.local:8080/x?y=1'],
+    ['example.com', null],
+    ['file:///C:/x', null],
+    ['javascript:alert(1)', null],
+    ['', null],
+  ])('%s -> %s', (raw, out) => {
+    expect(validLinkUrl(raw)).toBe(out)
+  })
+})
+
+describe('widget helpers', () => {
+  const base = normalizeHomeLayout({
+    widgets: [
+      { id: 'a', type: 'clock' },
+      { id: 'b', type: 'memo', text: '' },
+      { id: 'c', type: 'recent' },
+    ],
+  })
+
+  it('adds a widget with a fresh id at the end', () => {
+    const { layout, id } = addWidget(base, 'shortcut')
+    expect(layout.widgets).toHaveLength(4)
+    expect(layout.widgets[3]).toMatchObject({ id, type: 'shortcut', target: null })
+    expect(base.widgets.map((w) => w.id)).not.toContain(id)
+  })
+
+  it('adds several memos, each on its own', () => {
+    const one = addWidget(base, 'memo')
+    const two = addWidget(one.layout, 'memo')
+    expect(one.id).not.toBe(two.id)
+    expect(two.layout.widgets.filter((w) => w.type === 'memo')).toHaveLength(3)
+  })
+
+  it('does not go past the widget limit', () => {
+    let layout = base
+    for (let k = 0; k < HOME_WIDGET_MAX + 3; k++) layout = addWidget(layout, 'clock').layout
+    expect(layout.widgets).toHaveLength(HOME_WIDGET_MAX)
+  })
+
+  it('removes, updates, resizes and moves a widget', () => {
+    expect(removeWidget(base, 'b').widgets.map((w) => w.id)).toEqual(['a', 'c'])
+    const titled = updateWidget(base, 'b', { title: '할 일', size: 'wide' })
+    expect(titled.widgets[1]).toMatchObject({ title: '할 일', size: 'wide' })
+    // an update cannot change the type or the id
+    const forced = updateWidget(base, 'a', { type: 'memo', id: 'z' } as never)
+    expect(forced.widgets[0]).toMatchObject({ id: 'a', type: 'clock' })
+    expect(moveWidget(base, 'c', -1).widgets.map((w) => w.id)).toEqual(['a', 'c', 'b'])
+    expect(moveWidget(base, 'a', -1).widgets.map((w) => w.id)).toEqual(['a', 'b', 'c'])
+    expect(moveWidgetTo(base, 'a', 'c').widgets.map((w) => w.id)).toEqual(['b', 'c', 'a'])
+    expect(moveWidgetTo(base, 'c', 'a').widgets.map((w) => w.id)).toEqual(['c', 'a', 'b'])
   })
 })
 
@@ -63,7 +197,6 @@ describe('ordering helpers', () => {
   it('moves a key up or down within its group and keeps other stored keys', () => {
     expect(moveKey(keys, ['other'], 'c', -1)).toEqual(['a', 'c', 'b', 'd', 'other'])
     expect(moveKey(keys, [], 'd', 1)).toEqual(keys)
-    expect(moveKey(keys, [], 'a', -1)).toEqual(keys)
     expect(moveKey(keys, [], 'missing', 1)).toEqual(keys)
   })
 
@@ -72,13 +205,14 @@ describe('ordering helpers', () => {
     expect(toggleKey(['a', 'b'], 'a')).toEqual(['b'])
   })
 
-  it('resets the layout but keeps the memo text', () => {
+  it('goes back to the default widgets and cards', () => {
     const custom = normalizeHomeLayout({
+      widgets: [{ id: 'x', type: 'clock' }],
       hiddenCards: ['pdf'],
-      memo: 'keep me',
       pinnedApps: ['md'],
     })
-    expect(resetHomeLayout(custom)).toEqual({ ...DEFAULT_HOME_LAYOUT, memo: 'keep me' })
+    expect(custom.widgets).toHaveLength(1)
+    expect(resetHomeLayout()).toEqual(DEFAULT_HOME_LAYOUT)
   })
 })
 
@@ -99,11 +233,14 @@ describe('home layout storage', () => {
 
   it('writes a normalized layout beside the other settings', () => {
     writeFileSync(path, JSON.stringify({ theme: 'dark' }))
-    const written = writeHomeLayout(path, { hiddenCards: ['pdf', 9], memo: 'hello' })
+    const written = writeHomeLayout(path, {
+      hiddenCards: ['pdf', 9],
+      widgets: [{ id: 'm', type: 'memo', text: 'hello' }],
+    })
     expect(written.hiddenCards).toEqual(['pdf'])
     const file = JSON.parse(readFileSync(path, 'utf8'))
     expect(file.theme).toBe('dark')
-    expect(file[HOME_LAYOUT_SETTING_KEY].memo).toBe('hello')
+    expect(file[HOME_LAYOUT_SETTING_KEY].widgets[0].text).toBe('hello')
     expect(readHomeLayout(path)).toEqual(written)
   })
 })
