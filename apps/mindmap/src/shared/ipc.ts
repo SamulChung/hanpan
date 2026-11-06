@@ -64,6 +64,8 @@ export const MINDMAP_CHANNELS = {
   printRequest: 'mindmap:print-request',
   /** invoke(`PrintMindmapRequest`) → `PrintResult`. T10 */
   print: 'mindmap:print',
+  /** invoke() → `PrinterInfo[]`: the printers the in-app print dialog offers */
+  printers: 'mindmap:printers',
 
   // ---- chat attachments (T12) ----
   /** invoke → `AttachmentAddResult | null`. T12 */
@@ -266,6 +268,22 @@ export type ExportResult =
 export interface PrintMindmapRequest {
   /** self-contained print HTML */
   html: string
+  /**
+   * What the in-app print dialog chose. A printer name ('' = the system's
+   * default printer) prints without the system dialog; `deviceName: null` or
+   * no job opens the system dialog.
+   */
+  job?: PrintJob
+}
+
+export interface PrintJob {
+  deviceName: string | null
+  copies?: number
+}
+
+export interface PrinterInfo {
+  name: string
+  displayName: string
 }
 
 /** A cancelled job is the user closing the system dialog: an outcome, not a failure. */
@@ -433,6 +451,7 @@ export interface MindmapExportApi {
   exportPdf(request: ExportPdfRequest): Promise<ExportResult>
   exportMarkdown(request: ExportMarkdownRequest): Promise<ExportResult>
   print(request: PrintMindmapRequest): Promise<PrintResult>
+  listPrinters(): Promise<PrinterInfo[]>
 }
 
 /** The AI panel's bridge. The panel and the attachment handlers are T12's. */

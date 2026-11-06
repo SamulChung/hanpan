@@ -5,8 +5,9 @@
  *   branches folded), the whole sheet and not only the part in view.
  * - Markdown outline: every sheet of the file, from the map as it stands now
  *   (unsaved edits included, folding ignored): the engine's `sheetsToOutline`.
- * - Print: the sheet on screen on one landscape A4 page, through the system's
- *   print dialog. Print is in the File menu; the toolbar has the three exports.
+ * - Print: the sheet on screen on one landscape A4 page, shown in the editor's
+ *   own print dialog first (`PrintDialog`), which prints it. Print is in the
+ *   File menu; the toolbar has the three exports.
  * - The preview picture a save writes into the file: the first sheet, made
  *   only for a save that changes the file. When it cannot be made, or takes
  *   too long, the save goes ahead without one and the file keeps its old one.
@@ -36,6 +37,8 @@ export interface MapExportHost {
   flushAll(): void
   /** a short message in the status line */
   say(key: StringKey): void
+  /** shows the print dialog for this page */
+  openPrint(html: string): void
 }
 
 /** A preview picture not made by then is left out of the save. */
@@ -184,8 +187,7 @@ export function useMapExport(host: MapExportHost): MapExport {
     try {
       const taken = await activeSnapshot()
       if (!taken) throw new Error('the sheet is not drawn')
-      const result = await window.mindmapApi.print({ html: snapshotPage(taken.snapshot) })
-      if (!result.ok) throw new Error(result.error)
+      hostRef.current.openPrint(snapshotPage(taken.snapshot))
     } catch (error) {
       console.error('[mindmap] print failed:', error)
       hostRef.current.say('printFailed')

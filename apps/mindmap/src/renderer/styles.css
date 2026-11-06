@@ -1640,3 +1640,56 @@ textarea.mm-field {
   background: currentColor;
   border-radius: 1px;
 }
+
+/* ---- the print dialog: the page on the left, the printer and copies on the right ---- */
+
+.mm-modal.mm-print {
+  width: min(880px, calc(100vw - 48px));
+}
+
+.mm-print-body {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.mm-print-preview {
+  flex: none;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  background: #fff;
+  box-shadow: var(--shadow-modal-strong);
+}
+
+.mm-print-preview iframe {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+.mm-print-options {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mm-print-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 900px) {
+  .mm-print-body {
+    flex-direction: column;
+  }
+}

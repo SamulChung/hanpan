@@ -47,6 +47,7 @@ import { MarkerMenu, type MarkerMenuRequest } from './components/MarkerMenu'
 import { markerFamily, type MarkerFamily, withMarker } from './map/marker-families'
 import { NotePanel, type NotePanelHandle } from './components/NotePanel'
 import { MindmapAiDock, useMindmapAi } from './ai/AiDock'
+import { PrintDialog } from './components/PrintDialog'
 import { useMapHandoff } from './ai/use-handoff'
 import {
   ConfirmDialog,
@@ -55,7 +56,7 @@ import {
   TopicFieldDialog,
   type TopicFieldRequest,
 } from './components/dialogs'
-import type { MindmapMenuCommand, SaveMode } from '../shared/ipc'
+import type { MindmapMenuCommand, PrintJob, PrintResult, SaveMode } from '../shared/ipc'
 
 type LoadStatus = 'loading' | 'ready' | 'failed' | 'error'
 type SaveState = 'idle' | 'saving' | 'saved' | 'failed'
@@ -886,7 +887,32 @@ export default function App() {
   }, [doSave, runCommand, openFind])
 
   // export, print and the preview picture a save writes (export/use-map-export.ts)
-  const exporter = useMapExport({ session, controllers, activeKey, path, flushAll, say })
+  const [printPage, setPrintPage] = useState<string | null>(null)
+  const exporter = useMapExport({
+    session,
+    controllers,
+    activeKey,
+    path,
+    flushAll,
+    say,
+    openPrint: setPrintPage,
+  })
+  const printJob = useCallback(
+    async (job: PrintJob): Promise<PrintResult> => {
+      if (printPage === null) return { ok: true, canceled: true }
+      try {
+        const result = await window.mindmapApi.print({ html: printPage, job })
+        if (!result.ok) console.error('[mindmap] print failed:', result.error)
+        else if (!('canceled' in result)) say('printSent')
+        return result
+      } catch (error) {
+        console.error('[mindmap] print failed:', error)
+        return { ok: false, error: String(error) }
+      }
+    },
+    [printPage, say],
+  )
+  const closePrint = useCallback(() => setPrintPage(null), [])
 
   // ---- sheets ----
 
@@ -1337,6 +1363,9 @@ export default function App() {
       </footer>
 
       {confirm && <ConfirmDialog request={confirm} onAnswer={answer} />}
+      {printPage !== null && (
+        <PrintDialog html={printPage} onPrint={printJob} onClose={closePrint} />
+      )}
       {fieldRequest && (
         <TopicFieldDialog
           key={`${fieldRequest.field}:${fieldRequest.topicId}`}
