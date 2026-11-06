@@ -194,4 +194,17 @@ describe('quick style gallery (Word order and hiding)', () => {
     expect(stylePreviewCss(styles.get('IntenseReference')!).fontVariant).toBe('small-caps')
     expect(stylePreviewCss(styles.get('Title')!).fontSize).toBe('20px')
   })
+
+  it('lifts dark style colors on a dark UI so the previews stay readable', () => {
+    const subtle = { type: 'paragraph', display: { color: '595959' } } as never
+    const navy = { type: 'paragraph', display: { color: '1F3864' } } as never
+    const light = { type: 'paragraph', display: { color: 'FFC000' } } as never
+    expect(stylePreviewCss(subtle).color).toBe('#595959')
+    expect(stylePreviewCss(subtle, undefined, true).color).toBe(
+      'color-mix(in srgb, #595959 35%, var(--text))',
+    )
+    expect(stylePreviewCss(navy, undefined, true).color).toContain('var(--text)')
+    // already light enough: keep the document color
+    expect(stylePreviewCss(light, undefined, true).color).toBe('#FFC000')
+  })
 })

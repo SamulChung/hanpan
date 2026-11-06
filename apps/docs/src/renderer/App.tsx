@@ -394,6 +394,7 @@ import { Ruler } from './components/Ruler'
 import { docBodyFont, docHasCjk, docLineFactor, docStyleCss, docThemeCss } from './doc-style-css'
 import { isDocDirty, runGuardedCandidate, runGuardedDocumentAction } from './doc-dirty'
 import { saveStatusView } from './save-status'
+import type { ExportedOffer } from './export-offer'
 import {
   EMPTY_HF_VARIANTS,
   restingHfAreaVariant,
@@ -841,6 +842,8 @@ export function App() {
     null,
   )
   const [status, setStatus] = useState('')
+  /** Open / Open folder for the last export, while its status line is showing */
+  const [exportOffer, setExportOffer] = useState<ExportedOffer | null>(null)
   const [zoom, setZoom] = useState(100)
   const scrollContainerRef = useRef<HTMLElement>(null)
   /** bumps after every pagination pass: the canvas' page gaps are in place */
@@ -2059,6 +2062,7 @@ export function App() {
     printAutoOpenedPreviewRef,
     setShowPrintDialog,
     setStatus,
+    offerExported: setExportOffer,
     setRecent,
     setShowAi,
     setDoc,
@@ -4054,6 +4058,20 @@ export function App() {
           fastPasses++
           const dbg = (window as unknown as Record<string, Record<string, unknown>>).__pageDebug
           if (dbg) dbg.fastPasses = fastPasses
+          // the fast pass keeps the page slices, but change bars and revision
+          // balloons follow the text: a tracked deletion must show its balloon now
+          const fpm = pmEl()
+          if (fpm && editor) {
+            syncMarginAnnotations(
+              (fpm.closest('.page-wrap') as HTMLElement) ?? fpm,
+              fpm,
+              comments,
+              factor,
+              doc.parsed.blocks,
+              editor.view,
+              marginHandlersRef.current,
+            )
+          }
           locate()
           return
         }
@@ -5503,7 +5521,11 @@ export function App() {
   anyDirtyRef.current = hasUnsavedChanges
   // 상태줄: 다시 고치면 지난 "저장됨" 알림을 지우고 "저장 안 됨"을 켠다
   const docDirtyNow = !!doc && (hasUnsavedChanges || dirtyRef.current)
-  const saveView = saveStatusView(status, docDirtyNow, t('appSaved'), t('appAutoSavedAt'))
+  const saveView = saveStatusView(status, docDirtyNow, t('appSaved'), t('appAutoSavedAt'), [
+    t('appNewDocCreated'),
+  ])
+  // the hint points at the AI panel: with the panel closed it points at nothing
+  if (!showAi && saveView.message === t('appNewDocCreated')) saveView.message = ''
   // 셸 탭의 "저장 안 됨" 점: 바뀔 때만 알린다
   useEffect(() => {
     window.desktop.reportDirty?.(docDirtyNow)
@@ -8038,6 +8060,26 @@ export function App() {
               )}
               {!doc && t('appReady')}
               {saveView.message && <span className="status-msg"> — {saveView.message}</span>}
+              {exportOffer && exportOffer.message === saveView.message && (
+                <span className="status-export-actions">
+                  {!exportOffer.folder && (
+                    <button
+                      type="button"
+                      className="status-link-btn"
+                      onClick={() => void window.desktop.openExported(exportOffer.path)}
+                    >
+                      {t('appOpenExported')}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="status-link-btn"
+                    onClick={() => void window.desktop.revealExported(exportOffer.path)}
+                  >
+                    {t('appRevealExported')}
+                  </button>
+                </span>
+              )}
             </div>
             <div className="status-right">
               {doc && (
@@ -8409,6 +8451,7 @@ export function App() {
             }
           }}
           onExportPdf={() => void exportPdf()}
+          onPrint={() => void printDoc()}
           onClose={() => setShowPagePreview(false)}
           suppressEscape={showPrintDialog}
         />

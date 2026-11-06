@@ -401,11 +401,16 @@ export function clearInks(ctx: ReviewContext): void {
 /** Compare: pick a second .docx and diff it against the open document */
 export async function compareWithFile(ctx: ReviewContext): Promise<void> {
   if (!ctx.doc || refuseInOdt('compare')) return
-  const other = await window.desktop.openDocx()
+  // read on the side: picking the open file itself must not trigger its recovery prompt
+  const other = await window.desktop.openCompareDocx()
   if (!other) return
   // password-protected comparison target: not wired through the decrypt prompt (yet)
   if ('needsPassword' in other) {
     ctx.setStatus(t('appCompareFailed', { error: t('appDocPwdTitle') }))
+    return
+  }
+  if ('error' in other) {
+    ctx.setStatus(t('appCompareFailed', { error: other.error }))
     return
   }
   try {

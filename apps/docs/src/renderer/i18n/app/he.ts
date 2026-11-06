@@ -118,6 +118,8 @@ export const he = {
   appExportingImages: 'מייצא תמונות…',
   appExportImagesProgress: 'מייצא {count} תמונות…',
   appExportImagesDone: '{count} תמונות יוצאו אל {dir}',
+  appOpenExported: 'פתח',
+  appRevealExported: 'פתח תיקייה',
   appExportImagesFailed: 'ייצוא התמונות נכשל: {error}',
   appMixedExportOpening:
     'גודלי נייר מעורבים: נפתחת תצוגה מקדימה של עימוד לייצוא עם איחוד לפי עמודים…',
@@ -480,6 +482,7 @@ export const he = {
   appMatchCase: 'התאמת אותיות רישיות/קטנות',
   appWholeWord: 'מילים שלמות בלבד',
   appNoResults: 'אין תוצאות',
+  appReplacedCount: 'הוחלפו {count}',
   appPrevMatch: 'הקודם (Shift+Enter)',
   appNextMatch: 'הבא (Enter)',
   appCloseEsc: 'סגירה (Esc)',

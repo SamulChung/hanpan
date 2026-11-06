@@ -93,6 +93,7 @@ const api: DesktopApi = {
   },
   respondToZotero: (response) => ipcRenderer.send('zotero:response', response),
   openDocx: () => ipcRenderer.invoke('docs:open'),
+  openCompareDocx: () => ipcRenderer.invoke('docs:open-compare'),
   openDocxPath: (path: string) => ipcRenderer.invoke('docs:open-path', path),
   confirmDocumentReplace: () => ipcRenderer.invoke('docs:confirm-document-replace'),
   convertAltChunkHtml: (html: string) => ipcRenderer.invoke('docs:altchunk-html-to-docx', html),
@@ -219,6 +220,8 @@ const api: DesktopApi = {
       scale,
       links,
     ),
+  openExported: (path: string) => ipcRenderer.invoke('docs:open-exported', path),
+  revealExported: (path: string) => ipcRenderer.invoke('docs:reveal-exported', path),
   exportHtml: (defaultName: string, html: string, outPath?: string) =>
     ipcRenderer.invoke('docs:export-html', defaultName, html, outPath),
   exportMarkdown: (

@@ -26,10 +26,15 @@ export function saveStatusView(
   dirty: boolean,
   savedText: string,
   autoSavedTemplate: string,
+  /** first-use hints ("type what to write in the AI panel") that the first edit makes moot */
+  firstEditHints: readonly string[] = [],
 ): SaveStatusView {
   if (!dirty) return { message: status, unsaved: false }
   return {
-    message: isSaveMessage(status, savedText, autoSavedTemplate) ? '' : status,
+    message:
+      isSaveMessage(status, savedText, autoSavedTemplate) || firstEditHints.includes(status)
+        ? ''
+        : status,
     unsaved: true,
   }
 }

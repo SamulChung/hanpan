@@ -119,6 +119,7 @@ import {
   toggleRepeatHeaderRows,
 } from '../editor/table-properties'
 import { useI18n, type StringKey } from '../i18n/locale'
+import { uiThemeIsDark } from '../ui-theme'
 import type { MergeDataSource } from '../../shared/ipc'
 import type { MailMergeRequest, MailMergeResponse } from '../mail-merge/output'
 import { pxToTwips, twipsToPx } from '../units'
@@ -1588,7 +1589,10 @@ function RibbonInner({
               data-style-id={info.styleId}
               onClick={() => apply(info)}
             >
-              <span className="style-card-preview" style={stylePreviewCss(info, docDefaults)}>
+              <span
+                className="style-card-preview"
+                style={stylePreviewCss(info, docDefaults, uiThemeIsDark())}
+              >
                 {isChar ? 'Aa' : t('ribbonStylePreview')}
               </span>
               <span className="style-card-label">{label}</span>

@@ -7110,6 +7110,20 @@ body.docs-crop-active .doc-protected[data-doc-protected='image'] .doc-img-wrap {
   font-family: 'Segoe UI', var(--ui-cjk), sans-serif;
 }
 
+/* The page preview and the print dialog show what prints: no editor-only type
+   chip, dashed box or chip fill (same as @media print; geometry stays because
+   pagination sliced the pages with these boxes in the flow) */
+.pagination-preview .doc-protected-label,
+.print-preview-zoom .doc-protected-label {
+  display: none !important;
+}
+
+.pagination-preview .doc-protected,
+.print-preview-zoom .doc-protected {
+  border-color: transparent !important;
+  background: none !important;
+}
+
 .doc-protected-preview {
   font-size: 12px;
   color: var(--text-dim);
@@ -9310,7 +9324,9 @@ body.docs-crop-active
   gap: 5px;
   height: 24px;
   padding: 0 10px;
-  flex-shrink: 0;
+  /* the model chip keeps its name readable; this pill gives way first */
+  flex-shrink: 1;
+  min-width: 0;
   border: 1px solid var(--color-border-default);
   border-radius: var(--radius-30);
   background: none;
@@ -9319,6 +9335,18 @@ body.docs-crop-active
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
+}
+
+.ai-track-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-panel .ai-model-chip {
+  flex-shrink: 0;
+  max-width: 160px;
 }
 
 .ai-track-btn:hover {
@@ -9707,6 +9735,31 @@ body.docs-crop-active
   opacity: 0.85;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* 내보내기 뒤 상태줄의 [열기] [폴더 열기] */
+.status-export-actions {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+.status-link-btn {
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  padding: 0 6px;
+  line-height: 16px;
+  cursor: pointer;
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+.status-link-btn:hover {
+  opacity: 1;
 }
 
 .status-right {

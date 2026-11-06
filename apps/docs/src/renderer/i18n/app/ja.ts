@@ -129,6 +129,8 @@ export const ja = {
   appExportingImages: '画像をエクスポート中…',
   appExportImagesProgress: '{count} 枚の画像をエクスポート中…',
   appExportImagesDone: '{count} 枚の画像を {dir} にエクスポートしました',
+  appOpenExported: '開く',
+  appRevealExported: 'フォルダーを開く',
   appExportImagesFailed: '画像のエクスポートに失敗しました：{error}',
   appMixedExportOpening:
     '用紙サイズが混在する文書:ページ プレビューを開き、ページごとに結合してエクスポートしています…',
@@ -512,6 +514,7 @@ export const ja = {
   appMatchCase: '大文字と小文字を区別する',
   appWholeWord: '完全に一致する単語だけを検索する',
   appNoResults: '一致なし',
+  appReplacedCount: '{count} 件を置換しました',
   appPrevMatch: '前へ (Shift+Enter)',
   appNextMatch: '次へ (Enter)',
   appCloseEsc: '閉じる (Esc)',

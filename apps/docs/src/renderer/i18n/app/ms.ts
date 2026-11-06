@@ -126,6 +126,8 @@ export const ms = {
   appExportingImages: 'Mengeksport imej…',
   appExportImagesProgress: 'Mengeksport {count} imej…',
   appExportImagesDone: '{count} imej dieksport ke {dir}',
+  appOpenExported: 'Buka',
+  appRevealExported: 'Buka folder',
   appExportImagesFailed: 'Eksport imej gagal: {error}',
   appMixedExportOpening:
     'Saiz kertas bercampur: membuka pratonton penomboran halaman untuk eksport dengan gabungan mengikut halaman…',
@@ -492,6 +494,7 @@ export const ms = {
   appMatchCase: 'Padankan huruf besar/kecil',
   appWholeWord: 'Perkataan penuh sahaja',
   appNoResults: 'Tiada hasil',
+  appReplacedCount: '{count} diganti',
   appPrevMatch: 'Sebelumnya (Shift+Enter)',
   appNextMatch: 'Berikutnya (Enter)',
   appCloseEsc: 'Tutup (Esc)',

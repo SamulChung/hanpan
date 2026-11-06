@@ -30,3 +30,11 @@ describe('saveStatusView', () => {
     })
   })
 })
+
+describe('saveStatusView first-use hints', () => {
+  const hint = '빈 문서를 만들었습니다. 오른쪽 AI 패널에 만들 내용을 적어 보세요'
+  it('drops the new-document hint once the user starts typing', () => {
+    expect(saveStatusView(hint, false, saved, autoSavedTemplate, [hint]).message).toBe(hint)
+    expect(saveStatusView(hint, true, saved, autoSavedTemplate, [hint]).message).toBe('')
+  })
+})

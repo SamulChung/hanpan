@@ -124,6 +124,8 @@ export const pl = {
   appExportingImages: 'Eksportowanie obrazów…',
   appExportImagesProgress: 'Eksportowanie {count} obrazów…',
   appExportImagesDone: 'Wyeksportowano {count} obrazów do {dir}',
+  appOpenExported: 'Otwórz',
+  appRevealExported: 'Otwórz folder',
   appExportImagesFailed: 'Eksport obrazów nie powiódł się: {error}',
   appMixedExportOpening:
     'Mieszane rozmiary papieru: otwieranie podglądu podziału na strony w celu eksportu ze scaleniem według stron…',
@@ -493,6 +495,7 @@ export const pl = {
   appMatchCase: 'Uwzględnij wielkość liter',
   appWholeWord: 'Tylko całe wyrazy',
   appNoResults: 'Brak wyników',
+  appReplacedCount: 'Zastąpiono: {count}',
   appPrevMatch: 'Poprzedni (Shift+Enter)',
   appNextMatch: 'Następny (Enter)',
   appCloseEsc: 'Zamknij (Esc)',
