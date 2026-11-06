@@ -134,7 +134,7 @@ export const vi = {
   appCommentReopenedMsg: 'Đã mở lại bình luận',
   appCommentsTitle: 'Bình luận ({n})',
   appCommentPlaceholder: 'Nhập bình luận…',
-  appCommentBtn: 'Bình luận',
+  appCommentBtn: 'Đăng',
   appUnknownAuthor: '(Tác giả không xác định)',
   appResolved: 'Đã giải quyết',
   appResolvedComments: 'Bình luận đã giải quyết ({n})',

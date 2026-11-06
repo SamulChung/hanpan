@@ -857,7 +857,7 @@ const tMain = createI18n({
     menuPageWidth: '페이지 너비',
     menuWholePage: '전체 페이지',
     menuMultiPage: '여러 페이지',
-    menuAiSidebar: 'AI 사이드바',
+    menuAiSidebar: 'AI 패널',
     menuDarkMode: '다크 모드',
     menuFullscreen: '전체 화면 시작',
     menuInsert: '삽입',

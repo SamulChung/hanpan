@@ -144,7 +144,7 @@ export const ko = {
   appCommentReopenedMsg: '메모를 다시 열었습니다',
   appCommentsTitle: '메모 ({n})',
   appCommentPlaceholder: '메모 입력…',
-  appCommentBtn: '메모',
+  appCommentBtn: '게시',
   appUnknownAuthor: '(작성자 알 수 없음)',
   appResolved: '해결됨',
   appResolvedComments: '해결된 메모 ({n})',

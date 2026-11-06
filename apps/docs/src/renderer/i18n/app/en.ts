@@ -133,7 +133,7 @@ export const en = {
   appCommentReopenedMsg: 'Comment reopened',
   appCommentsTitle: 'Comments ({n})',
   appCommentPlaceholder: 'Type a comment…',
-  appCommentBtn: 'Comment',
+  appCommentBtn: 'Post',
   appUnknownAuthor: '(Unknown author)',
   appResolved: 'Resolved',
   appResolvedComments: 'Resolved comments ({n})',
