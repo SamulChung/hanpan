@@ -352,6 +352,56 @@ describe('home widgets', () => {
   })
 })
 
+describe('0.17 review v2: widget settings say what to do next', () => {
+  it('asks to pick a file below, not to press the settings button, while setting a shortcut', async () => {
+    await renderHome()
+    await addWidget('shortcut')
+    const form = () => last().querySelector('[data-widget-form]')!
+    await setValue(form().querySelector('select[name="kind"]'), 'file')
+    expect(form().textContent).not.toContain('설정 단추')
+    expect(form().querySelector('[data-pick-hint]')?.textContent).toContain('파일')
+    // the pick button sits on its own row under the hint, so it never leaves the card
+    expect(form().querySelector('[data-pick-row] [data-pick="file"]')).not.toBeNull()
+    await setValue(form().querySelector('select[name="kind"]'), 'folder')
+    expect(form().querySelector('[data-pick-hint]')?.textContent).toContain('폴더')
+  })
+
+  it('puts the current name in an empty title field and opens settings from an unset widget', async () => {
+    await renderHome()
+    await addWidget('shortcut')
+    await click(last().querySelector('[data-widget-done]'))
+    expect(last().dataset.unset).toBe('true')
+    // the empty state is itself the way in: no hunting for a hover-only gear
+    await click(last().querySelector('[data-widget-setup]'))
+    const title = last().querySelector<HTMLInputElement>('[data-widget-form] input[name="title"]')!
+    expect(title.value).toBe('')
+    expect(title.placeholder).toBe('바로가기')
+  })
+})
+
+describe('0.17 review v2: 홈 꾸미기 guards', () => {
+  it('asks before going back to the defaults', async () => {
+    stored = { ...DEFAULT_HOME_LAYOUT, widgets: [{ id: 'c1', type: 'clock', size: 'wide' }] }
+    await renderHome()
+    await openPanel()
+    await click(panel()!.querySelector('[data-home-custom="reset"]'))
+    expect(widgetTypes()).toEqual(['clock'])
+    await click(panel()!.querySelector('[data-home-custom="reset-confirm"]'))
+    expect(stored).toEqual(DEFAULT_HOME_LAYOUT)
+  })
+
+  it('turns off moving the first item up and the last item down', async () => {
+    await renderHome()
+    await openPanel()
+    const rows = Array.from(panel()!.querySelectorAll<HTMLElement>('[data-custom-widget]'))
+    const up = (el: HTMLElement) => el.querySelector<HTMLButtonElement>('[data-move="up"]')!
+    const down = (el: HTMLElement) => el.querySelector<HTMLButtonElement>('[data-move="down"]')!
+    expect(up(rows[0]!).disabled).toBe(true)
+    expect(down(rows[0]!).disabled).toBe(false)
+    expect(down(rows.at(-1)!).disabled).toBe(true)
+  })
+})
+
 describe('홈 꾸미기 panel', () => {
   it('removes and reorders widgets, and opens the gallery', async () => {
     await renderHome()
@@ -401,6 +451,7 @@ describe('홈 꾸미기 panel', () => {
     expect(widgetTypes()).toEqual(['clock'])
     await openPanel()
     await click(panel()!.querySelector('[data-home-custom="reset"]'))
+    await click(panel()!.querySelector('[data-home-custom="reset-confirm"]'))
     expect(stored).toEqual(DEFAULT_HOME_LAYOUT)
     expect(setTheme).toHaveBeenCalledWith('system')
     expect(widgetTypes().sort()).toEqual(['favorites', 'memo', 'recent'])

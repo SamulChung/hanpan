@@ -295,20 +295,46 @@ function MemoBody({
 
 const KIND_GLYPH: Record<ShortcutKind, string> = { file: '📄', folder: '📁', link: '🔗', app: '▦' }
 
+/** a widget with nothing chosen yet: the empty state itself opens its settings */
+function UnsetBody({ text, onSetUp }: { text: Text; onSetUp: () => void }) {
+  return (
+    <div className="hw-unset">
+      <p className="hw-empty">{text('notSet')}</p>
+      <button
+        type="button"
+        className="hw-small-btn hw-done"
+        data-widget-setup=""
+        onClick={onSetUp}
+      >
+        {text('setUp')}
+      </button>
+    </div>
+  )
+}
+
+/** a shortcut with no target, or a folder view with no folder */
+export function widgetUnset(widget: HomeWidget): boolean {
+  return (
+    (widget.type === 'shortcut' && !widget.target) || (widget.type === 'folder' && !widget.path)
+  )
+}
+
 function ShortcutBody({
   widget,
   title,
   cards,
   text,
+  onSetUp,
 }: {
   widget: Extract<HomeWidget, { type: 'shortcut' }>
   title: string
   cards: readonly HomeAppCard[]
   text: Text
+  onSetUp: () => void
 }) {
   const [failed, setFailed] = useState(false)
   const target = widget.target
-  if (!target) return <p className="hw-empty">{text('notSet')}</p>
+  if (!target) return <UnsetBody text={text} onSetUp={onSetUp} />
   const card = target.kind === 'app' ? cards.find((c) => c.key === target.value) : undefined
   const open = async () => {
     setFailed(false)
@@ -395,7 +421,18 @@ function ClockBody({ dateLocale }: { dateLocale: string }) {
   )
 }
 
-function MoveButtons({ text, onMove }: { text: Text; onMove: (delta: -1 | 1) => void }) {
+function MoveButtons({
+  text,
+  onMove,
+  first = false,
+  last = false,
+}: {
+  text: Text
+  onMove: (delta: -1 | 1) => void
+  /** the item is already first / last: that direction has nowhere to go */
+  first?: boolean
+  last?: boolean
+}) {
   return (
     <span className="hc-move">
       <button
@@ -403,6 +440,7 @@ function MoveButtons({ text, onMove }: { text: Text; onMove: (delta: -1 | 1) => 
         data-move="up"
         aria-label={text('moveUp')}
         title={text('moveUp')}
+        disabled={first}
         onClick={() => onMove(-1)}
       >
         ↑
@@ -412,6 +450,7 @@ function MoveButtons({ text, onMove }: { text: Text; onMove: (delta: -1 | 1) => 
         data-move="down"
         aria-label={text('moveDown')}
         title={text('moveDown')}
+        disabled={last}
         onClick={() => onMove(1)}
       >
         ↓
@@ -434,6 +473,8 @@ function WidgetForm({
   text: Text
   onDone: () => void
 }) {
+  /** the name the card shows while the title is empty, offered as the field's hint */
+  const shownName = widgetTitle({ ...widget, title: '' }, text, cards)
   const patch = (values: Record<string, unknown>) =>
     update((prev) => updateWidget(prev, widget.id, values))
   const target = widget.type === 'shortcut' ? widget.target : null
@@ -480,6 +521,7 @@ function WidgetForm({
         <input
           name="title"
           value={widget.title}
+          placeholder={shownName}
           maxLength={HOME_TITLE_MAX}
           onChange={(event) => patch({ title: event.target.value })}
         />
@@ -503,10 +545,17 @@ function WidgetForm({
             </select>
           </label>
           {(kind === 'file' || kind === 'folder') && (
-            <div className="hw-field">
-              <span className="hw-path" title={target?.kind === kind ? target.value : ''}>
-                {target?.kind === kind ? target.value : text('notSet')}
-              </span>
+            <div className="hw-pick" data-pick-row="">
+              {/* what is chosen, else what to do next: it wraps inside the card */}
+              {target?.kind === kind ? (
+                <span className="hw-path" title={target.value}>
+                  {target.value}
+                </span>
+              ) : (
+                <span className="hw-hint" data-pick-hint="">
+                  {text(kind === 'file' ? 'pickFileHint' : 'pickFolderHint')}
+                </span>
+              )}
               <button
                 type="button"
                 className="hw-small-btn"
@@ -666,8 +715,17 @@ export function HomeWidgets({
           />
         )
       case 'shortcut':
-        return <ShortcutBody widget={widget} title={title} cards={cards} text={text} />
+        return (
+          <ShortcutBody
+            widget={widget}
+            title={title}
+            cards={cards}
+            text={text}
+            onSetUp={() => onEdit(widget.id)}
+          />
+        )
       case 'folder':
+        if (!widget.path) return <UnsetBody text={text} onSetUp={() => onEdit(widget.id)} />
         return <FolderBody path={widget.path} text={text} reloadKey={reloadKey} />
       case 'clock':
         return <ClockBody dateLocale={dateLocale} />
@@ -701,6 +759,7 @@ export function HomeWidgets({
                 data-widget={widget.id}
                 data-widget-type={widget.type}
                 data-size={widget.size}
+                data-unset={widgetUnset(widget) ? 'true' : undefined}
                 draggable={!editing}
                 onDragStart={(event) => {
                   dragged.current = widget.id
@@ -854,6 +913,8 @@ export function HomeCustomizePanel({
 }) {
   const text: Text = (key) => homeCustomText(lang, key)
   const [theme, setThemeState] = useState<UiTheme>('system')
+  /** "기본값으로 되돌리기" wipes the arrangement: it asks once first */
+  const [askReset, setAskReset] = useState(false)
   useEffect(() => {
     let alive = true
     Promise.resolve(window.aiOffice.getTheme?.())
@@ -888,7 +949,7 @@ export function HomeCustomizePanel({
           <fieldset className="hc-group">
             <legend>{text('widgets')}</legend>
             <ul className="hc-list">
-              {layout.widgets.map((widget) => (
+              {layout.widgets.map((widget, index) => (
                 <li key={widget.id} data-custom-widget={widget.id}>
                   <span className="hc-check">
                     <span className="hc-type">{text(TYPE_NAME[widget.type])}</span>
@@ -896,6 +957,8 @@ export function HomeCustomizePanel({
                   </span>
                   <MoveButtons
                     text={text}
+                    first={index === 0}
+                    last={index === layout.widgets.length - 1}
                     onMove={(delta) => update((prev) => moveWidget(prev, widget.id, delta))}
                   />
                   <button
@@ -928,7 +991,7 @@ export function HomeCustomizePanel({
                 <div key={group.label} className="hc-subgroup">
                   <p className="hc-sublabel">{group.label}</p>
                   <ul className="hc-list">
-                    {arrangeCards(group.cards, layout, true).map((card) => {
+                    {arrangeCards(group.cards, layout, true).map((card, index, arranged) => {
                       const pinnedApp = layout.pinnedApps.includes(card.key)
                       return (
                         <li key={card.key} data-custom-card={card.key}>
@@ -963,6 +1026,8 @@ export function HomeCustomizePanel({
                           </button>
                           <MoveButtons
                             text={text}
+                            first={index === 0}
+                            last={index === arranged.length - 1}
                             onMove={(delta) =>
                               update((prev) => ({
                                 ...prev,
@@ -997,17 +1062,40 @@ export function HomeCustomizePanel({
           </fieldset>
         </div>
         <div className="hc-actions">
-          <button
-            type="button"
-            className="btn btn-secondary"
-            data-home-custom="reset"
-            onClick={() => {
-              update(() => resetHomeLayout())
-              chooseTheme('system')
-            }}
-          >
-            {text('reset')}
-          </button>
+          {askReset ? (
+            <span className="hc-reset-ask" role="alert">
+              {text('resetAsk')}
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-home-custom="reset-confirm"
+                onClick={() => {
+                  setAskReset(false)
+                  update(() => resetHomeLayout())
+                  chooseTheme('system')
+                }}
+              >
+                {text('resetYes')}
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-home-custom="reset-cancel"
+                onClick={() => setAskReset(false)}
+              >
+                {text('cancel')}
+              </button>
+            </span>
+          ) : (
+            <button
+              type="button"
+              className="btn btn-secondary"
+              data-home-custom="reset"
+              onClick={() => setAskReset(true)}
+            >
+              {text('reset')}
+            </button>
+          )}
           <button
             type="button"
             className="btn btn-primary"
