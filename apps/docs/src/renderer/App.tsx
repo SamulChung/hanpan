@@ -33,6 +33,7 @@ import { wordRangeAtCaret } from './editor/comments'
 import { setFieldInstr, toggleAllFieldCodes, type FieldRange } from './editor/field-codes'
 import { linkTarget } from './editor/link-actions'
 import { FieldDialog } from './components/FieldDialog'
+import { isModalOpen } from './components/modal-keys'
 import { markdownPasteHtml } from './editor/markdown-paste'
 import { pasteTextSlice, singleCellPasteText } from './editor/paste-text'
 import {
@@ -5571,9 +5572,11 @@ export function App() {
         e.preventDefault()
         void openFile()
       }
+      // a modal dialog keeps the document's panels shut behind it (Word: the dialog is modal)
+      const modalOpen = isModalOpen()
       if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
         e.preventDefault()
-        if (doc) {
+        if (doc && !modalOpen) {
           // bump even when the panel is already open: focus returns to the find box
           setShowFind(true)
           setFindFocusInput((n) => n + 1)
@@ -5583,7 +5586,7 @@ export function App() {
       // which never reaches the renderer, so this branch is Ctrl+H there too)
       if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && e.key === 'h') {
         e.preventDefault()
-        if (doc) {
+        if (doc && !modalOpen) {
           setShowFind(true)
           setFindFocusReplace((n) => n + 1)
         }
@@ -5594,7 +5597,8 @@ export function App() {
         !e.shiftKey &&
         e.altKey === IS_MAC &&
         e.code === 'KeyG' &&
-        doc
+        doc &&
+        !modalOpen
       ) {
         e.preventDefault()
         setShowFind(true)
