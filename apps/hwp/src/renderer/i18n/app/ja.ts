@@ -5,6 +5,7 @@ export const ja = {
   editorFailed: 'エディターを起動できませんでした。',
   openFailed: '文書を開けませんでした。',
   saveFailed: '文書を保存できませんでした。',
+  fileOpen: '開く…',
   fileSave: '保存',
   fileSaveAs: '名前を付けて保存…',
   fileExportPdf: 'PDF として書き出す…',

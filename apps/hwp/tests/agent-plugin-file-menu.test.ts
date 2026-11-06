@@ -10,6 +10,7 @@ import {
 } from '../studio-plugin/agent-plugin.mjs'
 
 const LABELS = {
+  open: '열기…',
   save: '저장',
   saveAs: '다른 이름으로 저장…',
   pdf: 'PDF로 내보내기…',
@@ -62,10 +63,11 @@ afterEach(() => {
 })
 
 describe('the File menu of the embedded editor', () => {
-  it('gets Save, Save As, Export as PDF and Print on top, in that order', () => {
+  it('gets Open, Save, Save As, Export as PDF and Print on top, in that order', () => {
     const { plugin, commands, menu } = editor()
     expect(plugin.installFileMenu(LABELS)).toEqual({ ok: true })
     expect(menu).toEqual([
+      'ext:ieum-open',
       'ext:ieum-save',
       'ext:ieum-save-as',
       'ext:ieum-export-pdf',
@@ -75,6 +77,7 @@ describe('the File menu of the embedded editor', () => {
     ])
     expect(commands.get('ext:ieum-save')).toMatchObject({ label: '저장', shortcutLabel: 'Ctrl+S' })
     expect(commands.get('ext:ieum-save-as')).toMatchObject({ shortcutLabel: 'Ctrl+Shift+S' })
+    expect(commands.get('ext:ieum-open')).toMatchObject({ label: '열기…', shortcutLabel: 'Ctrl+O' })
     expect(commands.get('ext:ieum-export-pdf')?.shortcutLabel).toBeUndefined()
   })
 
@@ -82,6 +85,7 @@ describe('the File menu of the embedded editor', () => {
     const { plugin, commands } = editor()
     plugin.installFileMenu(LABELS)
     for (const id of [
+      'ext:ieum-open',
       'ext:ieum-save',
       'ext:ieum-save-as',
       'ext:ieum-export-pdf',
@@ -89,14 +93,14 @@ describe('the File menu of the embedded editor', () => {
     ]) {
       commands.get(id)?.execute(undefined as never)
     }
-    expect(fired).toEqual(['save', 'saveAs', 'pdf', 'print'])
+    expect(fired).toEqual(['open', 'save', 'saveAs', 'pdf', 'print'])
   })
 
   it('puts the items back once when asked again, without registering twice', () => {
     const { plugin, menu } = editor()
     plugin.installFileMenu(LABELS)
     expect(plugin.installFileMenu(LABELS)).toEqual({ ok: true })
-    expect(menu.filter((id) => id.startsWith('ext:'))).toHaveLength(4)
+    expect(menu.filter((id) => id.startsWith('ext:'))).toHaveLength(5)
   })
 
   it('says so when the editor has no File menu, and refuses missing labels', () => {

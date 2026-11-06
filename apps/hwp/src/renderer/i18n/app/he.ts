@@ -5,6 +5,7 @@ export const he = {
   editorFailed: 'לא ניתן היה להפעיל את העורך.',
   openFailed: 'לא ניתן היה לפתוח את המסמך.',
   saveFailed: 'לא ניתן היה לשמור את המסמך.',
+  fileOpen: 'פתיחה…',
   fileSave: 'שמירה',
   fileSaveAs: 'שמירה בשם…',
   fileExportPdf: 'ייצוא כ-PDF…',

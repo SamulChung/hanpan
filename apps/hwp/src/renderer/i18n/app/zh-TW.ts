@@ -5,6 +5,7 @@ export const zhTW = {
   editorFailed: '編輯器無法啟動。',
   openFailed: '無法開啟文件。',
   saveFailed: '無法儲存文件。',
+  fileOpen: '開啟…',
   fileSave: '儲存',
   fileSaveAs: '另存新檔…',
   fileExportPdf: '匯出為 PDF…',

@@ -5,6 +5,7 @@ export const cs = {
   editorFailed: 'Editor se nepodařilo spustit.',
   openFailed: 'Dokument se nepodařilo otevřít.',
   saveFailed: 'Dokument se nepodařilo uložit.',
+  fileOpen: 'Otevřít…',
   fileSave: 'Uložit',
   fileSaveAs: 'Uložit jako…',
   fileExportPdf: 'Exportovat jako PDF…',

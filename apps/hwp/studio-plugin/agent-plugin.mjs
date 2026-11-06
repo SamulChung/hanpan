@@ -75,6 +75,7 @@ export const FILE_COMMAND_EVENT = 'ieum:file-command'
 export const DIRTY_EVENT = 'ieum:dirty-changed'
 /** The File menu items, top to bottom: the command the app runs, and the shortcut shown. */
 const FILE_MENU = [
+  { command: 'open', id: 'ext:ieum-open', shortcut: 'Ctrl+O' },
   { command: 'save', id: 'ext:ieum-save', shortcut: 'Ctrl+S' },
   { command: 'saveAs', id: 'ext:ieum-save-as', shortcut: 'Ctrl+Shift+S' },
   { command: 'pdf', id: 'ext:ieum-export-pdf' },
@@ -5367,10 +5368,10 @@ export const agentPlugin = {
       }),
 
       /**
-       * Put Save, Save As, Export as PDF and Print at the top of the editor's File menu. The
+       * Put Open, Save, Save As, Export as PDF and Print at the top of the editor's File menu. The
        * embedded editor leaves out its own (the app owns the file), which left the menu with
        * no way to save. Each item fires FILE_COMMAND_EVENT on the editor's window and the app
-       * does the rest. `labels` holds the four names in the app's language, by command. A
+       * does the rest. `labels` holds the five names in the app's language, by command. A
        * second call puts the items back where they were; the names stay the first ones.
        */
       installFileMenu: guarded((labels) => {

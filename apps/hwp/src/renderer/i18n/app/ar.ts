@@ -5,6 +5,7 @@ export const ar = {
   editorFailed: 'تعذّر بدء المحرر.',
   openFailed: 'تعذّر فتح المستند.',
   saveFailed: 'تعذّر حفظ المستند.',
+  fileOpen: 'فتح…',
   fileSave: 'حفظ',
   fileSaveAs: 'حفظ باسم…',
   fileExportPdf: 'تصدير بتنسيق PDF…',

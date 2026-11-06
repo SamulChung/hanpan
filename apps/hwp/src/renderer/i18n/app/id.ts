@@ -5,6 +5,7 @@ export const id = {
   editorFailed: 'Editor tidak dapat dimulai.',
   openFailed: 'Dokumen tidak dapat dibuka.',
   saveFailed: 'Dokumen tidak dapat disimpan.',
+  fileOpen: 'Buka…',
   fileSave: 'Simpan',
   fileSaveAs: 'Simpan Sebagai…',
   fileExportPdf: 'Ekspor sebagai PDF…',

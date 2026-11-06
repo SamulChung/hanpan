@@ -5,6 +5,7 @@ export const ms = {
   editorFailed: 'Editor tidak dapat dimulakan.',
   openFailed: 'Dokumen tidak dapat dibuka.',
   saveFailed: 'Dokumen tidak dapat disimpan.',
+  fileOpen: 'Buka…',
   fileSave: 'Simpan',
   fileSaveAs: 'Simpan Sebagai…',
   fileExportPdf: 'Eksport sebagai PDF…',

@@ -4,6 +4,7 @@ export const zh = {
   editorFailed: '编辑器无法启动。',
   openFailed: '无法打开文档。',
   saveFailed: '无法保存文档。',
+  fileOpen: '打开…',
   fileSave: '保存',
   fileSaveAs: '另存为…',
   fileExportPdf: '导出为 PDF…',

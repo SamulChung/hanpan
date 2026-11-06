@@ -433,6 +433,7 @@ export default function App() {
     if (!frame) return
     void agentBridge
       .installFileMenu({
+        open: t('fileOpen'),
         save: t('fileSave'),
         saveAs: t('fileSaveAs'),
         pdf: t('fileExportPdf'),
@@ -441,7 +442,13 @@ export default function App() {
       .catch(() => {})
     const onCommand = (event: Event) => {
       const command = (event as CustomEvent<unknown>).detail
-      if (command === 'save' || command === 'saveAs' || command === 'pdf' || command === 'print') {
+      if (
+        command === 'open' ||
+        command === 'save' ||
+        command === 'saveAs' ||
+        command === 'pdf' ||
+        command === 'print'
+      ) {
         window.hwpApi.requestFileCommand(command)
       }
     }

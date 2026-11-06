@@ -5,6 +5,7 @@ export const de = {
   editorFailed: 'Der Editor konnte nicht gestartet werden.',
   openFailed: 'Das Dokument konnte nicht geöffnet werden.',
   saveFailed: 'Das Dokument konnte nicht gespeichert werden.',
+  fileOpen: 'Öffnen…',
   fileSave: 'Speichern',
   fileSaveAs: 'Speichern unter…',
   fileExportPdf: 'Als PDF exportieren…',

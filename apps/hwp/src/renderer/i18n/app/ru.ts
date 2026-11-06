@@ -5,6 +5,7 @@ export const ru = {
   editorFailed: 'Не удалось запустить редактор.',
   openFailed: 'Не удалось открыть документ.',
   saveFailed: 'Не удалось сохранить документ.',
+  fileOpen: 'Открыть…',
   fileSave: 'Сохранить',
   fileSaveAs: 'Сохранить как…',
   fileExportPdf: 'Экспортировать в PDF…',
