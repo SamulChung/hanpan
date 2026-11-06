@@ -39,8 +39,9 @@ function FileKindIcon({ src }: { src: string }) {
  * - Tabs with a saved filePath show the full title on line 1, and the full absolute path on line 2.
  * - Untitled or Home/Help tabs without a filePath show the title alone.
  */
-export function formatTabTooltip(tab: TabSummary): string {
-  return tab.filePath ? `${tab.title}\n${tab.filePath}` : tab.title
+export function formatTabTooltip(tab: TabSummary, unsavedLabel?: string): string {
+  const head = tab.dirty && unsavedLabel ? `${tab.title} — ${unsavedLabel}` : tab.title
+  return tab.filePath ? `${head}\n${tab.filePath}` : head
 }
 
 function HelpIcon() {
@@ -470,10 +471,12 @@ export function TabBar({ split }: TabBarProps) {
           return (
             <div
               key={tab.id}
-              className={`tab-item ${tab.kind === 'home' ? 'tab-home' : ''} ${tab.active ? 'active' : ''} ${dragVisual?.id === tab.id ? 'drag-source' : ''}${pane}`}
+              className={`tab-item ${tab.kind === 'home' ? 'tab-home' : ''} ${tab.active ? 'active' : ''} ${dragVisual?.id === tab.id ? 'drag-source' : ''}${pane}${tab.dirty ? ' dirty' : ''}`}
               // long file names ellipsize in the strip — hover reveals the
               // full title and where the file is (the close button's own tooltip still wins there)
-              title={tab.kind === 'home' ? productName(lang) : formatTabTooltip(tab)}
+              title={
+                tab.kind === 'home' ? productName(lang) : formatTabTooltip(tab, t('tabUnsaved'))
+              }
               style={dragStyle}
               onContextMenu={(event) => {
                 event.preventDefault()
@@ -579,13 +582,15 @@ export function TabBar({ split }: TabBarProps) {
                 <button
                   className="tab-close"
                   title={t('closeTab')}
-                  aria-label={t('closeTab')}
+                  aria-label={tab.dirty ? `${t('closeTab')} (${t('tabUnsaved')})` : t('closeTab')}
                   onClick={(event) => {
                     event.stopPropagation()
                     void window.aiOfficeTabs.close(tab.id)
                   }}
                 >
-                  ×
+                  {/* 저장 안 된 탭은 닫기 자리에 점을 보이고, 마우스를 올리면 ×로 바뀐다 */}
+                  {tab.dirty && <span className="tab-dirty-dot" aria-hidden="true" />}
+                  <span className="tab-close-x">×</span>
                 </button>
               )}
             </div>

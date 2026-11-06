@@ -204,4 +204,12 @@ export const de = {
   presentInTab: 'In diesem Tab',
   presentFullscreen: 'Vollbild',
   presentNewTab: 'Neuer Tab',
+  emptyPageTitle: 'This web page is empty',
+  emptyPageBody:
+    'Describe the page you want in the AI pane, or start with a heading and a paragraph and edit them.',
+  emptyPageStarter: 'Start with a heading',
+  starterHeading: 'Title',
+  starterParagraph: 'Write your content here.',
+  emptyPageAskAi: 'Describe it to AI',
+  emptyPageSource: 'View HTML source',
 } satisfies Record<keyof typeof zh, string>

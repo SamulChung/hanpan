@@ -141,6 +141,7 @@ import {
   isEastAsianFontName,
   splitHangulFamilies,
   systemFamiliesBesidesCandidates,
+  fontBoxDisplayName,
 } from '../font-list'
 import {
   fontSizeLabel,
@@ -939,6 +940,21 @@ function RibbonInner({
       ]),
   })
 
+  // 화면 안 파일 메뉴는 Esc로 닫고 포커스를 파일 버튼으로 돌려준다(엑셀·한글과 같게)
+  const fileTabRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    if (dropdown !== 'file') return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || e.isComposing) return
+      e.preventDefault()
+      e.stopPropagation()
+      setDropdown(null)
+      fileTabRef.current?.focus()
+    }
+    document.addEventListener('keydown', onKey, true)
+    return () => document.removeEventListener('keydown', onKey, true)
+  }, [dropdown])
+
   // leaving the Draw tab always drops back to text editing, so the drawing
   // overlay never swallows clicks while its controls are off-screen
   useEffect(() => {
@@ -1406,6 +1422,8 @@ function RibbonInner({
   }
 
   const currentFont = fs.fontFamily
+  // 한국어 화면: 글꼴 칸은 한국어 이름(맑은 고딕)으로 보인다. 문서 안 이름은 그대로
+  const currentFontShown = fontBoxDisplayName(currentFont, lang, fontInfo)
   // Word's font box: an East Asian face fills every rFonts slot, a Latin face only
   // w:ascii/w:hAnsi so the CJK font survives
   const setFont = (name: string) => {
@@ -1467,8 +1485,8 @@ function RibbonInner({
       // the name the box already shows stays as it is, even when it is another
       // spelling of a listed family (a document may hold the Korean name)
       const name =
-        typedName === currentFont
-          ? typedName
+        typedName === currentFont || typedName === currentFontShown
+          ? currentFont
           : (picked ?? familyForTypedName(typedName, fontMenuNames, fontInfo))
       resetFontBox()
       // an unchanged name is a no-op: re-applying the East Asian face the box
@@ -2094,6 +2112,9 @@ function RibbonInner({
         {!IS_MAC && (
           <div className="file-tab-wrap">
             <button
+              ref={fileTabRef}
+              aria-haspopup="menu"
+              aria-expanded={dropdown === 'file'}
               className={`ribbon-tab ribbon-tab-file ${dropdown === 'file' ? 'open' : ''}`}
               onClick={() => setDropdown((v) => (v === 'file' ? null : 'file'))}
             >
@@ -3398,7 +3419,7 @@ function RibbonInner({
                       ref={fontInputRef}
                       className="rb-select rb-font-family"
                       disabled={!canEdit}
-                      value={fontDraft ?? currentFont}
+                      value={fontDraft ?? currentFontShown}
                       aria-label={t('ribbonFontFamilyTip')}
                       data-tip={t('ribbonFontFamilyTip')}
                       aria-autocomplete="both"

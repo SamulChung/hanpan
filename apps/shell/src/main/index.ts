@@ -403,6 +403,8 @@ import {
 } from '@genoffice/ui/ai-panel-prefs'
 import type { DocumentTabKind, OpenDocumentTab, TabKind } from '../shared/tabs-api'
 import { TABS_CHANNELS } from '../shared/tabs-api'
+import { noteRendererDirty, rendererReportedDirty } from './tab-dirty-mirror'
+import { untitledPathIn } from './untitled-path'
 import { SPLIT_TABS_CHANNELS } from '../shared/split-view-api'
 import type {
   SplitDropIntent,
@@ -900,6 +902,30 @@ installRecoveryTitleSources(
   (contents) =>
     tabManager?.describeWebContents(contents.id)?.title ?? detachedDocumentFor(contents.id)?.title,
 )
+
+/** re-send the tab list when a tab's unsaved dot changed (set once the shell window exists) */
+let pushTabDirtyDots: (() => void) | null = null
+// docs keeps its dirty flag inside the renderer: it pushes changes here for the tab dot
+ipcMain.on('docs:dirty-changed', (event, dirty: unknown) => {
+  const id = event.sender.id
+  if (dirty === true && !rendererReportedDirty(id))
+    event.sender.once('destroyed', () => noteRendererDirty(id, false))
+  noteRendererDirty(id, dirty === true)
+  pushTabDirtyDots?.()
+})
+// the other editors mirror dirty in their own main module; a second listener on
+// the same channel runs after theirs has settled, so read on the next tick
+for (const channel of [
+  'markdown:dirty-changed',
+  'html:dirty-changed',
+  'pdf:dirty-changed',
+  'hwp:dirty-changed',
+  'mindmap:dirty-changed',
+  'epub:dirty-changed',
+  'graphics:dirty-changed',
+]) {
+  ipcMain.on(channel, () => setTimeout(() => pushTabDirtyDots?.(), 0))
+}
 
 ipcMain.handle(RECOVERY_LIST_CHANNELS.get, (event) => {
   // the shell window's Home only (the manual shares the preload)
@@ -5216,6 +5242,18 @@ function createShellWindow(): void {
   )
   tabManager = manager
   manager.setClosedListener((closed) => recentlyClosed.push(closed))
+  // 탭 줄의 "저장 안 됨" 점: 편집기가 dirty를 알리면 곧바로, 그 밖(저장으로 main이
+  // 지운 경우, slides·sheets처럼 main이 직접 아는 경우)은 1초 주기로 다시 본다.
+  // 바뀐 탭이 있을 때만 목록을 다시 보낸다.
+  pushTabDirtyDots = () => {
+    if (!win.isDestroyed() && manager.refreshDirty())
+      win.webContents.send(TABS_CHANNELS.changed, manager.list())
+  }
+  const dirtyDotTimer = setInterval(() => pushTabDirtyDots?.(), 1000)
+  win.once('closed', () => {
+    clearInterval(dirtyDotTimer)
+    pushTabDirtyDots = null
+  })
 
   // Docking: a detached window dragged over this window's tab strip hands its
   // document back. The strip reports the insertion slot for each preview
@@ -5931,7 +5969,7 @@ function newIllustTab(): void {
  */
 async function newPdfTab(): Promise<void> {
   try {
-    const filePath = uniquePathIn(newFileDir('pdf'), `${tm('untitledPdf')}.pdf`)
+    const filePath = untitledPathIn(newFileDir('pdf'), tm('untitledPdf'), '.pdf')
     await atomicWriteFile(filePath, await blankPdfBuffer())
     // Opt the file into content-derived auto-naming on its first save
     markPdfUntitledPath(filePath)

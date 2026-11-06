@@ -53,11 +53,12 @@ export const pl = {
   appFontsMissing: 'Brak czcionek dokumentu: {names} (wyświetlane zamienniki)',
   appVerticalTextNotice:
     'Ten dokument zawiera tekst pionowy (na razie wyświetlany poziomo; zapis pozostaje bez zmian)',
-  appNewDocCreated: 'Utworzono pusty dokument. Opisz w panelu AI po lewej, co wygenerować.',
+  appNewDocCreated: 'Utworzono pusty dokument. Opisz w panelu AI, co wygenerować.',
   appNewFailed: 'Nie udało się utworzyć dokumentu: {error}',
   appSaveFailed: 'Zapisywanie nie powiodło się: {error}',
   appAutoSavedAt: 'Zapisano automatycznie ({time})',
   appSaved: 'Zapisano',
+  appUnsaved: 'Niezapisane',
   appSectionBreakInserted: 'Wstawiono podział sekcji ({type})',
   appSectionBreakPending: 'Wstawiono podział sekcji; nowa sekcja zacznie obowiązywać po zapisaniu',
   appBreakNextPage: 'Następna strona',

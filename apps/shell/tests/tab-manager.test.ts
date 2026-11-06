@@ -1407,3 +1407,36 @@ describe('detach / attach (Open in New Window, tear-off, dock)', () => {
     expect(manager.list()).toHaveLength(1)
   })
 })
+
+describe('unsaved-changes dot (0.17 review #1)', () => {
+  it('lists a tab as dirty while its editor reports unsaved changes', async () => {
+    const { noteRendererDirty } = await import('../src/main/tab-dirty-mirror')
+    const docsId = manager.openDocsTab()
+    const slidesId = manager.openSlidesTab()
+    const markdownId = manager.openMarkdownTab()
+    const docsWc = lastCreatedView(createDocsView).webContents
+    expect(manager.list().some((t) => t.dirty)).toBe(false)
+
+    noteRendererDirty(docsWc.id, true)
+    slidesIsDirty.mockImplementation(() => true)
+    markdownIsDirty.mockImplementation(() => true)
+    const dirty = manager
+      .list()
+      .filter((t) => t.dirty)
+      .map((t) => t.id)
+    expect(dirty).toEqual([docsId, slidesId, markdownId])
+
+    noteRendererDirty(docsWc.id, false)
+    expect(manager.list().find((t) => t.id === docsId)?.dirty).toBeUndefined()
+  })
+
+  it('refreshDirty reports a change once, then stays quiet until the next change', () => {
+    manager.openSlidesTab()
+    expect(manager.refreshDirty()).toBe(false)
+    slidesIsDirty.mockImplementation(() => true)
+    expect(manager.refreshDirty()).toBe(true)
+    expect(manager.refreshDirty()).toBe(false)
+    slidesIsDirty.mockImplementation(() => false)
+    expect(manager.refreshDirty()).toBe(true)
+  })
+})

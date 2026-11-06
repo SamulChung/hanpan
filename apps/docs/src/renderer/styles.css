@@ -500,6 +500,8 @@ html.genoffice-popover-open .ribbon-tabs {
 
 .ribbon-tab-file:hover,
 .ribbon-tab-file.open {
+  /* .ribbon-tab:hover가 글자를 강조색으로 바꾸면 강조색 바탕에 묻힌다: 흰 글자 유지 */
+  color: var(--docs-on-accent);
   background: var(--word-blue-dark);
 }
 
@@ -9623,6 +9625,22 @@ body.docs-crop-active
 
 .status-track.on {
   color: var(--accent);
+}
+
+/* 저장 안 된 변경 사항: 점 + 문구 (저장하면 사라진다) */
+.status-unsaved {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.status-unsaved::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.75;
 }
 
 .status-msg {

@@ -36,3 +36,21 @@ describe('Malgun Gothic without the installed face', () => {
     expect(chain).toContain('GenOffice Sans KR')
   })
 })
+
+describe('font box display name (0.17 review #11)', () => {
+  it('shows the Korean family name in a Korean UI', async () => {
+    const { fontBoxDisplayName } = await import('../src/renderer/font-list')
+    expect(fontBoxDisplayName('Malgun Gothic', 'ko')).toBe('맑은 고딕')
+    expect(fontBoxDisplayName('Batang', 'ko')).toBe('바탕')
+    // the font's own Korean name, read from its name table, wins
+    expect(
+      fontBoxDisplayName(
+        'NanumGothic',
+        'ko',
+        new Map([['NanumGothic', { ko: '나눔고딕', hangul: true }]]),
+      ),
+    ).toBe('나눔고딕')
+    expect(fontBoxDisplayName('Calibri', 'ko')).toBe('Calibri')
+    expect(fontBoxDisplayName('Malgun Gothic', 'en')).toBe('Malgun Gothic')
+  })
+})

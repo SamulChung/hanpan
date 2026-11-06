@@ -175,7 +175,7 @@ export const ko = {
   insertImageUrl: 'URL에서 이미지…',
   insertConfirm: '삽입',
   insertMore: '더 보기',
-  insertSkeleton: '스켈레톤 삽입',
+  insertSkeleton: '기본 틀 넣기',
   insertTableSize: '{r}×{c} 표',
   insertTablePickSize: '표 크기 선택',
   insertPlaceholderTableHeader: '머리글 {n}',
@@ -199,4 +199,12 @@ export const ko = {
   presentInTab: '현재 탭에서',
   presentFullscreen: '전체 화면',
   presentNewTab: '새 탭',
+  emptyPageTitle: '빈 웹 문서입니다',
+  emptyPageBody:
+    '오른쪽 AI 도우미에 만들 페이지를 설명하거나, 제목과 문단을 넣고 바로 고쳐 보세요.',
+  emptyPageStarter: '제목과 문단으로 시작',
+  starterHeading: '제목',
+  starterParagraph: '여기에 내용을 적으세요.',
+  emptyPageAskAi: 'AI 도우미에 설명하기',
+  emptyPageSource: 'HTML 소스 보기',
 } satisfies Record<keyof typeof zh, string>

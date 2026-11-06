@@ -200,4 +200,12 @@ export const hi = {
   presentInTab: 'इसी टैब में',
   presentFullscreen: 'पूर्ण स्क्रीन',
   presentNewTab: 'नया टैब',
+  emptyPageTitle: 'This web page is empty',
+  emptyPageBody:
+    'Describe the page you want in the AI pane, or start with a heading and a paragraph and edit them.',
+  emptyPageStarter: 'Start with a heading',
+  starterHeading: 'Title',
+  starterParagraph: 'Write your content here.',
+  emptyPageAskAi: 'Describe it to AI',
+  emptyPageSource: 'View HTML source',
 } satisfies Record<keyof typeof zh, string>

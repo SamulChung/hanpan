@@ -776,6 +776,8 @@ export interface DesktopApi {
   /** Close guard: main process queries pre-close state (dirty flag + autosave switch; if autosave is on, save silently without a dialog) */
   onCloseCheck(handler: () => void): () => void
   reportCloseCheck(state: { dirty: boolean; autoSave: boolean; filePath?: string | null }): void
+  /** 저장 안 된 변경 사항이 생기거나 없어질 때 알린다(셸 탭의 "저장 안 됨" 점) */
+  reportDirty?(dirty: boolean): void
   /** Close guard chose "Save": main process asks the renderer to run the full save flow */
   onCloseSaveRequest(handler: () => void): () => void
   reportCloseSaveResult(ok: boolean): void

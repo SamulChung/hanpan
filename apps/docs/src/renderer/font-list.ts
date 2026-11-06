@@ -1,4 +1,5 @@
-import type { Lang } from '@genoffice/i18n'
+import { CJK_FAMILY_ALIASES, type Lang } from '@genoffice/i18n'
+import type { FontFamilyInfoMap } from '@genoffice/ui'
 
 /**
  * The suite-wide candidate lists live in @genoffice/ui so every app offers the
@@ -58,4 +59,21 @@ export function defaultEastAsiaFontFor(lang: Lang): string | undefined {
 export function blankDocxFontsFor(lang: Lang): { eastAsiaFont?: string; latinFont?: string } {
   const eastAsiaFont = defaultEastAsiaFontFor(lang)
   return lang === 'ko' ? { eastAsiaFont, latinFont: 'Malgun Gothic' } : { eastAsiaFont }
+}
+
+const HANGUL_RE = /[가-힯]/
+/** 'Malgun Gothic' → '맑은 고딕' 같은 영문 패밀리 이름의 한국어 이름(글꼴 표에 없을 때 쓰는 대체값) */
+const KOREAN_NAME_OF: ReadonlyMap<string, string> = new Map(
+  Object.entries(CJK_FAMILY_ALIASES)
+    .filter(([name]) => HANGUL_RE.test(name))
+    .flatMap(([name, aliases]) => aliases.map((alias) => [alias, name] as const)),
+)
+
+/**
+ * 글꼴 칸에 보일 이름. 한국어 화면에서는 엑셀·한글처럼 한국어 패밀리 이름(맑은 고딕)을
+ * 보인다. 문서에 쓰이는 이름은 그대로 두고 표시만 바꾼다.
+ */
+export function fontBoxDisplayName(family: string, lang: Lang, info?: FontFamilyInfoMap): string {
+  if (lang !== 'ko' || !family) return family
+  return info?.get(family)?.ko ?? KOREAN_NAME_OF.get(family) ?? family
 }

@@ -306,6 +306,7 @@ const api: DesktopApi = {
       darkCanvas: state?.darkCanvas === true,
       odt: state?.odt === true,
     }),
+  reportDirty: (dirty: boolean) => ipcRenderer.send('docs:dirty-changed', dirty === true),
   reportCloseCheck: (state: { dirty: boolean; autoSave: boolean; filePath?: string | null }) =>
     ipcRenderer.send('docs:close-check-result', {
       dirty: state?.dirty === true,

@@ -85,7 +85,8 @@ import {
   type InsertKind,
 } from './document/insert-presets'
 import { isDocEmpty } from './document/blank'
-import { documentSkeleton } from './document/skeleton'
+import { EmptyPageHint } from './components/EmptyPageHint'
+import { documentSkeleton, starterDocument } from './document/skeleton'
 import { pageAtScroll, readPageSetup, sheetPeriod } from './document/page-setup'
 import { moveTarget } from './document/move-target'
 import { StylePanel, type PanelDrafts } from './components/StylePanel'
@@ -1119,6 +1120,12 @@ export default function App() {
     replaceAll(documentSkeleton(lang), false)
   }, [lang, replaceAll])
 
+  /** empty-page hint: a page with a heading and a paragraph to edit (the bare skeleton shows nothing) */
+  const insertStarter = useCallback(() => {
+    if (!isDocEmpty(textRef.current)) return
+    replaceAll(starterDocument(lang, t('starterHeading'), t('starterParagraph')), false)
+  }, [lang, replaceAll, t])
+
   /** ribbon Insert menu: a starter element after the selection (or at the end of the body), then straight into editing */
   const insertElement = async (kind: InsertKind, opts: InsertOptions = {}) => {
     let imageSrc: string | undefined
@@ -2069,6 +2076,21 @@ export default function App() {
                   onLoad={onPreviewLoad}
                   draft={draftHtml}
                 />
+                {canvasMode === 'edit' && !draftHtml && isDocEmpty(textRef.current) && (
+                  <EmptyPageHint
+                    onAskAi={() => {
+                      // open the pane and put the caret in its input; nothing is sent
+                      setAiOpen(true)
+                      requestAnimationFrame(() =>
+                        document
+                          .querySelector<HTMLTextAreaElement>('.ai-input-box textarea')
+                          ?.focus(),
+                      )
+                    }}
+                    onStarter={insertStarter}
+                    onSource={() => setView('source')}
+                  />
+                )}
                 {canvasMode === 'present' && (
                   <button
                     type="button"

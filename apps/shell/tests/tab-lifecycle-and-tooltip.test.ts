@@ -348,3 +348,23 @@ describe('production recently closed tabs lifecycle tracker', () => {
     expect(tracker.getEntries()).toHaveLength(0)
   })
 })
+
+describe('unsaved tab tooltip (0.17 review #1)', () => {
+  it('says the tab has unsaved changes', () => {
+    const tab: TabSummary = {
+      id: 'doc-9',
+      kind: 'docs',
+      title: '보고서',
+      filePath: '/home/me/문서/보고서.docx',
+      active: true,
+      closable: true,
+      dirty: true,
+    }
+    expect(formatTabTooltip(tab, '저장 안 됨')).toBe(
+      '보고서 — 저장 안 됨\n/home/me/문서/보고서.docx',
+    )
+    expect(formatTabTooltip({ ...tab, dirty: undefined }, '저장 안 됨')).toBe(
+      '보고서\n/home/me/문서/보고서.docx',
+    )
+  })
+})

@@ -52,11 +52,12 @@ export const vi = {
   appFontsMissing: 'Thiếu phông chữ trong tài liệu: {names} (đang hiển thị phông chữ thay thế)',
   appVerticalTextNotice:
     'Tài liệu này chứa văn bản dọc (tạm thời hiển thị ngang; không ảnh hưởng khi lưu)',
-  appNewDocCreated: 'Đã tạo tài liệu trống. Mô tả nội dung cần tạo trong ngăn AI ở bên trái.',
+  appNewDocCreated: 'Đã tạo tài liệu trống. Mô tả nội dung cần tạo trong ngăn AI.',
   appNewFailed: 'Tạo tài liệu thất bại: {error}',
   appSaveFailed: 'Lưu thất bại: {error}',
   appAutoSavedAt: 'Đã tự động lưu ({time})',
   appSaved: 'Đã lưu',
+  appUnsaved: 'Chưa lưu',
   appSectionBreakInserted: 'Đã chèn dấu ngắt phần ({type})',
   appSectionBreakPending: 'Đã chèn dấu ngắt phần; phần mới sẽ có hiệu lực sau khi lưu',
   appBreakNextPage: 'Trang tiếp theo',

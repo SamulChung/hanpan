@@ -4000,3 +4000,70 @@ html.genoffice-popover-open .ribbon-tabs {
   margin: 4px 6px;
   background: var(--border);
 }
+
+/* 새(빈) 웹 문서의 첫 화면 안내 (0.17 리뷰 #17) */
+.empty-page-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  pointer-events: none;
+}
+
+.empty-page-hint-card {
+  pointer-events: auto;
+  max-width: 480px;
+  padding: 28px 32px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  text-align: center;
+  box-shadow: var(--hx-pop-shadow);
+}
+
+.empty-page-hint-card h2 {
+  margin: 0 0 8px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.empty-page-hint-card p {
+  margin: 0 0 18px;
+  font-size: 13px;
+  line-height: 1.6;
+  text-wrap: balance;
+  word-break: keep-all;
+  color: var(--text-dim, var(--text));
+}
+
+.empty-page-hint-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.empty-page-hint-actions button {
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.empty-page-hint-actions button:not(.primary):hover {
+  background: var(--hover);
+}
+
+.empty-page-hint-actions button.primary {
+  border-color: var(--color-btn-primary);
+  background: var(--color-btn-primary);
+  color: var(--color-btn-primary-text);
+  font-weight: 600;
+}

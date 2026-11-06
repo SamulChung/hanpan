@@ -54,11 +54,12 @@ export const es = {
   appVerticalTextNotice:
     'Este documento contiene texto vertical (se muestra horizontal por ahora; el guardado no se ve afectado)',
   appNewDocCreated:
-    'Documento en blanco creado. Describa el contenido que desea generar en el panel de IA de la izquierda',
+    'Documento en blanco creado. Describa el contenido que desea generar en el panel de IA',
   appNewFailed: 'Error al crear el documento: {error}',
   appSaveFailed: 'Error al guardar: {error}',
   appAutoSavedAt: 'Guardado automáticamente ({time})',
   appSaved: 'Guardado',
+  appUnsaved: 'Sin guardar',
   appSectionBreakInserted: 'Salto de sección insertado ({type})',
   appSectionBreakPending:
     'Salto de sección insertado; la nueva sección se aplicará después de guardar',

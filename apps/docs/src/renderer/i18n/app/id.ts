@@ -53,12 +53,12 @@ export const id = {
   appFontsMissing: 'Font dokumen tidak tersedia: {names} (ditampilkan dengan font pengganti)',
   appVerticalTextNotice:
     'Dokumen ini berisi teks vertikal (sementara ditampilkan horizontal; penyimpanan tidak terpengaruh)',
-  appNewDocCreated:
-    'Dokumen kosong telah dibuat. Jelaskan konten yang ingin dibuat di panel AI sebelah kiri',
+  appNewDocCreated: 'Dokumen kosong telah dibuat. Jelaskan konten yang ingin dibuat di panel AI',
   appNewFailed: 'Gagal membuat dokumen: {error}',
   appSaveFailed: 'Gagal menyimpan: {error}',
   appAutoSavedAt: 'Disimpan otomatis ({time})',
   appSaved: 'Disimpan',
+  appUnsaved: 'Belum disimpan',
   appSectionBreakInserted: 'Pemisah bagian disisipkan ({type})',
   appSectionBreakPending: 'Pemisah bagian disisipkan; bagian baru berlaku setelah disimpan',
   appBreakNextPage: 'Halaman Berikutnya',

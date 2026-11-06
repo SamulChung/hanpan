@@ -54,11 +54,12 @@ export const de = {
   appVerticalTextNotice:
     'Dieses Dokument enthält vertikalen Text (vorerst horizontal angezeigt; das Speichern ist nicht betroffen)',
   appNewDocCreated:
-    'Leeres Dokument erstellt. Beschreiben Sie im KI-Bereich links, was generiert werden soll',
+    'Leeres Dokument erstellt. Beschreiben Sie im KI-Bereich, was generiert werden soll',
   appNewFailed: 'Erstellen des Dokuments fehlgeschlagen: {error}',
   appSaveFailed: 'Speichern fehlgeschlagen: {error}',
   appAutoSavedAt: 'Automatisch gespeichert ({time})',
   appSaved: 'Gespeichert',
+  appUnsaved: 'Nicht gespeichert',
   appSectionBreakInserted: 'Abschnittsumbruch eingefügt ({type})',
   appSectionBreakPending:
     'Abschnittsumbruch eingefügt; der neue Abschnitt wird nach dem Speichern wirksam',
