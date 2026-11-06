@@ -170,7 +170,7 @@ export const ko = {
   insertPlaceholderParagraph: '여기에 텍스트를 입력하세요.',
   insertPlaceholderListItem: '목록 항목',
   insertPlaceholderButton: '버튼',
-  insertNoBody: '페이지에 <body>가 없어 삽입할 수 없습니다',
+  insertNoBody: '이 문서에는 내용을 넣을 자리가 없습니다. 본문에 글을 한 줄 쓴 뒤 다시 해 보세요.',
   insertTable: '표',
   insertImageUrl: 'URL에서 이미지…',
   insertConfirm: '삽입',

@@ -170,7 +170,7 @@ export const vi = {
   insertPlaceholderParagraph: 'Nhập văn bản của bạn tại đây.',
   insertPlaceholderListItem: 'Mục danh sách',
   insertPlaceholderButton: 'Nút',
-  insertNoBody: 'Trang không có thẻ <body> để chèn vào',
+  insertNoBody: 'Tài liệu này chưa có chỗ để chèn. Hãy gõ một dòng nội dung rồi thử lại.',
   insertTable: 'Bảng',
   insertImageUrl: 'Hình ảnh từ URL…',
   insertConfirm: 'Chèn',

@@ -167,7 +167,7 @@ export const he = {
   insertPlaceholderParagraph: 'הקלידו את הטקסט כאן.',
   insertPlaceholderListItem: 'פריט רשימה',
   insertPlaceholderButton: 'כפתור',
-  insertNoBody: 'לדף אין <body> שאפשר להוסיף אליו',
+  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'טבלה',
   insertImageUrl: 'תמונה מכתובת URL…',
   insertConfirm: 'הוספה',

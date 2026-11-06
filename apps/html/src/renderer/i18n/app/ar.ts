@@ -168,7 +168,7 @@ export const ar = {
   insertPlaceholderParagraph: 'اكتب النص هنا.',
   insertPlaceholderListItem: 'عنصر قائمة',
   insertPlaceholderButton: 'زر',
-  insertNoBody: 'الصفحة لا تحتوي على <body> للإدراج فيه',
+  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'جدول',
   insertImageUrl: 'صورة من رابط…',
   insertConfirm: 'إدراج',

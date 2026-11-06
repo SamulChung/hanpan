@@ -78,6 +78,7 @@ import { RedactDialog } from './components/RedactDialog'
 import { useMathExtension } from './extensions/math/useMathExtension'
 import { redactClearPlan, redactMarkPlan, type RedactPlan } from './document/redact-edit'
 import {
+  bodySkeletonFor,
   insertOp,
   insertPresetHtml,
   type InsertOptions,
@@ -664,6 +665,19 @@ export default function App() {
     [applyOps, getMap, flushPending, pushPreview],
   )
 
+  /** an empty new document has no <body> to insert into: write the skeleton first */
+  const ensureBody = (): boolean => {
+    flushPending()
+    const base = textRef.current
+    const skeleton = bodySkeletonFor(base, lang)
+    if (skeleton === null) return false
+    editorRef.current?.applyPatches([{ from: 0, to: base.length, text: skeleton }], false)
+    commitText(skeleton, true)
+    return true
+  }
+  const ensureBodyRef = useRef(ensureBody)
+  ensureBodyRef.current = ensureBody
+
   const mathExtension = useMathExtension({
     flush: flushPending,
     read: () => ({
@@ -673,7 +687,10 @@ export default function App() {
       sid: selectedSidRef.current,
     }),
     apply: (ops) => runManual(ops, 'inserted'),
-    unavailable: () => setNotice(t('insertNoBody')),
+    unavailable: () => {
+      if (ensureBodyRef.current()) openMathRef.current()
+      else setNotice(t('insertNoBody'))
+    },
   })
   const openMathRef = mathExtension.openRef
 
@@ -1141,6 +1158,7 @@ export default function App() {
       imageSrc = rel
     }
     flushPending()
+    ensureBody()
     const map = getMap()
     const selected =
       selectedSidRef.current !== null ? map.bySid.get(selectedSidRef.current) : undefined

@@ -169,7 +169,7 @@ export const pl = {
   insertPlaceholderParagraph: 'Wpisz tutaj tekst.',
   insertPlaceholderListItem: 'Element listy',
   insertPlaceholderButton: 'Przycisk',
-  insertNoBody: 'Strona nie ma <body>, w którym można wstawić',
+  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Tabela',
   insertImageUrl: 'Obraz z adresu URL…',
   insertConfirm: 'Wstaw',

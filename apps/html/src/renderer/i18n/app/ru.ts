@@ -171,7 +171,7 @@ export const ru = {
   insertPlaceholderParagraph: 'Введите текст здесь.',
   insertPlaceholderListItem: 'Элемент списка',
   insertPlaceholderButton: 'Кнопка',
-  insertNoBody: 'На странице нет <body>, некуда вставлять',
+  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Таблица',
   insertImageUrl: 'Изображение по URL…',
   insertConfirm: 'Вставить',

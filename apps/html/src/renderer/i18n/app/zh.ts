@@ -166,7 +166,7 @@ export const zh = {
   insertPlaceholderParagraph: '在此输入文字。',
   insertPlaceholderListItem: '列表项',
   insertPlaceholderButton: '按钮',
-  insertNoBody: '页面没有 <body>，无法插入元素',
+  insertNoBody: '此文档中没有可插入的位置。请先输入一行正文，然后重试。',
   insertTable: '表格',
   insertImageUrl: '图片链接…',
   insertConfirm: '插入',

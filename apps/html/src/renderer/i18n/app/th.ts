@@ -167,7 +167,7 @@ export const th = {
   insertPlaceholderParagraph: 'พิมพ์ข้อความของคุณที่นี่',
   insertPlaceholderListItem: 'รายการ',
   insertPlaceholderButton: 'ปุ่ม',
-  insertNoBody: 'หน้านี้ไม่มี <body> ให้แทรก',
+  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'ตาราง',
   insertImageUrl: 'รูปภาพจาก URL…',
   insertConfirm: 'แทรก',

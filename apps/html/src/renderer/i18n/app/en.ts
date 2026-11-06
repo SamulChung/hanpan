@@ -170,7 +170,7 @@ export const en = {
   insertPlaceholderParagraph: 'Type your text here.',
   insertPlaceholderListItem: 'List item',
   insertPlaceholderButton: 'Button',
-  insertNoBody: 'The page has no <body> to insert into',
+  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Table',
   insertImageUrl: 'Image from URL…',
   insertConfirm: 'Insert',

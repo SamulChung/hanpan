@@ -174,7 +174,7 @@ export const de = {
   insertPlaceholderParagraph: 'Text hier eingeben.',
   insertPlaceholderListItem: 'Listenpunkt',
   insertPlaceholderButton: 'Schaltfläche',
-  insertNoBody: 'Die Seite hat kein <body> zum Einfügen',
+  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Tabelle',
   insertImageUrl: 'Bild von URL…',
   insertConfirm: 'Einfügen',

@@ -170,7 +170,7 @@ export const id = {
   insertPlaceholderParagraph: 'Ketik teks Anda di sini.',
   insertPlaceholderListItem: 'Item daftar',
   insertPlaceholderButton: 'Tombol',
-  insertNoBody: 'Halaman tidak memiliki <body> untuk disisipi',
+  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Tabel',
   insertImageUrl: 'Gambar dari URL…',
   insertConfirm: 'Sisipkan',

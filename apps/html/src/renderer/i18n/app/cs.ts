@@ -157,7 +157,7 @@ export const cs = {
   insertPlaceholderParagraph: 'Sem napište text.',
   insertPlaceholderListItem: 'Položka seznamu',
   insertPlaceholderButton: 'Tlačítko',
-  insertNoBody: 'Stránka nemá <body>, kam vložit',
+  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Tabulka',
   insertImageUrl: 'Obrázek z adresy URL…',
   insertConfirm: 'Vložit',

@@ -170,7 +170,7 @@ export const hi = {
   insertPlaceholderParagraph: 'यहाँ अपना टेक्स्ट लिखें।',
   insertPlaceholderListItem: 'सूची आइटम',
   insertPlaceholderButton: 'बटन',
-  insertNoBody: 'पेज में <body> नहीं है, सम्मिलित नहीं किया जा सकता',
+  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'तालिका',
   insertImageUrl: 'URL से छवि…',
   insertConfirm: 'सम्मिलित करें',

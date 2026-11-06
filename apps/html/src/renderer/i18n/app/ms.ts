@@ -169,7 +169,7 @@ export const ms = {
   insertPlaceholderParagraph: 'Taip teks anda di sini.',
   insertPlaceholderListItem: 'Item senarai',
   insertPlaceholderButton: 'Butang',
-  insertNoBody: 'Halaman tiada <body> untuk disisipkan',
+  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Jadual',
   insertImageUrl: 'Imej daripada URL…',
   insertConfirm: 'Sisipkan',

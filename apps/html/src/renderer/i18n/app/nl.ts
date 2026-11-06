@@ -174,7 +174,7 @@ export const nl = {
   insertPlaceholderParagraph: 'Typ hier je tekst.',
   insertPlaceholderListItem: 'Lijstitem',
   insertPlaceholderButton: 'Knop',
-  insertNoBody: 'De pagina heeft geen <body> om in te voegen',
+  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Tabel',
   insertImageUrl: 'Afbeelding van URL…',
   insertConfirm: 'Invoegen',

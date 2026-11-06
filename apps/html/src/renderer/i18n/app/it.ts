@@ -174,7 +174,7 @@ export const it = {
   insertPlaceholderParagraph: 'Scrivi qui il tuo testo.',
   insertPlaceholderListItem: 'Voce elenco',
   insertPlaceholderButton: 'Pulsante',
-  insertNoBody: 'La pagina non ha un <body> in cui inserire',
+  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: 'Tabella',
   insertImageUrl: 'Immagine da URL…',
   insertConfirm: 'Inserisci',

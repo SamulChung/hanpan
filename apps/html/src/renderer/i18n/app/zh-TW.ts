@@ -167,7 +167,7 @@ export const zhTW = {
   insertPlaceholderParagraph: '在此輸入文字。',
   insertPlaceholderListItem: '清單項目',
   insertPlaceholderButton: '按鈕',
-  insertNoBody: '頁面沒有 <body>，無法插入元素',
+  insertNoBody: 'There is no place in this document to insert into. Type a line of text first, then try again.',
   insertTable: '表格',
   insertImageUrl: '圖片連結…',
   insertConfirm: '插入',

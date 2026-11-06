@@ -170,7 +170,7 @@ export const ja = {
   insertPlaceholderParagraph: 'ここにテキストを入力します。',
   insertPlaceholderListItem: 'リスト項目',
   insertPlaceholderButton: 'ボタン',
-  insertNoBody: 'ページに <body> がないため挿入できません',
+  insertNoBody: 'この文書には挿入できる場所がありません。本文を1行入力してからもう一度お試しください。',
   insertTable: '表',
   insertImageUrl: 'URL から画像…',
   insertConfirm: '挿入',
