@@ -11,7 +11,8 @@ let host: HTMLDivElement
 let root: ReturnType<typeof createRoot>
 beforeEach(() => {
   vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true)
-  applyAiPanelPrefs({})
+  // these cases start from the left side (the default is the right)
+  applyAiPanelPrefs({ side: 'left' })
   host = document.createElement('div')
   document.body.append(host)
   root = createRoot(host)

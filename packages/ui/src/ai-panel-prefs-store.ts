@@ -23,9 +23,11 @@ function subscribe(listener: () => void): () => void {
  */
 export function applyAiPanelPrefs(raw: unknown): void {
   const next = normalizeAiPanelPrefs(raw)
-  if (sameAiPanelPrefs(next, current)) return
-  current = next
   const html = document.documentElement
+  // the side attribute is written once even for the default prefs: the right-side
+  // layout is opt-in CSS, so an unmarked page would dock the panel on the left
+  if (sameAiPanelPrefs(next, current) && html.dataset.aiPanelSide === next.side) return
+  current = next
   html.dataset.aiPanelSide = next.side
   if (next.fontSize === 'default') {
     delete html.dataset.aiFontSize
