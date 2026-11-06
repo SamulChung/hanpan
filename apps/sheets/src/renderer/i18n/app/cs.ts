@@ -1542,4 +1542,5 @@ export const cs = {
   appPngExportFailed: 'Export obrázku se nezdařil.',
   appFilePrint: 'Tisk…',
   appSheetNamePrefix: 'Sheet',
+  appColorOptions: 'Možnosti: {label}',
 } satisfies Record<keyof typeof zh, string>

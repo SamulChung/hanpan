@@ -7276,3 +7276,162 @@ body:has(.note-pictures-pane) .threaded-comments-pane {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+/* Home tab fits 1366- and 1920-wide windows (Hanpan 0.17 #9; measured in the built
+   app, ko UI: the band needed 2162px at 1920 and 2115px at 1366, so both showed a
+   scrollbar under the ribbon). The Editing group lays its seven tools out in three
+   rows by column, as Excel does, instead of two long rows. */
+.editing-grid {
+  display: grid;
+  grid-template-rows: repeat(3, 21px);
+  grid-auto-flow: column;
+  align-content: center;
+  justify-items: start;
+  gap: 0 2px;
+}
+
+.ribbon-group-editing .editing-grid .select-like.compact,
+.ribbon-group-editing .editing-grid button.labeled,
+.ribbon-group-cells .select-like.compact {
+  height: 21px;
+  min-width: 0;
+  padding: 0 5px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.ribbon-group-editing .tool-label,
+.ribbon-group-cells .tool-label {
+  font-size: 12px;
+}
+
+/* The denser layouts (ribbon-fit.ts sets data-fit when the band overflows). A name a
+   layout takes off a button is clipped, not removed: screen readers still read it and
+   the tooltip keeps it.
+
+   First layout (a 1920 window in Korean): Borders and Format Cells lose their text,
+   the two one-click AI buttons stack as small rows beside the AI assistant, Paste
+   Special's label takes two lines and the insert/delete tools two rows. */
+.ribbon[data-fit] .ribbon-group-font .tool-label,
+.ribbon[data-fit] .ribbon-group-cells .tool-kbd {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.ribbon[data-fit] .ribbon-group-ai > .ribbon-group-content {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.ribbon[data-fit] .ribbon-group-ai .ai-entry:first-child {
+  grid-row: 1 / span 2;
+  align-self: stretch;
+}
+
+.ribbon[data-fit] .ribbon-group-ai .ribbon-tool.large.ai-entry:not(:first-child) {
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 4px;
+  padding: 2px 6px 2px 2px;
+}
+
+.ribbon[data-fit] .ribbon-group-ai .ribbon-tool.large.ai-entry:not(:first-child) .tool-icon-row {
+  flex: none;
+}
+
+.ribbon[data-fit] .ribbon-group-ai .ribbon-tool.large.ai-entry:not(:first-child) .ai-feature-icon,
+.ribbon[data-fit]
+  .ribbon-group-ai
+  .ribbon-tool.large.ai-entry:not(:first-child)
+  .ai-feature-icon
+  svg {
+  width: 18px;
+  height: 18px;
+}
+
+.ribbon[data-fit] .ribbon-group-clipboard .ribbon-tool.large strong {
+  display: block;
+  max-width: 64px;
+  white-space: normal;
+  word-break: keep-all;
+  line-height: 1.15;
+}
+
+.ribbon[data-fit] .ribbon-group-cells .ribbon-rows {
+  grid-auto-flow: column;
+  align-items: center;
+}
+
+.ribbon[data-fit] .ribbon-group-cells .cell-tools {
+  display: grid;
+  grid-template-rows: repeat(2, 28px);
+  grid-auto-flow: column;
+  gap: 0 1px;
+}
+
+.ribbon[data-fit] .ribbon-group {
+  padding: 2px 6px;
+}
+
+/* Second layout (a 1366 window): the Cells, Styles, Alignment and Editing tools keep
+   their icons, the stacked AI buttons too, the square tools narrow to 24px and the
+   font box to 132px. */
+
+.ribbon[data-fit='2'] .ribbon-group-cells .tool-label,
+.ribbon[data-fit='2'] .ribbon-group-styles .tool-label,
+.ribbon[data-fit='2'] .ribbon-group-alignment .tool-label,
+.ribbon[data-fit='2'] .ribbon-group-editing .tool-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.ribbon[data-fit='2'] .ribbon-group-font .select-like.font-name {
+  width: 132px;
+}
+
+.ribbon[data-fit='2'] .ribbon-group-font .inline-tools > button:not(.select-like),
+.ribbon[data-fit='2'] .ribbon-group-alignment .inline-tools > button:not(.select-like),
+.ribbon[data-fit='2'] .ribbon-group-number .inline-tools > button:not(.select-like),
+.ribbon[data-fit='2'] .ribbon-group-cells .inline-tools > button:not(.select-like) {
+  min-width: 24px;
+}
+
+.ribbon[data-fit='2'] .ribbon-group-number .number-format,
+.ribbon[data-fit='2'] .ribbon-group-number .select-like {
+  min-width: 0;
+}
+
+.ribbon[data-fit='2'] .ribbon-group-font .inline-tools,
+.ribbon[data-fit='2'] .ribbon-group-alignment .inline-tools,
+.ribbon[data-fit='2'] .ribbon-group-number .inline-tools,
+.ribbon[data-fit='2'] .ribbon-group-cells .inline-tools {
+  gap: 1px;
+}
+
+/* the stacked AI buttons keep their icons */
+.ribbon[data-fit='2']
+  .ribbon-group-ai
+  .ribbon-tool.large.ai-entry:not(:first-child)
+  > span:last-child {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.ribbon[data-fit='2'] .ribbon-group {
+  padding: 2px 4px;
+}

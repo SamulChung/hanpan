@@ -1478,4 +1478,5 @@ export const he = {
   appPngExportFailed: 'ייצוא התמונה נכשל.',
   appFilePrint: 'הדפסה…',
   appSheetNamePrefix: 'Sheet',
+  appColorOptions: 'אפשרויות {label}',
 } satisfies Record<keyof typeof zh, string>

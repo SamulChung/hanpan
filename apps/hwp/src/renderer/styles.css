@@ -327,7 +327,23 @@ body {
 }
 .hp-tools-row > span {
   flex: 1;
+  min-width: 0;
   color: var(--text-secondary);
+}
+/* a tool's name over the one line that says what it does */
+.hp-tools-name,
+.hp-tools-desc {
+  display: block;
+}
+.hp-tools-desc {
+  margin-top: 1px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.35;
+}
+.hp-tools-pop button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
 }
 .hp-prompt {
   display: grid;

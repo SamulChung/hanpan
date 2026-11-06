@@ -1591,4 +1591,5 @@ export const ja = {
   appPngExportFailed: '画像をエクスポートできませんでした。',
   appFilePrint: '印刷…',
   appSheetNamePrefix: 'Sheet',
+  appColorOptions: '{label}のオプション',
 } satisfies Record<keyof typeof zh, string>

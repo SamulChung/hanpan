@@ -96,6 +96,25 @@
  *   one synchronous draw reuses it, and what the answer depends on (the fonts
  *   found on the PC, the open document's substitutions) changes only when an
  *   asynchronous step ends, so every later draw asks again.
+ *
+ * studio-locale-supported, studio-locale-register, studio-locale-toolbar-overflow
+ *   The studio has Korean and English only. The languages this app adds
+ *   (studio-plugin/studio-locales.mjs, Vietnamese first) become supported locales,
+ *   each catalog is registered over the English one so a key it leaves out shows in
+ *   English, and the style toolbar folds at the wider widths English has for every
+ *   language other than Korean.
+ *
+ * studio-style-display-names
+ *   The toolbar's style list shows a style's name in the studio's language where the
+ *   document carries one (styleDisplayName): a Korean document's 바탕글 is Normal in
+ *   English. Only the list's text changes; values, the document and dialogs keep the
+ *   stored names. The app's plugin refills the list the same way (syncStyleList).
+ *
+ * studio-about-hanpan
+ *   The About box named the engine as a developer would ("HWP/HWPX Compatible Module
+ *   for Rust", "Version 0.8.7-ieum.12", "Rust + WebAssembly + TypeScript"). Its head
+ *   lines name Hanpan and the rhwp release it is built on; rhwp's licence list,
+ *   copyright line and the HWP specification notice stay as they are.
  */
 
 import { HANCOM_KEYS_MODULE, studioCommandIds } from '../studio-plugin/hancom-keys.mjs'
@@ -114,6 +133,9 @@ export { HANCOM_KEYS_MODULE }
 
 /** Module specifier the studio-format-copy patches import; build-studio.mjs aliases it. */
 export const FORMAT_COPY_MODULE = '@ieum/format-copy'
+
+/** Module specifier the studio-locale and studio-about patches import; build-studio.mjs aliases it. */
+export const STUDIO_LOCALES_MODULE = '@ieum/studio-locales'
 
 const PATCHES = {
   'sdk-scheme': {
@@ -789,6 +811,100 @@ const PATCHES = {
       "    await initializeDocument(docInfo, t('ui.sbMessage.filePages', { p1: fileName, p2: docInfo.pageCount }), {",
     ].join('\n'),
   },
+  'studio-locale-supported': {
+    file: /[\\/]rhwp-studio[\\/]src[\\/]i18n[\\/]core\.ts$/,
+    edits: [
+      {
+        find: "export type Locale = 'ko' | 'en';",
+        replace: [
+          `import { EXTRA_LOCALES } from '${STUDIO_LOCALES_MODULE}';`,
+          '',
+          "export type Locale = 'ko' | 'en' | keyof typeof EXTRA_LOCALES;",
+        ].join('\n'),
+      },
+      {
+        find: "const SUPPORTED: readonly Locale[] = ['ko', 'en'];",
+        replace:
+          "const SUPPORTED: readonly Locale[] = ['ko', 'en', ...(Object.keys(EXTRA_LOCALES) as Locale[])];",
+      },
+    ],
+  },
+  'studio-locale-register': {
+    file: /[\\/]rhwp-studio[\\/]src[\\/]i18n[\\/]index\.ts$/,
+    edits: [
+      {
+        find: "import enCatalog from './locales/en.ts';",
+        replace: [
+          "import enCatalog from './locales/en.ts';",
+          `import { EXTRA_LOCALES } from '${STUDIO_LOCALES_MODULE}';`,
+        ].join('\n'),
+      },
+      {
+        find: "registerCatalog('en', enCatalog as Record<string, string>);",
+        replace: [
+          "registerCatalog('en', enCatalog as Record<string, string>);",
+          '// the app adds languages over English: a key a catalog leaves out shows in English',
+          'for (const [locale, catalog] of Object.entries(EXTRA_LOCALES)) {',
+          '  registerCatalog(locale as Locale, { ...enCatalog, ...catalog } as Record<string, string>);',
+          '}',
+        ].join('\n'),
+      },
+    ],
+  },
+  'studio-locale-toolbar-overflow': {
+    file: /[\\/]rhwp-studio[\\/]src[\\/]ui[\\/]style-toolbar-overflow\.ts$/,
+    find: "this.mediaQuery = matchMedia(getLocale() === 'en'",
+    replace: "this.mediaQuery = matchMedia(getLocale() !== 'ko'",
+  },
+  'studio-style-display-names': {
+    file: /[\\/]rhwp-studio[\\/]src[\\/]ui[\\/]toolbar\.ts$/,
+    edits: [
+      {
+        find: "import { t } from '../i18n/index.ts';",
+        replace: [
+          "import { t } from '../i18n/index.ts';",
+          "import { getLocale } from '../i18n/core.ts';",
+          `import { styleDisplayName } from '${STUDIO_LOCALES_MODULE}';`,
+        ].join('\n'),
+      },
+      {
+        find: '        opt.textContent = style.name;',
+        replace: '        opt.textContent = styleDisplayName(style, getLocale());',
+      },
+    ],
+  },
+  'studio-about-hanpan': {
+    file: /[\\/]rhwp-studio[\\/]src[\\/]ui[\\/]about-dialog\.ts$/,
+    edits: [
+      {
+        find: "import { t } from '../i18n/index.ts';",
+        replace: [
+          "import { t } from '../i18n/index.ts';",
+          "import { getLocale } from '../i18n/core.ts';",
+          `import { aboutText } from '${STUDIO_LOCALES_MODULE}';`,
+        ].join('\n'),
+      },
+      {
+        find: ["    titleEn.textContent = 'HWP/HWPX Compatible Module for Rust';"].join('\n'),
+        replace: [
+          '    const about = aboutText(getLocale(), __APP_VERSION__);',
+          '    titleEn.textContent = about.product;',
+        ].join('\n'),
+      },
+      {
+        find: "    titleKo.textContent = t('dialog.about.titleKo.text');",
+        replace: '    titleKo.textContent = about.subtitle;',
+      },
+      {
+        find: '    version.textContent = `Version ${__APP_VERSION__}`;',
+        replace: '    version.textContent = about.engine;',
+      },
+      {
+        find: "    tech.textContent = 'Rust + WebAssembly + TypeScript';",
+        replace: '    tech.textContent = about.credit;',
+      },
+    ],
+  },
 }
 
 /** The patches the studio build applies, in order; the SDK's own is applied by the renderer builds. */
@@ -820,6 +936,11 @@ export const STUDIO_PATCHES = /** @type {const} */ ([
   'studio-font-memo-state',
   'studio-font-memo-use',
   'studio-hide-load-timing',
+  'studio-locale-supported',
+  'studio-locale-register',
+  'studio-locale-toolbar-overflow',
+  'studio-style-display-names',
+  'studio-about-hanpan',
 ])
 
 /** Whether a patch is written against this file. */

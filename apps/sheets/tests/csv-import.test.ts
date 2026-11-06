@@ -371,7 +371,9 @@ describe('blankXlsxBuffer', () => {
 
 describe('the first sheet of a workbook made from CSV (0.17 #9)', () => {
   const firstSheetName = async (buffer: Buffer) =>
-    /<sheet name="([^"]*)"/.exec((await (await JSZip.loadAsync(buffer)).file('xl/workbook.xml')?.async('text')) ?? '')?.[1]
+    /<sheet name="([^"]*)"/.exec(
+      (await (await JSZip.loadAsync(buffer)).file('xl/workbook.xml')?.async('text')) ?? '',
+    )?.[1]
 
   it('is 시트1 when the caller names none, on the open path and the AI path', async () => {
     expect(await firstSheetName((await csvToXlsxBufferForOpen('a,b\n1,2')).buffer)).toBe('시트1')
@@ -380,8 +382,38 @@ describe('the first sheet of a workbook made from CSV (0.17 #9)', () => {
   })
 
   it('keeps a name the caller gives', async () => {
-    expect(await firstSheetName((await csvToXlsxBufferForOpen('a', 'Sheet1')).buffer)).toBe('Sheet1')
+    expect(await firstSheetName((await csvToXlsxBufferForOpen('a', 'Sheet1')).buffer)).toBe(
+      'Sheet1',
+    )
     expect(await firstSheetName(await sheetCsvToXlsxBuffer('a', 'de'))).toBe('de')
+  })
+
+  // the UI language names the first sheet, as it does for a blank workbook
+  it.each([
+    ['vi', 'Trang tính1'],
+    ['zh-TW', '工作表1'],
+    ['en', 'Sheet1'],
+    ['ko', '시트1'],
+  ])('follows a %s UI with %s on the open path and the AI path', async (lang, sheet) => {
+    expect(
+      await firstSheetName(
+        (await csvToXlsxBufferForOpen('a,b\n1,2', undefined, undefined, lang)).buffer,
+      ),
+    ).toBe(sheet)
+    expect(
+      await firstSheetName((await csvToXlsxBufferForOpen('', undefined, undefined, lang)).buffer),
+    ).toBe(sheet)
+    expect(await firstSheetName(await sheetCsvToXlsxBuffer('a,b\r\n', undefined, lang))).toBe(sheet)
+    expect(await firstSheetName(await csvToXlsxBuffer('a,b\r\n1,2', undefined, lang))).toBe(sheet)
+  })
+
+  it('gets the UI language from the sheets main process on every new-workbook path', async () => {
+    const { readFileSync } = await import('node:fs')
+    const main = readFileSync(new URL('../src/main/sheets-main.ts', import.meta.url), 'utf8')
+    const calls =
+      main.match(/(?:csvToXlsxBufferForOpen|sheetCsvToXlsxBuffer)\([^;]*?\)\)?[;\n]/gs) ?? []
+    expect(calls.length).toBeGreaterThanOrEqual(4)
+    for (const call of calls) expect(call).toContain('getUiLang()')
   })
 
   it('is not hard-coded as Sheet1 by the sheets main process', async () => {

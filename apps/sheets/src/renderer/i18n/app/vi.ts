@@ -1529,4 +1529,5 @@ export const vi = {
   appPngExportFailed: 'Xuất hình ảnh thất bại.',
   appFilePrint: 'In…',
   appSheetNamePrefix: 'Sheet',
+  appColorOptions: 'Tùy chọn {label}',
 } satisfies Record<keyof typeof zh, string>

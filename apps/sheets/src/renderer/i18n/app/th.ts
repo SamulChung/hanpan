@@ -1501,4 +1501,5 @@ export const th = {
   appPngExportFailed: 'ส่งออกรูปภาพไม่สำเร็จ',
   appFilePrint: 'พิมพ์…',
   appSheetNamePrefix: 'Sheet',
+  appColorOptions: 'ตัวเลือก{label}',
 } satisfies Record<keyof typeof zh, string>

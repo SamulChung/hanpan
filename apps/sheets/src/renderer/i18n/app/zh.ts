@@ -1474,4 +1474,5 @@ export const zh = {
   appPngExportFailed: '导出图片失败。',
   appFilePrint: '打印…',
   appSheetNamePrefix: 'Sheet',
+  appColorOptions: '{label}选项',
 }

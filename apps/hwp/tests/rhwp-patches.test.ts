@@ -580,6 +580,11 @@ describe('the studio source the build fetched', () => {
     'src/command/registry.ts',
     'src/i18n/locales/ko.ts',
     'src/i18n/locales/en.ts',
+    'src/i18n/core.ts',
+    'src/i18n/index.ts',
+    'src/ui/style-toolbar-overflow.ts',
+    'src/ui/toolbar.ts',
+    'src/ui/about-dialog.ts',
   ].map((file) => join(studio, file))
 
   // only where a build has fetched it; a fresh checkout has nothing to look at

@@ -1562,4 +1562,5 @@ export const ko = {
   appPngExportFailed: '이미지로 내보내지 못했습니다.',
   appFilePrint: '인쇄…',
   appSheetNamePrefix: '시트',
+  appColorOptions: '{label} 옵션',
 } satisfies Record<keyof typeof zh, string>

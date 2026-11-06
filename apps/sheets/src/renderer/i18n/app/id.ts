@@ -1545,4 +1545,5 @@ export const id = {
   appPngExportFailed: 'Ekspor gambar gagal.',
   appFilePrint: 'Cetak…',
   appSheetNamePrefix: 'Sheet',
+  appColorOptions: 'Opsi {label}',
 } satisfies Record<keyof typeof zh, string>

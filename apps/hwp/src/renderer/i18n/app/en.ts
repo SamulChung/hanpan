@@ -246,4 +246,18 @@ export const en = {
   hpCreditAddToList: 'Add to list',
   hpCreditListFailed: 'Could not add it to the picture credits list.',
   hpCreditsScope: 'Only pictures in the body are checked, not those inside tables or text boxes.',
+  hpTidyDesc: 'Fixes date and time formats and adds the closing mark official letters need',
+  hpCheckDesc:
+    'Checks the recipient, title, closing mark, item numbers and style against the letter format',
+  hpToneDesc: "Rewrites the wording for the reader's generation",
+  hpReviewDesc:
+    'Highlights facts to verify in red, key points in blue, numbers and dates in yellow',
+  hpPromptDesc: 'Builds a request for the AI from role, field, purpose, conditions and length',
+  hpCreditsDesc: 'Checks that every picture in the document has a credit line',
+  hpTaskSummarize: 'Summarize',
+  hpTaskOrganize: 'Organize',
+  hpTaskAnalyze: 'Analyze',
+  hpTaskGenerate: 'Generate',
+  hpTaskExplain: 'Explain',
+  untitledHwp: 'Untitled HWP',
 } satisfies Record<keyof typeof zh, string>
