@@ -232,6 +232,7 @@ import {
 import { copyImageDisplaySize, validCopyImageDataUrl } from './copy-image-guard'
 import { closePromptDocName } from './close-prompt-name'
 import { ExportedFiles } from './exported-files'
+import { readCompareTarget } from './compare-target'
 import { printJobOptions, printScaleOption, validPrintGeometry } from './print-args'
 import { addPdfInternalLinks } from './pdf-links'
 import {
@@ -4680,6 +4681,33 @@ export function registerDocsIpc(): void {
   })
 
   ipcMain.handle('docs:open-path', (event, filePath: string) => loadDocx(filePath, event.sender.id))
+
+  // Review → Compare: the other document is only read, never opened in this tab
+  ipcMain.handle('docs:open-compare', async (event) => {
+    const result = await openDialog(event, {
+      title: tm('dlgOpenDoc'),
+      filters: [{ name: tm('filterWord'), extensions: ['docx'] }],
+      properties: ['openFile'],
+    })
+    if (result.canceled || result.filePaths.length === 0) return null
+    try {
+      const target = await readCompareTarget(result.filePaths[0], {
+        readFile: (p) => readFile(p),
+        isEncrypted: isEncryptedDocx,
+        maxBytes: MAX_OPEN_BYTES,
+      })
+      if (!target) return null
+      if (target.kind === 'needsPassword') return { needsPassword: true, name: target.name }
+      if (target.kind === 'tooLarge') {
+        return {
+          error: `${target.name}: ${tm('errTooLarge', { mb: MAX_OPEN_BYTES / 1024 / 1024 })}`,
+        }
+      }
+      return { name: target.name, dataUrl: handOffBytes(target.bytes) }
+    } catch (err) {
+      return { error: err instanceof Error ? err.message : String(err) }
+    }
+  })
 
   // w:altChunk HTML: the same html2docx chain as the HTML app's export, in a
   // hidden window; the renderer parses the result and shows its blocks
