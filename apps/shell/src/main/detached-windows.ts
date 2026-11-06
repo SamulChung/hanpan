@@ -513,7 +513,7 @@ export function createDetachedEditorWindow(options: {
   // each kind's usual size, inside the screen it opens on (0.17 리뷰 v2 shell #12)
   const size = fitWindowSize(
     DEFAULT_SIZE[kind] ?? { width: 1360, height: 900 },
-    (tearOffAt ? screen.getDisplayNearestPoint(tearOffAt) : screen.getPrimaryDisplay()).workArea,
+    screen.getDisplayNearestPoint(tearOffAt ?? screen.getCursorScreenPoint()).workArea,
   )
   const origin = tearOffAt ? tearOffOrigin(tearOffAt, size) : {}
   const win = new BrowserWindow({
