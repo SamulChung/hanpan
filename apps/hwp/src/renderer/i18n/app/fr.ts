@@ -36,6 +36,8 @@ export const fr = {
   backupKept: 'Enregistré. La version précédente a été conservée sous le nom {name}.',
   openedTracked:
     'Ce document contient des modifications suivies. Vous voyez son texte actuel, modifications appliquées ; l’enregistrement conserve ce texte et supprime l’historique des modifications.',
+  languageOnReopen:
+    "Les menus de l'éditeur passeront à la nouvelle langue quand vous fermerez puis rouvrirez ce document. Il n'a pas été rechargé maintenant pour ne rien perdre de non enregistré (ni son mot de passe).",
   saveTracked:
     "Non enregistré : ce document contient des modifications suivies ; l'enregistrer ici les ferait perdre et pourrait produire un fichier que Hancom Hangul ne peut pas ouvrir.",
   savedTailsLost:

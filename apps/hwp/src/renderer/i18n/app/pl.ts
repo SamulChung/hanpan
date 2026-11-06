@@ -36,6 +36,8 @@ export const pl = {
   backupKept: 'Zapisano. Poprzednia wersja została zachowana jako {name}.',
   openedTracked:
     'Ten dokument zawiera śledzone zmiany. Widzisz jego bieżący tekst z zastosowanymi zmianami; zapisanie zachowa ten tekst i usunie historię zmian.',
+  languageOnReopen:
+    'Menu edytora przełączą się na nowy język po zamknięciu i ponownym otwarciu tego dokumentu. Nie został teraz przeładowany, aby nie utracić niezapisanych zmian (ani hasła).',
   saveTracked:
     'Nie zapisano: ten dokument zawiera śledzone zmiany; zapisanie go tutaj spowodowałoby ich utratę, a pliku Hancom Hangul mógłby nie otworzyć.',
   savedTailsLost:

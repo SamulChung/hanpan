@@ -36,6 +36,8 @@ export const ms = {
   backupKept: 'Disimpan. Versi sebelumnya disimpan sebagai {name}.',
   openedTracked:
     'Dokumen ini mengandungi perubahan yang dijejak. Anda melihat teks semasanya, dengan perubahan digunakan; menyimpan akan mengekalkan teks ini dan membuang rekod perubahan.',
+  languageOnReopen:
+    'Menu editor akan bertukar kepada bahasa baharu apabila anda menutup dan membuka semula dokumen ini. Ia tidak dimuat semula sekarang supaya kandungan yang belum disimpan (atau kata laluannya) tidak hilang.',
   saveTracked:
     'Tidak disimpan: dokumen ini mempunyai penjejakan perubahan; menyimpannya di sini akan menghilangkannya dan mungkin menghasilkan fail yang tidak dapat dibuka oleh Hancom Hangul.',
   savedTailsLost:

@@ -35,6 +35,8 @@ export const en = {
   backupKept: 'Saved. The previous version was kept as {name}.',
   openedTracked:
     'This document has tracked changes. You see its current text, with the changes applied; saving keeps this text and drops the record of changes.',
+  languageOnReopen:
+    "The editor's menus switch to the new language when you close and reopen this document. It was not reloaded now so that nothing unsaved (or its password) is lost.",
   saveTracked:
     'Not saved: this document has tracked changes, and saving it here would lose them and may write a file Hancom Hangul cannot open.',
   savedTailsLost:

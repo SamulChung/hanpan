@@ -34,6 +34,8 @@ export const zhTW = {
   backupKept: '已儲存。先前的版本保留為 {name}。',
   openedTracked:
     '此文件包含追蹤修訂。畫面上只顯示套用修訂後的目前內容；儲存時會儲存此內容，不保留修訂記錄。',
+  languageOnReopen:
+    '關閉並重新開啟此文件後，編輯器選單將切換為新語言。為避免遺失未儲存的內容或密碼，現在未重新載入。',
   saveTracked:
     '未儲存：此文件包含追蹤修訂，在這裡儲存會遺失修訂記錄，而且儲存的檔案可能無法在 Hancom Hangul 中開啟。',
   savedTailsLost:

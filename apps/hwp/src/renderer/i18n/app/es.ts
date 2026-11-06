@@ -36,6 +36,8 @@ export const es = {
   backupKept: 'Guardado. La versión anterior se conservó como {name}.',
   openedTracked:
     'Este documento tiene control de cambios. Ve su texto actual, con los cambios aplicados; al guardar se conserva este texto y se descarta el registro de cambios.',
+  languageOnReopen:
+    'Los menús del editor cambiarán al nuevo idioma cuando cierre y vuelva a abrir este documento. No se ha recargado ahora para no perder nada sin guardar (ni su contraseña).',
   saveTracked:
     'No se guardó: este documento tiene control de cambios; guardarlo aquí los perdería y podría crear un archivo que Hancom Hangul no puede abrir.',
   savedTailsLost:
