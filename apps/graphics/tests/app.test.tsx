@@ -40,6 +40,11 @@ function fakeApi() {
     pickImage: vi.fn(),
     onMenuCommand: on('menu'),
     print: vi.fn(async () => ({ ok: true })),
+    writeRecoveryCopy: vi.fn(async () => 'written'),
+    recoveryRestored: vi.fn(async () => false),
+    onRecoveryCopyNow: on('recoveryCopyNow'),
+    recoveryCopyNowDone: vi.fn(),
+    onRecoveryReset: on('recoveryReset'),
   }
   installGraphicsApi(api as unknown as GraphicsApi)
   return { api, listeners }

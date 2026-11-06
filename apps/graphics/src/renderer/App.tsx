@@ -16,6 +16,7 @@ import { watchCaptures, type CaptureWatch } from './doc/capture-watch'
 import { createDirtyState, type DirtyState } from './doc/dirty-state'
 import { watchDoc, type DocWatch } from './doc/doc-watch'
 import { openPending } from './doc/open-flow'
+import { startRecoveryLoop } from './doc/recovery-loop'
 import { runSave, type SaveNoticeKey } from './doc/save-flow'
 import { singleFlight } from './doc/single-flight'
 import { copyBytes } from './frame/bytes'
@@ -241,6 +242,14 @@ export default function App({
           pollMs,
         )
         docWatchRef.current = docWatch
+        stops.push(
+          startRecoveryLoop({
+            adapter,
+            dirty: dirtyRef.current,
+            busy: () => hostOps.current > 0 || appLocks.current > 0,
+            api: graphicsApi(),
+          }),
+        )
         stops.push(() => docWatch.stop())
         setStatus('ready')
       } catch {
