@@ -14,6 +14,7 @@
  */
 
 import { installDialogTheme } from './dialog-theme.mjs'
+import { styleDisplayName, studioLocaleNow } from './studio-locales.mjs'
 
 export const AGENT_PLUGIN_ID = 'ieum-agent'
 /** The size of a picture's credit line put in under it, in points. */
@@ -1178,19 +1179,21 @@ const CARET_STATE_COMMAND = 'ext:ieum-caret-state'
  * Fill the editor toolbar's style list (`select`) with the document's styles (as
  * getStyleList gives them) when they differ from what it shows. The number shown stays
  * shown when there still is a style by it: the editor sets the list by the number of the
- * caret's style, which may already be the new one. Returns whether the list was refilled.
+ * caret's style, which may already be the new one. Each style shows under its name in the
+ * studio's language (styleDisplayName). Returns whether the list was refilled.
  */
-export function syncStyleList(select, styles) {
+export function syncStyleList(select, styles, locale = studioLocaleNow()) {
   const shown = Array.from(select.options, (option) => [Number(option.value), option.textContent])
-  if (JSON.stringify(shown) === JSON.stringify(styles.map((style) => [style.id, style.name]))) {
+  const names = styles.map((style) => [style.id, styleDisplayName(style, locale)])
+  if (JSON.stringify(shown) === JSON.stringify(names)) {
     return false
   }
   const current = select.value
   select.replaceChildren(
-    ...styles.map((style) => {
+    ...names.map(([id, name]) => {
       const option = select.ownerDocument.createElement('option')
-      option.value = String(style.id)
-      option.textContent = style.name
+      option.value = String(id)
+      option.textContent = name
       return option
     }),
   )
