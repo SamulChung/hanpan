@@ -86,4 +86,20 @@ describe('the design board File menu', () => {
     expect(labels()).not.toContain('Print')
     expect(labels()[0]).toBe('New')
   })
+
+  it('reads Vietnamese in Vietnamese (점검 v2 hwp-design #18), as the toolbar does', () => {
+    render('vi')
+    act(() => fileButton().click())
+    expect(fileButton().textContent).toBe('Tệp')
+    expect(labels()).toEqual([
+      'Tạo mới',
+      'Mở',
+      'Lưu',
+      'Lưu thành',
+      'Xuất ra PNG',
+      'Xuất ra JPG',
+      'Xuất ra PDF',
+      'In',
+    ])
+  })
 })

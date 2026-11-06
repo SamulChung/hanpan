@@ -203,9 +203,7 @@ async function saveAs(
   const options = {
     title: extension === 'hpdesign' ? words.saveTitle : words.exportTitle,
     defaultPath:
-      designPath && extension === 'hpdesign'
-        ? designPath
-        : join(saveDir(), `${name}.${extension}`),
+      designPath && extension === 'hpdesign' ? designPath : join(saveDir(), `${name}.${extension}`),
     filters: [{ name: label, extensions: [extension] }],
   }
   const result = parent

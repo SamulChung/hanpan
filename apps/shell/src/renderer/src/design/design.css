@@ -15,16 +15,17 @@
   --dz-sample-shadow: rgba(15, 23, 42, 0.35);
 }
 
+/* dark: the same navy family as light, lightened to read on a dark ground (점검 v2 #35) */
 [data-theme='dark'] {
-  --accent: #ff8a3d;
-  --dz-on-accent: #1e1e1e;
+  --accent: #8fb3e0;
+  --dz-on-accent: #0f1b2b;
   --dz-guide: #ff4fb3;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']):not([data-theme='dark']) {
-    --accent: #ff8a3d;
-    --dz-on-accent: #1e1e1e;
+    --accent: #8fb3e0;
+    --dz-on-accent: #0f1b2b;
     --dz-guide: #ff4fb3;
   }
 }
@@ -219,7 +220,8 @@ body {
   overflow-wrap: normal;
 }
 .dz-right {
-  width: 272px;
+  /* one width for 속성 and AI 도우미: switching tabs never moves the page (점검 v2 #35) */
+  width: 320px;
   border-inline-start: 1px solid var(--border);
 }
 .dz-templates {
@@ -353,6 +355,8 @@ body {
 }
 .dz-layers {
   display: grid;
+  /* rows never grow past the panel: the lock stays in sight, long names end in … */
+  grid-template-columns: minmax(0, 1fr);
   gap: 2px;
   margin: 8px 0 0;
   padding: 0;
@@ -360,6 +364,7 @@ body {
 }
 .dz-layers li {
   display: flex;
+  min-width: 0;
   gap: 2px;
   border-radius: 6px;
 }
@@ -933,8 +938,6 @@ body {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 4px;
-  max-height: 232px;
-  overflow-y: auto;
 }
 .dz .dz-icon-grid button {
   display: grid;
@@ -950,9 +953,6 @@ body {
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-.dz-credit {
-  font-size: 11px;
 }
 
 /* ---- the AI helper (right side), its entry in the top bar and the quick rewrite ---- */
@@ -989,7 +989,6 @@ body {
 .dz-right.dz-right-ai {
   display: flex;
   flex-direction: column;
-  width: 336px;
   overflow: hidden;
   padding-bottom: 10px;
 }
@@ -1266,4 +1265,26 @@ body {
   align-items: center;
   gap: 4px;
   font-size: 12px;
+}
+
+/* an empty page says what to do (점검 v2 #34); never part of an export */
+.dz-empty-hint {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 10%;
+  color: var(--text-secondary);
+  text-align: center;
+  pointer-events: none;
+  word-break: keep-all;
+}
+.dz-export-label {
+  align-self: center;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.dz .dz-gongu-settings {
+  margin-inline-start: 6px;
 }

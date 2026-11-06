@@ -1,9 +1,10 @@
 /**
  * 디자인 보드의 화면 속 "파일" 메뉴(0.17 리뷰 #8): 다른 편집기의 파일 메뉴처럼
  * 새로 만들기·열기·저장·다른 이름으로 저장·내보내기·인쇄를 한곳에 모은다.
- * 글자는 words.ts와 따로 두었다(다국어 작업과 겹치지 않게).
+ * 글자는 보드의 다른 글자와 같이 words/ 표(fileMenu)에서 읽는다(점검 v2 hwp-design #18).
  */
 import { useEffect, useRef, useState } from 'react'
+import { wordsFor } from './words'
 
 export interface DesignFileActions {
   newDesign(): void
@@ -16,29 +17,6 @@ export interface DesignFileActions {
   print(): void
 }
 
-const KO = {
-  file: '파일',
-  newDesign: '새로 만들기',
-  open: '열기',
-  save: '저장',
-  saveAs: '다른 이름으로 저장',
-  exportPng: 'PNG로 내보내기',
-  exportJpg: 'JPG로 내보내기',
-  exportPdf: 'PDF로 내보내기',
-  print: '인쇄',
-}
-const EN: typeof KO = {
-  file: 'File',
-  newDesign: 'New',
-  open: 'Open',
-  save: 'Save',
-  saveAs: 'Save as',
-  exportPng: 'Export as PNG',
-  exportJpg: 'Export as JPG',
-  exportPdf: 'Export as PDF',
-  print: 'Print',
-}
-
 type Item = keyof DesignFileActions | 'sep'
 const KEYS: Partial<Record<keyof DesignFileActions, string>> = {
   save: 'Ctrl+S',
@@ -47,7 +25,7 @@ const KEYS: Partial<Record<keyof DesignFileActions, string>> = {
 }
 
 export function DesignFileMenu(p: { lang: string; actions: DesignFileActions; canPrint: boolean }) {
-  const w = p.lang === 'ko' ? KO : EN
+  const w = wordsFor(p.lang).fileMenu
   const [open, setOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
