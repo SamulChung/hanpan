@@ -525,7 +525,7 @@ export const vi = {
   appPaginationPreview: 'Xem trước phân trang',
   appPvCommented: 'Có bình luận',
   appTotalPagesN: 'Tổng cộng {n} trang',
-  appPvHint: 'Bản chụp chỉ đọc; mở lại sau khi chỉnh sửa · Esc để đóng',
+  appPvHint: 'Màn hình chỉ đọc; mở lại sau khi chỉnh sửa · Esc để đóng',
   appPvExportTip:
     'Xuất từng trang theo bản xem trước; tiêu đề đầu trang, chân trang và số trang khớp với những gì hiển thị',
   appStylesTitle: 'Kiểu',

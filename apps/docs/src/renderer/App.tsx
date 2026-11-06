@@ -8409,6 +8409,7 @@ export function App() {
             }
           }}
           onExportPdf={() => void exportPdf()}
+          onPrint={() => void printDoc()}
           onClose={() => setShowPagePreview(false)}
           suppressEscape={showPrintDialog}
         />

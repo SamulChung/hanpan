@@ -522,7 +522,7 @@ export const en = {
   appPaginationPreview: 'Pagination Preview',
   appPvCommented: 'Commented',
   appTotalPagesN: '{n} pages',
-  appPvHint: 'Read-only snapshot; reopen after editing · Esc to close',
+  appPvHint: 'Read-only view; reopen after editing · Esc to close',
   appPvExportTip:
     'Exports page by page as previewed; headers, footers, and page numbers match what you see',
   appStylesTitle: 'Styles',

@@ -551,7 +551,7 @@ export const ko = {
   appPaginationPreview: '페이지 미리 보기',
   appPvCommented: '메모',
   appTotalPagesN: '전체 {n}페이지',
-  appPvHint: '읽기 전용 스냅숏입니다. 편집 후 다시 여세요 · Esc로 닫기',
+  appPvHint: '읽기 전용 화면입니다. 편집한 뒤 다시 여세요 · Esc로 닫기',
   appPvExportTip:
     '미리 보기 그대로 페이지 단위로 내보냅니다. 머리글/바닥글과 페이지 번호가 화면과 일치합니다',
   // Styles pane
