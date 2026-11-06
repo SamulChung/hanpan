@@ -93,8 +93,12 @@ body,
 }
 
 .gx-quick-btn:disabled {
+  /* no picture yet: clearly off, not just a shade greyer */
+  background: transparent;
+  border-style: dashed;
   color: var(--text-muted);
-  cursor: default;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* the export dialog */
