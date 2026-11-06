@@ -145,6 +145,7 @@ import { printPdf } from './print'
 import { PasswordDialog } from './PasswordDialog'
 import { PropertiesDialog } from './PropertiesDialog'
 import { ConvertDialog } from './convert/ConvertDialog'
+import { FileMenu } from './FileMenu'
 import { ExportImagesMenu } from './convert/ExportImagesMenu'
 import { exportEmbeddedImages } from './convert/embedded-images'
 import { AiPageReading, type AiPageReadingHandle } from './ai-read/AiPageReading'
@@ -8445,6 +8446,25 @@ export default function App() {
     >
       <div className={`ribbon ${collapse.rootClass}`} ref={collapse.rootRef}>
         <div className="ribbon-tabs" onDoubleClick={collapse.onTabsDoubleClick}>
+          <FileMenu
+            t={t}
+            saveDisabled={!dirty || saveState === 'saving'}
+            busy={convertBusy}
+            onOpen={() =>
+              void window.pdfApi
+                .openFileDialog()
+                .catch((err) => console.error('[pdf] open dialog failed:', err))
+            }
+            onSave={() => void save()}
+            onSaveAs={() =>
+              void window.pdfApi
+                .saveAsDialog()
+                .catch((err) => console.error('[pdf] save as failed:', err))
+            }
+            onConvert={(format) => void convertTo(format)}
+            onConvertDialog={openConvertDialog}
+            onPrint={openPrintDlg}
+          />
           <button
             className="qa-btn"
             data-tip={`${t('save')} (${platformShortcuts('⌘S')})`}

@@ -63,6 +63,7 @@ describe('AI panel side', () => {
     expect(normalizeAiPanelPrefs({ side: 'bottom' }).side).toBe('right')
     expect(normalizeAiPanelPrefs({ side: 'left' }).side).toBe('left')
     expect(normalizeAiPanelPrefs({ side: 'right' }).side).toBe('right')
+    expect(normalizeAiPanelPrefs({ side: 'left' }).side).toBe('left')
   })
 
   it('does not discard a side-only preference change', () => {

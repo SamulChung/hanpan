@@ -33,7 +33,7 @@ export function isEastAsianFontName(name: string): boolean {
  * zh-TW → PMingLiU). English and every other language return undefined —
  * like en-US Word, whose theme leaves the East Asian slot empty and lets
  * per-script substitution kick in only when CJK text actually appears.
- * Latin default stays Calibri for every language.
+ * The Latin default is Calibri except under Korean (see blankDocxFontsFor).
  */
 export function defaultEastAsiaFontFor(lang: Lang): string | undefined {
   switch (lang) {
@@ -48,4 +48,14 @@ export function defaultEastAsiaFontFor(lang: Lang): string | undefined {
     default:
       return undefined
   }
+}
+
+/**
+ * docDefaults fonts of a new blank document. Hanpan: a Korean UI starts every
+ * script slot in Malgun Gothic (맑은 고딕), like Korean Word, instead of Calibri.
+ * Where the face is not installed the Korean sans fallback chain draws it.
+ */
+export function blankDocxFontsFor(lang: Lang): { eastAsiaFont?: string; latinFont?: string } {
+  const eastAsiaFont = defaultEastAsiaFontFor(lang)
+  return lang === 'ko' ? { eastAsiaFont, latinFont: 'Malgun Gothic' } : { eastAsiaFont }
 }

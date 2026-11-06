@@ -251,6 +251,8 @@ export interface HtmlApi {
   takeSeed?(): Promise<string | null>
   /** open any shell-routed document path (an AI answer's filenav citation) */
   openSourcePath(path: string): Promise<void>
+  /** File menu Open: the shell's open dialog (the same as the tab bar menu and Ctrl+O) */
+  openFileDialog(): Promise<void>
   /** Headless export mode: the path and format this hidden renderer must export, null in normal use */
   consumeHeadlessExport(): Promise<HeadlessExportTarget | null>
   /** Headless export mode: report the export outcome so the main process can quit */

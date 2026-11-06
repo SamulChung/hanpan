@@ -78,6 +78,7 @@ const api: HtmlApi = {
   consumePending: () => ipcRenderer.invoke(HTML_CHANNELS.consumePending),
   takeSeed: () => ipcRenderer.invoke(HTML_CHANNELS.seedTake),
   openSourcePath: (path: string) => ipcRenderer.invoke('home:open-path', path),
+  openFileDialog: () => ipcRenderer.invoke('app:open-file-dialog'),
   consumeHeadlessExport: () => ipcRenderer.invoke(HTML_CHANNELS.consumeHeadlessExport),
   headlessExportDone: (result: { ok: boolean; error?: string }) =>
     ipcRenderer.send(HTML_CHANNELS.headlessExportDone, result),

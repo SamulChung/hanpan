@@ -8703,6 +8703,16 @@ ipcMain.handle(PDF_CHANNELS.convertOffice, async (e, format: unknown) => {
   else if (format === 'pptx') await exportPdfAsPptxLocal()
 })
 
+// On-screen File menus of the Markdown, HTML and PDF editors (Hanpan 0.17 #6):
+// Open is the same dialog as the tab bar menu and Ctrl+O
+ipcMain.handle('app:open-file-dialog', () => openFileViaDialog())
+
+// PDF File menu › Save As: the same flow as the tab bar menu, for the tab that asked
+ipcMain.handle(PDF_CHANNELS.saveAsDialog, async (e) => {
+  if (activePdfTarget()?.webContents.id !== e.sender.id) return
+  await savePdfAs()
+})
+
 function openThirdPartyNotices(): Promise<string> {
   const path = app.isPackaged
     ? join(process.resourcesPath, 'THIRD-PARTY-NOTICES.txt')

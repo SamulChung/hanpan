@@ -1931,6 +1931,13 @@ export default function App() {
         dirty={dirty}
         onSave={() => void doSave('save')}
         onSaveAs={() => void doSave('saveAs')}
+        onOpen={() =>
+          void window.htmlApi
+            .openFileDialog()
+            .catch((err) => console.error('[html] open dialog failed:', err))
+        }
+        onExport={(format) => void runExport(format)}
+        onPrint={() => void runPrint()}
         onFind={() => openFind(false)}
         canUndo={historyState.undo}
         canRedo={historyState.redo}
