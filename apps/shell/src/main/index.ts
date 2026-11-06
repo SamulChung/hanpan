@@ -1076,7 +1076,7 @@ const tMain = createI18n({
     shareFileMissing: '找不到该文件，无法共享',
     menuTabRename: '重命名',
     menuTabDuplicate: '创建副本（复制已保存的文件）',
-    menuTabSplitBeside: '左右分屏',
+    menuTabSplitBeside: '移到新窗口，各占半个屏幕',
     menuTabCopyPath: '复制路径',
     menuTabCopyName: '复制文件名',
     menuTabReveal: '在文件夹中显示',
@@ -1240,7 +1240,7 @@ const tMain = createI18n({
     shareFileMissing: 'The file cannot be found, so it cannot be shared',
     menuTabRename: 'Rename',
     menuTabDuplicate: 'Duplicate (copy the saved file)',
-    menuTabSplitBeside: 'Split side by side',
+    menuTabSplitBeside: 'Move to a new window, half the screen each',
     menuTabCopyPath: 'Copy path',
     menuTabCopyName: 'Copy file name',
     menuTabReveal: 'Show in folder',
@@ -1413,7 +1413,7 @@ const tMain = createI18n({
     shareFileMissing: 'Không tìm thấy tệp nên không thể chia sẻ',
     menuTabRename: 'Đổi tên',
     menuTabDuplicate: 'Nhân bản (sao chép file đã lưu)',
-    menuTabSplitBeside: 'Chia đôi màn hình',
+    menuTabSplitBeside: 'Tách sang cửa sổ mới, mỗi bên nửa màn hình',
     menuTabCopyPath: 'Sao chép đường dẫn',
     menuTabCopyName: 'Sao chép tên file',
     menuTabReveal: 'Mở thư mục chứa file',
@@ -1761,7 +1761,7 @@ const tMain = createI18n({
     shareFileMissing: '파일을 찾을 수 없어 공유할 수 없습니다',
     menuTabRename: '이름 바꾸기',
     menuTabDuplicate: '복제(저장된 파일 복사)',
-    menuTabSplitBeside: '나란히 분할',
+    menuTabSplitBeside: '새 창으로 떼어 화면 반씩 보기',
     menuTabCopyPath: '경로 복사',
     menuTabCopyName: '파일 이름 복사',
     menuTabReveal: '폴더에서 표시',
@@ -7645,11 +7645,32 @@ function tabMenuActions(): TabMenuActions {
       const win = createDetachedEditorWindow({ ...record, applyMenuFor })
       const area = screen.getDisplayMatching(shellWindow.getBounds()).workArea
       const half = Math.floor(area.width / 2)
+      // the shell goes back to how it was once the window beside it closes (#12)
+      const before = {
+        bounds: shellWindow.getNormalBounds(),
+        maximized: shellWindow.isMaximized(),
+      }
       if (shellWindow.isMaximized()) shellWindow.unmaximize()
       if (shellWindow.isFullScreen()) shellWindow.setFullScreen(false)
-      shellWindow.setBounds({ x: area.x, y: area.y, width: half, height: area.height })
+      const halfBounds = { x: area.x, y: area.y, width: half, height: area.height }
+      shellWindow.setBounds(halfBounds)
       win.setBounds({ x: area.x + half, y: area.y, width: area.width - half, height: area.height })
       win.focus()
+      const filePath = record.filePath
+      const kind = record.kind
+      win.once('closed', () => {
+        // closed here, not docked back: it can be reopened like a closed tab
+        if (filePath && !tabManager?.list().some((t) => t.filePath === filePath)) {
+          recentlyClosed.push({ kind, filePath })
+        }
+        const shell = shellWindow
+        if (!shell || shell.isDestroyed()) return
+        // only if the person left the shell on its half: a window they moved stays put
+        const now = shell.getBounds()
+        if (now.x !== halfBounds.x || now.width !== halfBounds.width) return
+        shell.setBounds(before.bounds)
+        if (before.maximized) shell.maximize()
+      })
     },
     rename: (id) => {
       if (shellWindow && !shellWindow.isDestroyed())
@@ -7668,7 +7689,15 @@ function tabMenuActions(): TabMenuActions {
     },
     move: (id, toIndex) => tabManager?.reorderTab(id, toIndex),
     closeTabs: (ids) => void (tabManager && closeTabsInOrder(tabManager, ids)),
-    reopenClosed: () => recentlyClosed.reopenNext(openDocumentPath, existsSync),
+    // the tab comes back where it was in the strip, not at the end (0.17 리뷰 v2 shell #39)
+    reopenClosed: () =>
+      recentlyClosed.reopenNext((path, entry) => {
+        if (!openDocumentPath(path)) return false
+        const key = canonicalPath(path)
+        const tab = tabManager?.list().find((t) => t.filePath && canonicalPath(t.filePath) === key)
+        if (tab && entry?.index !== undefined) tabManager?.reorderTab(tab.id, entry.index)
+        return true
+      }, existsSync),
     share: (id) => void shareTabFromShell(id),
     // the forms dialog lives on Home: show Home and let it open the dialog with this tab picked
     saveMyForm: (id) => {

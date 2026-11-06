@@ -219,7 +219,8 @@ export class TabManager {
   private readonly bleedWcIds = new Set<number>()
   /** tabs mid unsaved-changes prompt, so a second close click doesn't stack dialogs */
   private readonly closingIds = new Set<string>()
-  private closedListener: ((tab: { kind: TabKind; filePath: string }) => void) | null = null
+  private closedListener:
+    ((tab: { kind: TabKind; filePath: string; index?: number }) => void) | null = null
   /** views whose HTML-fullscreen listeners are installed: a view that leaves
    *  for a detached window and docks back must not get a second pair */
   private readonly fullScreenTracked = new WeakSet<WebContentsView>()
@@ -1822,7 +1823,7 @@ export class TabManager {
     if (this.htmlFullScreenId === id) this.htmlFullScreenId = null
     const [removed] = this.tabs.splice(idx, 1)
     if (removed.filePath && !removed.present)
-      this.closedListener?.({ kind: removed.kind, filePath: removed.filePath })
+      this.closedListener?.({ kind: removed.kind, filePath: removed.filePath, index: idx })
     const split = this.split
     const survivor = split ? splitSurvivor(split, id) : null
     if (survivor !== null) {
@@ -1865,7 +1866,9 @@ export class TabManager {
   }
 
   /** told when a tab with a file is closed (not detached), so it can be reopened */
-  setClosedListener(listener: ((tab: { kind: TabKind; filePath: string }) => void) | null): void {
+  setClosedListener(
+    listener: ((tab: { kind: TabKind; filePath: string; index?: number }) => void) | null,
+  ): void {
     this.closedListener = listener
   }
 

@@ -1,6 +1,7 @@
 import { basename } from 'node:path'
 import { BrowserWindow, screen } from 'electron'
 import type { Rectangle, WebContents, WebContentsView } from 'electron'
+import { fitWindowSize } from './window-bounds'
 import { resumeDiscardedCopies } from '@genoffice/electron-utils'
 
 import {
@@ -509,7 +510,11 @@ export function createDetachedEditorWindow(options: {
   tearOffAt?: { x: number; y: number }
 }): BrowserWindow {
   const { view, kind, title, filePath, applyMenuFor, tearOffAt } = options
-  const size = DEFAULT_SIZE[kind] ?? { width: 1360, height: 900 }
+  // each kind's usual size, inside the screen it opens on (0.17 리뷰 v2 shell #12)
+  const size = fitWindowSize(
+    DEFAULT_SIZE[kind] ?? { width: 1360, height: 900 },
+    (tearOffAt ? screen.getDisplayNearestPoint(tearOffAt) : screen.getPrimaryDisplay()).workArea,
+  )
   const origin = tearOffAt ? tearOffOrigin(tearOffAt, size) : {}
   const win = new BrowserWindow({
     ...size,
