@@ -194,7 +194,7 @@ describe('Korean defaults in the Format Cells number tab (X5)', () => {
     const dates = datePatterns('ko')
     expect(dates[0]).toBe('yyyy"년" m"월" d"일"')
     expect(dates).toContain('m"월" d"일"')
-  // the Chinese/Japanese year-month-day forms are for zh/ja users, not Korean ones
+    // the Chinese/Japanese year-month-day forms are for zh/ja users, not Korean ones
     expect(dates.some((pattern) => pattern.includes('年'))).toBe(false)
     expect(numfmtPreview(dates[0]!, 46333)).toBe('2026년 11월 7일')
   })
