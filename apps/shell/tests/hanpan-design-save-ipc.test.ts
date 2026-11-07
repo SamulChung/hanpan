@@ -1,4 +1,5 @@
 // @vitest-environment node
+import { join, sep } from 'node:path'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 /**
@@ -101,11 +102,11 @@ describe('design window save', () => {
   })
 
   it('an opened design saves back to its own file', async () => {
-    showOpenDialog.mockResolvedValue({ canceled: false, filePaths: ['C:\\d\\notice.hpdesign'] })
+    // a path in this OS's own form, so the name is its basename on Windows and POSIX alike
+    const opened = join(sep === '\\' ? 'C:\\d' : '/d', 'notice.hpdesign')
+    showOpenDialog.mockResolvedValue({ canceled: false, filePaths: [opened] })
     expect(await call(DESIGN_CHANNELS.openDesign)).toEqual({ name: 'notice', text: DESIGN })
-    expect(await call(DESIGN_CHANNELS.saveDesign, 'edited', 'notice')).toBe(
-      'C:\\d\\notice.hpdesign',
-    )
+    expect(await call(DESIGN_CHANNELS.saveDesign, 'edited', 'notice')).toBe(opened)
     expect(showSaveDialog).not.toHaveBeenCalled()
   })
 
