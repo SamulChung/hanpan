@@ -318,7 +318,9 @@ test.describe('mind map editor in the shell', () => {
       })
       const labels = items.map((item) => item.label)
       expect(labels).toContain('Mind Map')
-      expect(labels.indexOf('Mind Map')).toBe(labels.indexOf('AI HTML') + 1)
+      // Home's order (0.17 review v2 shell #38): the mind map leads the New section, AI HWP next
+      expect(labels.indexOf('Mind Map')).toBe(labels.indexOf('New') + 1)
+      expect(labels.indexOf('AI HWP')).toBe(labels.indexOf('Mind Map') + 1)
       expect(items.find((item) => item.label === 'Mind Map')!.hasIcon).toBe(true)
       expect(labels.join(' ')).not.toMatch(/xmind/i)
 
