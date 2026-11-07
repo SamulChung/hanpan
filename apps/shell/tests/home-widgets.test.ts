@@ -377,6 +377,18 @@ describe('0.17 review v2: widget settings say what to do next', () => {
     expect(title.value).toBe('')
     expect(title.placeholder).toBe('바로가기')
   })
+
+  it('names each gear after its widget, so it is not one more plain "설정" next to the app Settings', async () => {
+    await renderHome()
+    const gears = Array.from(host.querySelectorAll<HTMLElement>('[data-widget-settings]'))
+    expect(gears).toHaveLength(3)
+    const names = gears.map((gear) => gear.getAttribute('aria-label'))
+    expect(names).not.toContain('설정')
+    expect(new Set(names).size).toBe(gears.length)
+    const memo = host.querySelector('[data-widget-type="memo"] [data-widget-settings]')!
+    expect(memo.getAttribute('aria-label')).toContain('빠른 메모')
+    expect(memo.getAttribute('aria-label')).toContain('설정')
+  })
 })
 
 describe('0.17 review v2: 홈 꾸미기 guards', () => {

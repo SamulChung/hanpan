@@ -786,7 +786,8 @@ export function HomeWidgets({
                     type="button"
                     className="hw-icon-btn"
                     data-widget-settings=""
-                    aria-label={text('settings')}
+                    // 앱 설정 단추와 같은 이름 "설정"이 홈에 여럿 생기지 않도록 위젯 이름을 붙인다
+                    aria-label={`${title} ${text('settings')}`}
                     title={text('settings')}
                     aria-pressed={editing}
                     onClick={() => onEdit(editing ? null : widget.id)}
