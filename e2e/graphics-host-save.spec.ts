@@ -5,7 +5,7 @@ import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { execFileSync } from 'node:child_process'
-import { launchShell, closeAndSaveVideo, waitForPageWithUrl } from './helpers'
+import { launchShell, closeAndSaveVideo, graphicsGpuMissing, waitForPageWithUrl } from './helpers'
 
 /**
  * 0.17 UI/UX review v2 (G1, G2, G3, W1, W4): inside an AI Photo or AI Illustration tab, the web
@@ -98,6 +98,8 @@ for (const kind of ['illust', 'photo'] as const) {
         await sizeWindow(app, 1366, 768)
         await page.locator(`.quick-card[data-new="${kind}"]`).click()
         const tab = await waitForPageWithUrl(app, `://${kind}/`)
+        const noGpu = await graphicsGpuMissing(tab)
+        test.skip(noGpu !== null, noGpu ?? '')
         await expect
           .poll(
             () => inApp<number>(tab, kind, 'return (await api.commands()).length').catch(() => 0),
@@ -207,9 +209,12 @@ for (const kind of ['illust', 'photo'] as const) {
         env: { GENOFFICE_AUTH_DIR: auth },
       })
       const { app, page, userDataDir } = launched
+      let noGpu: string | null = null
       try {
         await page.locator(`.quick-card[data-new="${kind}"]`).click()
         const tab = await waitForPageWithUrl(app, `://${kind}/`)
+        noGpu = await graphicsGpuMissing(tab)
+        test.skip(noGpu !== null, noGpu ?? '')
         await expect
           .poll(
             () => inApp<number>(tab, kind, 'return (await api.commands()).length').catch(() => 0),
@@ -236,11 +241,19 @@ for (const kind of ['illust', 'photo'] as const) {
         if (kind === 'photo') expect(head).toBe('8BPS')
         expect(statSync(copy).size).toBeGreaterThan(100)
       } finally {
-        // a power cut: the main process, by the PID this test started, with its children
-        const pid = app.process().pid!
-        const closed = app.waitForEvent('close', { timeout: 30_000 }).catch(() => undefined)
-        execFileSync('taskkill', ['/PID', String(pid), '/T', '/F'], { stdio: 'pipe' })
-        await closed
+        if (noGpu !== null) {
+          await closeAndSaveVideo(launched, `graphics-recovery-${kind}`)
+        } else {
+          // a power cut: the main process, by the PID this test started, with its children
+          const pid = app.process().pid!
+          const closed = app.waitForEvent('close', { timeout: 30_000 }).catch(() => undefined)
+          if (process.platform === 'win32') {
+            execFileSync('taskkill', ['/PID', String(pid), '/T', '/F'], { stdio: 'pipe' })
+          } else {
+            process.kill(pid, 'SIGKILL')
+          }
+          await closed
+        }
       }
       // the next launch offers the copy, and restoring it brings the drawing back, unsaved
       const second = await launchShell({

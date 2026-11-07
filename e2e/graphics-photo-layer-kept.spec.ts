@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, statSync } from 'node:fs'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { launchShell, closeAndSaveVideo, waitForPageWithUrl } from './helpers'
+import { launchShell, closeAndSaveVideo, graphicsGpuMissing, waitForPageWithUrl } from './helpers'
 
 /**
  * 0.17 final check: after Ctrl+S in AI Photo the brush drew nothing and the status line said
@@ -98,6 +98,11 @@ async function openPhoto(lang: string, videoDir: string) {
   await sizeWindow(launched.app)
   await launched.page.locator('.quick-card[data-new="photo"]').click()
   const tab = await waitForPageWithUrl(launched.app, '://photo/')
+  const noGpu = await graphicsGpuMissing(tab)
+  if (noGpu !== null) {
+    await closeAndSaveVideo(launched, videoDir)
+    test.skip(true, noGpu)
+  }
   await expect
     .poll(() => inApp<number>(tab, 'return (await api.commands()).length').catch(() => 0), {
       timeout: 60_000,
