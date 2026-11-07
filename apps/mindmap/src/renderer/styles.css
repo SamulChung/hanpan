@@ -1677,7 +1677,9 @@ textarea.mm-field {
   position: relative;
   overflow: hidden;
   border: 1px solid var(--border-strong);
-  background: #fff;
+  /* paper stays white in both themes */
+  --mm-print-paper: #fff;
+  background: var(--mm-print-paper);
   box-shadow: var(--shadow-modal-strong);
 }
 

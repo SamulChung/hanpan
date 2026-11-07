@@ -536,7 +536,7 @@ html.genoffice-popover-open .ribbon-tabs {
   background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: 6px;
-  box-shadow: 0 6px 18px rgb(0 0 0 / 16%);
+  box-shadow: var(--shadow-menu);
 }
 
 .sheet-file-pop button {

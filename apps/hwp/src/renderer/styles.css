@@ -444,7 +444,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgb(0 0 0 / 45%);
+  background: var(--color-bg-overlay);
 }
 
 .hwp-preview {
@@ -494,8 +494,9 @@ body {
 
 .hwp-preview-actions button.primary {
   border-color: var(--accent);
+  --hwp-on-accent: #fff;
   background: var(--accent);
-  color: #fff;
+  color: var(--hwp-on-accent);
 }
 
 .hwp-preview-actions button:focus-visible {
@@ -511,12 +512,16 @@ body {
   align-items: center;
   gap: 16px;
   padding: 20px;
-  background: #8a8d91;
+  --hwp-preview-desk: #8a8d91;
+  background: var(--hwp-preview-desk);
 }
 
 .hwp-preview-page {
   max-width: 100%;
   height: auto;
-  background: #fff;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 35%);
+  /* paper stays white in both themes */
+  --hwp-preview-paper: #fff;
+  --hwp-preview-paper-shadow: 0 2px 8px rgb(0 0 0 / 35%);
+  background: var(--hwp-preview-paper);
+  box-shadow: var(--hwp-preview-paper-shadow);
 }

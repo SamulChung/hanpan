@@ -9750,7 +9750,8 @@ body.show-curtain::after {
   cursor: pointer;
 }
 .app-toast-action:hover {
-  background: rgb(255 255 255 / 14%);
+  --app-toast-action-hover: rgb(255 255 255 / 14%);
+  background: var(--app-toast-action-hover);
 }
 
 .app-toast-icon {

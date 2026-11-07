@@ -130,8 +130,8 @@ body {
   padding: 4px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--surface, #fff);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 16%);
+  background: var(--surface);
+  box-shadow: var(--shadow-menu);
 }
 .dz-file-menu button {
   display: flex;
@@ -144,7 +144,7 @@ body {
 }
 .dz-file-menu button:hover,
 .dz-file-menu button:focus-visible {
-  background: var(--accent-soft, rgb(0 0 0 / 6%));
+  background: var(--accent-soft);
 }
 .dz-file-menu kbd {
   color: var(--text-secondary);
