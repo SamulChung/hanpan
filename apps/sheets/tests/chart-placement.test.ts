@@ -36,7 +36,11 @@ describe('newChartTitle (0.17 final: one column titled "Series 1")', () => {
     expect(newChartTitle(values, chartDataFromValues(values)!, fallback)).toBe('매출')
   })
   it('uses the UI-language title for several series', () => {
-    const values = [[10, 1], [20, 2], [30, 3]]
+    const values = [
+      [10, 1],
+      [20, 2],
+      [30, 3],
+    ]
     expect(newChartTitle(values, chartDataFromValues(values)!, fallback)).toBe(fallback)
   })
   it('uses the UI-language title for one headerless row', () => {
