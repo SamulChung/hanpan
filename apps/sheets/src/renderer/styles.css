@@ -1026,6 +1026,15 @@ html.genoffice-popover-open .ribbon-tabs {
   grid-auto-flow: column;
 }
 
+/* 좁은 창의 홈 띠(data-fit)는 AI 단추와 셀 도구를 두 줄로 쌓는다. 간단히 보기 띠는
+   한 줄 높이라 쌓으면 아래가 잘리므로, 여기서는 다시 옆으로 늘어놓는다. */
+.ribbon-compact .ribbon[data-fit] .ribbon-group-ai > .ribbon-group-content,
+.ribbon-compact .ribbon[data-fit] .ribbon-group-cells .cell-tools {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 /* Bare colored ribbon glyphs — no chip background.
    Icon-beside-label rows use the slides ribbon's .rb-small icon size (14px);
    the tall .large buttons scale theirs up to 28px below. */
@@ -7322,6 +7331,12 @@ body:has(.note-pictures-pane) .threaded-comments-pane {
   gap: 0 2px;
 }
 
+/* 세 줄 격자(63px)는 간단히 보기 띠(내용 약 42px)를 넘치므로 거기서는 한 줄로 늘어놓는다 */
+.ribbon-compact .editing-grid {
+  grid-template-rows: 21px;
+  align-items: center;
+}
+
 .ribbon-group-editing .editing-grid .select-like.compact,
 .ribbon-group-editing .editing-grid button.labeled,
 .ribbon-group-cells .select-like.compact {
@@ -7393,7 +7408,20 @@ body:has(.note-pictures-pane) .threaded-comments-pane {
   max-width: 64px;
   white-space: normal;
   word-break: keep-all;
-  line-height: 1.15;
+  line-height: 1.1;
+}
+
+/* 두 줄 이름을 단 붙여넣기 단추도 띠(내용 68px) 안에 들어가게 위아래 여백을 줄인다.
+   그대로 두면 76px이 되어 단추 위아래가 잘렸다. */
+.ribbon[data-fit] .ribbon-group-clipboard .ribbon-tool.large {
+  gap: 2px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.ribbon[data-fit] .ribbon-group-clipboard .ribbon-tool.large .tool-icon-row {
+  padding-top: 1px;
+  padding-bottom: 1px;
 }
 
 .ribbon[data-fit] .ribbon-group-cells .ribbon-rows {
