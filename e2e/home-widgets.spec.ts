@@ -82,6 +82,10 @@ test('Home widgets: add, configure, resize, remove and keep them across a restar
     // 기본값으로 되돌리기 brings back the three default widgets
     await page2.locator('[data-home-custom="open"]').click()
     await page2.locator('[data-home-custom="reset"]').click()
+    // it asks first (99c216e9); nothing changes until the person confirms
+    await expect(page2.locator('.hc-reset-ask')).toBeVisible()
+    await expect(page2.locator('[data-widget]')).toHaveCount(5)
+    await page2.locator('[data-home-custom="reset-confirm"]').click()
     await page2.locator('[data-home-custom="close"]').click()
     await expect(page2.locator('[data-widget]')).toHaveCount(3)
     await expect(page2.locator('.hp-cards [data-new="html"]')).toHaveCount(1)

@@ -36,12 +36,14 @@ test('the Markdown converter writes HWP, Word and PDF in one press', async () =>
   })
   const { app, page } = launched
   try {
-    // the converter writes to Documents\한판 변환 by default: point Documents at a temp folder
+    // the converter writes to the app's save folder (Documents\Hanpan) by default, not a
+    // separate Documents\한판 변환 (5b6aaab4): point Documents at a temp folder
     await app.evaluate(({ app: electronApp }, dir) => electronApp.setPath('documents', dir), out)
     await page.locator('[data-new="md-convert"]').click()
     const dialog = page.locator('[data-hanpan="md-converter"]')
     await expect(dialog).toBeVisible()
-    await expect(dialog).toContainText(out)
+    const folder = join(out, 'Hanpan')
+    await expect(dialog).toContainText(folder)
 
     await dialog.locator('[data-hanpan="md-source"]').fill(MARKDOWN)
     const preview = dialog.locator('[data-hanpan="md-preview"]')
@@ -60,7 +62,6 @@ test('the Markdown converter writes HWP, Word and PDF in one press', async () =>
     await expect(result).toContainText('파일 3개를 만들었습니다', { timeout: 120_000 })
     await page.screenshot({ path: screenshotPath('hanpan-md-convert-done') })
 
-    const folder = join(out, '한판 변환')
     const files = readdirSync(folder).sort()
     expect(files).toEqual([
       'ACP215 홍보영상 3편 — v2 수정 내역.docx',
