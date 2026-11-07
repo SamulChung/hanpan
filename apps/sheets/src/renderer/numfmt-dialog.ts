@@ -80,7 +80,7 @@ export function datePatterns(lang?: string): readonly string[] {
   return DATE_PATTERNS.includes(system) ? DATE_PATTERNS : [system, ...DATE_PATTERNS]
 }
 
-/// 한국어 화면의 날짜 목록: 한국식("2026년 11월 7일")을 앞에, 중국식 年月日은 뺀다.
+/// Korean UI date list: the Korean long form ("2026년 11월 7일") first; the CJK year/month/day forms meant for zh and ja are left out.
 export const KO_DATE_PATTERNS: readonly string[] = [
   'yyyy"년" m"월" d"일"',
   'yyyy"년" m"월" d"일" dddd',
